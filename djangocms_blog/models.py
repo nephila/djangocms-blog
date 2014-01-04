@@ -66,8 +66,8 @@ class Post(TranslatableModel):
                                              related_name='blog_post_thumbnail',
                                              blank=True, null=True)
     main_image_full = models.ForeignKey(ThumbnailOption,
-                                          related_name='blog_post_full',
-                                          blank=True, null=True)
+                                        related_name='blog_post_full',
+                                        blank=True, null=True)
 
     translations = TranslatedFields(
         title=models.CharField(max_length=255),
@@ -104,13 +104,13 @@ class Post(TranslatableModel):
 
     def thumbnail_options(self):
         if self.main_image_thumbnail_id:
-            return self.main_image_thumbnail.as_dict()
+            return self.main_image_thumbnail.as_dict
         else:
             return settings.BLOG_IMAGE_THUMBNAIL_SIZE
 
     def full_image_options(self):
         if self.main_image_fulll_id:
-            return self.main_image_full.as_dict()
+            return self.main_image_full.as_dict
         else:
             return settings.BLOG_IMAGE_FULL_SIZE
 

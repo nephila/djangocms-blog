@@ -3,34 +3,13 @@ import datetime
 
 from django.core.urlresolvers import resolve
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import ListView, DetailView, ArchiveIndexView
+from django.views.generic import ListView, DetailView
 from hvad.admin import TranslatableModelAdminMixin
 
 from .models import Post
 
 
 class BaseBlogView(TranslatableModelAdminMixin):
-
-    def _get_object(self, queryset=None):
-        if not queryset:
-            queryset = self.get_queryset()
-        model = self.model
-        try:
-            obj = queryset.get(**self.filter_kwargs())
-        except self.model.DoesNotExist:
-            obj = None
-        if obj:
-            return obj
-        queryset = self.model.objects.untranslated()
-        try:
-            obj = queryset.get(**self.filter_kwargs())
-        except model.DoesNotExist:
-            return None
-        new_translation = model._meta.translations_model()
-        new_translation.language_code = self._language(self.request)
-        new_translation.master = obj
-        setattr(obj, model._meta.translations_cache, new_translation)
-        return obj
 
     def get_queryset(self):
         language = self._language(self.request)
@@ -56,7 +35,7 @@ class PostDetailView(BaseBlogView, DetailView):
     template_name = "djangocms_blog/post_detail.html"
 
 
-class PostArchiveView(BaseBlogView, ArchiveIndexView):
+class PostArchiveView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
@@ -67,9 +46,9 @@ class PostArchiveView(BaseBlogView, ArchiveIndexView):
     def get_queryset(self):
         qs = super(PostArchiveView, self).get_queryset()
         if 'month' in self.kwargs:
-            qs = qs.filter(date_published__month=self.kwargs['month'])
+            qs = qs.filter(**{"%s__month" % self.date_field: self.kwargs['month']})
         if 'year' in self.kwargs:
-            qs = qs.filter(date_published__year=self.kwargs['year'])
+            qs = qs.filter(**{"%s__year" % self.date_field: self.kwargs['year']})
         return qs
 
     def get_context_data(self, **kwargs):
