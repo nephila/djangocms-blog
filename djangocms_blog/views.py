@@ -15,7 +15,7 @@ class BaseBlogView(TranslatableModelAdminMixin):
         language = self._language(self.request)
         manager = self.model._default_manager.language(language)
         if not self.request.user.is_staff:
-            manager = manager.published()
+            manager = manager.filter(publish=True)
         return manager
 
     def render_to_response(self, context, **response_kwargs):
