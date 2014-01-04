@@ -1,0 +1,29 @@
+{% load i18n thumbnail cms_tags nephila_django %}
+{% load url from future %}
+
+<article id="post-{{ post.slug }}" class="post-item">
+    <header>
+        <h3><a href="{{ post.get_absolute_url }}">{% show_editable_model post "title" %}</a></h3>
+		{% block blog_meta %}
+			{% html5time post.date_published "d F Y" "blog-date" %}
+            <div class="blog-author">{% trans "by" %} <a href="{% url 'djangocms_blog:author-posts' post.author.username %}">{{ post.author }}</a></div>
+			{% if post.tags.exists %}
+            <nav class="blog-tags">
+                {% for tag in post.tags.all %}
+                    <a href="{% url 'djangocms_blog:tagged-posts' tag=tag.slug %}" class="blog-tag blog-tag-{{ tag.count }}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </nav>
+			{% endif %}
+		{% endblock %}
+    </header>
+    {% if image and post.main_image_id %}
+    <div class="blog-visual">
+        {% thumbnail post.main_image thumbnail_options.size crop=thumbnail_options.crop upscale=thumbnail_options.upscale as thumb %}
+        <img src="{{ thumb.url }}" alt="" width="{{ thumb.width }}" height="{{ thumb.height }}" />
+    </div>
+    {% endif %}
+    <div class="blog-lead">{% show_editable_model post "abstract" "abstract" "" safe %}</div>
+    <footer>
+        <a href="{{ post.get_absolute_url }}">{% trans "read more" %}</a>
+    </footer>
+</article>

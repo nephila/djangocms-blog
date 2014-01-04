@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load url from future %}
+
+<div class="plugin plugin-blog">
+	{% regroup dates by date.year as years %}
+	{% with current_year=year current_month=month %}
+	<ul class="blog-archive">
+		{% for year in years %}
+		<li{% if year.grouper == current_year %} class="active"{% endif %}>
+			<a href="{% url 'djangocms_blog:archive-year' year=year.grouper %}">{{ year.grouper }}</a>
+			<ul>
+				{% for month in year.list %}
+				<li{% if year.grouper == current_year and month.date.month == current_month %} class="active"{% endif %}>
+					<a href="{% url 'djangocms_blog:archive-month' year=year.grouper month=month.date|date:"n" %}">{{ month.date|date:"F" }} <span>({{ month.count }})</span></a>
+				</li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% empty %}
+		<li class="blog-empty"><p>{% trans "No entry found." %}</p></li>
+		{% endfor %}
+	</ul>
+	{% endwith %}
+</div>

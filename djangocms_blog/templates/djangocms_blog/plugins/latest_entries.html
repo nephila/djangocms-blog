@@ -1,0 +1,7 @@
+<div class="plugin plugin-blog">
+	<div class="blog-latest-entries">
+    {% for post in post_list %}
+    	{% include "djangocms_blog/includes/blog_item.html" with post=instance.get_posts %}
+	{% empty %}
+	</div>
+</div>

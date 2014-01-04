@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load url from future %}
+
+<div class="plugin plugin-blog">
+	<ul class="blog-tags">
+		{% for tag in tags %}
+		<li><a href="{% url 'djangocms_blog:tagged-posts' tag=tag.slug %}" class="blog-tag-{{ tag.count }}">{{ tag.name }} <span>({{ tag.count }})</span></a></li>
+		{% empty %}
+		<li class="blog-empty"><p>{% trans "No entry found." %}</p></li>
+		{% endfor %}
+	</ul>
+</div>
