@@ -1,0 +1,7 @@
+django-vanilla-views
+django-hvad
+django-taggit
+django-taggit-templatetags
+django-taggit-autosuggest
+django-admin-enhancer
+# Additional requirements go here
