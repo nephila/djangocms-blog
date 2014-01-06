@@ -34,3 +34,8 @@ Features
 --------
 
 * TODO
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/nephila/djangocms-blog/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
