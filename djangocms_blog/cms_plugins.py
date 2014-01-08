@@ -6,6 +6,7 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 
 from .models import AuthorEntriesPlugin, LatestPostsPlugin, Post
+from .forms import LatestEntriesForm
 
 
 class BlogPlugin(CMSPluginBase):
@@ -18,6 +19,8 @@ class LatestEntriesPlugin(BlogPlugin):
     render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Entries')
     model = LatestPostsPlugin
+    form = LatestEntriesForm
+    filter_horizontal = ('categories',)
 
     def render(self, context, instance, placeholder):
         context['instance'] = instance

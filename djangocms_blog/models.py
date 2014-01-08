@@ -119,6 +119,7 @@ class LatestPostsPlugin(CMSPlugin):
 
     latest_posts = models.IntegerField(default=5, help_text=_('The number of latests posts to be displayed.'))
     tags = models.ManyToManyField('taggit.Tag', blank=True, help_text=_('Show only the blog posts tagged with chosen tags.'))
+    categories = models.ManyToManyField('BlogCategory', blank=True, help_text=_('Show only the blog posts tagged with chosen tags.'))
 
     def __unicode__(self):
         return u"%s latest post by tag" % self.latest_posts

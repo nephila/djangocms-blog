@@ -1,29 +1,7 @@
 {% extends "admin/hvad/change_form.html" %}
-{% load i18n admin_modify %}
+{% load static %}
 
 {% block extrahead %}
 {{ block.super }}
-<style type="text/css">
-.as-selections.vTextField {
-    width: 300px;
-}
-
-.as-results ul.as-list {
-    margin-left:9em;
-    padding-left:0;
-    box-shadow: none !important;
-    border: 1px solid #888888 !important;
-}
-.as-results ul.as-list li {
-    list-style: none;
-}
-ul.as-selections.vTextField {
-    padding-left: 10px;
-    margin-left:9em;
-}
-
-ul.as-selections li {
-    list-style: none;
-}
-</style>
+<link href="{% static 'css/djangocms_blog_admin.css' %}" media="screen, projection" rel="stylesheet" type="text/css">
 {% endblock %}
