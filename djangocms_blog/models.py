@@ -2,6 +2,7 @@
 from cms.models import PlaceholderField, CMSPlugin
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -33,6 +34,10 @@ class BlogCategory(TranslatableModel):
     class Meta:
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
+        
+    @property
+    def count(self):
+        return self.blog_posts.count()
 
     def __unicode__(self):
         return self.lazy_translation_getter('name')
@@ -107,6 +112,14 @@ class Post(TranslatableModel):
             return self.main_image_thumbnail.as_dict
         else:
             return settings.BLOG_IMAGE_THUMBNAIL_SIZE
+        
+    def get_full_url(self):
+        s = Site.objects.get_current()
+        if s.domain.find('http') > -1:
+            return "%s%s" % (s.domain, self.get_absolute_url())
+        else:
+            return "http://%s%s" % (s.domain, self.get_absolute_url())
+
 
     def full_image_options(self):
         if self.main_image_fulll_id:

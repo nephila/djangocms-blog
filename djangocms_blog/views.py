@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django.contrib.auth.models import User
 
 from django.core.urlresolvers import resolve
+from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
 from hvad.admin import TranslatableModelAdminMixin
 
-from .models import Post
+from .models import Post, BlogCategory
 
 
 class BaseBlogView(TranslatableModelAdminMixin):
@@ -86,5 +88,28 @@ class AuthorEntriesView(BaseBlogView, ListView):
         return qs
 
     def get_context_data(self, **kwargs):
-        kwargs['author'] = self.kwargs.get('username')
+        kwargs['author'] = User.objects.get(username=self.kwargs.get('username'))
         return super(AuthorEntriesView, self).get_context_data(**kwargs)
+
+class CategoryEntriesView(BaseBlogView, ListView):
+    model = Post
+    context_object_name = 'post_list'
+    template_name = "djangocms_blog/post_list.html"
+    _category = None
+
+    @property
+    def category(self):
+        if not self._category:
+            language = self._language(self.request)
+            self._category = BlogCategory._default_manager.language(language).get(slug=self.kwargs['category'])
+        return self._category
+
+    def get_queryset(self):
+        qs = super(CategoryEntriesView, self).get_queryset()
+        if 'category' in self.kwargs:
+            qs = qs.filter(categories=self.category.pk)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        kwargs['category'] = self.category
+        return super(CategoryEntriesView, self).get_context_data(**kwargs)
