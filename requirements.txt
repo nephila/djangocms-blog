@@ -1,6 +1,6 @@
-django-vanilla-views
 django-hvad
 django-taggit
+django-selects2
 django-taggit-templatetags
 django-taggit-autosuggest
 django-admin-enhancer
