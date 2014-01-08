@@ -18,6 +18,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
     raw_id_fields = ['author']
     frontend_editable_fields = ("title", "abstract")
     enhance_exclude = ('main_image', 'tags')
+    change_form_template = "admin/djangocms_blog/post_change_form.html"
 
     fieldsets = [
         (None, {
