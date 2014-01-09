@@ -91,6 +91,7 @@ class AuthorEntriesView(BaseBlogView, ListView):
         kwargs['author'] = User.objects.get(username=self.kwargs.get('username'))
         return super(AuthorEntriesView, self).get_context_data(**kwargs)
 
+
 class CategoryEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
@@ -100,8 +101,8 @@ class CategoryEntriesView(BaseBlogView, ListView):
     @property
     def category(self):
         if not self._category:
-            language = self._language(self.request)
-            self._category = BlogCategory._default_manager.language(language).get(slug=self.kwargs['category'])
+            language = get_language_from_request(self.request)
+            self._category = BlogCategory._default_manager.language(language).get(translations__slug=self.kwargs['category'])
         return self._category
 
     def get_queryset(self):

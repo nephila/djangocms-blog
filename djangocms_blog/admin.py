@@ -8,7 +8,8 @@ from .models import Post, BlogCategory
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
-    model = BlogCategory
+    def get_prepopulated_fields(self, request, obj=None):
+        return {"slug": ("name",)}
 
 
 class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
