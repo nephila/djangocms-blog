@@ -7,8 +7,9 @@
     <header>
         <h3>
 		{% if author %}{% trans "Entries by" %} {{ author.get_full_name }}
-        {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}{% elif tagged_entries %}
-		{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}{% endif %}
+        {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
+        {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
+        {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
         </h3>
     </header>
     {% endblock %}

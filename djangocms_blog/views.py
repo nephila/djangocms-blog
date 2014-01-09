@@ -102,7 +102,9 @@ class CategoryEntriesView(BaseBlogView, ListView):
     def category(self):
         if not self._category:
             language = get_language_from_request(self.request)
-            self._category = BlogCategory._default_manager.language(language).get(translations__slug=self.kwargs['category'])
+            self._category = BlogCategory._default_manager.language(language).get(
+                translations__language_code=language,
+                translations__slug=self.kwargs['category'])
         return self._category
 
     def get_queryset(self):

@@ -28,7 +28,7 @@ class BlogCategory(TranslatableModel):
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
-        slug=models.SlugField(_('slug'), blank=True),
+        slug=models.SlugField(_('slug'), blank=True, unique=True),
     )
 
     class Meta:
@@ -76,7 +76,7 @@ class Post(TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(max_length=255),
-        slug=models.SlugField(_('slug'), blank=True),
+        slug=models.SlugField(_('slug'), blank=True, unique=True),
         abstract=HTMLField(),
 
     )
