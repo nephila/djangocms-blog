@@ -2,7 +2,7 @@
 from admin_enhancer.admin import EnhancedModelAdminMixin
 from cms.admin.placeholderadmin import PlaceholderAdmin, FrontendEditableAdmin
 from django.contrib import admin
-from hvad.admin import TranslatableAdmin
+from parler.admin import TranslatableAdmin
 
 from .models import Post, BlogCategory
 
@@ -31,6 +31,9 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
                        'abstract']
         }),
     ]
+
+    def get_prepopulated_fields(self, request, obj=None):
+        return {"slug": ("title",)}
 
     def save_model(self, request, obj, form, change):
         if not obj.author_id:

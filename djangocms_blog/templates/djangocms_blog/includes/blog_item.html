@@ -1,11 +1,11 @@
-{% load i18n thumbnail cms_tags nephila_django %}
+{% load i18n thumbnail cms_tags %}
 {% load url from future %}
 
 <article id="post-{{ post.slug }}" class="post-item">
     <header>
         <h3><a href="{{ post.get_absolute_url }}">{% show_editable_model post "title" %}</a></h3>
 		{% block blog_meta %}
-			{% html5time post.date_published "d F Y" "blog-date" %}
+			{{ post.date_published|date:"d F Y" }}
             <div class="blog-author">{% trans "by" %} <a href="{% url 'djangocms_blog:author-posts' post.author.username %}">{{ post.author }}</a></div>
 			{% if post.tags.exists %}
             <nav class="blog-tags">

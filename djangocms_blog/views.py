@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
 import datetime
+from cms.utils import get_language_from_request
 from django.contrib.auth.models import User
-
 from django.core.urlresolvers import resolve
 from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
-from hvad.admin import TranslatableModelAdminMixin
 
 from .models import Post, BlogCategory
 
 
-class BaseBlogView(TranslatableModelAdminMixin):
+class BaseBlogView(object):
 
     def get_queryset(self):
-        language = self._language(self.request)
+        language = get_language_from_request(self.request)
         manager = self.model._default_manager.language(language)
         if not self.request.user.is_staff:
             manager = manager.filter(publish=True)
@@ -35,6 +34,7 @@ class PostDetailView(BaseBlogView, DetailView):
     model = Post
     context_object_name = 'post'
     template_name = "djangocms_blog/post_detail.html"
+    slug_field = 'translations__slug'
 
 
 class PostArchiveView(BaseBlogView, ListView):

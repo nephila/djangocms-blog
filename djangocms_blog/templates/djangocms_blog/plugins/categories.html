@@ -1,0 +1,13 @@
+{% load i18n %}
+{% load url from future %}
+
+<div class="plugin plugin-blog">
+    <h3>{% trans "Categories" %}</h3>
+	<ul class="blog-categories">
+		{% for category in categories %}
+		<li><a href="{% url 'djangocms_blog:category-posts' category=category.slug %}" class="blog-categories-{{ category.count }}">{{ category.name }} <span>({{ category.count }} {% trans "articles" %})</span></a></li>
+		{% empty %}
+		<li class="blog-empty"><p>{% trans "No entry found." %}</p></li>
+		{% endfor %}
+	</ul>
+</div>

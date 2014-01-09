@@ -11,9 +11,9 @@ class Migration(SchemaMigration):
         # Adding model 'BlogCategoryTranslation'
         db.create_table(u'djangocms_blog_blogcategory_translation', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, blank=True)),
-            ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
             ('master', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', null=True, to=orm['djangocms_blog.BlogCategory'])),
         ))
         db.send_create_signal(u'djangocms_blog', ['BlogCategoryTranslation'])
@@ -33,10 +33,10 @@ class Migration(SchemaMigration):
         # Adding model 'PostTranslation'
         db.create_table(u'djangocms_blog_post_translation', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, blank=True)),
             ('abstract', self.gf('djangocms_text_ckeditor.fields.HTMLField')()),
-            ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
             ('master', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', null=True, to=orm['djangocms_blog.Post'])),
         ))
         db.send_create_signal(u'djangocms_blog', ['PostTranslation'])
@@ -85,6 +85,15 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['latestpostsplugin_id', 'tag_id'])
 
+        # Adding M2M table for field categories on 'LatestPostsPlugin'
+        m2m_table_name = db.shorten_name(u'djangocms_blog_latestpostsplugin_categories')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('latestpostsplugin', models.ForeignKey(orm[u'djangocms_blog.latestpostsplugin'], null=False)),
+            ('blogcategory', models.ForeignKey(orm[u'djangocms_blog.blogcategory'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['latestpostsplugin_id', 'blogcategory_id'])
+
         # Adding model 'AuthorEntriesPlugin'
         db.create_table(u'cmsplugin_authorentriesplugin', (
             (u'cmsplugin_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['cms.CMSPlugin'], unique=True, primary_key=True)),
@@ -129,6 +138,9 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field tags on 'LatestPostsPlugin'
         db.delete_table(db.shorten_name(u'djangocms_blog_latestpostsplugin_tags'))
+
+        # Removing M2M table for field categories on 'LatestPostsPlugin'
+        db.delete_table(db.shorten_name(u'djangocms_blog_latestpostsplugin_categories'))
 
         # Deleting model 'AuthorEntriesPlugin'
         db.delete_table(u'cmsplugin_authorentriesplugin')
@@ -227,6 +239,7 @@ class Migration(SchemaMigration):
         },
         u'djangocms_blog.latestpostsplugin': {
             'Meta': {'object_name': 'LatestPostsPlugin', 'db_table': "u'cmsplugin_latestpostsplugin'", '_ormbases': ['cms.CMSPlugin']},
+            'categories': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['djangocms_blog.BlogCategory']", 'symmetrical': 'False', 'blank': 'True'}),
             u'cmsplugin_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['cms.CMSPlugin']", 'unique': 'True', 'primary_key': 'True'}),
             'latest_posts': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
             'tags': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['taggit.Tag']", 'symmetrical': 'False', 'blank': 'True'})
@@ -276,14 +289,14 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('name',)", 'unique_together': "(('parent', 'name'),)", 'object_name': 'Folder'},
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modified_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'filer_owned_folders'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['filer.Folder']"}),
-            'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'uploaded_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
         'filer.image': {
@@ -297,7 +310,6 @@ class Migration(SchemaMigration):
             u'file_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['filer.File']", 'unique': 'True', 'primary_key': 'True'}),
             'must_always_publish_author_credit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'must_always_publish_copyright': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'related_url': ('django.db.models.fields.CharField', [], {'max_length': '250', 'null': 'True', 'blank': 'True'}),
             'subject_location': ('django.db.models.fields.CharField', [], {'default': 'None', 'max_length': '64', 'null': 'True', 'blank': 'True'})
         },
         u'taggit.tag': {

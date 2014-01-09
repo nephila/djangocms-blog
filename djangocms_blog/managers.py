@@ -4,7 +4,7 @@ import datetime
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from hvad.manager import TranslationManager
+from parler.managers import TranslationManager
 
 from .settings import BLOG_TAGCLOUD_MIN, BLOG_TAGCLOUD_MAX
 
@@ -62,7 +62,7 @@ class TaggedFilterItem(object):
         if len(count) > 0:
             weight_fun = get_weight_fun(BLOG_TAGCLOUD_MIN,
                                         BLOG_TAGCLOUD_MAX,
-                                        min(count), max(count))
+                                        min(count), BLOG_TAGCLOUD_MAX)
             tagquery = tagquery.order_by('name')
             for tag in tagquery:
                 tag.weight = weight_fun(tag.count)

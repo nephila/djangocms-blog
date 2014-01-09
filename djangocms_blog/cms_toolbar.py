@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from cms.toolbar_base import CMSToolbar
+from cms.toolbar_pool import toolbar_pool
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from cms.toolbar_base import CMSToolbar
-from cms.toolbar_pool import toolbar_pool
 
 
 @toolbar_pool.register

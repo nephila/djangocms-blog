@@ -10,7 +10,7 @@ from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
-from hvad.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatableModel, TranslatedFields
 from taggit_autosuggest.managers import TaggableManager
 
 from .managers import GenericDateTaggedManager
@@ -40,15 +40,15 @@ class BlogCategory(TranslatableModel):
         return self.blog_posts.count()
 
     def __unicode__(self):
-        return self.lazy_translation_getter('name')
+        return self.safe_translation_getter('name')
 
     def save(self, *args, **kwargs):
         super(BlogCategory, self).save(*args, **kwargs)
-        for item in self._meta.translations_model.objects.filter(master__pk=self.pk):
-            title = getattr(item, "name", False)
-            if title and not item.slug:
-                item.slug = slugify(title)
-                item.save()
+        for lang in self.get_available_languages():
+            self.set_current_language(lang)
+            if not self.slug and self.name:
+                self.slug = slugify(self.name)
+        self.save_translations()
 
 
 class Post(TranslatableModel):
@@ -90,15 +90,15 @@ class Post(TranslatableModel):
         verbose_name_plural = _('blog post')
 
     def __unicode__(self):
-        return self.lazy_translation_getter('title')
+        return self.safe_translation_getter('title')
 
     def save(self, *args, **kwargs):
         super(Post, self).save(*args, **kwargs)
-        for item in self._meta.translations_model.objects.filter(master__pk=self.pk):
-            title = getattr(item, "title", False)
-            if title and not item.slug:
-                item.slug = slugify(title)
-                item.save()
+        for lang in self.get_available_languages():
+            self.set_current_language(lang)
+            if not self.slug and self.title:
+                self.slug = slugify(self.title)
+        self.save_translations()
 
     def get_absolute_url(self):
         kwargs = {'year': self.date_published.year,
@@ -119,7 +119,6 @@ class Post(TranslatableModel):
             return "%s%s" % (s.domain, self.get_absolute_url())
         else:
             return "http://%s%s" % (s.domain, self.get_absolute_url())
-
 
     def full_image_options(self):
         if self.main_image_fulll_id:
