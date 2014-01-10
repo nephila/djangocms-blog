@@ -1,12 +1,20 @@
 {% load i18n %}
-{% load url from future %}
-
+{% load url from future %}{% spaceless %}
 <div class="plugin plugin-blog">
+    <h3>{% trans "Tags" %}</h3>
 	<ul class="blog-tags">
 		{% for tag in tags %}
-		<li><a href="{% url 'djangocms_blog:tagged-posts' tag=tag.slug %}" class="blog-tag-{{ tag.count }}">{{ tag.name }} <span>({{ tag.count }})</span></a></li>
+		    <li><a href="{% url 'djangocms_blog:tagged-posts' tag=tag.slug %}" class="blog-tag-{{ tag.count }}">
+                {{ tag.name }}
+                <span>(
+                    {% if tag.count > 0 %}
+                    {% blocktrans count articles=tag.count %}1 article{% plural %}{{ articles }} articles{% endblocktrans %}
+                    {% else %}{% trans "0 articles" %}{% endif %}
+                )</span>
+            </a></li>
 		{% empty %}
-		<li class="blog-empty"><p>{% trans "No entry found." %}</p></li>
+		<li class="blog-empty"><p>{% trans "No article found." %}</p></li>
 		{% endfor %}
 	</ul>
 </div>
+{% endspaceless %}

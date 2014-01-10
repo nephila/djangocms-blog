@@ -5,22 +5,36 @@
 <section class="blog-list">
     {% block blog_title %}
     <header>
-        <h3>
-		{% if author %}{% trans "Entries by" %} {{ author.get_full_name }}
+        <h2>
+		{% if author %}{% trans "Articles by" %} {{ author.get_full_name }}
         {% elif archive_date %}{% trans "Archive" %} &ndash; {% if month %}{{ archive_date|date:'F' }} {% endif %}{{ year }}
         {% elif tagged_entries %}{% trans "Tag" %} &ndash; {{ tagged_entries|capfirst }}
         {% elif category %}{% trans "Category" %} &ndash; {{ category }}{% endif %}
-        </h3>
+        </h2>
     </header>
     {% endblock %}
     {% for post in post_list %}
     	{% include "djangocms_blog/includes/blog_item.html" with post=post image="true" %}
 	{% empty %}
-	<p class="blog-empty">{% trans "No post found." %}</p>
+	<p class="blog-empty">{% trans "No article found." %}</p>
     {% endfor %}
 	{% if author or archive_date or tagged_entries %}
 	<p class="blog-back"><a href="{% url 'djangocms_blog:latest-posts' %}">{% trans "Back" %}</a></p>
 	{% endif %}
+
+    {% if is_paginated %}
+    <nav class="{% firstof css_grid instance.css_grid %} pagination">
+        {% if page_obj.has_previous %}
+            <a href="?{{ page_name }}={{ page_obj.previous_page_number }}">&laquo; {% trans "previous" %}</a>
+        {% endif %}
+        <span class="current">
+            {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ paginator.num_pages }}
+        </span>
+        {% if page_obj.has_next %}
+            <a href="?{{ page_name }}={{ page_obj.next_page_number }}">{% trans "next" %} &raquo;</a>
+        {% endif %}
+    </nav>
+    {% endif %}
 </section>
 {% endblock %}
 {% endspaceless %}
