@@ -50,23 +50,22 @@ class TaggedFilterItem(object):
         qs = self.tag_list(other_model, queryset)
         return qs.values("slug")
 
-    def tag_cloud(self, other_model=None, queryset=None, start=None):
-        from taggit_templatetags.templatetags.taggit_extras import get_weight_fun
+    def tag_cloud(self, other_model=None, queryset=None, published=True):
         from taggit.models import TaggedItem
         tag_ids = self._taglist(other_model, queryset)
-        tagquery = TaggedItem.tags_for(self.model).filter(id__in=tag_ids)
-        if start is not None:
-            tagquery = tagquery.filter(name__istartswith=start)
-        tagquery = tagquery.annotate(count=models.Count('taggit_taggeditem_items'))
-        count = tagquery.values_list('count', flat=True)
-        if len(count) > 0:
-            weight_fun = get_weight_fun(BLOG_TAGCLOUD_MIN,
-                                        BLOG_TAGCLOUD_MAX,
-                                        min(count), BLOG_TAGCLOUD_MAX)
-            tagquery = tagquery.order_by('name')
-            for tag in tagquery:
-                tag.weight = weight_fun(tag.count)
-        return tagquery
+        kwargs = {}
+        if published:
+            kwargs = TaggedItem.bulk_lookup_kwargs(self.model.objects.published())
+        kwargs['tag_id__in'] = tag_ids
+        counted_tags = dict(TaggedItem.objects
+                                      .filter(**kwargs)
+                                      .values('tag')
+                                      .annotate(count=models.Count('tag'))
+                                      .values_list('tag', 'count'))
+        tags = TaggedItem.tag_model().objects.filter(pk__in=counted_tags.keys())
+        for tag in tags:
+            tag.count = counted_tags[tag.pk]
+        return sorted(tags, key=lambda x: -x.count)
 
 
 class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):

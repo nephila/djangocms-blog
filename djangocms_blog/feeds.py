@@ -13,16 +13,16 @@ class LatestEntriesFeed(Feed):
         return reverse('djangocms_blog:latest-posts')
 
     def title(self):
-        return _('Blog posts on %(site_name)s') % {'site_name': Site.objects.get_current().name}
+        return _('Blog articles on %(site_name)s') % {'site_name': Site.objects.get_current().name}
 
     def items(self, obj):
         return Post.objects.published().order_by('-date_published')[:10]
 
     def item_title(self, item):
-        return item.lazy_translation_getter('title')
+        return item.safe_translation_getter('title')
 
     def item_description(self, item):
-        return item.lazy_translation_getter('abstract')
+        return item.safe_translation_getter('abstract')
 
 
 class TagFeed(LatestEntriesFeed):

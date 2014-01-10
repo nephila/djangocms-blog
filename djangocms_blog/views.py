@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
 
 from .models import Post, BlogCategory
+from .settings import BLOG_PAGINATION
 
 
 class BaseBlogView(object):
@@ -28,6 +29,7 @@ class PostListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
+    paginate_by = BLOG_PAGINATION
 
 
 class PostDetailView(BaseBlogView, DetailView):
@@ -44,6 +46,7 @@ class PostArchiveView(BaseBlogView, ListView):
     date_field = 'date_published'
     allow_empty = True
     allow_future = True
+    paginate_by = BLOG_PAGINATION
 
     def get_queryset(self):
         qs = super(PostArchiveView, self).get_queryset()
@@ -65,6 +68,7 @@ class TaggedListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
+    paginate_by = BLOG_PAGINATION
 
     def get_queryset(self):
         qs = super(TaggedListView, self).get_queryset()
@@ -80,6 +84,7 @@ class AuthorEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
+    paginate_by = BLOG_PAGINATION
 
     def get_queryset(self):
         qs = super(AuthorEntriesView, self).get_queryset()
@@ -97,6 +102,7 @@ class CategoryEntriesView(BaseBlogView, ListView):
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
     _category = None
+    paginate_by = BLOG_PAGINATION
 
     @property
     def category(self):

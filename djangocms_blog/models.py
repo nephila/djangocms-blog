@@ -11,10 +11,12 @@ from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from parler.models import TranslatableModel, TranslatedFields
+from parler.managers import TranslationManager
 from taggit_autosuggest.managers import TaggableManager
 
-from .managers import GenericDateTaggedManager
 from . import settings
+from .managers import GenericDateTaggedManager
+from .fields import UsersWithPermsManyToManyField
 
 
 class BlogCategory(TranslatableModel):
@@ -28,16 +30,19 @@ class BlogCategory(TranslatableModel):
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
-        slug=models.SlugField(_('slug'), blank=True, unique=True),
+        slug=models.SlugField(_('slug'), blank=True, db_index=True),
+        meta={'unique_together': (('language_code', 'slug'),)}
     )
+
+    objects = TranslationManager()
 
     class Meta:
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
-        
+
     @property
     def count(self):
-        return self.blog_posts.count()
+        return self.blog_posts.filter(publish=True).count()
 
     def __unicode__(self):
         return self.safe_translation_getter('name')
@@ -55,7 +60,7 @@ class Post(TranslatableModel):
     """
     Blog post
     """
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -76,9 +81,9 @@ class Post(TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(max_length=255),
-        slug=models.SlugField(_('slug'), blank=True, unique=True),
+        slug=models.SlugField(_('slug'), blank=True, db_index=True),
         abstract=HTMLField(),
-
+        meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField("post_content")
 
@@ -86,8 +91,9 @@ class Post(TranslatableModel):
     tags = TaggableManager(blank=True)
 
     class Meta:
-        verbose_name = _('blog post')
-        verbose_name_plural = _('blog post')
+        verbose_name = _('blog article')
+        verbose_name_plural = _('blog articles')
+        ordering = ("-date_published", "-date_created")
 
     def __unicode__(self):
         return self.safe_translation_getter('title')
@@ -129,12 +135,15 @@ class Post(TranslatableModel):
 
 class LatestPostsPlugin(CMSPlugin):
 
-    latest_posts = models.IntegerField(default=5, help_text=_('The number of latests posts to be displayed.'))
-    tags = models.ManyToManyField('taggit.Tag', blank=True, help_text=_('Show only the blog posts tagged with chosen tags.'))
-    categories = models.ManyToManyField('BlogCategory', blank=True, help_text=_('Show only the blog posts tagged with chosen tags.'))
+    latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+                                       help_text=_('The number of latests articles to be displayed.'))
+    tags = models.ManyToManyField('taggit.Tag', blank=True,
+                                  help_text=_('Show only the blog articles tagged with chosen tags.'))
+    categories = models.ManyToManyField('BlogCategory', blank=True,
+                                        help_text=_('Show only the blog articles tagged with chosen tags.'))
 
     def __unicode__(self):
-        return u"%s latest post by tag" % self.latest_posts
+        return u"%s latest articles by tag" % self.latest_posts
 
     def copy_relations(self, oldinstance):
         self.tags = oldinstance.tags.all()
@@ -148,11 +157,14 @@ class LatestPostsPlugin(CMSPlugin):
 
 
 class AuthorEntriesPlugin(CMSPlugin):
-    authors = models.ManyToManyField(User, verbose_name=_('Authors'))
-    latest_posts = models.IntegerField(default=5, help_text=_('The number of author entries to be displayed.'))
+    #authors = models.ManyToManyField(User, verbose_name=_('Authors'))
+    authors = UsersWithPermsManyToManyField(perms=['add_post'],
+                                            verbose_name=_('Authors'))
+    latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+                                       help_text=_('The number of author articles to be displayed.'))
 
     def __unicode__(self):
-        return u"%s latest post by author" % self.latest_posts
+        return u"%s latest articles by author" % self.latest_posts
 
     def copy_relations(self, oldinstance):
         self.authors = oldinstance.authors.all()
@@ -163,4 +175,7 @@ class AuthorEntriesPlugin(CMSPlugin):
 
     def get_authors(self):
         authors = self.authors.all()
+        for author in authors:
+            if author.post_set.filter(publish=True).exists:
+                author.count = author.post_set.filter(publish=True).count()
         return authors
