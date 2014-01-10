@@ -1,0 +1,204 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Iacopo Spalletti, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-10 15:00+0100\n"
+"PO-Revision-Date: 2014-01-10 15:02+0100\n"
+"Last-Translator: Iacopo Spalletti\n"
+"Language-Team: Italian <i.spalletti@nephila.it>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: cms_app.py:8 cms_plugins.py:30 cms_plugins.py:43 cms_plugins.py:54
+#: cms_plugins.py:65 cms_toolbar.py:13
+msgid "Blog"
+msgstr "Blog"
+
+#: cms_plugins.py:19
+msgid "Latest Blog Articles"
+msgstr "Ultimi articoli"
+
+#: cms_plugins.py:31
+msgid "Author Blog Articles"
+msgstr "Articoli per autore"
+
+#: cms_plugins.py:44 templates/djangocms_blog/plugins/tags.html:4
+msgid "Tags"
+msgstr "Tag"
+
+#: cms_plugins.py:55 templates/djangocms_blog/plugins/categories.html:4
+msgid "Categories"
+msgstr "Categorie"
+
+#: cms_plugins.py:66 templates/djangocms_blog/post_list.html:10
+#: templates/djangocms_blog/plugins/archive.html:4
+msgid "Archive"
+msgstr "Archivio"
+
+#: cms_toolbar.py:15
+msgid "Post list"
+msgstr "Lista degli articoli"
+
+#: cms_toolbar.py:17
+msgid "Add post"
+msgstr "Aggiungi articolo"
+
+#: feeds.py:16
+#, python-format
+msgid "Blog articles on %(site_name)s"
+msgstr "Articoli del blog su %(site_name)s"
+
+#: models.py:26
+msgid "parent"
+msgstr "superiore"
+
+#: models.py:28
+msgid "created at"
+msgstr "creato il"
+
+#: models.py:29
+msgid "modified at"
+msgstr "modificato il"
+
+#: models.py:32
+msgid "name"
+msgstr "nome"
+
+#: models.py:33 models.py:84
+msgid "slug"
+msgstr "slug"
+
+#: models.py:40
+msgid "blog category"
+msgstr "categoria del blog"
+
+#: models.py:41
+msgid "blog categories"
+msgstr "categorie el blog"
+
+#: models.py:67
+msgid "Published Since"
+msgstr "Pubblicato il"
+
+#: models.py:69
+msgid "Published Until"
+msgstr "fino al"
+
+#: models.py:72
+msgid "category"
+msgstr "categoria"
+
+#: models.py:94
+msgid "blog article"
+msgstr "articolo del blog"
+
+#: models.py:95
+msgid "blog articles"
+msgstr "articoli del blog"
+
+#: models.py:138 models.py:163
+msgid "Articles"
+msgstr "Articoli"
+
+#: models.py:139
+msgid "The number of latests articles to be displayed."
+msgstr "Il numero di articoli da mostrare."
+
+#: models.py:141 models.py:143
+msgid "Show only the blog articles tagged with chosen tags."
+msgstr "Mostra solo gli articoli marcati con i tag selezionati."
+
+#: models.py:162 templates/djangocms_blog/plugins/authors.html:3
+msgid "Authors"
+msgstr "Autori"
+
+#: models.py:164
+msgid "The number of author articles to be displayed."
+msgstr "Numero di elementi per autore da mostrare."
+
+#: templates/djangocms_blog/post_detail.html:12
+#: templates/djangocms_blog/includes/blog_item.html:10
+msgid "by"
+msgstr "di"
+
+#: templates/djangocms_blog/post_list.html:9
+msgid "Articles by"
+msgstr "Articoli di"
+
+#: templates/djangocms_blog/post_list.html:11
+msgid "Tag"
+msgstr "Tag"
+
+#: templates/djangocms_blog/post_list.html:12
+msgid "Category"
+msgstr "Categoria"
+
+#: templates/djangocms_blog/post_list.html:19
+#: templates/djangocms_blog/plugins/archive.html:27
+#: templates/djangocms_blog/plugins/authors.html:15
+#: templates/djangocms_blog/plugins/categories.html:16
+#: templates/djangocms_blog/plugins/latest_entries.html:7
+#: templates/djangocms_blog/plugins/tags.html:16
+msgid "No article found."
+msgstr "Nessun articolo trovato."
+
+#: templates/djangocms_blog/post_list.html:22
+msgid "Back"
+msgstr "Indietro"
+
+#: templates/djangocms_blog/post_list.html:28
+msgid "previous"
+msgstr "precedente"
+
+#: templates/djangocms_blog/post_list.html:31
+msgid "Page"
+msgstr "Pagina"
+
+#: templates/djangocms_blog/post_list.html:31
+msgid "of"
+msgstr "di"
+
+#: templates/djangocms_blog/post_list.html:34
+msgid "next"
+msgstr "successivo"
+
+#: templates/djangocms_blog/includes/blog_item.html:38
+msgid "read more"
+msgstr "leggi"
+
+#: templates/djangocms_blog/plugins/archive.html:18
+#: templates/djangocms_blog/plugins/authors.html:10
+#: templates/djangocms_blog/plugins/categories.html:11
+#: templates/djangocms_blog/plugins/tags.html:11
+#, python-format
+msgid "1 article"
+msgid_plural "%(articles)s articles"
+msgstr[0] "1 articolo"
+msgstr[1] "%(articles)s articoli"
+
+#: templates/djangocms_blog/plugins/archive.html:19
+#: templates/djangocms_blog/plugins/authors.html:11
+#: templates/djangocms_blog/plugins/categories.html:12
+#: templates/djangocms_blog/plugins/tags.html:12
+msgid "0 articles"
+msgstr "0 articoli"
+
+#~ msgid "blog post"
+#~ msgstr "articolo"
+
+#~ msgid "Posts"
+#~ msgstr "Articolo"
+
+#~ msgid "Entries by"
+#~ msgstr "Articoli di"
+
+#~ msgid "No entry found."
+#~ msgstr "Nessun articolo trovato."
