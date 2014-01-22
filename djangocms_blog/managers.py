@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-from collections import Counter
+try:
+    from collections import Counter
+except ImportError:
+    from .compat import Counter
 import datetime
 
 from django.db import models
