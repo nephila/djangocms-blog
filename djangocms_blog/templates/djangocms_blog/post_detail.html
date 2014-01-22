@@ -5,7 +5,7 @@
 {% block content_blog %}{% spaceless %}
 <article id="post-{{ post.slug }}" class="post-item post-detail">
     <header>
-        <h2>{% show_editable_model post "title" %}</h2>
+        <h2>{% render_model post "title" %}</h2>
 		{% block blog_meta %}
 		<ul class="post-detail">
                 <li>
@@ -35,7 +35,7 @@
         <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
     {% endif %}
-    <div class="blog-lead">{% show_editable_model post "abstract" "abstract" %}</div>
+    <div class="blog-lead">{% render_model post "abstract" "abstract" %}</div>
 	<div class="blog-content">{% render_placeholder post.content %}</div>
 </article>
 {% endspaceless %}{% endblock content_blog %}

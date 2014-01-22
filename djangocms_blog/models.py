@@ -22,6 +22,8 @@ from .fields import UsersWithPermsManyToManyField
 class BlogCategory(TranslatableModel):
     """
     Blog category
+
+    
     """
     parent = models.ForeignKey('self', verbose_name=_('parent'), null=True,
                                blank=True)
