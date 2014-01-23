@@ -62,7 +62,7 @@ class Post(TranslatableModel):
     """
     Blog post
     """
-    author = models.ForeignKey(User, blank=True)
+    author = models.ForeignKey(User, null=True, blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
