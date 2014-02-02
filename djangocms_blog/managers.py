@@ -50,8 +50,8 @@ class TaggedFilterItem(object):
         return Tag.objects.filter(id__in=self._taglist(other_model, queryset))
 
     def tag_list_slug(self, other_model=None, queryset=None):
-        qs = self.tag_list(other_model, queryset)
-        return qs.values("slug")
+        queryset = self.tag_list(other_model, queryset)
+        return queryset.values("slug")
 
     def tag_cloud(self, other_model=None, queryset=None, published=True):
         from taggit.models import TaggedItem
@@ -77,49 +77,48 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
     end_date_field = "date_published_end"
     publish_field = "publish"
 
-    def published(self, qs=None):
-        qs = self.published_future(qs)
+    def published(self, queryset=None):
+        queryset = self.published_future(queryset)
         if self.start_date_field:
-            return qs.filter(
+            return queryset.filter(
                 **{"%s__lte" % self.start_date_field: datetime.datetime.now()})
         else:
-            return qs
+            return queryset
 
-    def published_future(self, qs=None):
-        if not qs:
-            qs = self.get_query_set().all()
+    def published_future(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_query_set().all()
         if self.end_date_field:
             qfilter = (
                 models.Q(**{"%s__gte" % self.end_date_field: datetime.datetime.now()})
                 | models.Q(**{"%s__isnull" % self.end_date_field: True})
             )
-            qs = qs.filter(qfilter)
-        return qs.filter(**{self.publish_field: True})
+            queryset = queryset.filter(qfilter)
+        return queryset.filter(**{self.publish_field: True})
 
-    def archived(self, qs=None):
-        if not qs:
-            qs = self.get_query_set().all()
+    def archived(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_query_set().all()
         if self.end_date_field:
             qfilter = (
                 models.Q(**{"%s__lte" % self.end_date_field: datetime.datetime.now()})
                 | models.Q(**{"%s__isnull" % self.end_date_field: False})
             )
-            qs = qs.filter(qfilter)
-        return qs.filter(**{self.publish_field: True})
+            queryset = queryset.filter(qfilter)
+        return queryset.filter(**{self.publish_field: True})
 
-    def available(self, qs=None):
-        if not qs:
-            qs = self.get_query_set().all()
-        return qs.filter(**{self.publish_field: True})
+    def available(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_query_set().all()
+        return queryset.filter(**{self.publish_field: True})
 
     def filter_by_language(self, language):
-        qs = self.get_query_set()
-        return qs.filter(models.Q(language__isnull=True) | models.Q(language=language))
+        queryset = self.get_query_set()
+        return queryset.filter(models.Q(language__isnull=True) | models.Q(language=language))
 
     def get_months(self, queryset=None):
         """Get months with aggregatet count (how much posts is in the month). Results are ordered by date."""
-        # done via naive way as django's having tough time while aggregating on date fields
-        if not queryset:
+        if queryset is None:
             queryset = self.get_query_set()
         dates = queryset.values_list(self.start_date_field, flat=True)
         dates = [(x.year, x.month) for x in dates]
