@@ -1,10 +1,1 @@
-https://github.com/edoburu/django-parler/archive/master.zip
-django-taggit
-django-filer
-django-cms>=3.0
-django-select2
-pytz
-django-taggit-templatetags
-django-taggit-autosuggest
-django-admin-enhancer
-# Additional requirements go here
+-e .

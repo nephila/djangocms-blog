@@ -36,6 +36,13 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
+        'django-taggit',
+        'django-filer',
+        'django-select2',
+        'pytz',
+        'django-taggit-templatetags',
+        'django-taggit-autosuggest',
+        'django-admin-enhancer',
     ],
     license="BSD",
     zip_safe=False,
