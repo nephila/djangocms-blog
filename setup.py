@@ -36,6 +36,8 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
+        'django-parler>0.9.4',
+        'django-cms>=3.0b4.dev6',
         'django-taggit',
         'django-filer',
         'django-select2',
@@ -43,6 +45,10 @@ setup(
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
         'django-admin-enhancer',
+    ],
+    dependency_links=[
+        'https://github.com/edoburu/django-parler/archive/master.zip#egg=django-parler-0.9.5',
+        'https://github.com/divio/django-cms/archive/develop.zip#egg=django-cms-3.0b4.dev6'
     ],
     license="BSD",
     zip_safe=False,
