@@ -16,7 +16,6 @@ from taggit_autosuggest.managers import TaggableManager
 
 from . import settings
 from .managers import GenericDateTaggedManager
-from .fields import UsersWithPermsManyToManyField
 
 
 class BlogCategory(TranslatableModel):
@@ -159,9 +158,9 @@ class LatestPostsPlugin(CMSPlugin):
 
 
 class AuthorEntriesPlugin(CMSPlugin):
-    #authors = models.ManyToManyField(User, verbose_name=_('Authors'))
-    authors = UsersWithPermsManyToManyField(perms=['add_post'],
-                                            verbose_name=_('Authors'))
+    authors = models.ManyToManyField(User, verbose_name=_('Authors'),
+                                     limit_choices_to={'post_set__publish': True}
+                                     )
     latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
                                        help_text=_('The number of author articles to be displayed.'))
 
@@ -178,6 +177,6 @@ class AuthorEntriesPlugin(CMSPlugin):
     def get_authors(self):
         authors = self.authors.all()
         for author in authors:
-            if author.post_set.filter(publish=True).exists:
+            if author.post_set.filter(publish=True).exists():
                 author.count = author.post_set.filter(publish=True).count()
         return authors
