@@ -1,6 +1,6 @@
-=============================
+==============
 djangocms-blog
-=============================
+==============
 
 .. image:: https://badge.fury.io/py/djangocms-blog.png
     :target: http://badge.fury.io/py/djangocms-blog
@@ -12,12 +12,15 @@ djangocms-blog
         :target: https://crate.io/packages/djangocms-blog?version=latest
 
 
-A djangoCMS 3 blog application
+A djangoCMS 3 blog application.
+
+Still experimental and untested. You are welcome if you want to try it; if
+you encounter any issue, please open an issue.
 
 Documentation
 -------------
 
-The full documentation is at http://djangocms-blog.rtfd.org.
+No doc at the moment, sorry
 
 Quickstart
 ----------
