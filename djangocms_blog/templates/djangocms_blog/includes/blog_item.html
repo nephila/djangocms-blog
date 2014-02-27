@@ -34,11 +34,10 @@
     </div>
     {% endif %}
     <div class="blog-lead">
-        {% render_model post "abstract" as full_text %}
         {% if not TRUNCWORDS_COUNT %}
-            {{ full_text }}
+            {% render_model post "abstract" %}
         {% else %}
-            {{ full_text|truncatewords_html:TRUNCWORDS_COUNT }}
+            {% render_model post "abstract" "" "" 'truncatewords_html:TRUNCWORDS_COUNT'  %}
         {% endif %}
     </div>
     <footer class="read-more">
