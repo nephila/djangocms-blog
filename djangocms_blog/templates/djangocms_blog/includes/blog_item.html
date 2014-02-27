@@ -33,7 +33,13 @@
         <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
     {% endif %}
-    <div class="blog-lead">{% render_model post "abstract" %}</div>
+    <div class="blog-lead">
+        {% if not TRUNCWORDS_COUNT %}
+            {% render_model post "abstract" %}
+        {% else %}
+            {% render_model post "abstract" "" "" 'truncatewords_html:TRUNCWORDS_COUNT'  %}
+        {% endif %}
+    </div>
     <footer class="read-more">
         <a href="{{ post.get_absolute_url }}">{% trans "read more" %} &raquo;</a>
     </footer>

@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
 
 from .models import Post, BlogCategory
-from .settings import BLOG_PAGINATION
+from .settings import BLOG_PAGINATION, BLOG_POSTS_LIST_TRUNCWORDS_COUNT
 
 
 class BaseBlogView(object):
@@ -31,6 +31,10 @@ class PostListView(BaseBlogView, ListView):
     template_name = "djangocms_blog/post_list.html"
     paginate_by = BLOG_PAGINATION
 
+    def get_context_data(self, **kwargs):
+        context = super(PostListView, self).get_context_data(**kwargs)
+        context['TRUNCWORDS_COUNT'] = BLOG_POSTS_LIST_TRUNCWORDS_COUNT
+        return context
 
 class PostDetailView(BaseBlogView, DetailView):
     model = Post

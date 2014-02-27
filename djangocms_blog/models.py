@@ -61,7 +61,7 @@ class Post(TranslatableModel):
     """
     Blog post
     """
-    author = models.ForeignKey(User, null=True, blank=True)
+    author = models.ForeignKey(User, verbose_name=_('Author'), null=True, blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -69,21 +69,23 @@ class Post(TranslatableModel):
                                           default=timezone.now)
     date_published_end = models.DateTimeField(_('Published Until'), null=True,
                                               blank=True)
-    publish = models.BooleanField(default=False)
+    publish = models.BooleanField(_('Publish'), default=False)
     categories = models.ManyToManyField(BlogCategory, verbose_name=_('category'),
                                         related_name='blog_posts',)
-    main_image = FilerImageField(blank=True, null=True)
+    main_image = FilerImageField(verbose_name=_('Main image'), blank=True, null=True)
     main_image_thumbnail = models.ForeignKey(ThumbnailOption,
+                                             verbose_name=_('Main image thumbnail'),
                                              related_name='blog_post_thumbnail',
                                              blank=True, null=True)
     main_image_full = models.ForeignKey(ThumbnailOption,
+                                        verbose_name=_('Main image full'),
                                         related_name='blog_post_full',
                                         blank=True, null=True)
 
     translations = TranslatedFields(
-        title=models.CharField(max_length=255),
+        title=models.CharField(_('Title'), max_length=255),
         slug=models.SlugField(_('slug'), blank=True, db_index=True),
-        abstract=HTMLField(),
+        abstract=HTMLField(_('Text')),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField("post_content")
