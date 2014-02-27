@@ -112,9 +112,13 @@ msgstr "Articoli"
 msgid "The number of latests articles to be displayed."
 msgstr "Il numero di articoli da mostrare."
 
-#: models.py:141 models.py:143
+#: models.py:141
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Mostra solo gli articoli marcati con i tag selezionati."
+
+#: models.py:143
+msgid "Show only the blog articles tagged with chosen categories."
+msgstr "Mostra solo gli articoli marcati con i categorie selezionati."
 
 #: models.py:162 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
