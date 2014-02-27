@@ -43,3 +43,5 @@ docs/build
 
 *.lokalize
 lokalize*
+
+.idea
