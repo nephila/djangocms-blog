@@ -7,6 +7,7 @@ from cms.plugin_pool import plugin_pool
 
 from .models import AuthorEntriesPlugin, LatestPostsPlugin, Post, BlogCategory
 from .forms import LatestEntriesForm
+from .settings import BLOG_POSTS_LIST_TRUNCWORDS_COUNT
 
 
 class BlogPlugin(CMSPluginBase):
@@ -23,6 +24,7 @@ class LatestEntriesPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context['instance'] = instance
+        context['TRUNCWORDS_COUNT'] = BLOG_POSTS_LIST_TRUNCWORDS_COUNT
         return context
 
 

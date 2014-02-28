@@ -2,7 +2,7 @@
 <div class="plugin plugin-blog">
 	<div class="blog-latest-entries">
     {% for post in instance.get_posts %}
-    	{% include "djangocms_blog/includes/blog_item.html" with post=post %}
+    	{% include "djangocms_blog/includes/blog_item.html" with post=post TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
 	{% empty %}
 	<p class="blog-empty">{% trans "No article found." %}</p>
     {% endfor %}
