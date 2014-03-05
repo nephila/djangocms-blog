@@ -2,6 +2,8 @@
 {% load i18n thumbnail cms_tags %}
 {% load url from future %}
 
+{% block meta_description %}{{ post.meta_description }}{% endblock meta_description %}
+
 {% block content_blog %}{% spaceless %}
 <article id="post-{{ post.slug }}" class="post-item post-detail">
     <header>
