@@ -36,7 +36,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
         }),
         (None, {
             'fields': [('main_image', 'main_image_thumbnail', 'main_image_full'),
-                       'abstract']
+                       'abstract', 'meta_description']
         }),
     ]
 
