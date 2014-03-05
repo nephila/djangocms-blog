@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-10 15:00+0100\n"
-"PO-Revision-Date: 2014-01-10 15:02+0100\n"
+"POT-Creation-Date: 2014-03-05 18:08+0100\n"
+"PO-Revision-Date: 2014-03-05 18:11+0100\n"
 "Last-Translator: Iacopo Spalletti\n"
 "Language-Team: Italian <i.spalletti@nephila.it>\n"
 "Language: it\n"
@@ -17,28 +17,28 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: cms_app.py:8 cms_plugins.py:30 cms_plugins.py:43 cms_plugins.py:54
-#: cms_plugins.py:65 cms_toolbar.py:13
+#: cms_app.py:8 cms_plugins.py:32 cms_plugins.py:45 cms_plugins.py:56
+#: cms_plugins.py:67 cms_toolbar.py:13
 msgid "Blog"
 msgstr "Blog"
 
-#: cms_plugins.py:19
+#: cms_plugins.py:20
 msgid "Latest Blog Articles"
 msgstr "Ultimi articoli"
 
-#: cms_plugins.py:31
+#: cms_plugins.py:33
 msgid "Author Blog Articles"
 msgstr "Articoli per autore"
 
-#: cms_plugins.py:44 templates/djangocms_blog/plugins/tags.html:4
+#: cms_plugins.py:46 templates/djangocms_blog/plugins/tags.html:4
 msgid "Tags"
 msgstr "Tag"
 
-#: cms_plugins.py:55 templates/djangocms_blog/plugins/categories.html:4
+#: cms_plugins.py:57 templates/djangocms_blog/plugins/categories.html:4
 msgid "Categories"
 msgstr "Categorie"
 
-#: cms_plugins.py:66 templates/djangocms_blog/post_list.html:10
+#: cms_plugins.py:68 templates/djangocms_blog/post_list.html:10
 #: templates/djangocms_blog/plugins/archive.html:4
 msgid "Archive"
 msgstr "Archivio"
@@ -56,79 +56,111 @@ msgstr "Aggiungi articolo"
 msgid "Blog articles on %(site_name)s"
 msgstr "Articoli del blog su %(site_name)s"
 
-#: models.py:26
+#: models.py:27
 msgid "parent"
 msgstr "superiore"
 
-#: models.py:28
+#: models.py:29
 msgid "created at"
 msgstr "creato il"
 
-#: models.py:29
+#: models.py:30
 msgid "modified at"
 msgstr "modificato il"
 
-#: models.py:32
+#: models.py:33
 msgid "name"
 msgstr "nome"
 
-#: models.py:33 models.py:84
+#: models.py:34 models.py:87
 msgid "slug"
 msgstr "slug"
 
-#: models.py:40
+#: models.py:41
 msgid "blog category"
 msgstr "categoria del blog"
 
-#: models.py:41
+#: models.py:42
 msgid "blog categories"
 msgstr "categorie el blog"
 
-#: models.py:67
+#: models.py:64
+msgid "Author"
+msgstr "Autore"
+
+#: models.py:68
 msgid "Published Since"
 msgstr "Pubblicato il"
 
-#: models.py:69
+#: models.py:70
 msgid "Published Until"
 msgstr "fino al"
 
 #: models.py:72
+msgid "Publish"
+msgstr "Pubblicato"
+
+#: models.py:73
 msgid "category"
 msgstr "categoria"
 
-#: models.py:94
+#: models.py:75
+msgid "Main image"
+msgstr "Immagine"
+
+#: models.py:77
+msgid "Main image thumbnail"
+msgstr "Dimensione miniatura"
+
+#: models.py:81
+msgid "Main image full"
+msgstr "Dimensione piena"
+
+#: models.py:86
+msgid "Title"
+msgstr "Titolo"
+
+#: models.py:88
+msgid "Text"
+msgstr "Testo"
+
+#: models.py:89
+msgid "Post meta description"
+msgstr "Meta Descrizione dell'articolo"
+
+#: models.py:99
 msgid "blog article"
 msgstr "articolo del blog"
 
-#: models.py:95
+#: models.py:100
 msgid "blog articles"
 msgstr "articoli del blog"
 
-#: models.py:138 models.py:163
+#: models.py:143 models.py:168
 msgid "Articles"
 msgstr "Articoli"
 
-#: models.py:139
+#: models.py:144
 msgid "The number of latests articles to be displayed."
 msgstr "Il numero di articoli da mostrare."
 
-#: models.py:141
+#: models.py:146
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Mostra solo gli articoli marcati con i tag selezionati."
 
-#: models.py:143
+#: models.py:148
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Mostra solo gli articoli marcati con i categorie selezionati."
 
-#: models.py:162 templates/djangocms_blog/plugins/authors.html:3
+#: models.py:165 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Autori"
 
-#: models.py:164
+#: models.py:169
 msgid "The number of author articles to be displayed."
 msgstr "Numero di elementi per autore da mostrare."
 
-#: templates/djangocms_blog/post_detail.html:12
+#: templates/djangocms_blog/post_detail.html:14
 #: templates/djangocms_blog/includes/blog_item.html:10
 msgid "by"
 msgstr "di"
@@ -174,7 +206,7 @@ msgstr "di"
 msgid "next"
 msgstr "successivo"
 
-#: templates/djangocms_blog/includes/blog_item.html:38
+#: templates/djangocms_blog/includes/blog_item.html:44
 msgid "read more"
 msgstr "leggi"
 
