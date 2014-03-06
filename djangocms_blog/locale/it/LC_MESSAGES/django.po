@@ -82,7 +82,7 @@ msgstr "categoria del blog"
 
 #: models.py:42
 msgid "blog categories"
-msgstr "categorie el blog"
+msgstr "categorie del blog"
 
 #: models.py:64
 msgid "Author"
