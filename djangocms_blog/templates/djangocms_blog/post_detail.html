@@ -3,6 +3,7 @@
 {% load url from future %}
 
 {% block meta_description %}{{ post.meta_description }}{% endblock meta_description %}
+{% block meta_keywords %}{{ post.meta_keywords }}{% endblock meta_keywords %}
 
 {% block content_blog %}{% spaceless %}
 <article id="post-{{ post.slug }}" class="post-item post-detail">
@@ -37,7 +38,6 @@
         <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
     {% endif %}
-    <div class="blog-lead">{% render_model post "abstract" "abstract" %}</div>
 	<div class="blog-content">{% render_placeholder post.content %}</div>
 </article>
 {% endspaceless %}{% endblock content_blog %}
