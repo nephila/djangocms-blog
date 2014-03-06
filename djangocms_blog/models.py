@@ -88,6 +88,8 @@ class Post(TranslatableModel):
         abstract=HTMLField(_('Text')),
         meta_description=models.TextField(verbose_name=_(u'Post meta description'),
                                           blank=True, default=''),
+        meta_keywords=models.TextField(verbose_name=_(u'Post meta keywords'),
+                                       blank=True, default=''),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField("post_content")
