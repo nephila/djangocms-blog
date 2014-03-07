@@ -6,6 +6,7 @@ from django.core.urlresolvers import resolve
 from django.db.models import Count
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
+from parler.utils import get_active_language_choices
 
 from .models import Post, BlogCategory
 from .settings import BLOG_PAGINATION, BLOG_POSTS_LIST_TRUNCWORDS_COUNT
@@ -36,11 +37,19 @@ class PostListView(BaseBlogView, ListView):
         context['TRUNCWORDS_COUNT'] = BLOG_POSTS_LIST_TRUNCWORDS_COUNT
         return context
 
+
 class PostDetailView(BaseBlogView, DetailView):
     model = Post
     context_object_name = 'post'
     template_name = "djangocms_blog/post_detail.html"
     slug_field = 'translations__slug'
+
+    def get_object(self, queryset=None):
+        qs = self.model._default_manager.get(**{
+            'translations__language_code': get_language_from_request(self.request),
+            self.slug_field: self.kwargs.get(self.slug_url_kwarg, None)
+        })
+        return qs
 
 
 class PostArchiveView(BaseBlogView, ListView):
