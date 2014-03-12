@@ -10,7 +10,7 @@ from .models import Post
 class LatestEntriesFeed(Feed):
 
     def link(self):
-        return reverse('djangocms_blog:latest-posts')
+        return reverse('djangocms_blog:posts-latest')
 
     def title(self):
         return _('Blog articles on %(site_name)s') % {'site_name': Site.objects.get_current().name}
