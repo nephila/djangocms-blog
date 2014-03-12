@@ -4,6 +4,7 @@ from cms.utils import get_language_from_request
 from django.contrib.auth.models import User
 from django.core.urlresolvers import resolve
 from django.db.models import Count
+from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
 from parler.utils import get_active_language_choices
@@ -16,7 +17,7 @@ class BaseBlogView(object):
 
     def get_queryset(self):
         language = get_language_from_request(self.request)
-        manager = self.model._default_manager.language(language)
+        manager = self.model._default_manager.translated(language)
         if not self.request.user.is_staff:
             manager = manager.filter(publish=True)
         return manager
@@ -45,10 +46,13 @@ class PostDetailView(BaseBlogView, DetailView):
     slug_field = 'translations__slug'
 
     def get_object(self, queryset=None):
-        qs = self.model._default_manager.get(**{
-            'translations__language_code': get_language_from_request(self.request),
-            self.slug_field: self.kwargs.get(self.slug_url_kwarg, None)
-        })
+        try:
+            qs = self.model._default_manager.get(**{
+                'translations__language_code': get_language_from_request(self.request),
+                self.slug_field: self.kwargs.get(self.slug_url_kwarg, None)
+            })
+        except Post.DoesNotExist:
+            raise Http404()
         return qs
 
 
