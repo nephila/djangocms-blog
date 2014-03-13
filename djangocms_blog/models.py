@@ -17,6 +17,7 @@ from taggit_autosuggest.managers import TaggableManager
 from . import settings
 from .managers import GenericDateTaggedManager
 
+BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
 
 class BlogCategory(TranslatableModel):
     """
@@ -101,6 +102,7 @@ class Post(TranslatableModel):
         verbose_name = _('blog article')
         verbose_name_plural = _('blog articles')
         ordering = ("-date_published", "-date_created")
+        get_latest_by = 'date_published'
 
     def __unicode__(self):
         return self.safe_translation_getter('title')

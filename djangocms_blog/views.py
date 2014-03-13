@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 import datetime
-from cms.utils import get_language_from_request
+from django.utils.translation import get_language
 from django.contrib.auth.models import User
 from django.core.urlresolvers import resolve
-from django.db.models import Count
 from django.http import Http404
-from django.utils.translation import ugettext_lazy as _
 from django.views.generic import ListView, DetailView
 from parler.utils import get_active_language_choices
 
-from .models import Post, BlogCategory
+from parler.views import ViewUrlMixin
+
+from .models import Post, BlogCategory, BLOG_CURRENT_POST_IDENTIFIER
 from .settings import BLOG_PAGINATION, BLOG_POSTS_LIST_TRUNCWORDS_COUNT
 
 
-class BaseBlogView(object):
+class BaseBlogView(ViewUrlMixin):
 
     def get_queryset(self):
-        language = get_language_from_request(self.request)
-        manager = self.model._default_manager.translated(language)
+        language = get_language()
+        manager = self.model._default_manager.language(language)
         if not self.request.user.is_staff:
             manager = manager.filter(publish=True)
         return manager
@@ -32,6 +32,7 @@ class PostListView(BaseBlogView, ListView):
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
     paginate_by = BLOG_PAGINATION
+    view_url_name = 'djangocms_blog:posts-latest'
 
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
@@ -43,18 +44,22 @@ class PostDetailView(BaseBlogView, DetailView):
     model = Post
     context_object_name = 'post'
     template_name = "djangocms_blog/post_detail.html"
-    slug_field = 'translations__slug'
+    slug_field = 'slug'
+    view_url_name = 'djangocms_blog:post-detail'
 
     def get_object(self, queryset=None):
         try:
-            qs = self.model._default_manager.get(**{
-                'translations__language_code': get_language_from_request(self.request),
+            qs = self.model._default_manager.active_translations(**{
                 self.slug_field: self.kwargs.get(self.slug_url_kwarg, None)
-            })
+            }).latest()
         except Post.DoesNotExist:
             raise Http404()
         return qs
 
+    def get_context_data(self, **kwargs):
+        context = super(PostDetailView, self).get_context_data(**kwargs)
+        setattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, self.get_object())
+        return context
 
 class PostArchiveView(BaseBlogView, ListView):
     model = Post
@@ -64,6 +69,7 @@ class PostArchiveView(BaseBlogView, ListView):
     allow_empty = True
     allow_future = True
     paginate_by = BLOG_PAGINATION
+    view_url_name = 'djangocms_blog:posts-archive'
 
     def get_queryset(self):
         qs = super(PostArchiveView, self).get_queryset()
@@ -86,6 +92,7 @@ class TaggedListView(BaseBlogView, ListView):
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
     paginate_by = BLOG_PAGINATION
+    view_url_name = 'djangocms_blog:posts-tagged'
 
     def get_queryset(self):
         qs = super(TaggedListView, self).get_queryset()
@@ -102,6 +109,7 @@ class AuthorEntriesView(BaseBlogView, ListView):
     context_object_name = 'post_list'
     template_name = "djangocms_blog/post_list.html"
     paginate_by = BLOG_PAGINATION
+    view_url_name = 'djangocms_blog:posts-authors'
 
     def get_queryset(self):
         qs = super(AuthorEntriesView, self).get_queryset()
@@ -120,11 +128,12 @@ class CategoryEntriesView(BaseBlogView, ListView):
     template_name = "djangocms_blog/post_list.html"
     _category = None
     paginate_by = BLOG_PAGINATION
+    view_url_name = 'djangocms_blog:posts-category'
 
     @property
     def category(self):
         if not self._category:
-            language = get_language_from_request(self.request)
+            language = get_language()
             self._category = BlogCategory._default_manager.language(language).get(
                 translations__language_code=language,
                 translations__slug=self.kwargs['category'])
