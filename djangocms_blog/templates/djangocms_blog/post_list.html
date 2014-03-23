@@ -1,6 +1,8 @@
 {% extends "djangocms_blog/base.html" %}
 {% load i18n thumbnail %}{% spaceless %}
 
+{% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
+
 {% block content_blog %}
 <section class="blog-list">
     {% block blog_title %}
@@ -19,7 +21,7 @@
 	<p class="blog-empty">{% trans "No article found." %}</p>
     {% endfor %}
 	{% if author or archive_date or tagged_entries %}
-	<p class="blog-back"><a href="{% url 'djangocms_blog:latest-posts' %}">{% trans "Back" %}</a></p>
+	<p class="blog-back"><a href="{% url 'djangocms_blog:posts-latest' %}">{% trans "Back" %}</a></p>
 	{% endif %}
 
     {% if is_paginated %}
