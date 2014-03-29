@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-05 18:08+0100\n"
+"POT-Creation-Date: 2014-03-29 16:31+0100\n"
 "PO-Revision-Date: 2014-03-05 18:09+0100\n"
 "Last-Translator: Iacopo Spalletti\n"
 "Language-Team: Italian <i.spalletti@nephila.it>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Lokalize 1.5\n"
 
 #: cms_app.py:8 cms_plugins.py:32 cms_plugins.py:45 cms_plugins.py:56
-#: cms_plugins.py:67 cms_toolbar.py:13
+#: cms_plugins.py:67 cms_toolbar.py:17
 msgid "Blog"
 msgstr "Blog"
 
@@ -38,146 +38,155 @@ msgstr "Tags"
 msgid "Categories"
 msgstr "Categories"
 
-#: cms_plugins.py:68 templates/djangocms_blog/post_list.html:10
+#: cms_plugins.py:68 templates/djangocms_blog/post_list.html:12
 #: templates/djangocms_blog/plugins/archive.html:4
 msgid "Archive"
 msgstr "Archive"
 
-#: cms_toolbar.py:15
+#: cms_toolbar.py:19
 msgid "Post list"
 msgstr "Post list"
 
-#: cms_toolbar.py:17
+#: cms_toolbar.py:21
 msgid "Add post"
 msgstr "Add post"
+
+#: cms_toolbar.py:25
+msgid "Edit Post"
+msgstr ""
 
 #: feeds.py:16
 #, python-format
 msgid "Blog articles on %(site_name)s"
 msgstr "Blog articles on %(site_name)s"
 
-#: models.py:27
+#: models.py:28
 msgid "parent"
 msgstr "parent"
 
-#: models.py:29
+#: models.py:30
 msgid "created at"
 msgstr "created at"
 
-#: models.py:30
+#: models.py:31
 msgid "modified at"
 msgstr "modified at"
 
-#: models.py:33
+#: models.py:34
 msgid "name"
 msgstr "name"
 
-#: models.py:34 models.py:87
+#: models.py:35 models.py:88
 msgid "slug"
 msgstr "slug"
 
-#: models.py:41
+#: models.py:42
 msgid "blog category"
 msgstr "blog category"
 
-#: models.py:42
+#: models.py:43
 msgid "blog categories"
 msgstr "blog categories"
 
-#: models.py:64
+#: models.py:65
 msgid "Author"
 msgstr "Author"
 
-#: models.py:68
+#: models.py:69
 msgid "Published Since"
 msgstr "Published Since"
 
-#: models.py:70
+#: models.py:71
 msgid "Published Until"
 msgstr "Published Until"
 
-#: models.py:72
+#: models.py:73
 msgid "Publish"
 msgstr "Publish"
 
-#: models.py:73
+#: models.py:74
 msgid "category"
 msgstr "category"
 
-#: models.py:75
+#: models.py:76
 msgid "Main image"
 msgstr "Main image"
 
-#: models.py:77
+#: models.py:78
 msgid "Main image thumbnail"
 msgstr "Main image thumbnail"
 
-#: models.py:81
+#: models.py:82
 msgid "Main image full"
 msgstr "Main image full"
 
-#: models.py:86
+#: models.py:87
 msgid "Title"
 msgstr "Title"
 
-#: models.py:88
+#: models.py:89
 msgid "Text"
 msgstr "Text"
 
-#: models.py:89
+#: models.py:90
 msgid "Post meta description"
 msgstr "Post meta description"
 
-#: models.py:99
+#: models.py:92
+#, fuzzy
+msgid "Post meta keywords"
+msgstr "Post meta description"
+
+#: models.py:102
 msgid "blog article"
 msgstr "blog article"
 
-#: models.py:100
+#: models.py:103
 msgid "blog articles"
 msgstr "blog articles"
 
-#: models.py:143 models.py:168
+#: models.py:147 models.py:172
 msgid "Articles"
 msgstr "Articles"
 
-#: models.py:144
+#: models.py:148
 msgid "The number of latests articles to be displayed."
 msgstr "The number of latests articles to be displayed."
 
-#: models.py:146
+#: models.py:150
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Show only the blog articles tagged with chosen tags."
 
-#: models.py:148
+#: models.py:152
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Show only the blog articles tagged with chosen categories."
 
-#: models.py:165 templates/djangocms_blog/plugins/authors.html:3
+#: models.py:169 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Authors"
 
-#: models.py:169
+#: models.py:173
 msgid "The number of author articles to be displayed."
 msgstr "The number of author articles to be displayed."
 
-#: templates/djangocms_blog/post_detail.html:14
+#: templates/djangocms_blog/post_detail.html:16
 #: templates/djangocms_blog/includes/blog_item.html:10
 msgid "by"
 msgstr "by"
 
-#: templates/djangocms_blog/post_list.html:9
+#: templates/djangocms_blog/post_list.html:11
 msgid "Articles by"
 msgstr "Articles by"
 
-#: templates/djangocms_blog/post_list.html:11
+#: templates/djangocms_blog/post_list.html:13
 msgid "Tag"
 msgstr "Tag"
 
-#: templates/djangocms_blog/post_list.html:12
+#: templates/djangocms_blog/post_list.html:14
 msgid "Category"
 msgstr "Category"
 
-#: templates/djangocms_blog/post_list.html:19
+#: templates/djangocms_blog/post_list.html:21
 #: templates/djangocms_blog/plugins/archive.html:27
 #: templates/djangocms_blog/plugins/authors.html:15
 #: templates/djangocms_blog/plugins/categories.html:16
@@ -186,23 +195,23 @@ msgstr "Category"
 msgid "No article found."
 msgstr "No article found."
 
-#: templates/djangocms_blog/post_list.html:22
+#: templates/djangocms_blog/post_list.html:24
 msgid "Back"
 msgstr "Back"
 
-#: templates/djangocms_blog/post_list.html:28
+#: templates/djangocms_blog/post_list.html:30
 msgid "previous"
 msgstr "previous"
 
-#: templates/djangocms_blog/post_list.html:31
+#: templates/djangocms_blog/post_list.html:33
 msgid "Page"
 msgstr "Page"
 
-#: templates/djangocms_blog/post_list.html:31
+#: templates/djangocms_blog/post_list.html:33
 msgid "of"
 msgstr "of"
 
-#: templates/djangocms_blog/post_list.html:34
+#: templates/djangocms_blog/post_list.html:36
 msgid "next"
 msgstr "next"
 
