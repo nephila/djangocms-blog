@@ -14,7 +14,7 @@ class BlogPlugin(CMSPluginBase):
     module = 'Blog'
 
 
-class LatestEntriesPlugin(BlogPlugin):
+class BlogLatestEntriesPlugin(BlogPlugin):
 
     render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
@@ -28,7 +28,7 @@ class LatestEntriesPlugin(BlogPlugin):
         return context
 
 
-class AuthorPostsPlugin(BlogPlugin):
+class BlogAuthorPostsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Author Blog Articles')
     model = AuthorEntriesPlugin
@@ -74,8 +74,8 @@ class BlogArchivePlugin(BlogPlugin):
         return context
 
 
-plugin_pool.register_plugin(LatestEntriesPlugin)
-plugin_pool.register_plugin(AuthorPostsPlugin)
+plugin_pool.register_plugin(BlogLatestEntriesPlugin)
+plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
 plugin_pool.register_plugin(BlogCategoryPlugin)

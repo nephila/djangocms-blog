@@ -19,11 +19,10 @@ from .managers import GenericDateTaggedManager
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
 
+
 class BlogCategory(TranslatableModel):
     """
     Blog category
-
-    
     """
     parent = models.ForeignKey('self', verbose_name=_('parent'), null=True,
                                blank=True)
@@ -62,7 +61,8 @@ class Post(TranslatableModel):
     """
     Blog post
     """
-    author = models.ForeignKey(User, verbose_name=_('Author'), null=True, blank=True)
+    author = models.ForeignKey(User, verbose_name=_('Author'), null=True, blank=True,
+                               related_name='djangocms_blog_author')
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -73,7 +73,8 @@ class Post(TranslatableModel):
     publish = models.BooleanField(_('Publish'), default=False)
     categories = models.ManyToManyField(BlogCategory, verbose_name=_('category'),
                                         related_name='blog_posts',)
-    main_image = FilerImageField(verbose_name=_('Main image'), blank=True, null=True)
+    main_image = FilerImageField(verbose_name=_('Main image'), blank=True, null=True,
+                                 related_name='djangocmsblog_post_image')
     main_image_thumbnail = models.ForeignKey(ThumbnailOption,
                                              verbose_name=_('Main image thumbnail'),
                                              related_name='blog_post_thumbnail',
@@ -96,7 +97,7 @@ class Post(TranslatableModel):
     content = PlaceholderField("post_content")
 
     objects = GenericDateTaggedManager()
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
 
     class Meta:
         verbose_name = _('blog article')
