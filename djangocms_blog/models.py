@@ -62,7 +62,7 @@ class Post(TranslatableModel):
     Blog post
     """
     author = models.ForeignKey(User, verbose_name=_('Author'), null=True, blank=True,
-                               related_name='djangocms_blog_author')
+                               related_name='djangocms_blog_post_author')
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
@@ -74,10 +74,10 @@ class Post(TranslatableModel):
     categories = models.ManyToManyField(BlogCategory, verbose_name=_('category'),
                                         related_name='blog_posts',)
     main_image = FilerImageField(verbose_name=_('Main image'), blank=True, null=True,
-                                 related_name='djangocmsblog_post_image')
+                                 related_name='djangocms_blog_post_image')
     main_image_thumbnail = models.ForeignKey(ThumbnailOption,
                                              verbose_name=_('Main image thumbnail'),
-                                             related_name='blog_post_thumbnail',
+                                             related_name='djangocms_blog_post_thumbnail',
                                              blank=True, null=True)
     main_image_full = models.ForeignKey(ThumbnailOption,
                                         verbose_name=_('Main image full'),
@@ -168,7 +168,7 @@ class LatestPostsPlugin(CMSPlugin):
 
 class AuthorEntriesPlugin(CMSPlugin):
     authors = models.ManyToManyField(User, verbose_name=_('Authors'),
-                                     limit_choices_to={'post_set__publish': True}
+                                     limit_choices_to={'djangocms_blog_post_author__publish': True}
                                      )
     latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
                                        help_text=_('The number of author articles to be displayed.'))
@@ -186,6 +186,6 @@ class AuthorEntriesPlugin(CMSPlugin):
     def get_authors(self):
         authors = self.authors.all()
         for author in authors:
-            if author.post_set.filter(publish=True).exists():
-                author.count = author.post_set.filter(publish=True).count()
+            if author.djangocms_blog_post_author.filter(publish=True).exists():
+                author.count = author.djangocms_blog_post_author.filter(publish=True).count()
         return authors
