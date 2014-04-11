@@ -14,6 +14,13 @@ A djangoCMS 3 blog application.
 Still experimental and untested. You are welcome if you want to try it; if
 you encounter any issue, please open an issue.
 
+.. warning:: Due to changes in pip 1.5, dependency_links is not respected
+   anymore (see http://www.pip-installer.org/en/develop/dependency_links.html);
+   djangocms-blog depends on development version of django-parler; thus,
+   to proper install it you must invoke pip with `--process-dependency-links`
+   options as stated below.
+   We're going to fix this soon, sorry for the inconvenience.
+
 Documentation
 -------------
 
@@ -24,7 +31,7 @@ Quickstart
 
 Install djangocms-blog::
 
-    pip install djangocms-blog
+    pip install --process-dependency-links djangocms-blog
 
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
