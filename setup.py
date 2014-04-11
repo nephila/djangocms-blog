@@ -36,7 +36,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'django-parler>=1.0',
+        'django-parler>1.0a1',
         'django-cms>=3.0c1',
         'django-taggit',
         'django-filer',
@@ -47,7 +47,7 @@ setup(
         'django-admin-enhancer',
     ],
     dependency_links=[
-        'https://github.com/edoburu/django-parler/archive/cdd500bb28a234d870274e73cba9d7020f1ef0b1.zip#egg=django-parler-1.0',
+        'https://github.com/edoburu/django-parler/archive/master.zip#egg=django-parler-1.0',
     ],
     license="BSD",
     zip_safe=False,
