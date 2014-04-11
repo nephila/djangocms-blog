@@ -5,10 +5,7 @@ djangocms-blog
 .. image:: https://badge.fury.io/py/djangocms-blog.png
     :target: http://badge.fury.io/py/djangocms-blog
     
-.. image:: https://travis-ci.org/yakky/djangocms-blog.png?branch=master
-        :target: https://travis-ci.org/yakky/djangocms-blog
-
-.. image:: https://pypip.in/d/djangocms-blog/badge.png
+.. image:: http://img.shields.io/pypi/dm/djangocms-blog.png
         :target: https://crate.io/packages/djangocms-blog?version=latest
 
 
