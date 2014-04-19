@@ -36,8 +36,8 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'django-parler>1.0a1',
-        'django-cms>=3.0c1',
+        'django-parler>1.0b1',
+        'django-cms>=3.0',
         'django-taggit',
         'django-filer',
         'django-select2',
@@ -45,9 +45,7 @@ setup(
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
         'django-admin-enhancer',
-    ],
-    dependency_links=[
-        'https://github.com/edoburu/django-parler/archive/master.zip#egg=django-parler-1.0',
+        'django-meta-mixin',
     ],
     license="BSD",
     zip_safe=False,
