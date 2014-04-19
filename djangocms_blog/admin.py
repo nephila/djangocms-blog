@@ -16,7 +16,7 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
     class Media:
         css = {
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                  "djangocms_blog_admin.css"),)
+                                                 "djangocms_blog_admin.css"),)
         }
 
 
@@ -27,23 +27,29 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
     raw_id_fields = ['author']
     frontend_editable_fields = ("title", "abstract")
     enhance_exclude = ('main_image', 'tags')
-
     _fieldsets = [
         (None, {
-            'fields': [('title', 'slug', 'publish'),
-                       ('categories', 'tags'),
-                       ('date_published', 'date_published_end')]
+            'fields': [('title', 'slug', 'publish'), 'abstract']
         }),
-        (None, {
-            'fields': [('main_image', 'main_image_thumbnail', 'main_image_full'),
-                       'abstract', ('meta_description', 'meta_keywords')]
+        ('Info', {
+            'fields': (['categories', 'tags'],
+                       ('date_published', 'date_published_end')),
+            'classes': ('collapse',)
+        }),
+        ('Immagine', {
+            'fields': (('main_image', 'main_image_thumbnail', 'main_image_full'),),
+            'classes': ('collapse',)
+        }),
+        ('SEO', {
+            'fields': [('meta_description', 'meta_keywords')],
+            'classes': ('collapse',)
         }),
     ]
 
     def get_fieldsets(self, request, obj=None):
         if request.user.is_superuser:
             fsets = deepcopy(self._fieldsets)
-            fsets[0][1]['fields'].append('author')
+            fsets[1][1]['fields'][0].append('author')
             return fsets
         else:
             return self._fieldsets
@@ -59,7 +65,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
     class Media:
         css = {
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                  "djangocms_blog_admin.css"),)
+                                                 "djangocms_blog_admin.css"),)
         }
 
 

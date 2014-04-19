@@ -2,7 +2,6 @@
 from cms.models import PlaceholderField, CMSPlugin
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -15,6 +14,7 @@ from parler.managers import TranslationManager
 from taggit_autosuggest.managers import TaggableManager
 
 from . import settings
+from meta_mixin.models import ModelMeta
 from .managers import GenericDateTaggedManager
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
@@ -57,7 +57,7 @@ class BlogCategory(TranslatableModel):
         self.save_translations()
 
 
-class Post(TranslatableModel):
+class Post(ModelMeta, TranslatableModel):
     """
     Blog post
     """
@@ -81,13 +81,13 @@ class Post(TranslatableModel):
                                              blank=True, null=True)
     main_image_full = models.ForeignKey(ThumbnailOption,
                                         verbose_name=_('Main image full'),
-                                        related_name='blog_post_full',
+                                        related_name='djangocms_blog_post_full',
                                         blank=True, null=True)
 
     translations = TranslatedFields(
         title=models.CharField(_('Title'), max_length=255),
         slug=models.SlugField(_('slug'), blank=True, db_index=True),
-        abstract=HTMLField(_('Text')),
+        abstract=HTMLField(_('Abstract')),
         meta_description=models.TextField(verbose_name=_(u'Post meta description'),
                                           blank=True, default=''),
         meta_keywords=models.TextField(verbose_name=_(u'Post meta keywords'),
@@ -98,6 +98,51 @@ class Post(TranslatableModel):
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
+
+    _metadata = {
+        'title': 'title',
+        'description': 'get_description',
+        'og_description': 'get_description',
+        'twitter_description': 'get_description',
+        'gplus_description': 'get_description',
+        'keywords': 'get_keywords',
+        'locale': None,
+        'image': 'get_image_url',
+        'object_type': settings.BLOG_TYPE,
+        'og_type': settings.BLOG_FB_TYPE,
+        'og_app_id': settings.BLOG_FB_APPID,
+        'og_profile_id': settings.BLOG_FB_PROFILE_ID,
+        'og_publisher': settings.BLOG_FB_PUBLISHER,
+        'og_author_url': settings.BLOG_FB_AUTHOR_URL,
+        'twitter_type': settings.BLOG_TWITTER_TYPE,
+        'twitter_site': settings.BLOG_TWITTER_SITE,
+        'twitter_author': settings.BLOG_TWITTER_AUTHOR,
+        'gplus_type': settings.BLOG_GPLUS_TYPE,
+        'gplus_author': settings.BLOG_GPLUS_AUTHOR,
+        'published_time': 'date_published',
+        'modified_time': 'date_modified',
+        'expiration_time': 'date_published_end',
+        'tag': 'get_tags',
+        'url': 'get_absolute_url',
+    }
+
+    def get_keywords(self):
+        return self.safe_translation_getter('meta_keywords', language_code=get_language()).strip().split(",")
+
+    def get_description(self):
+        description = self.safe_translation_getter('meta_description', language_code=get_language())
+        if not description:
+            description = self.safe_translation_getter('abstract', language_code=get_language())
+        return description.strip()
+
+    def get_image_url(self):
+        return self.main_image
+
+    def get_tags(self):
+        return ",".join(self.tags.all())
+
+    def get_author(self):
+        return self.author
 
     class Meta:
         verbose_name = _('blog article')
@@ -128,13 +173,6 @@ class Post(TranslatableModel):
             return self.main_image_thumbnail.as_dict
         else:
             return settings.BLOG_IMAGE_THUMBNAIL_SIZE
-        
-    def get_full_url(self):
-        s = Site.objects.get_current()
-        if s.domain.find('http') > -1:
-            return "%s%s" % (s.domain, self.get_absolute_url())
-        else:
-            return "http://%s%s" % (s.domain, self.get_absolute_url())
 
     def full_image_options(self):
         if self.main_image_fulll_id:
