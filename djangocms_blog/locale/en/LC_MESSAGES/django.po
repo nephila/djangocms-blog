@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-29 16:31+0100\n"
+"POT-Creation-Date: 2014-04-19 19:27+0200\n"
 "PO-Revision-Date: 2014-03-05 18:09+0100\n"
 "Last-Translator: Iacopo Spalletti\n"
 "Language-Team: Italian <i.spalletti@nephila.it>\n"
@@ -60,35 +60,35 @@ msgstr ""
 msgid "Blog articles on %(site_name)s"
 msgstr "Blog articles on %(site_name)s"
 
-#: models.py:28
+#: models.py:27
 msgid "parent"
 msgstr "parent"
 
-#: models.py:30
+#: models.py:29
 msgid "created at"
 msgstr "created at"
 
-#: models.py:31
+#: models.py:30
 msgid "modified at"
 msgstr "modified at"
 
-#: models.py:34
+#: models.py:33
 msgid "name"
 msgstr "name"
 
-#: models.py:35 models.py:88
+#: models.py:34 models.py:89
 msgid "slug"
 msgstr "slug"
 
-#: models.py:42
+#: models.py:41
 msgid "blog category"
 msgstr "blog category"
 
-#: models.py:43
+#: models.py:42
 msgid "blog categories"
 msgstr "blog categories"
 
-#: models.py:65
+#: models.py:64
 msgid "Author"
 msgstr "Author"
 
@@ -112,60 +112,60 @@ msgstr "category"
 msgid "Main image"
 msgstr "Main image"
 
-#: models.py:78
+#: models.py:79
 msgid "Main image thumbnail"
 msgstr "Main image thumbnail"
 
-#: models.py:82
+#: models.py:83
 msgid "Main image full"
 msgstr "Main image full"
 
-#: models.py:87
+#: models.py:88
 msgid "Title"
 msgstr "Title"
 
-#: models.py:89
-msgid "Text"
-msgstr "Text"
-
 #: models.py:90
+msgid "Abstract"
+msgstr ""
+
+#: models.py:91
 msgid "Post meta description"
 msgstr "Post meta description"
 
-#: models.py:92
+#: models.py:93
 #, fuzzy
 msgid "Post meta keywords"
 msgstr "Post meta description"
 
-#: models.py:102
+#: models.py:148
 msgid "blog article"
 msgstr "blog article"
 
-#: models.py:103
+#: models.py:149
 msgid "blog articles"
 msgstr "blog articles"
 
-#: models.py:147 models.py:172
+#: models.py:186 models.py:211
 msgid "Articles"
 msgstr "Articles"
 
-#: models.py:148
+#: models.py:187
 msgid "The number of latests articles to be displayed."
 msgstr "The number of latests articles to be displayed."
 
-#: models.py:150
+#: models.py:189
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Show only the blog articles tagged with chosen tags."
 
-#: models.py:152
+#: models.py:191
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Show only the blog articles tagged with chosen categories."
 
-#: models.py:169 templates/djangocms_blog/plugins/authors.html:3
+#: models.py:208 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Authors"
 
-#: models.py:173
+#: models.py:212
 msgid "The number of author articles to be displayed."
 msgstr "The number of author articles to be displayed."
 
@@ -235,6 +235,9 @@ msgstr[1] "%(articles)s articles"
 #: templates/djangocms_blog/plugins/tags.html:12
 msgid "0 articles"
 msgstr "0 articles"
+
+#~ msgid "Text"
+#~ msgstr "Text"
 
 #~ msgid "blog post"
 #~ msgstr "blog post"
