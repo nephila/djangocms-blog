@@ -4,14 +4,14 @@ History
 -------
 
 0.2.0 (in development)
-++++++++++++++++++
+++++++++++++++++++++++
 
 * **INCOMPATIBLE CHANGE**: view names changed!
 * Synced with latest django-parler development branch
 * Toolbar items contextual to the current page
 * Add support for canonical URLs
 * Add transifex support
-
+* Add social tags via django-meta-mixin
 
 
 0.1.0 (2014-03-06)
