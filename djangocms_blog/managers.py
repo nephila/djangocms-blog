@@ -6,10 +6,7 @@ except ImportError:
 import datetime
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from parler.managers import TranslationManager
-
-from .settings import BLOG_TAGCLOUD_MIN, BLOG_TAGCLOUD_MAX
 
 
 class TaggedFilterItem(object):
