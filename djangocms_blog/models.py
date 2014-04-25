@@ -97,6 +97,7 @@ class Post(ModelMeta, TranslatableModel):
                                           blank=True, default=''),
         meta_keywords=models.TextField(verbose_name=_(u'Post meta keywords'),
                                        blank=True, default=''),
+        post_text=HTMLField(_('Text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField("post_content")
