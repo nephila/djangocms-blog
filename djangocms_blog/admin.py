@@ -11,12 +11,12 @@ from .models import Post, BlogCategory
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
     def get_prepopulated_fields(self, request, obj=None):
-        return {"slug": ("name",)}
+        return {'slug': ('name',)}
 
     class Media:
         css = {
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                 "djangocms_blog_admin.css"),)
+                                                 'djangocms_blog_admin.css'),)
         }
 
 
@@ -25,7 +25,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
     list_display = ['title', 'author', 'date_published', 'date_published_end']
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
-    frontend_editable_fields = ("title", "abstract")
+    frontend_editable_fields = ('title', 'abstract', 'post_text')
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
@@ -47,15 +47,15 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
     ]
 
     def get_fieldsets(self, request, obj=None):
+        fsets = deepcopy(self._fieldsets)
+        if not settings.BLOG_USE_PLACEHOLDER:
+            fsets[0][1]['fields'].append('post_text')
         if request.user.is_superuser:
-            fsets = deepcopy(self._fieldsets)
             fsets[1][1]['fields'][0].append('author')
-            return fsets
-        else:
-            return self._fieldsets
+        return fsets
 
     def get_prepopulated_fields(self, request, obj=None):
-        return {"slug": ("title",)}
+        return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
         if not obj.author_id:
@@ -65,7 +65,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
     class Media:
         css = {
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                 "djangocms_blog_admin.css"),)
+                                                 'djangocms_blog_admin.css'),)
         }
 
 
