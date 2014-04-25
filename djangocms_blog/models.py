@@ -84,6 +84,10 @@ class Post(ModelMeta, TranslatableModel):
                                         verbose_name=_('Main image full'),
                                         related_name='djangocms_blog_post_full',
                                         blank=True, null=True)
+    enable_comments = models.BooleanField(
+        verbose_name = _(u'Enable comments on post'),
+        default=settings.BLOG_ENABLE_COMMENTS
+    )
 
     translations = TranslatedFields(
         title=models.CharField(_('Title'), max_length=255),

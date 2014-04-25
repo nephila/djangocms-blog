@@ -31,3 +31,4 @@ BLOG_TWITTER_SITE = getattr(settings, 'BLOG_TWITTER_SITE', meta_settings.TWITTER
 BLOG_TWITTER_AUTHOR = getattr(settings, 'BLOG_TWITTER_AUTHOR', 'get_author_twitter')
 BLOG_GPLUS_TYPE = getattr(settings, 'BLOG_GPLUS_SCOPE_CATEGORY', 'Article')
 BLOG_GPLUS_AUTHOR = getattr(settings, 'BLOG_GPLUS_AUTHOR', 'get_author_gplus')
+BLOG_ENABLE_COMMENTS = getattr(settings, 'BLOG_ENABLE_COMMENTS', True)

@@ -33,7 +33,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
         }),
         ('Info', {
             'fields': (['categories', 'tags'],
-                       ('date_published', 'date_published_end')),
+                       ('date_published', 'date_published_end', 'enable_comments')),
             'classes': ('collapse',)
         }),
         ('Immagine', {
