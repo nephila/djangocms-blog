@@ -52,6 +52,41 @@ Features
 * Placeholder content editing
 * Frontend editing using django CMS 3.0 frontend editor
 * Multilingual support using django-parler
+* Support for Twitter cards, Open Graph and Google+ snippets meta tags
+* Optional support for simpler TextField-based content editing
+
+
+Settings
+--------
+* BLOG_ENABLE_COMMENTS: Whether to enable comments by default on posts;
+  while `djangocms_blog` does not ship any comment system, this flag can be used
+  to control the chosen comments framework; (default: True)
+* BLOG_USE_PLACEHOLDER: Post content is managed via placeholder; if `False` a
+  simple HTMLField is used; (default: True)
+* BLOG_IMAGE_THUMBNAIL_SIZE: Size of the main image when shown on the post lists;
+  it's a dictionary with `size`, `crop` and `upscale` keys;
+  (default: `{'size': '120x120', 'crop': True,'upscale': False}`)
+* BLOG_IMAGE_FULL_SIZE: Size of the main image when shown on the post detail;
+  it's a dictionary with `size`, `crop` and `upscale` keys;
+  (default: `{'size': '640x120', 'crop': True,'upscale': False}`)
+* BLOG_PAGINATION: Number of post per page; (defaul: 10)
+* BLOG_LATEST_POSTS: Default number of post in the **Latest post** plugin; (defaul: 5)
+* BLOG_POSTS_LIST_TRUNCWORDS_COUNT: Default number of words shown for abstract in the post list; (default: 100)
+
+Social media tags settings
+++++++++++++++++++++++++++
+* BLOG_TYPE: Generic type for the post object; (default: Article)
+* BLOG_FB_TYPE: Open Graph type for the post object; (default: Article)
+* BLOG_FB_APPID: Facebook Application ID
+* BLOG_FB_PROFILE_ID: Facebook profile ID of the post author
+* BLOG_FB_PUBLISHER: Facebook URL of the blog publisher
+* BLOG_FB_AUTHOR_URL: Facebook profile URL of the post author
+* BLOG_FB_AUTHOR: Facebook profile URL of the post author
+* BLOG_TWITTER_TYPE: Twitter Card type for the post object; (default: Summary)
+* BLOG_TWITTER_SITE: Twitter account of the site
+* BLOG_TWITTER_AUTHOR: Twitter account of the post author
+* BLOG_GPLUS_TYPE: Google+ Snippet type for the post object; (default: Blog)
+* BLOG_GPLUS_AUTHOR: Google+ account of the post author
 
 .. image:: https://d2weczhvl823v0.cloudfront.net/nephila/djangocms-blog/trend.png
    :alt: Bitdeli badge
