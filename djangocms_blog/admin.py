@@ -7,6 +7,7 @@ from django.conf import settings
 from parler.admin import TranslatableAdmin
 
 from .models import Post, BlogCategory
+from .settings import BLOG_USE_PLACEHOLDER
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
@@ -48,7 +49,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
-        if not settings.BLOG_USE_PLACEHOLDER:
+        if not BLOG_USE_PLACEHOLDER:
             fsets[0][1]['fields'].append('post_text')
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
