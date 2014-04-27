@@ -55,6 +55,13 @@ Features
 * Support for Twitter cards, Open Graph and Google+ snippets meta tags
 * Optional support for simpler TextField-based content editing
 
+Import from Wordpress
++++++++++++++++++++++
+
+If you want to import content from existing wordpress blog, check
+https://pypi.python.org/pypi/the-real-django-wordpress and
+this gist https://gist.github.com/yakky/11336204 as a base.
+
 
 Settings
 --------
