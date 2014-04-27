@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-19 19:27+0200\n"
-"PO-Revision-Date: 2014-04-19 17:27+0000\n"
+"POT-Creation-Date: 2014-04-27 04:29+0200\n"
+"PO-Revision-Date: 2014-04-27 02:30+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/djangocms-blog/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -62,111 +62,119 @@ msgstr "Modifica articolo"
 msgid "Blog articles on %(site_name)s"
 msgstr "Articoli del blog su %(site_name)s"
 
-#: models.py:27
+#: models.py:28
 msgid "parent"
 msgstr "superiore"
 
-#: models.py:29
+#: models.py:30
 msgid "created at"
 msgstr "creato il"
 
-#: models.py:30
+#: models.py:31
 msgid "modified at"
 msgstr "modificato il"
 
-#: models.py:33
+#: models.py:34
 msgid "name"
 msgstr "nome"
 
-#: models.py:34 models.py:89
+#: models.py:35 models.py:94
 msgid "slug"
 msgstr "slug"
 
-#: models.py:41
+#: models.py:42
 msgid "blog category"
 msgstr "categoria del blog"
 
-#: models.py:42
+#: models.py:43
 msgid "blog categories"
 msgstr "categorie del blog"
 
-#: models.py:64
+#: models.py:65
 msgid "Author"
 msgstr "Autore"
 
-#: models.py:69
+#: models.py:70
 msgid "Published Since"
 msgstr "Pubblicato il"
 
-#: models.py:71
+#: models.py:72
 msgid "Published Until"
 msgstr "fino al"
 
-#: models.py:73
+#: models.py:74
 msgid "Publish"
 msgstr "Pubblicato"
 
-#: models.py:74
+#: models.py:75
 msgid "category"
 msgstr "categoria"
 
-#: models.py:76
+#: models.py:77
 msgid "Main image"
 msgstr "Immagine"
 
-#: models.py:79
+#: models.py:80
 msgid "Main image thumbnail"
 msgstr "Dimensione miniatura"
 
-#: models.py:83
+#: models.py:84
 msgid "Main image full"
 msgstr "Dimensione piena"
 
 #: models.py:88
+msgid "Enable comments on post"
+msgstr "Abilita commenti sul post"
+
+#: models.py:93
 msgid "Title"
 msgstr "Titolo"
 
-#: models.py:90
+#: models.py:95
 msgid "Abstract"
 msgstr "Riassunto"
 
-#: models.py:91
+#: models.py:96
 msgid "Post meta description"
 msgstr "Meta descrizione dell'articolo"
 
-#: models.py:93
+#: models.py:98
 msgid "Post meta keywords"
 msgstr "Meta keyword dell'articolo"
 
-#: models.py:148
+#: models.py:100
+msgid "Text"
+msgstr "Test"
+
+#: models.py:155
 msgid "blog article"
 msgstr "articolo del blog"
 
-#: models.py:149
+#: models.py:156
 msgid "blog articles"
 msgstr "articoli del blog"
 
-#: models.py:186 models.py:211
+#: models.py:200 models.py:225
 msgid "Articles"
 msgstr "Articoli"
 
-#: models.py:187
+#: models.py:201
 msgid "The number of latests articles to be displayed."
 msgstr "Il numero di articoli da mostrare."
 
-#: models.py:189
+#: models.py:203
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Mostra solo gli articoli marcati con i tag selezionati."
 
-#: models.py:191
+#: models.py:205
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Mostra solo gli articoli marcati con i categorie selezionati."
 
-#: models.py:208 templates/djangocms_blog/plugins/authors.html:3
+#: models.py:222 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Autori"
 
-#: models.py:212
+#: models.py:226
 msgid "The number of author articles to be displayed."
 msgstr "Numero di elementi per autore da mostrare."
 
@@ -236,9 +244,6 @@ msgstr[1] "%(articles)s articoli"
 #: templates/djangocms_blog/plugins/tags.html:12
 msgid "0 articles"
 msgstr "0 articoli"
-
-#~ msgid "Text"
-#~ msgstr "Text"
 
 #~ msgid "blog post"
 #~ msgstr "blog post"
