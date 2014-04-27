@@ -49,7 +49,7 @@ setup(
     ],
     license="BSD",
     zip_safe=False,
-    keywords='djangocms-blog',
+    keywords='djangocms-blog, blog, django, wordpress, multilingual',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Framework :: Django',
