@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
+from cms.api import add_plugin
+from cms.utils.copy_plugins import copy_plugins_to
+from cms.utils.plugins import downcast_plugins
 from cmsplugin_filer_image.models import ThumbnailOption
+from datetime import date
+from django.conf import settings as dj_settings
 from django.core.urlresolvers import reverse
+import parler
+from taggit.models import Tag
+
 from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog import settings
 
@@ -108,6 +116,139 @@ class ModelsTest(BaseTest):
             'crop': False,
             'upscale': False
         })
+
+    def test_manager(self):
+        post_1 = self._get_post(self.data['en'][0])
+        post_2 = self._get_post(self.data['en'][1])
+
+        # default queryset, published and unpublished posts
+        months = Post.objects.get_months()
+        for data in months:
+            self.assertEqual(data['date'], date(year=date.today().year, month=date.today().month, day=1))
+            self.assertEqual(data['count'], 2)
+
+        # custom queryset, only published
+        post_1.publish = True
+        post_1.save()
+        months = Post.objects.get_months(Post.objects.published())
+        for data in months:
+            self.assertEqual(data['date'], date(year=date.today().year, month=date.today().month, day=1))
+            self.assertEqual(data['count'], 1)
+
+        self.assertEqual(len(Post.objects.available()), 1)
+
+        # If post is published but publishing date is in the future
+        post_2.date_published = date(year=date.today().year+1, month=date.today().month, day=1)
+        post_2.publish = True
+        post_2.save()
+        self.assertEqual(len(Post.objects.available()), 2)
+        self.assertEqual(len(Post.objects.published()), 1)
+        self.assertEqual(len(Post.objects.archived()), 0)
+
+        # If post is published but end publishing date is in the past
+        post_2.date_published = date(year=date.today().year-2, month=date.today().month, day=1)
+        post_2.date_published_end = date(year=date.today().year-1, month=date.today().month, day=1)
+        post_2.save()
+        self.assertEqual(len(Post.objects.available()), 2)
+        self.assertEqual(len(Post.objects.published()), 1)
+        self.assertEqual(len(Post.objects.archived()), 1)
+
+        # counting with language fallback enabled
+        post = self._get_post(self.data['it'][0], post_1, 'it')
+        self.assertEqual(len(Post.objects.filter_by_language('it')), 2)
+
+        # No fallback
+        parler.appsettings.PARLER_LANGUAGES['default']['hide_untranslated'] = True
+        self.assertEqual(len(Post.objects.filter_by_language('it')), 1)
+        parler.appsettings.PARLER_LANGUAGES['default']['hide_untranslated'] = False
+
+    def test_tag_cloud(self):
+        post_1 = self._get_post(self.data['en'][0])
+        post_2 = self._get_post(self.data['en'][1])
+        post_1.tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        post_1.save()
+        post_2.tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
+        post_2.save()
+
+        self.assertEqual(len(Post.objects.tag_cloud()), 0)
+
+        tags = []
+        for tag in Tag.objects.all():
+            if tag.slug == 'tag-2':
+                tag.count = 2
+            else:
+                tag.count = 1
+            tags.append(tag)
+
+        self.assertEqual(Post.objects.tag_cloud(published=True), [])
+        self.assertEqual(set(Post.objects.tag_cloud(published=False)), set(tags))
+
+        tags_1 = []
+        for tag in Tag.objects.all():
+            if tag.slug == 'tag-2':
+                tag.count = 2
+                tags_1.append(tag)
+            elif tag.slug in ('tag-1', 'tag-3', 'tag-4'):
+                tag.count = 1
+                tags_1.append(tag)
+
+        post_1.publish = True
+        post_1.save()
+        self.assertEqual(set(Post.objects.tag_cloud()), set(tags_1))
+        self.assertEqual(set(Post.objects.tag_cloud(published=False)), set(tags))
+
+    def test_plugin_latest(self):
+        post_1 = self._get_post(self.data['en'][0])
+        post_2 = self._get_post(self.data['en'][1])
+        post_1.tags.add('tag 1')
+        post_1.save()
+        plugin = add_plugin(post_1.content, 'BlogLatestEntriesPlugin', language='en')
+        tag = Tag.objects.get(slug='tag-1')
+        plugin.tags.add(tag)
+        self.assertEqual(len(plugin.get_posts()), 0)
+        post_1.publish = True
+        post_1.save()
+        self.assertEqual(len(plugin.get_posts()), 1)
+
+    def test_copy_plugin_latest(self):
+        post_1 = self._get_post(self.data['en'][0])
+        post_2 = self._get_post(self.data['en'][1])
+        tag = Tag.objects.create(name='tag 1')
+        plugin = add_plugin(post_1.content, 'BlogLatestEntriesPlugin', language='en')
+        plugin.tags.add(tag)
+        plugins = list(post_1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+        copy_plugins_to(plugins, post_2.content)
+        new = downcast_plugins(post_2.content.cmsplugin_set.all())
+        self.assertEqual(set(new[0].tags.all()), set([tag]))
+
+    def test_plugin_author(self):
+        post_1 = self._get_post(self.data['en'][0])
+        post_2 = self._get_post(self.data['en'][1])
+        plugin = add_plugin(post_1.content, 'BlogAuthorPostsPlugin', language='en')
+        plugin.authors.add(self.user)
+        self.assertEqual(len(plugin.get_posts()), 0)
+        self.assertEqual(plugin.get_authors()[0].count, 0)
+
+        post_1.publish = True
+        post_1.save()
+        self.assertEqual(len(plugin.get_posts()), 1)
+        self.assertEqual(plugin.get_authors()[0].count, 1)
+
+        post_2.publish = True
+        post_2.save()
+        self.assertEqual(len(plugin.get_posts()), 2)
+        self.assertEqual(plugin.get_authors()[0].count, 2)
+
+    def test_copy_plugin_author(self):
+        post_1 = self._get_post(self.data['en'][0])
+        post_2 = self._get_post(self.data['en'][1])
+        plugin = add_plugin(post_1.content, 'BlogAuthorPostsPlugin', language='en')
+        plugin.authors.add(self.user)
+        plugins = list(post_1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+        copy_plugins_to(plugins, post_2.content)
+        new = downcast_plugins(post_2.content.cmsplugin_set.all())
+        self.assertEqual(set(new[0].authors.all()), set([self.user]))
+
         """
                 'title': 'title',
         'description': 'get_description',
