@@ -3,11 +3,13 @@
 Tests for `djangocms_blog` module.
 """
 from cms.utils.i18n import get_language_list
-
+from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth.models import User
 from django.http import SimpleCookie
 from django.test import TestCase, RequestFactory
 from six import StringIO
+
+from djangocms_blog.models import BlogCategory, Post
 
 
 class BaseTest(TestCase):
@@ -17,6 +19,28 @@ class BaseTest(TestCase):
     request_factory = None
     user = None
     languages = get_language_list()
+    category_1 = None
+    thumb_1 = None
+    thumb_2 = None
+
+    data = {
+        'it': [
+            {'title': u'Primo post', 'abstract': u'<p>prima riga</p>',
+             'description': u'Questa è la descrizione', 'keywords': u'keyword1, keyword2',
+             'text': u'Testo del post'},
+            {'title': u'Secondo post', 'abstract': u'<p>prima riga del secondo post</p>',
+             'description': u'Descrizione del secondo post', 'keywords': u'keyword3, keyword4',
+             'text': u'Testo del secondo post'},
+        ],
+        'en': [
+            {'title': u'First post', 'abstract': u'<p>first line</p>',
+             'description': u'This is the description', 'keywords': u'keyword1, keyword2',
+             'text': u'Post text'},
+            {'title': u'Second post', 'abstract': u'<p>second post first line</p>',
+             'description': u'Second post description', 'keywords': u'keyword3, keyword4',
+             'text': u'Second post text'}
+        ]
+    }
 
     @classmethod
     def setUpClass(cls):
@@ -24,6 +48,37 @@ class BaseTest(TestCase):
         cls.user = User.objects.create(username='admin', is_staff=True, is_superuser=True)
         cls.user_staff = User.objects.create(username='staff', is_staff=True)
         cls.user_normal = User.objects.create(username='normal')
+
+    def setUp(self):
+        super(BaseTest, self).setUp()
+        self.category_1 = BlogCategory.objects.create()
+        self.category_1.name = u'category 1'
+        self.category_1.save()
+        self.thumb_1 = ThumbnailOption.objects.create(
+            name='base', width=100, height=100, crop=True, upscale=False
+        )
+        self.thumb_2 = ThumbnailOption.objects.create(
+            name='main', width=200, height=200, crop=False, upscale=False
+        )
+
+    def _get_post(self, data, post=None, lang='en'):
+        if not post:
+            post = Post()
+        post.set_current_language(lang)
+        post.author = self.user
+        post.title = data['title']
+        post.abstract = data['abstract']
+        post.meta_description = data['description']
+        post.meta_keywords = data['keywords']
+        post.save()
+        post.categories.add(self.category_1)
+        post.save()
+        return post
+
+
+    @classmethod
+    def tearDownClass(cls):
+        User.objects.all().delete()
 
     def get_pages(self):
         from cms.api import create_page, create_title

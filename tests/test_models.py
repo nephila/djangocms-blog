@@ -2,14 +2,12 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
-from cmsplugin_filer_image.models import ThumbnailOption
 from datetime import date
-from django.conf import settings as dj_settings
 from django.core.urlresolvers import reverse
 import parler
 from taggit.models import Tag
 
-from djangocms_blog.models import BlogCategory, Post
+from djangocms_blog.models import Post
 from djangocms_blog import settings
 
 
@@ -17,51 +15,6 @@ from . import BaseTest
 
 
 class ModelsTest(BaseTest):
-
-    data = {
-        'it': [
-            {'title': u'Primo post', 'abstract': u'<p>prima riga</p>',
-             'description': u'Questa è la descrizione', 'keywords': u'keyword1, keyword2',
-             'text': u'Testo del post'},
-            {'title': u'Secondo post', 'abstract': u'<p>prima riga del secondo post</p>',
-             'description': u'Descrizione del secondo post', 'keywords': u'keyword3, keyword4',
-             'text': u'Testo del secondo post'},
-        ],
-        'en': [
-            {'title': u'First post', 'abstract': u'<p>first line</p>',
-             'description': u'This is the description', 'keywords': u'keyword1, keyword2',
-             'text': u'Post text'},
-            {'title': u'Second post', 'abstract': u'<p>second post first line</p>',
-             'description': u'Second post description', 'keywords': u'keyword3, keyword4',
-             'text': u'Second post text'}
-        ]
-    }
-
-    def setUp(self):
-        super(ModelsTest, self).setUp()
-        self.category_1 = BlogCategory.objects.create()
-        self.category_1.name = u'category 1'
-        self.category_1.save()
-        self.thumb_1 = ThumbnailOption.objects.create(
-            name='base', width=100, height=100, crop=True, upscale=False
-        )
-        self.thumb_2 = ThumbnailOption.objects.create(
-            name='main', width=200, height=200, crop=False, upscale=False
-        )
-
-    def _get_post(self, data, post=None, lang='en'):
-        if not post:
-            post = Post()
-        post.set_current_language(lang)
-        post.author = self.user
-        post.title = data['title']
-        post.abstract = data['abstract']
-        post.meta_description = data['description']
-        post.meta_keywords = data['keywords']
-        post.save()
-        post.categories.add(self.category_1)
-        post.save()
-        return post
 
     def test_model_attributes(self):
         post = self._get_post(self.data['en'][0])

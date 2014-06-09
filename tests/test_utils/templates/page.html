@@ -1,10 +1,6 @@
-{% load cms_tags sekizai_tags page_tags %}
+{% load cms_tags sekizai_tags %}
 {% render_block "css" %}
 {% cms_toolbar %}
 {% placeholder "placeholder" %}
 
-{% page_tags request.current_page as ptags_list %}
-{% title_tags request.current_page as ttags_list %}
-{% include_page_tags request.current_page %}
-{% include_title_tags request.current_page %}
 {% render_block "js" %}
