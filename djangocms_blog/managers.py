@@ -17,7 +17,7 @@ class TaggedFilterItem(object):
         o con gli stessi tag di un model o un queryset
         """
         tags = self._taglist(other_model, queryset)
-        return self.get_query_set().filter(taglist__in=tags)
+        return self.get_queryset().filter(taglist__in=tags)
 
     def _taglist(self, other_model=None, queryset=None):
         """
@@ -84,7 +84,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
 
     def published_future(self, queryset=None):
         if queryset is None:
-            queryset = self.get_query_set().all()
+            queryset = self.get_queryset().all()
         if self.end_date_field:
             qfilter = (
                 models.Q(**{"%s__gte" % self.end_date_field: datetime.datetime.now()})
@@ -95,7 +95,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
 
     def archived(self, queryset=None):
         if queryset is None:
-            queryset = self.get_query_set().all()
+            queryset = self.get_queryset().all()
         if self.end_date_field:
             qfilter = (
                 models.Q(**{"%s__lte" % self.end_date_field: datetime.datetime.now()})
@@ -106,17 +106,16 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
 
     def available(self, queryset=None):
         if queryset is None:
-            queryset = self.get_query_set().all()
+            queryset = self.get_queryset().all()
         return queryset.filter(**{self.publish_field: True})
 
     def filter_by_language(self, language):
-        queryset = self.get_query_set()
-        return queryset.filter(models.Q(language__isnull=True) | models.Q(language=language))
+        return self.get_queryset().active_translations(language_code=language)
 
     def get_months(self, queryset=None):
-        """Get months with aggregatet count (how much posts is in the month). Results are ordered by date."""
+        """Get months with aggregate count (how much posts is in the month). Results are ordered by date."""
         if queryset is None:
-            queryset = self.get_query_set()
+            queryset = self.get_queryset()
         dates = queryset.values_list(self.start_date_field, flat=True)
         dates = [(x.year, x.month) for x in dates]
         date_counter = Counter(dates)

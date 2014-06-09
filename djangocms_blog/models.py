@@ -239,6 +239,7 @@ class AuthorEntriesPlugin(CMSPlugin):
     def get_authors(self):
         authors = self.authors.all()
         for author in authors:
+            author.count = 0
             if author.djangocms_blog_post_author.filter(publish=True).exists():
                 author.count = author.djangocms_blog_post_author.filter(publish=True).count()
         return authors
