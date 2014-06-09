@@ -46,7 +46,7 @@ setup(
         'django-taggit-autosuggest',
         'django-admin-enhancer',
         'djangocms-text-ckeditor',
-        'cmsplugin-filer-image',
+        'cmsplugin-filer',
         'django-meta-mixin',
     ],
     license="BSD",
