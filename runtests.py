@@ -7,6 +7,8 @@ try:
 
     settings.configure(
         DEBUG=True,
+        THUMBNAIL_DEBUG=True,
+        TEMPLATE_DEBUG=True,
         USE_TZ=True,
         DATABASES={
             'default': {
@@ -53,6 +55,7 @@ try:
             'filer',
             'parler',
             'taggit',
+            'easy_thumbnails',
             'djangocms_text_ckeditor',
             'cmsplugin_filer_image',
             'django_select2',
@@ -98,6 +101,12 @@ try:
         META_USE_OG_PROPERTIES=True,
         META_USE_TWITTER_PROPERTIES=True,
         META_USE_GOOGLEPLUS_PROPERTIES=True,
+        THUMBNAIL_PROCESSORS=(
+            'easy_thumbnails.processors.colorspace',
+            'easy_thumbnails.processors.autocrop',
+            'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+            'easy_thumbnails.processors.filters',
+        )
     )
 
     from django_nose import NoseTestSuiteRunner
