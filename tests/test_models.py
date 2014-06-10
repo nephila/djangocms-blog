@@ -201,29 +201,3 @@ class ModelsTest(BaseTest):
         copy_plugins_to(plugins, post_2.content)
         new = downcast_plugins(post_2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
-
-        """
-                'title': 'title',
-        'description': 'get_description',
-        'og_description': 'get_description',
-        'twitter_description': 'get_description',
-        'gplus_description': 'get_description',
-        'keywords': 'get_keywords',
-        'locale': None,
-        'image': 'get_image_url',
-        'object_type': settings.BLOG_TYPE,
-        'og_type': settings.BLOG_FB_TYPE,
-        'og_app_id': settings.BLOG_FB_APPID,
-        'og_profile_id': settings.BLOG_FB_PROFILE_ID,
-        'og_publisher': settings.BLOG_FB_PUBLISHER,
-        'og_author_url': settings.BLOG_FB_AUTHOR_URL,
-        'twitter_type': settings.BLOG_TWITTER_TYPE,
-        'twitter_site': settings.BLOG_TWITTER_SITE,
-        'twitter_author': settings.BLOG_TWITTER_AUTHOR,
-        'gplus_type': settings.BLOG_GPLUS_TYPE,
-        'gplus_author': settings.BLOG_GPLUS_AUTHOR,
-        'published_time': 'date_published',
-        'modified_time': 'date_modified',
-        'expiration_time': 'date_published_end',
-        'tag': 'get_tags',
-        'url': 'get_absolute_url',"""

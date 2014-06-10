@@ -55,6 +55,8 @@ try:
             'filer',
             'parler',
             'taggit',
+            'meta',
+            'meta_mixin',
             'easy_thumbnails',
             'djangocms_text_ckeditor',
             'cmsplugin_filer_image',

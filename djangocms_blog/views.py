@@ -17,7 +17,7 @@ class BaseBlogView(ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        manager = self.model._default_manager.language(language)
+        manager = self.model._default_manager.active_translations(language_code=language)
         if not self.request.user.is_staff:
             manager = manager.filter(publish=True)
         return manager

@@ -7,6 +7,7 @@ from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth.models import User
 from django.http import SimpleCookie
 from django.test import TestCase, RequestFactory
+from django.utils.translation import activate
 from six import StringIO
 
 from djangocms_blog.models import BlogCategory, Post
@@ -27,7 +28,7 @@ class BaseTest(TestCase):
         'it': [
             {'title': u'Primo post', 'abstract': u'<p>prima riga</p>',
              'description': u'Questa è la descrizione', 'keywords': u'keyword1, keyword2',
-             'text': u'Testo del post'},
+             'text': u'Testo del post',},
             {'title': u'Secondo post', 'abstract': u'<p>prima riga del secondo post</p>',
              'description': u'Descrizione del secondo post', 'keywords': u'keyword3, keyword4',
              'text': u'Testo del secondo post'},
@@ -50,10 +51,15 @@ class BaseTest(TestCase):
         cls.user_normal = User.objects.create(username='normal')
 
     def setUp(self):
+        activate('en')
         super(BaseTest, self).setUp()
         self.category_1 = BlogCategory.objects.create()
         self.category_1.name = u'category 1'
         self.category_1.save()
+        self.category_1.set_current_language('it')
+        self.category_1.name = u'categoria 1'
+        self.category_1.save()
+        self.category_1.set_current_language('en')
         self.thumb_1 = ThumbnailOption.objects.create(
             name='base', width=100, height=100, crop=True, upscale=False
         )
