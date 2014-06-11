@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import date
 import re
 from cms.api import add_plugin
 from django.core.urlresolvers import reverse
@@ -70,3 +71,37 @@ class PluginTest(BaseTest):
                 rf = '\s+%s\s+<span>\(\s+%s article' % (tag.name, 1)
             rx = re.compile(rf)
             self.assertEqual(len(rx.findall(rendered)), 1)
+
+    def test_blog_category_plugin(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+        post1.publish = True
+        post1.save()
+        post2.publish = True
+        post2.save()
+        ph = page1.placeholders.get(slot='placeholder')
+        plugin = add_plugin(ph, 'BlogCategoryPlugin', language='en')
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
+        plugin_class = plugin.get_plugin_class_instance()
+        context = plugin_class.render(RequestContext(request, {}), plugin, ph)
+        self.assertTrue(context['categories'])
+        self.assertEqual(list(context['categories']), [self.category_1])
+
+    def test_blog_archive_plugin(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+        post1.publish = True
+        post1.save()
+        post2.publish = True
+        post2.save()
+        ph = page1.placeholders.get(slot='placeholder')
+        plugin = add_plugin(ph, 'BlogArchivePlugin', language='en')
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
+        plugin_class = plugin.get_plugin_class_instance()
+        context = plugin_class.render(RequestContext(request, {}), plugin, ph)
+        self.assertEqual(context['dates'][0], {'date': date(year=date.today().year, month=date.today().month, day=1), 'count': 2})
+
+        post2.publish = False
+        post2.save()
+        context = plugin_class.render(RequestContext(request, {}), plugin, ph)
+        self.assertEqual(context['dates'][0], {'date': date(year=date.today().year, month=date.today().month, day=1), 'count': 1})
