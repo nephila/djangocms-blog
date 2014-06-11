@@ -81,7 +81,6 @@ class BaseTest(TestCase):
         post.save()
         return post
 
-
     @classmethod
     def tearDownClass(cls):
         User.objects.all().delete()
@@ -123,3 +122,14 @@ class BaseTest(TestCase):
         mid = ToolbarMiddleware()
         mid.process_request(request)
         return request
+
+    def get_posts(self):
+        post1 = self._get_post(self.data['en'][0])
+        post1 = self._get_post(self.data['it'][0], post1, 'it')
+        post1.publish = True
+        post1.save()
+        post1.set_current_language('en')
+        post2 = self._get_post(self.data['en'][1])
+        post2 = self._get_post(self.data['it'][1], post2, 'it')
+        post2.set_current_language('en')
+        return post1, post2
