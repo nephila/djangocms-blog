@@ -8,8 +8,11 @@ djangocms-blog
 .. image:: https://travis-ci.org/nephila/djangocms-blog.svg?branch=develop
     :target: https://travis-ci.org/nephila/djangocms-blog
 
-.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png
-        :target: https://coveralls.io/r/nephila/djangocms-blog
+.. image:: https://pypip.in/d/djangocms-blog/badge.png
+        :target: https://pypi.python.org/pypi/djangocms-blog
+
+.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png?branch=develop
+        :target: https://coveralls.io/r/nephila/djangocms-blog?branch=develop
 
 
 A djangoCMS 3 blog application.
