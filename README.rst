@@ -3,10 +3,13 @@ djangocms-blog
 ==============
 
 .. image:: https://badge.fury.io/py/djangocms-blog.png
-    :target: http://badge.fury.io/py/djangocms-blog
-    
-.. image:: http://img.shields.io/pypi/dm/djangocms-blog.png
-        :target: https://crate.io/packages/djangocms-blog?version=latest
+        :target: http://badge.fury.io/py/djangocms-blog
+
+.. image:: https://travis-ci.org/nephila/djangocms-blog.svg?branch=develop
+    :target: https://travis-ci.org/nephila/djangocms-blog
+
+.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png
+        :target: https://coveralls.io/r/nephila/djangocms-blog
 
 
 A djangoCMS 3 blog application.
