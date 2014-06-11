@@ -3,7 +3,8 @@ from datetime import date
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.translation import activate
-from djangocms_blog.views import PostListView, PostDetailView, PostArchiveView
+from djangocms_blog.views import PostListView, PostDetailView, PostArchiveView, \
+    CategoryEntriesView, AuthorEntriesView, TaggedListView
 
 from . import BaseTest
 
@@ -97,6 +98,74 @@ class ViewTest(BaseTest):
         context = view_obj.get_context_data(object_list=view_obj.object_list)
         self.assertEqual(context['archive_date'], date(year=date.today().year, month=date.today().month, day=1))
         
-    def test_category_entries_views(self):
+    def test_category_entries_view(self):
         page1, page2 = self.get_pages()
         post1, post2 = self.get_posts()
+
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        activate('en')
+        view_obj = CategoryEntriesView()
+        view_obj.request = request
+        view_obj.kwargs = {'category': 'category-1'}
+        qs = view_obj.get_queryset()
+        self.assertEqual(qs.count(), 2)
+        self.assertEqual(set(qs), set([post1, post2]))
+
+        view_obj.paginate_by = 1
+        view_obj.object_list = qs
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
+        self.assertTrue(context['category'])
+        self.assertEqual(context['category'], self.category_1)
+        self.assertTrue(context['is_paginated'])
+        self.assertEqual(list(context['post_list']), [post2])
+        self.assertEqual(context['paginator'].count, 2)
+        self.assertEqual(context['post_list'][0].title, 'Second post')
+
+    def test_author_entries_view(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        activate('en')
+        view_obj = AuthorEntriesView()
+        view_obj.request = request
+        view_obj.kwargs = {'username': 'admin'}
+        qs = view_obj.get_queryset()
+        self.assertEqual(qs.count(), 2)
+        self.assertEqual(set(qs), set([post1, post2]))
+
+        view_obj.paginate_by = 1
+        view_obj.object_list = qs
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
+        self.assertTrue(context['author'])
+        self.assertEqual(context['author'], self.user)
+        self.assertTrue(context['is_paginated'])
+        self.assertEqual(list(context['post_list']), [post2])
+        self.assertEqual(context['paginator'].count, 2)
+        self.assertEqual(context['post_list'][0].title, 'Second post')
+
+    def test_taggedlist_view(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+        post1.tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        post1.save()
+        post2.tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
+        post2.save()
+
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        activate('en')
+        view_obj = TaggedListView()
+        view_obj.request = request
+        view_obj.kwargs = {'tag': 'tag-2'}
+        qs = view_obj.get_queryset()
+        self.assertEqual(qs.count(), 2)
+        self.assertEqual(set(qs), set([post1, post2]))
+
+        view_obj.paginate_by = 1
+        view_obj.object_list = qs
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
+        self.assertTrue(context['tagged_entries'], 'tag-2')
+        self.assertTrue(context['is_paginated'])
+        self.assertEqual(list(context['post_list']), [post2])
+        self.assertEqual(context['paginator'].count, 2)
+        self.assertEqual(context['post_list'][0].title, 'Second post')
