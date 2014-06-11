@@ -1,0 +1,9 @@
+{% load cms_tags sekizai_tags %}
+{% render_block "css" %}
+{% cms_toolbar %}
+
+{% block content %}
+    {% placeholder "placeholder" %}
+{% endblock content %}
+
+{% render_block "js" %}

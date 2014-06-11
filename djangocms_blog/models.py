@@ -6,8 +6,9 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
+from django.utils.encoding import force_text
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from parler.models import TranslatableModel, TranslatedFields
@@ -54,7 +55,7 @@ class BlogCategory(TranslatableModel):
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.name:
-                self.slug = slugify(self.name)
+                self.slug = slugify(force_text(self.name))
         self.save_translations()
 
 
@@ -85,7 +86,7 @@ class Post(ModelMeta, TranslatableModel):
                                         related_name='djangocms_blog_post_full',
                                         blank=True, null=True)
     enable_comments = models.BooleanField(
-        verbose_name = _(u'Enable comments on post'),
+        verbose_name=_(u'Enable comments on post'),
         default=settings.BLOG_ENABLE_COMMENTS
     )
 
@@ -133,12 +134,12 @@ class Post(ModelMeta, TranslatableModel):
     }
 
     def get_keywords(self):
-        return self.safe_translation_getter('meta_keywords', language_code=get_language()).strip().split(",")
+        return self.safe_translation_getter('meta_keywords').strip().split(",")
 
     def get_description(self):
-        description = self.safe_translation_getter('meta_description', language_code=get_language())
+        description = self.safe_translation_getter('meta_description', any_language=True)
         if not description:
-            description = self.safe_translation_getter('abstract', language_code=get_language())
+            description = self.safe_translation_getter('abstract', any_language=True)
         return description.strip()
 
     def get_image_url(self):
@@ -172,7 +173,7 @@ class Post(ModelMeta, TranslatableModel):
         kwargs = {'year': self.date_published.year,
                   'month': self.date_published.month,
                   'day': self.date_published.day,
-                  'slug': self.safe_translation_getter('slug', language_code=get_language())}
+                  'slug': self.safe_translation_getter('slug', any_language=True)}
         return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def thumbnail_options(self):
@@ -182,7 +183,7 @@ class Post(ModelMeta, TranslatableModel):
             return settings.BLOG_IMAGE_THUMBNAIL_SIZE
 
     def full_image_options(self):
-        if self.main_image_fulll_id:
+        if self.main_image_full_id:
             return self.main_image_full.as_dict
         else:
             return settings.BLOG_IMAGE_FULL_SIZE
@@ -238,6 +239,7 @@ class AuthorEntriesPlugin(CMSPlugin):
     def get_authors(self):
         authors = self.authors.all()
         for author in authors:
+            author.count = 0
             if author.djangocms_blog_post_author.filter(publish=True).exists():
                 author.count = author.djangocms_blog_post_author.filter(publish=True).count()
         return authors

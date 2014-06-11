@@ -14,6 +14,15 @@ A djangoCMS 3 blog application.
 Still experimental and untested. You are welcome if you want to try it; if
 you encounter any issue, please open an issue.
 
+Supported Django versions:
+
+* Django 1.5
+* Django 1.6
+
+Supported django CMS versions:
+
+* django CMS 3.0
+
 Documentation
 -------------
 
