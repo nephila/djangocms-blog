@@ -3,7 +3,6 @@ import datetime
 from django.utils.translation import get_language
 from django.contrib.auth.models import User
 from django.core.urlresolvers import resolve
-from django.http import Http404
 from django.views.generic import ListView, DetailView
 
 from parler.views import ViewUrlMixin, TranslatableSlugMixin

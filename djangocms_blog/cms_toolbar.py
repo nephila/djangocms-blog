@@ -22,6 +22,6 @@ class BlogToolbar(CMSToolbar):
 
         current_post = getattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, None)
         if current_post and self.request.user.has_perm('djangocms_blog.change_post'):   # pragma: no cover
-            admin_menu.add_modal_item(_('Edit Post'),reverse(
+            admin_menu.add_modal_item(_('Edit Post'), reverse(
                 'admin:djangocms_blog_post_change', args=(current_post.pk,)),
-                                      active=True)
+                active=True)

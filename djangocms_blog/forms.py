@@ -14,5 +14,5 @@ class LatestEntriesForm(forms.ModelForm):
     class Media:
         css = {
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                  "djangocms_blog_admin.css"),)
+                                                 "djangocms_blog_admin.css"),)
         }
