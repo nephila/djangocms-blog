@@ -79,7 +79,9 @@ class ViewTest(BaseTest):
 
         request = self.get_page_request(page1, AnonymousUser(), r'/it/blog/', lang_code='it', edit=False)
         activate('it')
+        post_1.set_current_language('it')
         view_obj.request = request
+        view_obj.kwargs = {'slug': post_1.slug}
         post_obj = view_obj.get_object()
         self.assertEqual(post_obj, post_1)
         self.assertEqual(post_obj.language_code, 'it')
