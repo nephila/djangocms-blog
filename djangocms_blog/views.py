@@ -6,7 +6,7 @@ from django.core.urlresolvers import resolve
 from django.http import Http404
 from django.views.generic import ListView, DetailView
 
-from parler.views import ViewUrlMixin
+from parler.views import ViewUrlMixin, TranslatableSlugMixin
 
 from .models import Post, BlogCategory, BLOG_CURRENT_POST_IDENTIFIER
 from .settings import (BLOG_PAGINATION, BLOG_POSTS_LIST_TRUNCWORDS_COUNT,
@@ -40,21 +40,12 @@ class PostListView(BaseBlogView, ListView):
         return context
 
 
-class PostDetailView(BaseBlogView, DetailView):
+class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     model = Post
     context_object_name = 'post'
     template_name = "djangocms_blog/post_detail.html"
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
-
-    def get_object(self, queryset=None):
-        try:
-            qs = self.model._default_manager.active_translations(**{
-                self.slug_field: self.kwargs.get(self.slug_url_kwarg, None)
-            }).latest()
-        except Post.DoesNotExist:
-            raise Http404()
-        return qs
 
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)

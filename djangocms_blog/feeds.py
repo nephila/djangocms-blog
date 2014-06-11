@@ -15,7 +15,7 @@ class LatestEntriesFeed(Feed):
     def title(self):
         return _('Blog articles on %(site_name)s') % {'site_name': Site.objects.get_current().name}
 
-    def items(self, obj):
+    def items(self, obj=None):
         return Post.objects.published().order_by('-date_published')[:10]
 
     def item_title(self, item):
@@ -28,7 +28,7 @@ class LatestEntriesFeed(Feed):
 class TagFeed(LatestEntriesFeed):
 
     def get_object(self, request, tag):
-        return tag
+        return tag  # pragma: no cover
 
-    def items(self, obj):
+    def items(self, obj=None):
         return Post.objects.published().filter(tags__slug=obj)[:10]

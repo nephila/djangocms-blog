@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import date
 import re
 from cms.api import add_plugin
 from django.core.urlresolvers import reverse
@@ -12,11 +13,11 @@ class PluginTest(BaseTest):
 
     def test_plugin_latest(self):
         page1, page2 = self.get_pages()
-        post_1 = self._get_post(self.data['en'][0])
-        post_2 = self._get_post(self.data['en'][1])
-        post_1.tags.add('tag 1')
-        post_1.publish = True
-        post_1.save()
+        post1 = self._get_post(self.data['en'][0])
+        post2 = self._get_post(self.data['en'][1])
+        post1.tags.add('tag 1')
+        post1.publish = True
+        post1.save()
         ph = page1.placeholders.get(slot='placeholder')
         plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
         tag = Tag.objects.get(slug='tag-1')
@@ -28,16 +29,16 @@ class PluginTest(BaseTest):
         self.assertTrue(rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1)
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
-        self.assertTrue(rendered.find(post_1.get_absolute_url()) > -1)
+        self.assertTrue(rendered.find(post1.get_absolute_url()) > -1)
 
     def test_plugin_authors(self):
         page1, page2 = self.get_pages()
-        post_1 = self._get_post(self.data['en'][0])
-        post_2 = self._get_post(self.data['en'][1])
-        post_1.publish = True
-        post_1.save()
-        post_2.publish = True
-        post_2.save()
+        post1 = self._get_post(self.data['en'][0])
+        post2 = self._get_post(self.data['en'][1])
+        post1.publish = True
+        post1.save()
+        post2.publish = True
+        post2.save()
         ph = page1.placeholders.get(slot='placeholder')
         plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en')
         plugin.authors.add(self.user)
@@ -49,14 +50,14 @@ class PluginTest(BaseTest):
 
     def test_plugin_tags(self):
         page1, page2 = self.get_pages()
-        post_1 = self._get_post(self.data['en'][0])
-        post_2 = self._get_post(self.data['en'][1])
-        post_1.tags.add('tag 1', 'tag 2', 'test tag')
-        post_1.publish = True
-        post_1.save()
-        post_2.tags.add('test tag', 'another tag')
-        post_2.publish = True
-        post_2.save()
+        post1 = self._get_post(self.data['en'][0])
+        post2 = self._get_post(self.data['en'][1])
+        post1.tags.add('tag 1', 'tag 2', 'test tag')
+        post1.publish = True
+        post1.save()
+        post2.tags.add('test tag', 'another tag')
+        post2.publish = True
+        post2.save()
         ph = page1.placeholders.get(slot='placeholder')
         plugin = add_plugin(ph, 'BlogTagsPlugin', language='en')
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
@@ -70,3 +71,37 @@ class PluginTest(BaseTest):
                 rf = '\s+%s\s+<span>\(\s+%s article' % (tag.name, 1)
             rx = re.compile(rf)
             self.assertEqual(len(rx.findall(rendered)), 1)
+
+    def test_blog_category_plugin(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+        post1.publish = True
+        post1.save()
+        post2.publish = True
+        post2.save()
+        ph = page1.placeholders.get(slot='placeholder')
+        plugin = add_plugin(ph, 'BlogCategoryPlugin', language='en')
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
+        plugin_class = plugin.get_plugin_class_instance()
+        context = plugin_class.render(RequestContext(request, {}), plugin, ph)
+        self.assertTrue(context['categories'])
+        self.assertEqual(list(context['categories']), [self.category_1])
+
+    def test_blog_archive_plugin(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+        post1.publish = True
+        post1.save()
+        post2.publish = True
+        post2.save()
+        ph = page1.placeholders.get(slot='placeholder')
+        plugin = add_plugin(ph, 'BlogArchivePlugin', language='en')
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
+        plugin_class = plugin.get_plugin_class_instance()
+        context = plugin_class.render(RequestContext(request, {}), plugin, ph)
+        self.assertEqual(context['dates'][0], {'date': date(year=date.today().year, month=date.today().month, day=1), 'count': 2})
+
+        post2.publish = False
+        post2.save()
+        context = plugin_class.render(RequestContext(request, {}), plugin, ph)
+        self.assertEqual(context['dates'][0], {'date': date(year=date.today().year, month=date.today().month, day=1), 'count': 1})
