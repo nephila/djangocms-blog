@@ -8,7 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from parler.models import TranslatableModel, TranslatedFields

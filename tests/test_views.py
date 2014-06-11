@@ -35,7 +35,7 @@ class ViewTest(BaseTest):
         view_obj.kwargs = {}
         view_obj.object_list = view_obj.get_queryset()
         view_obj.paginate_by = 1
-        context = view_obj.get_context_data()
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
         self.assertTrue(context['is_paginated'])
         self.assertEqual(list(context['post_list']), [post_2])
         self.assertEqual(context['paginator'].count, 2)
@@ -47,7 +47,7 @@ class ViewTest(BaseTest):
         activate('it')
         view_obj.request = request
         view_obj.object_list = view_obj.get_queryset()
-        context = view_obj.get_context_data()
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
         self.assertEqual(context['post_list'][0].title, 'Secondo post')
         response = view_obj.render_to_response(context)
         self.assertContains(response, context['post_list'][0].get_absolute_url())
@@ -113,5 +113,5 @@ class ViewTest(BaseTest):
         self.assertEqual(list(qs), [post_1])
 
         view_obj.object_list = qs
-        context = view_obj.get_context_data()
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
         self.assertEqual(context['archive_date'], date(year=date.today().year, month=date.today().month, day=1))

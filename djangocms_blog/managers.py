@@ -74,6 +74,12 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
     end_date_field = "date_published_end"
     publish_field = "publish"
 
+    def get_queryset(self, *args, **kwargs):
+        try:
+            return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
+        except AttributeError:
+            return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
+
     def published(self, queryset=None):
         queryset = self.published_future(queryset)
         if self.start_date_field:
