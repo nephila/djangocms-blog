@@ -3,6 +3,8 @@
 language: python
 
 python:
+  - 3.3
+  - 3.4
   - 2.7
   - 2.6
 
@@ -27,4 +29,8 @@ matrix:
     - python: 3.3
       env: DJANGO='django>=1.5,<1.6'
     - python: 3.3
+      env: DJANGO='django>=1.6,<1.7'
+    - python: 3.4
+      env: DJANGO='django>=1.5,<1.6'
+    - python: 3.4
       env: DJANGO='django>=1.6,<1.7'
