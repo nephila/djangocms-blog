@@ -3,6 +3,8 @@ from datetime import date
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.translation import activate
+from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
+from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import PostListView, PostDetailView, PostArchiveView, \
     CategoryEntriesView, AuthorEntriesView, TaggedListView
 
@@ -169,3 +171,45 @@ class ViewTest(BaseTest):
         self.assertEqual(list(context['post_list']), [post2])
         self.assertEqual(context['paginator'].count, 2)
         self.assertEqual(context['post_list'][0].title, 'Second post')
+
+    def test_feed(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+        post1.tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        post1.save()
+        post2.tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
+        post2.save()
+        post1.set_current_language('en')
+
+        feed = LatestEntriesFeed()
+        self.assertEqual(list(feed.items()), [post1])
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=False)
+        xml = feed(request)
+        self.assertContains(xml, post1.get_absolute_url())
+        self.assertContains(xml, 'Blog articles on example.com')
+
+        activate('it')
+        post1.set_current_language('it')
+        feed = LatestEntriesFeed()
+        self.assertEqual(list(feed.items()), [post1])
+        request = self.get_page_request(page1, self.user, r'/it/blog/', lang_code='it', edit=False)
+        xml = feed(request)
+        self.assertContains(xml, post1.get_absolute_url())
+        self.assertContains(xml, 'Articoli del blog su example.com')
+
+        feed = TagFeed()
+        self.assertEqual(list(feed.items('tag-2')), [post1])
+        
+    def test_sitemap(self):
+        post1, post2 = self.get_posts()
+        post1.tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        post1.save()
+        post2.tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
+        post2.publish = True
+        post2.save()
+        post1.set_current_language('en')
+        
+        sitemap = BlogSitemap()
+        self.assertEqual(sitemap.items().count(), 2)
+        for item in sitemap.items():
+            self.assertTrue(sitemap.lastmod(item).date(), date.today())
