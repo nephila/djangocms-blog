@@ -39,7 +39,7 @@ Quickstart
 
 Install djangocms-blog::
 
-    pip install djangocms-blog
+    pip install djangocms-blog==0.2b5
 
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
@@ -53,6 +53,9 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         'meta',
         'meta_mixin',
         'djangocms_blog',
+        'cmsplugin_filer_image'
+        'easy_thumbnail'
+        'admin_enhancer'
         ...
     ]
 
@@ -81,6 +84,7 @@ suited for your deployment.
 * Add the following settings to your project::    
 
     SOUTH_MIGRATION_MODULES = {
+        'easy_thumbnails': 'easy_thumbnails.south_migrations',
         'taggit': 'taggit.south_migrations',
     }
     THUMBNAIL_PROCESSORS = (
@@ -94,9 +98,9 @@ suited for your deployment.
 
 * Add the following to your ``urls.py``::
 
-    (r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+    url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
-
+* To start your blog, you need to create a new page from the CMS and hook it to the blog application. Then, go to Advanced setting and select Blog from the Application selector.
 
 Features
 --------
