@@ -1,5 +1,6 @@
-import sys
 from optparse import OptionParser
+import sys
+from tempfile import mkdtemp
 gettext = lambda s: s
 
 try:
@@ -108,7 +109,8 @@ try:
             'easy_thumbnails.processors.autocrop',
             'filer.thumbnail_processors.scale_and_crop_with_subject_location',
             'easy_thumbnails.processors.filters',
-        )
+        ),
+        FILE_UPLOAD_TEMP_DIR=mkdtemp()
     )
 
     from django_nose import NoseTestSuiteRunner
