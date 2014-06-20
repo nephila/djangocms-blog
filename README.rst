@@ -84,6 +84,7 @@ suited for your deployment.
 * Add the following settings to your project::    
 
     SOUTH_MIGRATION_MODULES = {
+        'easy_thumbnails': 'easy_thumbnails.south_migrations',
         'taggit': 'taggit.south_migrations',
     }
     THUMBNAIL_PROCESSORS = (
@@ -91,7 +92,6 @@ suited for your deployment.
         'easy_thumbnails.processors.autocrop',
         'filer.thumbnail_processors.scale_and_crop_with_subject_location',
         'easy_thumbnails.processors.filters',
-        'easy_thumbnails': 'easy_thumbnails.south_migrations'
     )
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
