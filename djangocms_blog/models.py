@@ -143,7 +143,9 @@ class Post(ModelMeta, TranslatableModel):
         return description.strip()
 
     def get_image_full_url(self):
-        return self.make_full_url(self.main_image.url)
+        if self.main_image:
+            return self.make_full_url(self.main_image.url)
+        return ''
 
     def get_tags(self):
         taglist = [tag.name for tag in self.tags.all()]

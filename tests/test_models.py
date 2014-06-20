@@ -19,6 +19,8 @@ class ModelsTest(BaseTest):
     def test_model_attributes(self):
         post = self._get_post(self.data['en'][0])
         post = self._get_post(self.data['it'][0], post, 'it')
+        post.main_image = self.img
+        post.save()
         post.set_current_language('en')
         meta_en = post.as_meta()
         self.assertEqual(meta_en.og_type, settings.BLOG_FB_TYPE)
@@ -51,6 +53,7 @@ class ModelsTest(BaseTest):
         self.assertNotEqual(url_it, url_en)
 
         self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
+        self.assertEqual(post.get_image_full_url(), 'http://example.com%s' % post.main_image.url)
 
         self.assertEqual(post.thumbnail_options(), settings.BLOG_IMAGE_THUMBNAIL_SIZE)
         self.assertEqual(post.full_image_options(), settings.BLOG_IMAGE_FULL_SIZE)

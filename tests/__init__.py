@@ -2,12 +2,18 @@
 """
 Tests for `djangocms_blog` module.
 """
+import os
+
 from cms.utils.i18n import get_language_list
 from cmsplugin_filer_image.models import ThumbnailOption
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files import File as DjangoFile
 from django.http import SimpleCookie
 from django.test import TestCase, RequestFactory
 from django.utils.translation import activate
+from filer.models import File, Image
+from PIL import Image as PilImage, ImageChops, ImageDraw
 from six import StringIO
 
 from djangocms_blog.models import BlogCategory, Post
@@ -66,6 +72,15 @@ class BaseTest(TestCase):
         self.thumb_2 = ThumbnailOption.objects.create(
             name='main', width=200, height=200, crop=False, upscale=False
         )
+        img = create_image()
+        self.image_name = 'test_file.jpg'
+        self.filename = os.path.join(settings.FILE_UPLOAD_TEMP_DIR,
+                                     self.image_name)
+        img.save(self.filename, 'JPEG')
+        file_obj = DjangoFile(open(self.filename, 'rb'), name=self.image_name)
+        self.img = Image.objects.create(owner=self.user,
+                                        original_filename=self.image_name,
+                                        file=file_obj)
 
     def _get_post(self, data, post=None, lang='en'):
         if not post:
@@ -84,6 +99,11 @@ class BaseTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         User.objects.all().delete()
+    
+    def tearDown(self):
+        os.remove(self.filename)
+        for f in File.objects.all():
+            f.delete()
 
     def get_pages(self):
         from cms.api import create_page, create_title
@@ -127,9 +147,20 @@ class BaseTest(TestCase):
         post1 = self._get_post(self.data['en'][0])
         post1 = self._get_post(self.data['it'][0], post1, 'it')
         post1.publish = True
+        post1.main_image = self.img
         post1.save()
         post1.set_current_language('en')
         post2 = self._get_post(self.data['en'][1])
         post2 = self._get_post(self.data['it'][1], post2, 'it')
         post2.set_current_language('en')
+        post2.main_image = self.img
         return post1, post2
+
+
+def create_image(mode='RGB', size=(800, 600)):
+    image = PilImage.new(mode, size)
+    draw = ImageDraw.Draw(image)
+    x_bit, y_bit = size[0] // 10, size[1] // 10
+    draw.rectangle((x_bit, y_bit * 2, x_bit * 7, y_bit * 3), 'red')
+    draw.rectangle((x_bit * 2, y_bit, x_bit * 3, y_bit * 8), 'red')
+    return image
