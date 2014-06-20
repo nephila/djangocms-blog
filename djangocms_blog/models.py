@@ -114,7 +114,7 @@ class Post(ModelMeta, TranslatableModel):
         'gplus_description': 'get_description',
         'keywords': 'get_keywords',
         'locale': None,
-        'image': 'get_image_url',
+        'image': 'get_image_full_url',
         'object_type': settings.BLOG_TYPE,
         'og_type': settings.BLOG_FB_TYPE,
         'og_app_id': settings.BLOG_FB_APPID,
@@ -142,8 +142,8 @@ class Post(ModelMeta, TranslatableModel):
             description = self.safe_translation_getter('abstract', any_language=True)
         return description.strip()
 
-    def get_image_url(self):
-        return self.main_image
+    def get_image_full_url(self):
+        return self.make_full_url(self.main_image.url)
 
     def get_tags(self):
         taglist = [tag.name for tag in self.tags.all()]
@@ -189,11 +189,7 @@ class Post(ModelMeta, TranslatableModel):
             return settings.BLOG_IMAGE_FULL_SIZE
 
     def get_full_url(self):
-        s = Site.objects.get_current()
-        if s.domain.find('http') > -1:
-            return "%s%s" % (s.domain, self.get_absolute_url())
-        else:
-            return "http://%s%s" % (s.domain, self.get_absolute_url())
+        return self.make_full_url(self.get_absolute_url())
 
 
 class LatestPostsPlugin(CMSPlugin):
