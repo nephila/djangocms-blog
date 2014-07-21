@@ -53,9 +53,9 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         'meta',
         'meta_mixin',
         'djangocms_blog',
-        'cmsplugin_filer_image'
-        'easy_thumbnail'
-        'admin_enhancer'
+        'cmsplugin_filer_image',
+        'easy_thumbnails',
+        'admin_enhancer',
         ...
     ]
 
