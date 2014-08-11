@@ -100,7 +100,17 @@ suited for your deployment.
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
-* To start your blog, you need to create a new page from the CMS and hook it to the blog application. Then, go to Advanced setting and select Blog from the Application selector.
+* To start your blog, you need to create a new page from the CMS and hook it to the blog application.
+Then, go to Advanced setting and select Blog from the Application selector.
+
+Templates
++++++++++
+
+To ease the template customisations a ``djangocms_blog/base.html`` template is used by all the blog templates;
+the templates itself extends a ``base.html`` template; content is pulled in the ``content`` block.
+If you need to define a different base template, or if your base template does not defines a ``content`` block,
+copy in your template directory ``djangocms_blog/base.html`` and customise it according to your
+needs; the other application templates will use the newly created template and will ignore the bundled one.
 
 Features
 --------
