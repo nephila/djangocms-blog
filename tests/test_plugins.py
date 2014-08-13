@@ -18,7 +18,7 @@ class PluginTest(BaseTest):
         post1.tags.add('tag 1')
         post1.publish = True
         post1.save()
-        ph = page1.placeholders.get(slot='placeholder')
+        ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
@@ -39,7 +39,7 @@ class PluginTest(BaseTest):
         post1.save()
         post2.publish = True
         post2.save()
-        ph = page1.placeholders.get(slot='placeholder')
+        ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en')
         plugin.authors.add(self.user)
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
@@ -58,7 +58,7 @@ class PluginTest(BaseTest):
         post2.tags.add('test tag', 'another tag')
         post2.publish = True
         post2.save()
-        ph = page1.placeholders.get(slot='placeholder')
+        ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogTagsPlugin', language='en')
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         context = RequestContext(request, {})
@@ -79,7 +79,7 @@ class PluginTest(BaseTest):
         post1.save()
         post2.publish = True
         post2.save()
-        ph = page1.placeholders.get(slot='placeholder')
+        ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogCategoryPlugin', language='en')
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         plugin_class = plugin.get_plugin_class_instance()
@@ -94,7 +94,7 @@ class PluginTest(BaseTest):
         post1.save()
         post2.publish = True
         post2.save()
-        ph = page1.placeholders.get(slot='placeholder')
+        ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogArchivePlugin', language='en')
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         plugin_class = plugin.get_plugin_class_instance()

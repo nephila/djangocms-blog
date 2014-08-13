@@ -107,8 +107,8 @@ class BaseTest(TestCase):
 
     def get_pages(self):
         from cms.api import create_page, create_title
-        page = create_page(u'page one', 'page.html', language='en')
-        page_2 = create_page(u'page two', 'page.html', language='en')
+        page = create_page(u'page one', 'fullwidth.html', language='en')
+        page_2 = create_page(u'page two', 'fullwidth.html', language='en')
         create_title(language='fr', title=u'page un', page=page)
         create_title(language='it', title=u'pagina uno', page=page)
         for lang in self.languages:
