@@ -3,9 +3,9 @@ try:
     from collections import Counter
 except ImportError:
     from .compat import Counter
-import datetime
 
 from django.db import models
+from django.utils.timezone import now
 from parler.managers import TranslationManager
 
 
@@ -84,7 +84,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
         queryset = self.published_future(queryset)
         if self.start_date_field:
             return queryset.filter(
-                **{"%s__lte" % self.start_date_field: datetime.datetime.now()})
+                **{"%s__lte" % self.start_date_field: now()})
         else:
             return queryset
 
@@ -93,7 +93,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             queryset = self.get_queryset().all()
         if self.end_date_field:
             qfilter = (
-                models.Q(**{"%s__gte" % self.end_date_field: datetime.datetime.now()})
+                models.Q(**{"%s__gte" % self.end_date_field: now()})
                 | models.Q(**{"%s__isnull" % self.end_date_field: True})
             )
             queryset = queryset.filter(qfilter)
@@ -104,7 +104,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             queryset = self.get_queryset().all()
         if self.end_date_field:
             qfilter = (
-                models.Q(**{"%s__lte" % self.end_date_field: datetime.datetime.now()})
+                models.Q(**{"%s__lte" % self.end_date_field: now()})
                 | models.Q(**{"%s__isnull" % self.end_date_field: False})
             )
             queryset = queryset.filter(qfilter)
@@ -127,5 +127,5 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
         date_counter = Counter(dates)
         dates = set(dates)
         dates = sorted(dates, reverse=True)
-        return [{'date': datetime.date(year=year, month=month, day=1),
+        return [{'date': now().replace(year=year, month=month, day=1),
                  'count': date_counter[year, month]} for year, month in dates]

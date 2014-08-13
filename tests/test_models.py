@@ -2,8 +2,8 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
-from datetime import date
 from django.core.urlresolvers import reverse
+from django.utils.timezone import now
 import parler
 from taggit.models import Tag
 
@@ -80,7 +80,7 @@ class ModelsTest(BaseTest):
         # default queryset, published and unpublished posts
         months = Post.objects.get_months()
         for data in months:
-            self.assertEqual(data['date'], date(year=date.today().year, month=date.today().month, day=1))
+            self.assertEqual(data['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
             self.assertEqual(data['count'], 2)
 
         # custom queryset, only published
@@ -88,13 +88,13 @@ class ModelsTest(BaseTest):
         post1.save()
         months = Post.objects.get_months(Post.objects.published())
         for data in months:
-            self.assertEqual(data['date'], date(year=date.today().year, month=date.today().month, day=1))
+            self.assertEqual(data['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
             self.assertEqual(data['count'], 1)
 
         self.assertEqual(len(Post.objects.available()), 1)
 
         # If post is published but publishing date is in the future
-        post2.date_published = date(year=date.today().year+1, month=date.today().month, day=1)
+        post2.date_published = now().replace(year=now().year+1, month=now().month, day=1)
         post2.publish = True
         post2.save()
         self.assertEqual(len(Post.objects.available()), 2)
@@ -102,8 +102,8 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.archived()), 0)
 
         # If post is published but end publishing date is in the past
-        post2.date_published = date(year=date.today().year-2, month=date.today().month, day=1)
-        post2.date_published_end = date(year=date.today().year-1, month=date.today().month, day=1)
+        post2.date_published = now().replace(year=now().year-2, month=now().month, day=1)
+        post2.date_published_end = now().replace(year=now().year-1, month=now().month, day=1)
         post2.save()
         self.assertEqual(len(Post.objects.available()), 2)
         self.assertEqual(len(Post.objects.published()), 1)

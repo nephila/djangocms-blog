@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from datetime import date
 import re
 from cms.api import add_plugin
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.utils.timezone import now
 from taggit.models import Tag
 
 from . import BaseTest
@@ -99,9 +99,11 @@ class PluginTest(BaseTest):
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         plugin_class = plugin.get_plugin_class_instance()
         context = plugin_class.render(RequestContext(request, {}), plugin, ph)
-        self.assertEqual(context['dates'][0], {'date': date(year=date.today().year, month=date.today().month, day=1), 'count': 2})
+        self.assertEqual(context['dates'][0]['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
+        self.assertEqual(context['dates'][0]['count'], 2)
 
         post2.publish = False
         post2.save()
         context = plugin_class.render(RequestContext(request, {}), plugin, ph)
-        self.assertEqual(context['dates'][0], {'date': date(year=date.today().year, month=date.today().month, day=1), 'count': 1})
+        self.assertEqual(context['dates'][0]['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
+        self.assertEqual(context['dates'][0]['count'], 1)

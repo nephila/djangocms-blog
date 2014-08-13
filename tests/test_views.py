@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from datetime import date
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.translation import activate
+from django.utils.timezone import now
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.sitemaps import BlogSitemap
-from djangocms_blog.views import PostListView, PostDetailView, PostArchiveView, \
-    CategoryEntriesView, AuthorEntriesView, TaggedListView
+from djangocms_blog.views import (PostListView, PostDetailView,
+                                  PostArchiveView, CategoryEntriesView,
+                                  AuthorEntriesView, TaggedListView)
 
 from . import BaseTest
 
@@ -89,7 +90,7 @@ class ViewTest(BaseTest):
         activate('en')
         view_obj = PostArchiveView()
         view_obj.request = request
-        view_obj.kwargs = {'year': date.today().year, 'month': date.today().month}
+        view_obj.kwargs = {'year': now().year, 'month': now().month}
 
         # One post only, anonymous request
         qs = view_obj.get_queryset()
@@ -98,7 +99,7 @@ class ViewTest(BaseTest):
 
         view_obj.object_list = qs
         context = view_obj.get_context_data(object_list=view_obj.object_list)
-        self.assertEqual(context['archive_date'], date(year=date.today().year, month=date.today().month, day=1))
+        self.assertEqual(context['archive_date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
         
     def test_category_entries_view(self):
         page1, page2 = self.get_pages()
@@ -212,4 +213,4 @@ class ViewTest(BaseTest):
         sitemap = BlogSitemap()
         self.assertEqual(sitemap.items().count(), 2)
         for item in sitemap.items():
-            self.assertTrue(sitemap.lastmod(item).date(), date.today())
+            self.assertTrue(sitemap.lastmod(item).date(), now().today())

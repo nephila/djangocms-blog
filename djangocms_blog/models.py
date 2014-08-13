@@ -2,7 +2,6 @@
 from cms.models import PlaceholderField, CMSPlugin
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone

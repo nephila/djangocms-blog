@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import datetime
 from django.utils.translation import get_language
+from django.utils.timezone import now
 from django.contrib.auth.models import User
 from django.core.urlresolvers import resolve
 from django.views.generic import ListView, DetailView
@@ -76,7 +76,7 @@ class PostArchiveView(BaseBlogView, ListView):
         kwargs['month'] = int(self.kwargs.get('month')) if 'month' in self.kwargs else None
         kwargs['year'] = int(self.kwargs.get('year')) if 'year' in self.kwargs else None
         if kwargs['year']:
-            kwargs['archive_date'] = datetime.date(kwargs['year'], kwargs['month'] or 1, 1)
+            kwargs['archive_date'] = now().replace(kwargs['year'], kwargs['month'] or 1, 1)
         return super(PostArchiveView, self).get_context_data(**kwargs)
 
 
