@@ -101,7 +101,7 @@ suited for your deployment.
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
 * To start your blog, you need to create a new page from the CMS and hook it to the blog application.
-Then, go to Advanced setting and select Blog from the Application selector.
+* Then, go to Advanced setting and select Blog from the Application selector.
 
 Templates
 +++++++++
