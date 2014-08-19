@@ -46,16 +46,16 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
     INSTALLED_APPS = [
         ...
         'filer',
+        'easy_thumbnails',
+        'cmsplugin_filer_image',
         'parler',
         'taggit',
-        'django_select2',
         'taggit_autosuggest',
+        'django_select2',
         'meta',
         'meta_mixin',
-        'djangocms_blog',
-        'cmsplugin_filer_image',
-        'easy_thumbnails',
         'admin_enhancer',
+        'djangocms_blog',
         ...
     ]
 
