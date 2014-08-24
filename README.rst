@@ -39,7 +39,7 @@ Quickstart
 
 Install djangocms-blog::
 
-    pip install djangocms-blog==0.2b5
+    pip install djangocms-blog==0.2c1
 
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
@@ -73,6 +73,7 @@ Please, refer to each application documentation on details.
 
 * django-filer: http://django-filer.readthedocs.org
 * django-meta: https://github.com/nephila/django-meta#installation
+* django-parler: http://django-parler.readthedocs.org/en/latest/quickstart.html#configuration
 * django-taggit-autosuggest: https://bitbucket.org/fabian/django-taggit-autosuggest
 
 Quick hint
@@ -96,12 +97,26 @@ suited for your deployment.
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
 
+* Configure parler according to your languages::
+
+    PARLER_LANGUAGES = {
+        1: (
+            {'code': 'en',},
+            {'code': 'it',},
+            {'code': 'fr',},
+        ),
+    }
+
 * Add the following to your ``urls.py``::
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
-* To start your blog, you need to create a new page from the CMS and hook it to the blog application.
-* Then, go to Advanced setting and select Blog from the Application selector.
+* To start your blog create a new page from the CMS and hook it to the blog application:
+
+ * Create a new django CMS page
+ * Go to Advanced settings and sele select Blog from the Application selector;
+ * Eventually customise the Application instance name;
+ * Restart the project instance to properly load blog urls.
 
 Templates
 +++++++++
