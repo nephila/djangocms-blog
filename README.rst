@@ -2,6 +2,7 @@
 djangocms-blog
 ==============
 
+
 .. image:: https://pypip.in/v/djangocms-blog/badge.png
         :target: https://pypi.python.org/pypi/djangocms-blog
         :alt: Latest PyPI version
@@ -17,6 +18,7 @@ djangocms-blog
 .. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png?branch=master
         :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
         :alt: Test coverage
+
 
 
 A djangoCMS 3 blog application.
