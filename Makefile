@@ -24,18 +24,18 @@ clean-pyc:
 
 lint:
 	flake8 djangocms_blog
+	djangocms-helper djangocms_blog pyflakes --cms
 
 test:
-	python runtests.py test
+	djangocms-helper djangocms_blog test --cms --nose
 
 test-all:
 	tox
 
 coverage:
-	coverage run --source djangocms-blog setup.py test
+	coverage erase
+	coverage run `which djangocms-helper` djangocms_blog test --cms --nose
 	coverage report -m
-	coverage html
-	open htmlcov/index.html
 
 release: clean
 	python setup.py sdist upload

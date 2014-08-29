@@ -3,7 +3,9 @@ from tempfile import mkdtemp
 gettext = lambda s: s
 
 HELPER_SETTINGS = {
-        'NOSE_ARGS':['-s'],
+        'NOSE_ARGS':[
+            '-s',
+        ],
         'ROOT_URLCONF':'tests.test_utils.urls',
         'INSTALLED_APPS':[
             'django_nose',

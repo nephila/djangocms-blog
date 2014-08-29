@@ -2,17 +2,21 @@
 djangocms-blog
 ==============
 
-.. image:: https://badge.fury.io/py/djangocms-blog.png
-        :target: http://badge.fury.io/py/djangocms-blog
-
-.. image:: https://travis-ci.org/nephila/djangocms-blog.svg?branch=develop
-    :target: https://travis-ci.org/nephila/djangocms-blog
+.. image:: https://pypip.in/v/djangocms-blog/badge.png
+        :target: https://pypi.python.org/pypi/djangocms-blog
+        :alt: Latest PyPI version
+    
+.. image:: https://travis-ci.org/nephila/djangocms-blog.png?branch=master
+        :target: https://travis-ci.org/nephila/djangocms-blog
+        :alt: Latest Travis CI build status
 
 .. image:: https://pypip.in/d/djangocms-blog/badge.png
         :target: https://pypi.python.org/pypi/djangocms-blog
+        :alt: Monthly downloads
 
-.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png?branch=develop
-        :target: https://coveralls.io/r/nephila/djangocms-blog?branch=develop
+.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png?branch=master
+        :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
+        :alt: Test coverage
 
 
 A djangoCMS 3 blog application.
@@ -112,11 +116,12 @@ suited for your deployment.
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
 * To start your blog create a new page from the CMS and hook it to the blog application:
-
+ 
   * Create a new django CMS page
   * Go to Advanced settings and sele select Blog from the Application selector;
   * Eventually customise the Application instance name;
   * Restart the project instance to properly load blog urls.
+
 
 Templates
 +++++++++
