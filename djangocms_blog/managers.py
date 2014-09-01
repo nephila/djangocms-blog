@@ -6,7 +6,7 @@ except ImportError:
 
 from django.db import models
 from django.utils.timezone import now
-from parler.managers import TranslationManager
+from parler.managers import TranslationManager, TranslatableQuerySet
 
 
 class TaggedFilterItem(object):
@@ -68,29 +68,21 @@ class TaggedFilterItem(object):
         return sorted(tags, key=lambda x: -x.count)
 
 
-class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
-    use_for_related_fields = True
+class GenericDateQuerySet(TranslatableQuerySet):
     start_date_field = 'date_published'
     end_date_field = 'date_published_end'
     publish_field = 'publish'
 
-    def get_queryset(self, *args, **kwargs):
-        try:
-            return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
-        except AttributeError:
-            return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
-
-    def published(self, queryset=None):
-        queryset = self.published_future(queryset)
+    def published(self):
+        queryset = self.published_future()
         if self.start_date_field:
             return queryset.filter(
                 **{'%s__lte' % self.start_date_field: now()})
         else:
             return queryset
 
-    def published_future(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset().all()
+    def published_future(self):
+        queryset = self
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__gte' % self.end_date_field: now()})
@@ -99,9 +91,8 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
-    def archived(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset().all()
+    def archived(self):
+        queryset = self
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__lte' % self.end_date_field: now()})
@@ -110,13 +101,41 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
-    def available(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset().all()
-        return queryset.filter(**{self.publish_field: True})
+    def available(self):
+        return self.filter(**{self.publish_field: True})
 
     def filter_by_language(self, language):
-        return self.get_queryset().active_translations(language_code=language)
+        return self.active_translations(language_code=language)
+
+
+class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
+    use_for_related_fields = True
+
+    queryset_class = GenericDateQuerySet
+
+    def get_queryset(self, *args, **kwargs):
+        try:
+            return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
+        except AttributeError:
+            return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
+
+    def get_query_set(self, *args, **kwargs):
+        return self.get_queryset(*args, **kwargs)
+
+    def published(self):
+        return self.get_queryset().published()
+
+    def available(self):
+        return self.get_queryset().available()
+
+    def archived(self):
+        return self.get_queryset().archived()
+
+    def published_future(self):
+        return self.get_queryset().published_future()
+
+    def filter_by_language(self, language):
+        return self.get_queryset().filter_by_language(language)
 
     def get_months(self, queryset=None):
         """
@@ -124,7 +143,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
         """
         if queryset is None:
             queryset = self.get_queryset()
-        dates = queryset.values_list(self.start_date_field, flat=True)
+        dates = queryset.values_list(queryset.start_date_field, flat=True)
         dates = [(x.year, x.month) for x in dates]
         date_counter = Counter(dates)
         dates = set(dates)
