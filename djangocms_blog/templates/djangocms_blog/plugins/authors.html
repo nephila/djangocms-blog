@@ -3,7 +3,7 @@
     <h3>{% trans "Authors" %}</h3>
 	<ul class="blog-authors">
 		{% for author in instance.get_authors %}
-        <li><a href="{% url 'djangocms_blog:posts-author' author.username %}">
+        <li><a href="{% url 'djangocms_blog:posts-author' author.get_username %}">
 		    {{ author.get_full_name }}
             <span>(
                 {% if author.count > 0 %}

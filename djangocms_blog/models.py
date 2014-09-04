@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from cms.models import PlaceholderField, CMSPlugin
 from cmsplugin_filer_image.models import ThumbnailOption
-from django.contrib.auth.models import User
+from django.conf import settings as dj_settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -62,7 +62,8 @@ class Post(ModelMeta, TranslatableModel):
     """
     Blog post
     """
-    author = models.ForeignKey(User, verbose_name=_('Author'), null=True, blank=True,
+    author = models.ForeignKey(dj_settings.AUTH_USER_MODEL,
+                               verbose_name=_('Author'), null=True, blank=True,
                                related_name='djangocms_blog_post_author')
 
     date_created = models.DateTimeField(auto_now_add=True)
@@ -217,11 +218,14 @@ class LatestPostsPlugin(CMSPlugin):
 
 
 class AuthorEntriesPlugin(CMSPlugin):
-    authors = models.ManyToManyField(User, verbose_name=_('Authors'),
-                                     limit_choices_to={'djangocms_blog_post_author__publish': True}
-                                     )
-    latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
-                                       help_text=_('The number of author articles to be displayed.'))
+    authors = models.ManyToManyField(
+        dj_settings.AUTH_USER_MODEL, verbose_name=_('Authors'),
+        limit_choices_to={'djangocms_blog_post_author__publish': True}
+    )
+    latest_posts = models.IntegerField(
+        _(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+        help_text=_('The number of author articles to be displayed.')
+    )
 
     def __unicode__(self):
         return u"%s latest articles by author" % self.latest_posts

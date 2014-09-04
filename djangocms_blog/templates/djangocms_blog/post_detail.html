@@ -13,7 +13,7 @@
 		{% block blog_meta %}
 			<ul class="post-detail">
 	            <li>
-	                {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.username %}">{{ post.author.get_full_name }}</a>
+	                {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{{ post.author.get_full_name }}</a>
 	            </li>
 	            <li>
 	                {{ post.date_published|date:"M d, Y" }}
