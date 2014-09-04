@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
-from django.conf import settings as dj_settings
 from django.core.urlresolvers import resolve
 from django.utils.timezone import now
 from django.utils.translation import get_language
