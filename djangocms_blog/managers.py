@@ -48,7 +48,7 @@ class TaggedFilterItem(object):
 
     def tag_list_slug(self, other_model=None, queryset=None):
         queryset = self.tag_list(other_model, queryset)
-        return queryset.values("slug")
+        return queryset.values('slug')
 
     def tag_cloud(self, other_model=None, queryset=None, published=True):
         from taggit.models import TaggedItem
@@ -70,9 +70,9 @@ class TaggedFilterItem(object):
 
 class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
     use_for_related_fields = True
-    start_date_field = "date_published"
-    end_date_field = "date_published_end"
-    publish_field = "publish"
+    start_date_field = 'date_published'
+    end_date_field = 'date_published_end'
+    publish_field = 'publish'
 
     def get_queryset(self, *args, **kwargs):
         try:
@@ -84,7 +84,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
         queryset = self.published_future(queryset)
         if self.start_date_field:
             return queryset.filter(
-                **{"%s__lte" % self.start_date_field: now()})
+                **{'%s__lte' % self.start_date_field: now()})
         else:
             return queryset
 
@@ -93,8 +93,8 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             queryset = self.get_queryset().all()
         if self.end_date_field:
             qfilter = (
-                models.Q(**{"%s__gte" % self.end_date_field: now()})
-                | models.Q(**{"%s__isnull" % self.end_date_field: True})
+                models.Q(**{'%s__gte' % self.end_date_field: now()})
+                | models.Q(**{'%s__isnull' % self.end_date_field: True})
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
@@ -104,8 +104,8 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             queryset = self.get_queryset().all()
         if self.end_date_field:
             qfilter = (
-                models.Q(**{"%s__lte" % self.end_date_field: now()})
-                | models.Q(**{"%s__isnull" % self.end_date_field: False})
+                models.Q(**{'%s__lte' % self.end_date_field: now()})
+                | models.Q(**{'%s__isnull' % self.end_date_field: False})
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
@@ -119,7 +119,9 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
         return self.get_queryset().active_translations(language_code=language)
 
     def get_months(self, queryset=None):
-        """Get months with aggregate count (how much posts is in the month). Results are ordered by date."""
+        """
+        Get months with aggregate count (how much posts is in the month). Results are ordered by date.
+        """
         if queryset is None:
             queryset = self.get_queryset()
         dates = queryset.values_list(self.start_date_field, flat=True)

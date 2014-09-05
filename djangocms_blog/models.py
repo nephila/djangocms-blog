@@ -101,7 +101,7 @@ class Post(ModelMeta, TranslatableModel):
         post_text=HTMLField(_('Text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
-    content = PlaceholderField("post_content")
+    content = PlaceholderField('post_content')
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
@@ -134,7 +134,7 @@ class Post(ModelMeta, TranslatableModel):
     }
 
     def get_keywords(self):
-        return self.safe_translation_getter('meta_keywords').strip().split(",")
+        return self.safe_translation_getter('meta_keywords').strip().split(',')
 
     def get_description(self):
         description = self.safe_translation_getter('meta_description', any_language=True)
@@ -149,7 +149,7 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_tags(self):
         taglist = [tag.name for tag in self.tags.all()]
-        return ",".join(taglist)
+        return ','.join(taglist)
 
     def get_author(self):
         return self.author
@@ -157,7 +157,7 @@ class Post(ModelMeta, TranslatableModel):
     class Meta:
         verbose_name = _('blog article')
         verbose_name_plural = _('blog articles')
-        ordering = ("-date_published", "-date_created")
+        ordering = ('-date_published', '-date_created')
         get_latest_by = 'date_published'
 
     def __unicode__(self):
@@ -204,7 +204,7 @@ class LatestPostsPlugin(CMSPlugin):
                                         help_text=_('Show only the blog articles tagged with chosen categories.'))
 
     def __unicode__(self):
-        return u"%s latest articles by tag" % self.latest_posts
+        return u'%s latest articles by tag' % self.latest_posts
 
     def copy_relations(self, oldinstance):
         self.tags = oldinstance.tags.all()
@@ -228,7 +228,7 @@ class AuthorEntriesPlugin(CMSPlugin):
     )
 
     def __unicode__(self):
-        return u"%s latest articles by author" % self.latest_posts
+        return u'%s latest articles by author' % self.latest_posts
 
     def copy_relations(self, oldinstance):
         self.authors = oldinstance.authors.all()
