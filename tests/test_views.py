@@ -3,6 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.translation import activate
 from django.utils.timezone import now
+from djangocms_blog.models import Post
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import (PostListView, PostDetailView,
@@ -132,7 +133,7 @@ class ViewTest(BaseTest):
         activate('en')
         view_obj = AuthorEntriesView()
         view_obj.request = request
-        view_obj.kwargs = {'username': 'admin'}
+        view_obj.kwargs = {'username': self.user.get_username()}
         qs = view_obj.get_queryset()
         self.assertEqual(qs.count(), 2)
         self.assertEqual(set(qs), set([post1, post2]))

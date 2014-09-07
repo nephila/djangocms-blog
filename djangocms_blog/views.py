@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.utils.translation import get_language
-from django.utils.timezone import now
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import resolve
+from django.utils.timezone import now
+from django.utils.translation import get_language
 from django.views.generic import ListView, DetailView
 
 from parler.views import ViewUrlMixin, TranslatableSlugMixin
@@ -10,6 +10,8 @@ from parler.views import ViewUrlMixin, TranslatableSlugMixin
 from .models import Post, BlogCategory, BLOG_CURRENT_POST_IDENTIFIER
 from .settings import (BLOG_PAGINATION, BLOG_POSTS_LIST_TRUNCWORDS_COUNT,
                        BLOG_USE_PLACEHOLDER)
+
+User = get_user_model()
 
 
 class BaseBlogView(ViewUrlMixin):
@@ -29,7 +31,7 @@ class BaseBlogView(ViewUrlMixin):
 class PostListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = "djangocms_blog/post_list.html"
+    template_name = 'djangocms_blog/post_list.html'
     paginate_by = BLOG_PAGINATION
     view_url_name = 'djangocms_blog:posts-latest'
 
@@ -42,7 +44,7 @@ class PostListView(BaseBlogView, ListView):
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     model = Post
     context_object_name = 'post'
-    template_name = "djangocms_blog/post_detail.html"
+    template_name = 'djangocms_blog/post_detail.html'
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
 
@@ -57,7 +59,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
 class PostArchiveView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = "djangocms_blog/post_list.html"
+    template_name = 'djangocms_blog/post_list.html'
     date_field = 'date_published'
     allow_empty = True
     allow_future = True
@@ -67,9 +69,9 @@ class PostArchiveView(BaseBlogView, ListView):
     def get_queryset(self):
         qs = super(PostArchiveView, self).get_queryset()
         if 'month' in self.kwargs:
-            qs = qs.filter(**{"%s__month" % self.date_field: self.kwargs['month']})
+            qs = qs.filter(**{'%s__month' % self.date_field: self.kwargs['month']})
         if 'year' in self.kwargs:
-            qs = qs.filter(**{"%s__year" % self.date_field: self.kwargs['year']})
+            qs = qs.filter(**{'%s__year' % self.date_field: self.kwargs['year']})
         return qs
 
     def get_context_data(self, **kwargs):
@@ -83,7 +85,7 @@ class PostArchiveView(BaseBlogView, ListView):
 class TaggedListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = "djangocms_blog/post_list.html"
+    template_name = 'djangocms_blog/post_list.html'
     paginate_by = BLOG_PAGINATION
     view_url_name = 'djangocms_blog:posts-tagged'
 
@@ -100,25 +102,25 @@ class TaggedListView(BaseBlogView, ListView):
 class AuthorEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = "djangocms_blog/post_list.html"
+    template_name = 'djangocms_blog/post_list.html'
     paginate_by = BLOG_PAGINATION
     view_url_name = 'djangocms_blog:posts-authors'
 
     def get_queryset(self):
         qs = super(AuthorEntriesView, self).get_queryset()
         if 'username' in self.kwargs:
-            qs = qs.filter(author__username=self.kwargs['username'])
+            qs = qs.filter(**{'author__%s' % User.USERNAME_FIELD: self.kwargs['username']})
         return qs
 
     def get_context_data(self, **kwargs):
-        kwargs['author'] = User.objects.get(username=self.kwargs.get('username'))
+        kwargs['author'] = User.objects.get(**{User.USERNAME_FIELD: self.kwargs.get('username')})
         return super(AuthorEntriesView, self).get_context_data(**kwargs)
 
 
 class CategoryEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = "djangocms_blog/post_list.html"
+    template_name = 'djangocms_blog/post_list.html'
     _category = None
     paginate_by = BLOG_PAGINATION
     view_url_name = 'djangocms_blog:posts-category'

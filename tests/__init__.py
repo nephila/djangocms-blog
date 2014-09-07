@@ -7,16 +7,19 @@ import os
 from cms.utils.i18n import get_language_list
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.files import File as DjangoFile
 from django.http import SimpleCookie
 from django.test import TestCase, RequestFactory
 from django.utils.translation import activate
 from filer.models import File, Image
-from PIL import Image as PilImage, ImageChops, ImageDraw
+from PIL import Image as PilImage, ImageDraw
 from six import StringIO
 
 from djangocms_blog.models import BlogCategory, Post
+from djangocms_helper.utils import create_user
+
+User = get_user_model()
 
 
 class BaseTest(TestCase):
@@ -52,9 +55,9 @@ class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.request_factory = RequestFactory()
-        cls.user = User.objects.create(username='admin', is_staff=True, is_superuser=True)
-        cls.user_staff = User.objects.create(username='staff', is_staff=True)
-        cls.user_normal = User.objects.create(username='normal')
+        cls.user = create_user('admin', 'admin@admin.com', 'admin', is_staff=True, is_superuser=True)
+        cls.user_staff = create_user('staff', 'staff@admin.com', 'staff', is_staff=True)
+        cls.user_normal = create_user('normal', 'normal@admin.com', 'normal')
 
     def setUp(self):
         activate('en')

@@ -45,7 +45,7 @@ class PluginTest(BaseTest):
         request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         context = RequestContext(request, {})
         rendered = plugin.render_plugin(context, ph)
-        self.assertTrue(rendered.find(reverse('djangocms_blog:posts-author', kwargs={'username': self.user.username})) > -1)
+        self.assertTrue(rendered.find(reverse('djangocms_blog:posts-author', kwargs={'username': self.user.get_username()})) > -1)
         self.assertTrue(rendered.find('2 articles') > -1)
 
     def test_plugin_tags(self):

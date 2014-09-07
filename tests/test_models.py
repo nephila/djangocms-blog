@@ -2,6 +2,7 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 import parler
@@ -115,8 +116,12 @@ class ModelsTest(BaseTest):
 
         # No fallback
         parler.appsettings.PARLER_LANGUAGES['default']['hide_untranslated'] = True
+        for index, lang in enumerate(parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk]):
+            parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk][index]['hide_untranslated'] = True
         self.assertEqual(len(Post.objects.filter_by_language('it')), 1)
         parler.appsettings.PARLER_LANGUAGES['default']['hide_untranslated'] = False
+        for index, lang in enumerate(parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk]):
+            parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk][index]['hide_untranslated'] = False
 
     def test_tag_cloud(self):
         post1 = self._get_post(self.data['en'][0])

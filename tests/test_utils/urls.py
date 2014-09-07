@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^media/cms/(?P<path>.*)$', 'django.views.static.serve',
        {'document_root': get_cms_setting('MEDIA_ROOT'), 'show_indexes': True}),
     url(r'^jsi18n/(?P<packages>\S+?)/$', 'django.views.i18n.javascript_catalog'),
+    url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 )
 
 urlpatterns += staticfiles_urlpatterns()
