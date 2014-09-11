@@ -74,6 +74,10 @@ class ModelsTest(BaseTest):
             'upscale': False
         })
 
+        post.set_current_language('en')
+        post.meta_title = 'meta title'
+        self.assertEqual(post.get_title(), 'meta title')
+
     def test_manager(self):
         post1 = self._get_post(self.data['en'][0])
         post2 = self._get_post(self.data['en'][1])
