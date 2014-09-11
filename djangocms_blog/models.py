@@ -98,6 +98,10 @@ class Post(ModelMeta, TranslatableModel):
                                           blank=True, default=''),
         meta_keywords=models.TextField(verbose_name=_(u'Post meta keywords'),
                                        blank=True, default=''),
+        meta_title=models.CharField(verbose_name=_(u'Post meta title'),
+                                    help_text=_(u'used in title tag and social sharing'),
+                                    max_length=255,
+                                    blank=True, default=''),
         post_text=HTMLField(_('Text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
@@ -107,7 +111,7 @@ class Post(ModelMeta, TranslatableModel):
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
 
     _metadata = {
-        'title': 'title',
+        'title': 'get_title',
         'description': 'get_description',
         'og_description': 'get_description',
         'twitter_description': 'get_description',
@@ -132,6 +136,12 @@ class Post(ModelMeta, TranslatableModel):
         'tag': 'get_tags',
         'url': 'get_absolute_url',
     }
+
+    def get_title(self):
+        title = self.safe_translation_getter('meta_title', any_language=True)
+        if not title:
+            title = self.safe_translation_getter('title', any_language=True)
+        return title.strip()
 
     def get_keywords(self):
         return self.safe_translation_getter('meta_keywords').strip().split(',')
