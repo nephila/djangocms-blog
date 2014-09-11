@@ -42,7 +42,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
             'classes': ('collapse',)
         }),
         ('SEO', {
-            'fields': [('meta_description', 'meta_keywords')],
+            'fields': [('meta_description', 'meta_keywords', 'meta_title')],
             'classes': ('collapse',)
         }),
     ]
