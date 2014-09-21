@@ -36,7 +36,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'django-parler>=1.0b3',
+        'django-parler>=1.0',
         'django-cms>=3.0',
         'django-taggit',
         'django-filer',
@@ -47,7 +47,8 @@ setup(
         'django-admin-enhancer',
         'djangocms-text-ckeditor',
         'cmsplugin-filer',
-        'django-meta-mixin',
+        'django-meta>=0.2',
+        'django-meta-mixin>=0.1.1',
     ],
     license="BSD",
     zip_safe=False,
