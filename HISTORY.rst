@@ -3,8 +3,8 @@
 History
 -------
 
-0.2.0 (in development)
-++++++++++++++++++++++
+0.2.0 (2014-09-24)
+++++++++++++++++++
 
 * **INCOMPATIBLE CHANGE**: view names changed!
 * Based on django parler 1.0
