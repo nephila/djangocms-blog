@@ -45,7 +45,7 @@ Quickstart
 
 Install djangocms-blog::
 
-    pip install djangocms-blog==0.2c1
+    pip install djangocms-blog
 
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
