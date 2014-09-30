@@ -5,6 +5,7 @@ from cms.utils.plugins import downcast_plugins
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
+from django.utils.translation import get_language, activate, override
 import parler
 from taggit.models import Tag
 
@@ -37,23 +38,26 @@ class ModelsTest(BaseTest):
         self.assertNotEqual(meta_it.title, meta_en.title)
         self.assertEqual(meta_it.description, post.meta_description)
 
-        post.set_current_language('en')
-        kwargs = {'year': post.date_published.year,
-                  'month': post.date_published.month,
-                  'day': post.date_published.day,
-                  'slug': post.safe_translation_getter('slug', any_language=True)}
-        url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
-        self.assertEqual(url_en, post.get_absolute_url())
-        post.set_current_language('it')
-        kwargs = {'year': post.date_published.year,
-                  'month': post.date_published.month,
-                  'day': post.date_published.day,
-                  'slug': post.safe_translation_getter('slug', any_language=True)}
-        url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
-        self.assertEqual(url_it, post.get_absolute_url())
-        self.assertNotEqual(url_it, url_en)
+        with override('en'):
+            post.set_current_language(get_language())
+            kwargs = {'year': post.date_published.year,
+                      'month': '%02d' % post.date_published.month,
+                      'day': '%02d' % post.date_published.day,
+                      'slug': post.safe_translation_getter('slug', any_language=get_language())}
+            url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            self.assertEqual(url_en, post.get_absolute_url())
 
-        self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
+        with override('it'):
+            post.set_current_language(get_language())
+            kwargs = {'year': post.date_published.year,
+                      'month': '%02d' % post.date_published.month,
+                      'day': '%02d' % post.date_published.day,
+                      'slug': post.safe_translation_getter('slug', any_language=get_language())}
+            url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            self.assertEqual(url_it, post.get_absolute_url())
+            self.assertNotEqual(url_it, url_en)
+
+            self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
         self.assertEqual(post.get_image_full_url(), 'http://example.com%s' % post.main_image.url)
 
         self.assertEqual(post.thumbnail_options(), settings.BLOG_IMAGE_THUMBNAIL_SIZE)
