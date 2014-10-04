@@ -2,6 +2,7 @@
 """
 Tests for `djangocms_blog` module.
 """
+from django.contrib.sites.models import Site
 import os
 
 from cms.utils.i18n import get_language_list
@@ -58,6 +59,8 @@ class BaseTest(TestCase):
         cls.user = create_user('admin', 'admin@admin.com', 'admin', is_staff=True, is_superuser=True)
         cls.user_staff = create_user('staff', 'staff@admin.com', 'staff', is_staff=True)
         cls.user_normal = create_user('normal', 'normal@admin.com', 'normal')
+        cls.site_1 = Site.objects.create(domain='http://example1.com', name='example 1')
+        cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
 
     def setUp(self):
         activate('en')

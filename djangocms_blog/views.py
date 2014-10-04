@@ -21,7 +21,7 @@ class BaseBlogView(ViewUrlMixin):
         queryset = self.model._default_manager.active_translations(language_code=language)
         if not self.request.user.is_staff:
             queryset = queryset.published()
-        return queryset
+        return queryset.on_site()
 
     def render_to_response(self, context, **response_kwargs):
         response_kwargs['current_app'] = resolve(self.request.path).namespace

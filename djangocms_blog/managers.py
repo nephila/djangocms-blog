@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.contrib.sites.models import Site
+from django.db.models import Q
+
 try:
     from collections import Counter
 except ImportError:
@@ -73,6 +76,9 @@ class GenericDateQuerySet(TranslatableQuerySet):
     end_date_field = 'date_published_end'
     publish_field = 'publish'
 
+    def on_site(self):
+        return self.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current()))
+
     def published(self):
         queryset = self.published_future()
         if self.start_date_field:
@@ -82,7 +88,7 @@ class GenericDateQuerySet(TranslatableQuerySet):
             return queryset
 
     def published_future(self):
-        queryset = self
+        queryset = self.on_site()
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__gte' % self.end_date_field: now()})
@@ -92,7 +98,7 @@ class GenericDateQuerySet(TranslatableQuerySet):
         return queryset.filter(**{self.publish_field: True})
 
     def archived(self):
-        queryset = self
+        queryset = self.on_site()
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__lte' % self.end_date_field: now()})
@@ -102,10 +108,10 @@ class GenericDateQuerySet(TranslatableQuerySet):
         return queryset.filter(**{self.publish_field: True})
 
     def available(self):
-        return self.filter(**{self.publish_field: True})
+        return self.on_site().filter(**{self.publish_field: True})
 
     def filter_by_language(self, language):
-        return self.active_translations(language_code=language)
+        return self.active_translations(language_code=language).on_site()
 
 
 class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
@@ -143,6 +149,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
         """
         if queryset is None:
             queryset = self.get_queryset()
+        queryset = queryset.on_site()
         dates = queryset.values_list(queryset.start_date_field, flat=True)
         dates = [(x.year, x.month) for x in dates]
         date_counter = Counter(dates)
