@@ -77,7 +77,7 @@ class GenericDateQuerySet(TranslatableQuerySet):
     publish_field = 'publish'
 
     def on_site(self):
-        return self.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current()))
+        return self.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current().pk))
 
     def published(self):
         queryset = self.published_future()

@@ -38,10 +38,13 @@ class BaseTest(TestCase):
         'it': [
             {'title': u'Primo post', 'abstract': u'<p>prima riga</p>',
              'description': u'Questa è la descrizione', 'keywords': u'keyword1, keyword2',
-             'text': u'Testo del post',},
+             'text': u'Testo del post'},
             {'title': u'Secondo post', 'abstract': u'<p>prima riga del secondo post</p>',
              'description': u'Descrizione del secondo post', 'keywords': u'keyword3, keyword4',
              'text': u'Testo del secondo post'},
+            {'title': u'Terzo post', 'abstract': u'<p>prima riga del terzo post</p>',
+             'description': u'Descrizione del terzo post', 'keywords': u'keyword5, keyword6',
+             'text': u'Testo del terzo post'},
         ],
         'en': [
             {'title': u'First post', 'abstract': u'<p>first line</p>',
@@ -49,7 +52,10 @@ class BaseTest(TestCase):
              'text': u'Post text'},
             {'title': u'Second post', 'abstract': u'<p>second post first line</p>',
              'description': u'Second post description', 'keywords': u'keyword3, keyword4',
-             'text': u'Second post text'}
+             'text': u'Second post text'},
+            {'title': u'Third post', 'abstract': u'<p>third post first line</p>',
+             'description': u'third post description', 'keywords': u'keyword5, keyword6',
+             'text': u'Third post text'}
         ]
     }
 
@@ -59,7 +65,7 @@ class BaseTest(TestCase):
         cls.user = create_user('admin', 'admin@admin.com', 'admin', is_staff=True, is_superuser=True)
         cls.user_staff = create_user('staff', 'staff@admin.com', 'staff', is_staff=True)
         cls.user_normal = create_user('normal', 'normal@admin.com', 'normal')
-        cls.site_1 = Site.objects.create(domain='http://example1.com', name='example 1')
+        cls.site_1 = Site.objects.get(pk=1)
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
 
     def setUp(self):
@@ -88,7 +94,7 @@ class BaseTest(TestCase):
                                         original_filename=self.image_name,
                                         file=file_obj)
 
-    def _get_post(self, data, post=None, lang='en'):
+    def _get_post(self, data, post=None, lang='en', sites=None):
         if not post:
             post = Post()
         post.set_current_language(lang)
@@ -99,6 +105,9 @@ class BaseTest(TestCase):
         post.meta_keywords = data['keywords']
         post.save()
         post.categories.add(self.category_1)
+        if sites:
+            for site in sites:
+                post.sites.add(site)
         post.save()
         return post
 
@@ -149,17 +158,19 @@ class BaseTest(TestCase):
         mid.process_request(request)
         return request
 
-    def get_posts(self):
-        post1 = self._get_post(self.data['en'][0])
+    def get_posts(self, sites=None):
+        post1 = self._get_post(self.data['en'][0], sites=sites)
         post1 = self._get_post(self.data['it'][0], post1, 'it')
         post1.publish = True
         post1.main_image = self.img
         post1.save()
         post1.set_current_language('en')
-        post2 = self._get_post(self.data['en'][1])
+        post2 = self._get_post(self.data['en'][1], sites=sites)
         post2 = self._get_post(self.data['it'][1], post2, 'it')
         post2.set_current_language('en')
         post2.main_image = self.img
+        post2.save()
+        post2.set_current_language('en')
         return post1, post2
 
 

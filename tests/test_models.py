@@ -217,3 +217,16 @@ class ModelsTest(BaseTest):
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
+
+    def test_multisite(self):
+        post1 = self._get_post(self.data['en'][0], sites=(self.site_1,))
+        post2 = self._get_post(self.data['en'][1], sites=(self.site_2,))
+        post3 = self._get_post(self.data['en'][2], sites=(self.site_2, self.site_1))
+
+        self.assertEqual(len(Post.objects.all()), 3)
+        with self.settings(**{'SITE_ID': 1}):
+            self.assertEqual(len(Post.objects.all().on_site()), 2)
+            self.assertEqual(set(list(Post.objects.all().on_site())), set([post1, post3]))
+        with self.settings(**{'SITE_ID': 2}):
+            self.assertEqual(len(Post.objects.all().on_site()), 2)
+            self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))

@@ -83,6 +83,7 @@ HELPER_SETTINGS = {
         'easy_thumbnails.processors.filters',
     ),
     'FILE_UPLOAD_TEMP_DIR': mkdtemp(),
+    'SITE_ID': 1
 }
 if 'test' in sys.argv:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
