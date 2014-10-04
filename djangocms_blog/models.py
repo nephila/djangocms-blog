@@ -7,15 +7,15 @@ from django.db import models
 from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
+from meta_mixin.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.managers import TranslationManager
 from taggit_autosuggest.managers import TaggableManager
 
 from . import settings
-from meta_mixin.models import ModelMeta
 from .managers import GenericDateTaggedManager
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
@@ -183,9 +183,9 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_absolute_url(self):
         kwargs = {'year': self.date_published.year,
-                  'month': self.date_published.month,
-                  'day': self.date_published.day,
-                  'slug': self.safe_translation_getter('slug', any_language=True)}
+                  'month': '%02d' % self.date_published.month,
+                  'day': '%02d' % self.date_published.day,
+                  'slug': self.safe_translation_getter('slug', language_code=get_language())}
         return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def thumbnail_options(self):
