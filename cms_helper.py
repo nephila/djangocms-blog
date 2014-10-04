@@ -46,6 +46,13 @@ HELPER_SETTINGS = {
                 'public': True,
             },
         ],
+        2: [
+            {
+                'code': 'en',
+                'name': gettext('English'),
+                'public': True,
+            },
+        ],
         'default': {
             'hide_untranslated': False,
         },
@@ -55,6 +62,9 @@ HELPER_SETTINGS = {
             {'code': 'en'},
             {'code': 'it'},
             {'code': 'fr'},
+        ),
+        2: (
+            {'code': 'en'},
         ),
         'default': {
             'fallback': 'en',

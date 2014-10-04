@@ -36,7 +36,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'django-parler>=1.0',
+        'django-parler>=1.1',
         'django-cms>=3.0',
         'django-taggit',
         'django-filer',

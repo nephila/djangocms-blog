@@ -2,6 +2,7 @@
 from cms.models import PlaceholderField, CMSPlugin
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.conf import settings as dj_settings
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -89,6 +90,10 @@ class Post(ModelMeta, TranslatableModel):
         verbose_name=_(u'Enable comments on post'),
         default=settings.BLOG_ENABLE_COMMENTS
     )
+    sites = models.ManyToManyField(Site, verbose_name=_(u'Site(s'), blank=True, null=True,
+                                   help_text=_(u'Select sites in which to show the post. If none is set it will be'
+                                               u'visible in all the configured sites.')
+                                   )
 
     translations = TranslatedFields(
         title=models.CharField(_('Title'), max_length=255),
