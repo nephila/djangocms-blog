@@ -128,7 +128,7 @@ class CategoryEntriesView(BaseBlogView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = BlogCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).last()
+            self._category = BlogCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).latest('pk')
         return self._category
 
     def get_queryset(self):
