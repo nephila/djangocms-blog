@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import django
 from django.contrib.sites.models import Site
 from django.db.models import Q
 
@@ -124,9 +125,8 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
             return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
         except AttributeError:
             return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
-
-    def get_query_set(self, *args, **kwargs):
-        return self.get_queryset(*args, **kwargs)
+    if django.VERSION < (1, 8):
+        get_query_set = get_queryset
 
     def published(self):
         return self.get_queryset().published()

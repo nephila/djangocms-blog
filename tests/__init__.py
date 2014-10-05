@@ -2,23 +2,23 @@
 """
 Tests for `djangocms_blog` module.
 """
-from django.contrib.sites.models import Site
 import os
 
 from cms.utils.i18n import get_language_list
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.core.files import File as DjangoFile
 from django.http import SimpleCookie
 from django.test import TestCase, RequestFactory
-from django.utils.translation import activate
+from django.utils.translation import activate, override
 from filer.models import File, Image
 from PIL import Image as PilImage, ImageDraw
 from six import StringIO
 
-from djangocms_blog.models import BlogCategory, Post
 from djangocms_helper.utils import create_user
+from djangocms_blog.models import BlogCategory, Post
 
 User = get_user_model()
 
@@ -71,13 +71,10 @@ class BaseTest(TestCase):
     def setUp(self):
         activate('en')
         super(BaseTest, self).setUp()
-        self.category_1 = BlogCategory.objects.create()
-        self.category_1.name = u'category 1'
-        self.category_1.save()
-        self.category_1.set_current_language('it')
+        self.category_1 = BlogCategory.objects.create(name=u'category 1')
+        self.category_1.set_current_language('it', initialize=True)
         self.category_1.name = u'categoria 1'
         self.category_1.save()
-        self.category_1.set_current_language('en')
         self.thumb_1 = ThumbnailOption.objects.create(
             name='base', width=100, height=100, crop=True, upscale=False
         )
@@ -96,19 +93,25 @@ class BaseTest(TestCase):
 
     def _get_post(self, data, post=None, lang='en', sites=None):
         if not post:
-            post = Post()
-        post.set_current_language(lang)
-        post.author = self.user
-        post.title = data['title']
-        post.abstract = data['abstract']
-        post.meta_description = data['description']
-        post.meta_keywords = data['keywords']
-        post.save()
+            post_data = {
+                'author': self.user,
+                'title': data['title'],
+                'abstract': data['abstract'],
+                'meta_description': data['description'],
+                'meta_keywords': data['keywords'],
+            }
+            post = Post.objects.create(**post_data)
+        else:
+            post.set_current_language(lang)
+            post.title = data['title']
+            post.abstract = data['abstract']
+            post.meta_description = data['description']
+            post.meta_keywords = data['keywords']
+            post.save()
         post.categories.add(self.category_1)
         if sites:
             for site in sites:
                 post.sites.add(site)
-        post.save()
         return post
 
     @classmethod
@@ -116,6 +119,8 @@ class BaseTest(TestCase):
         User.objects.all().delete()
     
     def tearDown(self):
+        for post in Post.objects.all():
+            post.delete()
         os.remove(self.filename)
         for f in File.objects.all():
             f.delete()
@@ -159,18 +164,16 @@ class BaseTest(TestCase):
         return request
 
     def get_posts(self, sites=None):
-        post1 = self._get_post(self.data['en'][0], sites=sites)
-        post1 = self._get_post(self.data['it'][0], post1, 'it')
-        post1.publish = True
-        post1.main_image = self.img
-        post1.save()
-        post1.set_current_language('en')
-        post2 = self._get_post(self.data['en'][1], sites=sites)
-        post2 = self._get_post(self.data['it'][1], post2, 'it')
-        post2.set_current_language('en')
-        post2.main_image = self.img
-        post2.save()
-        post2.set_current_language('en')
+        with override('en'):
+            post1 = self._get_post(self.data['en'][0], sites=sites)
+            post1 = self._get_post(self.data['it'][0], post1, 'it')
+            post1.publish = True
+            post1.main_image = self.img
+            post1.save()
+            post2 = self._get_post(self.data['en'][1], sites=sites)
+            post2 = self._get_post(self.data['it'][1], post2, 'it')
+            post2.main_image = self.img
+            post2.save()
         return post1, post2
 
 

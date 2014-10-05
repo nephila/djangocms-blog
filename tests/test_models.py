@@ -5,7 +5,7 @@ from cms.utils.plugins import downcast_plugins
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
-from django.utils.translation import get_language, activate, override
+from django.utils.translation import get_language, override
 import parler
 from taggit.models import Tag
 
