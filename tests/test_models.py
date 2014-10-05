@@ -2,6 +2,7 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
+from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
@@ -14,6 +15,33 @@ from djangocms_blog import settings
 
 
 from . import BaseTest
+
+
+class AdminTest(BaseTest):
+
+    def test_admin_fieldsets(self):
+        request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
+        post_admin = admin.site._registry[Post]
+
+        settings.BLOG_USE_PLACEHOLDER = True
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('post_text' in fsets[0][1]['fields'])
+        settings.BLOG_USE_PLACEHOLDER = False
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('post_text' in fsets[0][1]['fields'])
+        settings.BLOG_USE_PLACEHOLDER = True
+
+        settings.BLOG_MULTISITE = True
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('sites' in fsets[1][1]['fields'][0])
+        settings.BLOG_MULTISITE = False
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('sites' in fsets[1][1]['fields'][0])
+        settings.BLOG_MULTISITE = True
+
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('author' in fsets[1][1]['fields'][0])
 
 
 class ModelsTest(BaseTest):
@@ -219,14 +247,15 @@ class ModelsTest(BaseTest):
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
 
     def test_multisite(self):
-        post1 = self._get_post(self.data['en'][0], sites=(self.site_1,))
-        post2 = self._get_post(self.data['en'][1], sites=(self.site_2,))
-        post3 = self._get_post(self.data['en'][2], sites=(self.site_2, self.site_1))
+        with override('en'):
+            post1 = self._get_post(self.data['en'][0], sites=(self.site_1,))
+            post2 = self._get_post(self.data['en'][1], sites=(self.site_2,))
+            post3 = self._get_post(self.data['en'][2], sites=(self.site_2, self.site_1))
 
-        self.assertEqual(len(Post.objects.all()), 3)
-        with self.settings(**{'SITE_ID': 1}):
-            self.assertEqual(len(Post.objects.all().on_site()), 2)
-            self.assertEqual(set(list(Post.objects.all().on_site())), set([post1, post3]))
-        with self.settings(**{'SITE_ID': 2}):
-            self.assertEqual(len(Post.objects.all().on_site()), 2)
-            self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))
+            self.assertEqual(len(Post.objects.all()), 3)
+            with self.settings(**{'SITE_ID': self.site_1.pk}):
+                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(set(list(Post.objects.all().on_site())), set([post1, post3]))
+            with self.settings(**{'SITE_ID': self.site_2.pk}):
+                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))

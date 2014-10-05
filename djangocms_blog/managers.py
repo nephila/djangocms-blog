@@ -123,7 +123,7 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
     def get_queryset(self, *args, **kwargs):
         try:
             return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
     if django.VERSION < (1, 8):
         get_query_set = get_queryset

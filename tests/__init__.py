@@ -12,7 +12,7 @@ from django.contrib.sites.models import Site
 from django.core.files import File as DjangoFile
 from django.http import SimpleCookie
 from django.test import TestCase, RequestFactory
-from django.utils.translation import activate, override
+from django.utils.translation import activate
 from filer.models import File, Image
 from PIL import Image as PilImage, ImageDraw
 from six import StringIO
@@ -164,16 +164,15 @@ class BaseTest(TestCase):
         return request
 
     def get_posts(self, sites=None):
-        with override('en'):
-            post1 = self._get_post(self.data['en'][0], sites=sites)
-            post1 = self._get_post(self.data['it'][0], post1, 'it')
-            post1.publish = True
-            post1.main_image = self.img
-            post1.save()
-            post2 = self._get_post(self.data['en'][1], sites=sites)
-            post2 = self._get_post(self.data['it'][1], post2, 'it')
-            post2.main_image = self.img
-            post2.save()
+        post1 = self._get_post(self.data['en'][0], sites=sites)
+        post1 = self._get_post(self.data['it'][0], post1, 'it')
+        post1.publish = True
+        post1.main_image = self.img
+        post1.save()
+        post2 = self._get_post(self.data['en'][1], sites=sites)
+        post2 = self._get_post(self.data['it'][1], post2, 'it')
+        post2.main_image = self.img
+        post2.save()
         return post1, post2
 
 
