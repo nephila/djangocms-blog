@@ -2,9 +2,11 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
+from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
+from django.utils.translation import get_language, override
 import parler
 from taggit.models import Tag
 
@@ -13,6 +15,33 @@ from djangocms_blog import settings
 
 
 from . import BaseTest
+
+
+class AdminTest(BaseTest):
+
+    def test_admin_fieldsets(self):
+        request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
+        post_admin = admin.site._registry[Post]
+
+        settings.BLOG_USE_PLACEHOLDER = True
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('post_text' in fsets[0][1]['fields'])
+        settings.BLOG_USE_PLACEHOLDER = False
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('post_text' in fsets[0][1]['fields'])
+        settings.BLOG_USE_PLACEHOLDER = True
+
+        settings.BLOG_MULTISITE = True
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('sites' in fsets[1][1]['fields'][0])
+        settings.BLOG_MULTISITE = False
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('sites' in fsets[1][1]['fields'][0])
+        settings.BLOG_MULTISITE = True
+
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('author' in fsets[1][1]['fields'][0])
 
 
 class ModelsTest(BaseTest):
@@ -37,23 +66,26 @@ class ModelsTest(BaseTest):
         self.assertNotEqual(meta_it.title, meta_en.title)
         self.assertEqual(meta_it.description, post.meta_description)
 
-        post.set_current_language('en')
-        kwargs = {'year': post.date_published.year,
-                  'month': post.date_published.month,
-                  'day': post.date_published.day,
-                  'slug': post.safe_translation_getter('slug', any_language=True)}
-        url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
-        self.assertEqual(url_en, post.get_absolute_url())
-        post.set_current_language('it')
-        kwargs = {'year': post.date_published.year,
-                  'month': post.date_published.month,
-                  'day': post.date_published.day,
-                  'slug': post.safe_translation_getter('slug', any_language=True)}
-        url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
-        self.assertEqual(url_it, post.get_absolute_url())
-        self.assertNotEqual(url_it, url_en)
+        with override('en'):
+            post.set_current_language(get_language())
+            kwargs = {'year': post.date_published.year,
+                      'month': '%02d' % post.date_published.month,
+                      'day': '%02d' % post.date_published.day,
+                      'slug': post.safe_translation_getter('slug', any_language=get_language())}
+            url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            self.assertEqual(url_en, post.get_absolute_url())
 
-        self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
+        with override('it'):
+            post.set_current_language(get_language())
+            kwargs = {'year': post.date_published.year,
+                      'month': '%02d' % post.date_published.month,
+                      'day': '%02d' % post.date_published.day,
+                      'slug': post.safe_translation_getter('slug', any_language=get_language())}
+            url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            self.assertEqual(url_it, post.get_absolute_url())
+            self.assertNotEqual(url_it, url_en)
+
+            self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
         self.assertEqual(post.get_image_full_url(), 'http://example.com%s' % post.main_image.url)
 
         self.assertEqual(post.thumbnail_options(), settings.BLOG_IMAGE_THUMBNAIL_SIZE)
@@ -213,3 +245,17 @@ class ModelsTest(BaseTest):
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
+
+    def test_multisite(self):
+        with override('en'):
+            post1 = self._get_post(self.data['en'][0], sites=(self.site_1,))
+            post2 = self._get_post(self.data['en'][1], sites=(self.site_2,))
+            post3 = self._get_post(self.data['en'][2], sites=(self.site_2, self.site_1))
+
+            self.assertEqual(len(Post.objects.all()), 3)
+            with self.settings(**{'SITE_ID': self.site_1.pk}):
+                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(set(list(Post.objects.all().on_site())), set([post1, post3]))
+            with self.settings(**{'SITE_ID': self.site_2.pk}):
+                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))

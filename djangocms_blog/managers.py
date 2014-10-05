@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import django
 from django.contrib.sites.models import Site
 from django.db.models import Q
 
@@ -77,7 +78,7 @@ class GenericDateQuerySet(TranslatableQuerySet):
     publish_field = 'publish'
 
     def on_site(self):
-        return self.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current()))
+        return self.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current().pk))
 
     def published(self):
         queryset = self.published_future()
@@ -122,11 +123,10 @@ class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
     def get_queryset(self, *args, **kwargs):
         try:
             return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
-
-    def get_query_set(self, *args, **kwargs):
-        return self.get_queryset(*args, **kwargs)
+    if django.VERSION < (1, 8):
+        get_query_set = get_queryset
 
     def published(self):
         return self.get_queryset().published()

@@ -18,7 +18,7 @@ class BaseBlogView(ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        queryset = self.model._default_manager.active_translations(language_code=language)
+        queryset = self.model._default_manager.language(language_code=language)
         if not self.request.user.is_staff:
             queryset = queryset.published()
         return queryset.on_site()
@@ -128,10 +128,7 @@ class CategoryEntriesView(BaseBlogView, ListView):
     @property
     def category(self):
         if not self._category:
-            language = get_language()
-            self._category = BlogCategory._default_manager.language(language).get(
-                translations__language_code=language,
-                translations__slug=self.kwargs['category'])
+            self._category = BlogCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).last()
         return self._category
 
     def get_queryset(self):
