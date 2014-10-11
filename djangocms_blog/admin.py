@@ -4,6 +4,7 @@ from cms.admin.placeholderadmin import PlaceholderAdmin, FrontendEditableAdmin
 from copy import deepcopy
 from django.contrib import admin
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
 from .models import Post, BlogCategory
@@ -61,8 +62,12 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
-        if not obj.author_id and get_setting('AUTHOR_AUTO'):
-            obj.author = request.user
+        if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
+            if get_setting('AUTHOR_DEFAULT') is True:
+                user = request.user
+            else:
+                user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
+            obj.author = user
         super(PostAdmin, self).save_model(request, obj, form, change)
 
     class Media:
