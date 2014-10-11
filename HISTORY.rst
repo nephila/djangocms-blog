@@ -7,7 +7,9 @@ History
 ++++++++++++++++++
 
 * Multisite support
-*
+* Configurable default author support
+* Refactored settings
+* Fix multilanguage issues
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
