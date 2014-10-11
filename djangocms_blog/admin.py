@@ -61,7 +61,8 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
-        if not obj.author_id:
+        from .settings import BLOG_AUTHOR_AUTO
+        if not obj.author_id and BLOG_AUTHOR_AUTO:
             obj.author = request.user
         super(PostAdmin, self).save_model(request, obj, form, change)
 

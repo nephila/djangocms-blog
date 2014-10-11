@@ -9,6 +9,7 @@ HELPER_SETTINGS = {
     ],
     'ROOT_URLCONF': 'tests.test_utils.urls',
     'INSTALLED_APPS': [
+        'django.contrib.messages',
         'admin_enhancer',
         'filer',
         'parler',
@@ -71,6 +72,9 @@ HELPER_SETTINGS = {
             'hide_untranslated': False,
         }
     },
+    'MIDDLEWARE_CLASSES': [
+        'django.contrib.messages.middleware.MessageMiddleware',
+    ],
     'META_SITE_PROTOCOL': 'http',
     'META_SITE_DOMAIN': 'example.com',
     'META_USE_OG_PROPERTIES': True,

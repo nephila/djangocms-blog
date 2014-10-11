@@ -2,7 +2,9 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
+from copy import deepcopy
 from django.contrib import admin
+from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
@@ -42,6 +44,35 @@ class AdminTest(BaseTest):
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue('author' in fsets[1][1]['fields'][0])
+
+    def test_admin_auto_author(self):
+        page1, page2 = self.get_pages()
+        request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
+        data = deepcopy(self.data['en'][0])
+        data['date_published_0'] = now().strftime('%Y-%m-%d')
+        data['date_published_1'] = now().strftime('%H:%M:%S')
+        data['categories'] = self.category_1.pk
+        request = self.post_request(page1, 'en', data=data)
+        msg_mid = MessageMiddleware()
+        msg_mid.process_request(request)
+        post_admin = admin.site._registry[Post]
+        post_admin.add_view(request)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(Post.objects.get(translations__slug='first-post').author_id, 1)
+
+        settings.BLOG_AUTHOR_AUTO = False
+        data = deepcopy(self.data['en'][1])
+        data['date_published_0'] = now().strftime('%Y-%m-%d')
+        data['date_published_1'] = now().strftime('%H:%M:%S')
+        data['categories'] = self.category_1.pk
+        request = self.post_request(page1, 'en', data=data)
+        msg_mid = MessageMiddleware()
+        msg_mid.process_request(request)
+        post_admin = admin.site._registry[Post]
+        post_admin.add_view(request)
+        self.assertEqual(Post.objects.count(), 2)
+        self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
+        settings.BLOG_AUTHOR_AUTO = True
 
 
 class ModelsTest(BaseTest):
