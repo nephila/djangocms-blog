@@ -4,8 +4,6 @@ from django.http import Http404
 from django.utils.translation import activate
 from django.utils.timezone import now
 from parler.utils.context import switch_language
-from cms.middleware.toolbar import ToolbarMiddleware
-from djangocms_blog.models import Post, BlogCategory
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import (PostListView, PostDetailView,

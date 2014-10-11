@@ -13,7 +13,7 @@ import parler
 from taggit.models import Tag
 
 from djangocms_blog.models import Post
-from djangocms_blog import settings
+from djangocms_blog.settings import get_setting
 
 
 from . import BaseTest
@@ -25,21 +25,20 @@ class AdminTest(BaseTest):
         request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
         post_admin = admin.site._registry[Post]
 
-        settings.BLOG_USE_PLACEHOLDER = True
-        fsets = post_admin.get_fieldsets(request)
-        self.assertFalse('post_text' in fsets[0][1]['fields'])
-        settings.BLOG_USE_PLACEHOLDER = False
-        fsets = post_admin.get_fieldsets(request)
-        self.assertTrue('post_text' in fsets[0][1]['fields'])
-        settings.BLOG_USE_PLACEHOLDER = True
+        with self.settings(BLOG_USE_PLACEHOLDER=True):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertFalse('post_text' in fsets[0][1]['fields'])
 
-        settings.BLOG_MULTISITE = True
-        fsets = post_admin.get_fieldsets(request)
-        self.assertTrue('sites' in fsets[1][1]['fields'][0])
-        settings.BLOG_MULTISITE = False
-        fsets = post_admin.get_fieldsets(request)
-        self.assertFalse('sites' in fsets[1][1]['fields'][0])
-        settings.BLOG_MULTISITE = True
+        with self.settings(BLOG_USE_PLACEHOLDER=False):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('post_text' in fsets[0][1]['fields'])
+
+        with self.settings(BLOG_MULTISITE=True):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('sites' in fsets[1][1]['fields'][0])
+        with self.settings(BLOG_MULTISITE=False):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertFalse('sites' in fsets[1][1]['fields'][0])
 
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
         fsets = post_admin.get_fieldsets(request)
@@ -49,30 +48,31 @@ class AdminTest(BaseTest):
         page1, page2 = self.get_pages()
         request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
         data = deepcopy(self.data['en'][0])
-        data['date_published_0'] = now().strftime('%Y-%m-%d')
-        data['date_published_1'] = now().strftime('%H:%M:%S')
-        data['categories'] = self.category_1.pk
-        request = self.post_request(page1, 'en', data=data)
-        msg_mid = MessageMiddleware()
-        msg_mid.process_request(request)
-        post_admin = admin.site._registry[Post]
-        post_admin.add_view(request)
-        self.assertEqual(Post.objects.count(), 1)
-        self.assertEqual(Post.objects.get(translations__slug='first-post').author_id, 1)
 
-        settings.BLOG_AUTHOR_AUTO = False
-        data = deepcopy(self.data['en'][1])
-        data['date_published_0'] = now().strftime('%Y-%m-%d')
-        data['date_published_1'] = now().strftime('%H:%M:%S')
-        data['categories'] = self.category_1.pk
-        request = self.post_request(page1, 'en', data=data)
-        msg_mid = MessageMiddleware()
-        msg_mid.process_request(request)
-        post_admin = admin.site._registry[Post]
-        post_admin.add_view(request)
-        self.assertEqual(Post.objects.count(), 2)
-        self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
-        settings.BLOG_AUTHOR_AUTO = True
+        with self.settings(BLOG_AUTHOR_AUTO=True):
+            data['date_published_0'] = now().strftime('%Y-%m-%d')
+            data['date_published_1'] = now().strftime('%H:%M:%S')
+            data['categories'] = self.category_1.pk
+            request = self.post_request(page1, 'en', data=data)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.add_view(request)
+            self.assertEqual(Post.objects.count(), 1)
+            self.assertEqual(Post.objects.get(translations__slug='first-post').author_id, 1)
+
+        with self.settings(BLOG_AUTHOR_AUTO=False):
+            data = deepcopy(self.data['en'][1])
+            data['date_published_0'] = now().strftime('%Y-%m-%d')
+            data['date_published_1'] = now().strftime('%H:%M:%S')
+            data['categories'] = self.category_1.pk
+            request = self.post_request(page1, 'en', data=data)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.add_view(request)
+            self.assertEqual(Post.objects.count(), 2)
+            self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
 
 
 class ModelsTest(BaseTest):
@@ -84,7 +84,7 @@ class ModelsTest(BaseTest):
         post.save()
         post.set_current_language('en')
         meta_en = post.as_meta()
-        self.assertEqual(meta_en.og_type, settings.BLOG_FB_TYPE)
+        self.assertEqual(meta_en.og_type, get_setting('FB_TYPE'))
         self.assertEqual(meta_en.title, post.title)
         self.assertTrue(meta_en.url.endswith(post.get_absolute_url()))
         self.assertEqual(meta_en.description, post.meta_description)
@@ -119,8 +119,8 @@ class ModelsTest(BaseTest):
             self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
         self.assertEqual(post.get_image_full_url(), 'http://example.com%s' % post.main_image.url)
 
-        self.assertEqual(post.thumbnail_options(), settings.BLOG_IMAGE_THUMBNAIL_SIZE)
-        self.assertEqual(post.full_image_options(), settings.BLOG_IMAGE_FULL_SIZE)
+        self.assertEqual(post.thumbnail_options(), get_setting('IMAGE_THUMBNAIL_SIZE'))
+        self.assertEqual(post.full_image_options(), get_setting('IMAGE_FULL_SIZE'))
 
         post.main_image_thumbnail = self.thumb_1
         post.main_image_full = self.thumb_2
