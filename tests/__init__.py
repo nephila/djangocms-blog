@@ -145,6 +145,16 @@ class BaseTest(TestCase):
         request.errors = StringIO()
         return request
 
+    def post_request(self, page, lang, data):
+        request = self.request_factory.post(page.get_path(lang), data)
+        request.current_page = page
+        request.user = self.user
+        request.session = {}
+        request.cookies = SimpleCookie()
+        request.errors = StringIO()
+        request._dont_enforce_csrf_checks = True
+        return request
+
     def get_page_request(self, page, user, path=None, edit=False, lang_code='en'):
         from cms.middleware.toolbar import ToolbarMiddleware
         path = path or page and page.get_absolute_url()

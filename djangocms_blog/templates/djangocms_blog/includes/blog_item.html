@@ -6,9 +6,11 @@
         <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
 		{% block blog_meta %}
             <ul class="post-detail">
+				{% if post.author %}
                 <li>
                     {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{{ post.author.get_full_name }}</a>
                 </li>
+				{% endif %}
                 <li>
                     {{ post.date_published|date:"M d, Y" }}
                 </li>

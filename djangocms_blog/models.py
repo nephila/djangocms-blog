@@ -180,10 +180,12 @@ class Post(ModelMeta, TranslatableModel):
 
     def save(self, *args, **kwargs):
         super(Post, self).save(*args, **kwargs)
+        main_lang = self.get_current_language()
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.title:
                 self.slug = slugify(self.title)
+        self.set_current_language(main_lang)
         self.save_translations()
 
     def get_absolute_url(self):
