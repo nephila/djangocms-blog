@@ -16,7 +16,7 @@ from parler.models import TranslatableModel, TranslatedFields
 from parler.managers import TranslationManager
 from taggit_autosuggest.managers import TaggableManager
 
-from . import settings
+from .settings import get_setting
 from .managers import GenericDateTaggedManager
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
@@ -88,7 +88,7 @@ class Post(ModelMeta, TranslatableModel):
                                         blank=True, null=True)
     enable_comments = models.BooleanField(
         verbose_name=_(u'Enable comments on post'),
-        default=settings.BLOG_ENABLE_COMMENTS
+        default=get_setting('ENABLE_COMMENTS')
     )
     sites = models.ManyToManyField(Site, verbose_name=_(u'Site(s'), blank=True, null=True,
                                    help_text=_(u'Select sites in which to show the post. If none is set it will be'
@@ -124,17 +124,17 @@ class Post(ModelMeta, TranslatableModel):
         'keywords': 'get_keywords',
         'locale': None,
         'image': 'get_image_full_url',
-        'object_type': settings.BLOG_TYPE,
-        'og_type': settings.BLOG_FB_TYPE,
-        'og_app_id': settings.BLOG_FB_APPID,
-        'og_profile_id': settings.BLOG_FB_PROFILE_ID,
-        'og_publisher': settings.BLOG_FB_PUBLISHER,
-        'og_author_url': settings.BLOG_FB_AUTHOR_URL,
-        'twitter_type': settings.BLOG_TWITTER_TYPE,
-        'twitter_site': settings.BLOG_TWITTER_SITE,
-        'twitter_author': settings.BLOG_TWITTER_AUTHOR,
-        'gplus_type': settings.BLOG_GPLUS_TYPE,
-        'gplus_author': settings.BLOG_GPLUS_AUTHOR,
+        'object_type': get_setting('TYPE'),
+        'og_type': get_setting('FB_TYPE'),
+        'og_app_id': get_setting('FB_APPID'),
+        'og_profile_id': get_setting('FB_PROFILE_ID'),
+        'og_publisher': get_setting('FB_PUBLISHER'),
+        'og_author_url': get_setting('FB_AUTHOR_URL'),
+        'twitter_type': get_setting('TWITTER_TYPE'),
+        'twitter_site': get_setting('TWITTER_SITE'),
+        'twitter_author': get_setting('TWITTER_AUTHOR'),
+        'gplus_type': get_setting('GPLUS_TYPE'),
+        'gplus_author': get_setting('GPLUS_AUTHOR'),
         'published_time': 'date_published',
         'modified_time': 'date_modified',
         'expiration_time': 'date_published_end',
@@ -199,13 +199,13 @@ class Post(ModelMeta, TranslatableModel):
         if self.main_image_thumbnail_id:
             return self.main_image_thumbnail.as_dict
         else:
-            return settings.BLOG_IMAGE_THUMBNAIL_SIZE
+            return get_setting('IMAGE_THUMBNAIL_SIZE')
 
     def full_image_options(self):
         if self.main_image_full_id:
             return self.main_image_full.as_dict
         else:
-            return settings.BLOG_IMAGE_FULL_SIZE
+            return get_setting('IMAGE_FULL_SIZE')
 
     def get_full_url(self):
         return self.make_full_url(self.get_absolute_url())
@@ -213,7 +213,7 @@ class Post(ModelMeta, TranslatableModel):
 
 class LatestPostsPlugin(CMSPlugin):
 
-    latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+    latest_posts = models.IntegerField(_(u'Articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests articles to be displayed.'))
     tags = models.ManyToManyField('taggit.Tag', blank=True,
                                   help_text=_('Show only the blog articles tagged with chosen tags.'))
@@ -240,7 +240,7 @@ class AuthorEntriesPlugin(CMSPlugin):
         limit_choices_to={'djangocms_blog_post_author__publish': True}
     )
     latest_posts = models.IntegerField(
-        _(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+        _(u'Articles'), default=get_setting('LATEST_POSTS'),
         help_text=_('The number of author articles to be displayed.')
     )
 
