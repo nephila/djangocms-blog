@@ -49,7 +49,7 @@ class AdminTest(BaseTest):
         request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
         data = deepcopy(self.data['en'][0])
 
-        with self.settings(BLOG_AUTHOR_AUTO=True):
+        with self.settings(BLOG_AUTHOR_DEFAULT=True):
             data['date_published_0'] = now().strftime('%Y-%m-%d')
             data['date_published_1'] = now().strftime('%H:%M:%S')
             data['categories'] = self.category_1.pk
@@ -61,7 +61,7 @@ class AdminTest(BaseTest):
             self.assertEqual(Post.objects.count(), 1)
             self.assertEqual(Post.objects.get(translations__slug='first-post').author_id, 1)
 
-        with self.settings(BLOG_AUTHOR_AUTO=False):
+        with self.settings(BLOG_AUTHOR_DEFAULT=False):
             data = deepcopy(self.data['en'][1])
             data['date_published_0'] = now().strftime('%Y-%m-%d')
             data['date_published_1'] = now().strftime('%H:%M:%S')
@@ -73,6 +73,19 @@ class AdminTest(BaseTest):
             post_admin.add_view(request)
             self.assertEqual(Post.objects.count(), 2)
             self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
+
+        with self.settings(BLOG_AUTHOR_DEFAULT='staff'):
+            data = deepcopy(self.data['en'][2])
+            data['date_published_0'] = now().strftime('%Y-%m-%d')
+            data['date_published_1'] = now().strftime('%H:%M:%S')
+            data['categories'] = self.category_1.pk
+            request = self.post_request(page1, 'en', data=data)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.add_view(request)
+            self.assertEqual(Post.objects.count(), 3)
+            self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
 
 
 class ModelsTest(BaseTest):
