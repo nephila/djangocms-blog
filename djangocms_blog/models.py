@@ -6,7 +6,8 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.html import strip_tags, escape
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _, get_language
 from djangocms_text_ckeditor.fields import HTMLField
@@ -22,6 +23,7 @@ from .managers import GenericDateTaggedManager
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
 
 
+@python_2_unicode_compatible
 class BlogCategory(TranslatableModel):
     """
     Blog category
@@ -47,7 +49,7 @@ class BlogCategory(TranslatableModel):
     def count(self):
         return self.blog_posts.filter(publish=True).count()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.safe_translation_getter('name')
 
     def save(self, *args, **kwargs):
@@ -59,6 +61,7 @@ class BlogCategory(TranslatableModel):
         self.save_translations()
 
 
+@python_2_unicode_compatible
 class Post(ModelMeta, TranslatableModel):
     """
     Blog post
@@ -155,7 +158,7 @@ class Post(ModelMeta, TranslatableModel):
         description = self.safe_translation_getter('meta_description', any_language=True)
         if not description:
             description = self.safe_translation_getter('abstract', any_language=True)
-        return description.strip()
+        return escape(strip_tags(description)).strip()
 
     def get_image_full_url(self):
         if self.main_image:
@@ -175,7 +178,7 @@ class Post(ModelMeta, TranslatableModel):
         ordering = ('-date_published', '-date_created')
         get_latest_by = 'date_published'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.safe_translation_getter('title')
 
     def save(self, *args, **kwargs):
@@ -211,6 +214,7 @@ class Post(ModelMeta, TranslatableModel):
         return self.make_full_url(self.get_absolute_url())
 
 
+@python_2_unicode_compatible
 class LatestPostsPlugin(CMSPlugin):
 
     latest_posts = models.IntegerField(_(u'Articles'), default=get_setting('LATEST_POSTS'),
@@ -220,7 +224,7 @@ class LatestPostsPlugin(CMSPlugin):
     categories = models.ManyToManyField('BlogCategory', blank=True,
                                         help_text=_('Show only the blog articles tagged with chosen categories.'))
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s latest articles by tag' % self.latest_posts
 
     def copy_relations(self, oldinstance):
@@ -234,6 +238,7 @@ class LatestPostsPlugin(CMSPlugin):
         return posts[:self.latest_posts]
 
 
+@python_2_unicode_compatible
 class AuthorEntriesPlugin(CMSPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('Authors'),
@@ -244,7 +249,7 @@ class AuthorEntriesPlugin(CMSPlugin):
         help_text=_('The number of author articles to be displayed.')
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s latest articles by author' % self.latest_posts
 
     def copy_relations(self, oldinstance):
