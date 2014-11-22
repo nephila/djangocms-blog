@@ -1,6 +1,6 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Iacopo Spalletti, 2014
 # yakky <i.spalletti@nephila.it>, 2014
@@ -8,20 +8,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-11 13:11+0200\n"
-"PO-Revision-Date: 2014-04-27 02:30+0000\n"
+"POT-Creation-Date: 2014-09-01 07:16+0200\n"
+"PO-Revision-Date: 2014-10-12 09:43+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
-"Language-Team: Italian (http://www.transifex.com/projects/p/djangocms-blog/"
-"language/it/)\n"
-"Language: it\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/djangocms-blog/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
 #: cms_app.py:8 cms_plugins.py:32 cms_plugins.py:45 cms_plugins.py:56
-#: cms_plugins.py:67 cms_toolbar.py:17
+#: cms_plugins.py:67 cms_toolbar.py:18
 msgid "Blog"
 msgstr "Blog"
 
@@ -46,15 +45,15 @@ msgstr "Categorie"
 msgid "Archive"
 msgstr "Archivio"
 
-#: cms_toolbar.py:19
+#: cms_toolbar.py:20
 msgid "Post list"
 msgstr "Lista degli articoli"
 
-#: cms_toolbar.py:21
+#: cms_toolbar.py:22
 msgid "Add post"
 msgstr "Aggiungi articolo"
 
-#: cms_toolbar.py:25
+#: cms_toolbar.py:26
 msgid "Edit Post"
 msgstr "Modifica articolo"
 
@@ -63,31 +62,31 @@ msgstr "Modifica articolo"
 msgid "Blog articles on %(site_name)s"
 msgstr "Articoli del blog su %(site_name)s"
 
-#: models.py:29
+#: models.py:28
 msgid "parent"
 msgstr "superiore"
 
-#: models.py:31
+#: models.py:30
 msgid "created at"
 msgstr "creato il"
 
-#: models.py:32
+#: models.py:31
 msgid "modified at"
 msgstr "modificato il"
 
-#: models.py:35
+#: models.py:34
 msgid "name"
 msgstr "nome"
 
-#: models.py:36 models.py:95
+#: models.py:35 models.py:95
 msgid "slug"
 msgstr "slug"
 
-#: models.py:43
+#: models.py:42
 msgid "blog category"
 msgstr "categoria del blog"
 
-#: models.py:44
+#: models.py:43
 msgid "blog categories"
 msgstr "categorie del blog"
 
@@ -147,31 +146,31 @@ msgstr "Meta keyword dell'articolo"
 msgid "Text"
 msgstr "Test"
 
-#: models.py:156
+#: models.py:158
 msgid "blog article"
 msgstr "articolo del blog"
 
-#: models.py:157
+#: models.py:159
 msgid "blog articles"
 msgstr "articoli del blog"
 
-#: models.py:201 models.py:226
+#: models.py:199 models.py:226
 msgid "Articles"
 msgstr "Articoli"
 
-#: models.py:202
+#: models.py:200
 msgid "The number of latests articles to be displayed."
 msgstr "Il numero di articoli da mostrare."
 
-#: models.py:204
+#: models.py:202
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Mostra solo gli articoli marcati con i tag selezionati."
 
-#: models.py:206
+#: models.py:204
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Mostra solo gli articoli marcati con i categorie selezionati."
 
-#: models.py:223 templates/djangocms_blog/plugins/authors.html:3
+#: models.py:222 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Autori"
 
