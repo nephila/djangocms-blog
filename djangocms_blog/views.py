@@ -50,7 +50,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)
         context['meta'] = self.get_object().as_meta()
-        context['use_placeholer'] = get_setting('USE_PLACEHOLDER')
+        context['use_placeholder'] = get_setting('USE_PLACEHOLDER')
         setattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, self.get_object())
         return context
 
