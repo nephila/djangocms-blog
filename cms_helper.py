@@ -9,7 +9,6 @@ HELPER_SETTINGS = {
     ],
     'ROOT_URLCONF': 'tests.test_utils.urls',
     'INSTALLED_APPS': [
-        'django.contrib.messages',
         'admin_enhancer',
         'filer',
         'parler',
@@ -21,7 +20,6 @@ HELPER_SETTINGS = {
         'cmsplugin_filer_image',
         'django_select2',
         'taggit_autosuggest',
-        'djangocms_blog',
     ],
     'LANGUAGE_CODE': 'en',
     'LANGUAGES': (

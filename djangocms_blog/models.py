@@ -93,8 +93,10 @@ class Post(ModelMeta, TranslatableModel):
         verbose_name=_(u'Enable comments on post'),
         default=get_setting('ENABLE_COMMENTS')
     )
-    sites = models.ManyToManyField(Site, verbose_name=_(u'Site(s'), blank=True, null=True,
-                                   help_text=_(u'Select sites in which to show the post. If none is set it will be'
+    sites = models.ManyToManyField(Site, verbose_name=_(u'Site(s)'), blank=True,
+                                   null=True,
+                                   help_text=_(u'Select sites in which to show the post. '
+                                               u'If none is set it will be '
                                                u'visible in all the configured sites.')
                                    )
 

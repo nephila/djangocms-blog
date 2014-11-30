@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
+from .forms import PostAdminForm
 from .models import Post, BlogCategory
 from .settings import get_setting
 
@@ -24,6 +25,7 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
 
 class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
                 PlaceholderAdmin, TranslatableAdmin):
+    form = PostAdminForm
     list_display = ['title', 'author', 'date_published', 'date_published_end']
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
@@ -43,7 +45,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
             'classes': ('collapse',)
         }),
         ('SEO', {
-            'fields': [('meta_description', 'meta_keywords', 'meta_title')],
+            'fields': [('meta_description', 'meta_title', 'meta_keywords')],
             'classes': ('collapse',)
         }),
     ]
