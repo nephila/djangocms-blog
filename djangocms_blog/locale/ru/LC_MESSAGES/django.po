@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-01 07:16+0200\n"
-"PO-Revision-Date: 2014-10-12 09:43+0000\n"
+"POT-Creation-Date: 2014-11-30 12:49+0100\n"
+"PO-Revision-Date: 2014-11-30 11:49+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/djangocms-blog/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -61,124 +61,142 @@ msgstr ""
 msgid "Blog articles on %(site_name)s"
 msgstr "Статьи из блог на %(site_name)s"
 
-#: models.py:28
+#: models.py:31
 msgid "parent"
 msgstr "предок"
 
-#: models.py:30
+#: models.py:33
 msgid "created at"
 msgstr "время создания"
 
-#: models.py:31
+#: models.py:34
 msgid "modified at"
 msgstr "время изменения"
 
-#: models.py:34
+#: models.py:37
 msgid "name"
 msgstr "название"
 
-#: models.py:35 models.py:95
+#: models.py:38 models.py:105
 msgid "slug"
 msgstr "URL"
 
-#: models.py:42
+#: models.py:45
 msgid "blog category"
 msgstr "категория блога"
 
-#: models.py:43
+#: models.py:46
 msgid "blog categories"
 msgstr "категории блога"
 
-#: models.py:66
+#: models.py:70
 msgid "Author"
 msgstr "Автор"
 
-#: models.py:71
+#: models.py:75
 msgid "Published Since"
 msgstr "Опубликована с"
 
-#: models.py:73
+#: models.py:77
 msgid "Published Until"
 msgstr "Опубликована до"
 
-#: models.py:75
+#: models.py:79
 msgid "Publish"
 msgstr "Показывать на сайте"
 
-#: models.py:76
+#: models.py:80
 msgid "category"
 msgstr "категория"
 
-#: models.py:78
+#: models.py:82
 msgid "Main image"
 msgstr "Картинка для статьи"
 
-#: models.py:81
+#: models.py:85
 msgid "Main image thumbnail"
 msgstr "Уменьшенная копия"
 
-#: models.py:85
+#: models.py:89
 msgid "Main image full"
 msgstr "Полный размер"
 
-#: models.py:89
+#: models.py:93
 msgid "Enable comments on post"
 msgstr ""
 
-#: models.py:94
+#: models.py:96
+msgid "Site(s)"
+msgstr ""
+
+#: models.py:98
+msgid ""
+"Select sites in which to show the post. If none is set it will be visible in"
+" all the configured sites."
+msgstr ""
+
+#: models.py:104
 msgid "Title"
 msgstr "Заголовок"
 
-#: models.py:96
+#: models.py:106
 msgid "Abstract"
 msgstr ""
 
-#: models.py:97
+#: models.py:107
 msgid "Post meta description"
 msgstr ""
 
-#: models.py:99
+#: models.py:109
 msgid "Post meta keywords"
 msgstr ""
 
-#: models.py:101
+#: models.py:111
+msgid "Post meta title"
+msgstr ""
+
+#: models.py:112
+msgid "used in title tag and social sharing"
+msgstr ""
+
+#: models.py:115
 msgid "Text"
 msgstr ""
 
-#: models.py:158
+#: models.py:178
 msgid "blog article"
 msgstr "статья блога"
 
-#: models.py:159
+#: models.py:179
 msgid "blog articles"
 msgstr "статьи блога"
 
-#: models.py:199 models.py:226
+#: models.py:222 models.py:250
 msgid "Articles"
 msgstr "Статьи"
 
-#: models.py:200
+#: models.py:223
 msgid "The number of latests articles to be displayed."
 msgstr "Количество показываемых последних статей."
 
-#: models.py:202
+#: models.py:225
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Показывать только статьи с выбранными тэгами."
 
-#: models.py:204
+#: models.py:227
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Показывать только статьи из выбранныех категорий."
 
-#: models.py:222 templates/djangocms_blog/plugins/authors.html:3
+#: models.py:246 templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Авторы"
 
-#: models.py:227
+#: models.py:251
 msgid "The number of author articles to be displayed."
 msgstr "Количество статей автора, которые будут показаны."
 
-#: templates/djangocms_blog/post_detail.html:16
-#: templates/djangocms_blog/includes/blog_item.html:10
+#: templates/djangocms_blog/post_detail.html:18
+#: templates/djangocms_blog/includes/blog_item.html:11
 msgid "by"
 msgstr "создана"
 
@@ -223,7 +241,7 @@ msgstr "из"
 msgid "next"
 msgstr "следующая"
 
-#: templates/djangocms_blog/includes/blog_item.html:44
+#: templates/djangocms_blog/includes/blog_item.html:46
 msgid "read more"
 msgstr "продолжение"
 
