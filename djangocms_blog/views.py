@@ -8,8 +8,7 @@ from django.views.generic import ListView, DetailView
 from parler.views import ViewUrlMixin, TranslatableSlugMixin
 
 from .models import Post, BlogCategory, BLOG_CURRENT_POST_IDENTIFIER
-from .settings import (BLOG_PAGINATION, BLOG_POSTS_LIST_TRUNCWORDS_COUNT,
-                       BLOG_USE_PLACEHOLDER)
+from .settings import get_setting
 
 User = get_user_model()
 
@@ -18,10 +17,10 @@ class BaseBlogView(ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        manager = self.model._default_manager.active_translations(language_code=language)
-        if not self.request.user.is_staff:
-            manager = manager.filter(publish=True)
-        return manager
+        queryset = self.model._default_manager.language(language_code=language)
+        if not self.request.toolbar or not self.request.toolbar.edit_mode:
+            queryset = queryset.published()
+        return queryset.on_site()
 
     def render_to_response(self, context, **response_kwargs):
         response_kwargs['current_app'] = resolve(self.request.path).namespace
@@ -32,12 +31,12 @@ class PostListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
-    paginate_by = BLOG_PAGINATION
+    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-latest'
 
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
-        context['TRUNCWORDS_COUNT'] = BLOG_POSTS_LIST_TRUNCWORDS_COUNT
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
 
@@ -51,7 +50,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)
         context['meta'] = self.get_object().as_meta()
-        context['use_placeholder'] = BLOG_USE_PLACEHOLDER
+        context['use_placeholder'] = get_setting('USE_PLACEHOLDER')
         setattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, self.get_object())
         return context
 
@@ -63,7 +62,7 @@ class PostArchiveView(BaseBlogView, ListView):
     date_field = 'date_published'
     allow_empty = True
     allow_future = True
-    paginate_by = BLOG_PAGINATION
+    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-archive'
 
     def get_queryset(self):
@@ -86,7 +85,7 @@ class TaggedListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
-    paginate_by = BLOG_PAGINATION
+    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-tagged'
 
     def get_queryset(self):
@@ -103,7 +102,7 @@ class AuthorEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
-    paginate_by = BLOG_PAGINATION
+    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-authors'
 
     def get_queryset(self):
@@ -122,16 +121,13 @@ class CategoryEntriesView(BaseBlogView, ListView):
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
     _category = None
-    paginate_by = BLOG_PAGINATION
+    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-category'
 
     @property
     def category(self):
         if not self._category:
-            language = get_language()
-            self._category = BlogCategory._default_manager.language(language).get(
-                translations__language_code=language,
-                translations__slug=self.kwargs['category'])
+            self._category = BlogCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).latest('pk')
         return self._category
 
     def get_queryset(self):

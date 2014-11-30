@@ -45,7 +45,7 @@ Quickstart
 
 Install djangocms-blog::
 
-    pip install djangocms-blog==0.2c1
+    pip install djangocms-blog
 
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
@@ -142,6 +142,7 @@ Features
 * Multilingual support using django-parler
 * Support for Twitter cards, Open Graph and Google+ snippets meta tags
 * Optional support for simpler TextField-based content editing
+* Multisite support (posts can be visible in one or more Django sites on the same project)
 
 Import from Wordpress
 +++++++++++++++++++++
@@ -154,19 +155,24 @@ this gist https://gist.github.com/yakky/11336204 as a base.
 Settings
 --------
 * BLOG_ENABLE_COMMENTS: Whether to enable comments by default on posts;
-  while `djangocms_blog` does not ship any comment system, this flag can be used
+  while ``djangocms_blog`` does not ship any comment system, this flag can be used
   to control the chosen comments framework; (default: True)
-* BLOG_USE_PLACEHOLDER: Post content is managed via placeholder; if `False` a
+* BLOG_USE_PLACEHOLDER: Post content is managed via placeholder; if ``False`` a
   simple HTMLField is used; (default: True)
 * BLOG_IMAGE_THUMBNAIL_SIZE: Size of the main image when shown on the post lists;
-  it's a dictionary with `size`, `crop` and `upscale` keys;
-  (default: `{'size': '120x120', 'crop': True,'upscale': False}`)
+  it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
+  (default: ``{'size': '120x120', 'crop': True,'upscale': False}``)
 * BLOG_IMAGE_FULL_SIZE: Size of the main image when shown on the post detail;
-  it's a dictionary with `size`, `crop` and `upscale` keys;
-  (default: `{'size': '640x120', 'crop': True,'upscale': False}`)
-* BLOG_PAGINATION: Number of post per page; (defaul: 10)
-* BLOG_LATEST_POSTS: Default number of post in the **Latest post** plugin; (defaul: 5)
+  it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
+  (default: ``{'size': '640x120', 'crop': True,'upscale': False}``)
+* BLOG_PAGINATION: Number of post per page; (default: 10)
+* BLOG_LATEST_POSTS: Default number of post in the **Latest post** plugin; (default: 5)
 * BLOG_POSTS_LIST_TRUNCWORDS_COUNT: Default number of words shown for abstract in the post list; (default: 100)
+* BLOG_MULTISITE: Add support for multisite setup
+* BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
+  current user is set as the default author, if set to ``False`` no default
+  author is set, if set to a string the user with the provided username is
+  used; (default: True)
 
 Social media tags settings
 ++++++++++++++++++++++++++

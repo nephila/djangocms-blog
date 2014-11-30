@@ -9,6 +9,7 @@ HELPER_SETTINGS = {
     ],
     'ROOT_URLCONF': 'tests.test_utils.urls',
     'INSTALLED_APPS': [
+        'django.contrib.messages',
         'admin_enhancer',
         'filer',
         'parler',
@@ -46,6 +47,13 @@ HELPER_SETTINGS = {
                 'public': True,
             },
         ],
+        2: [
+            {
+                'code': 'en',
+                'name': gettext('English'),
+                'public': True,
+            },
+        ],
         'default': {
             'hide_untranslated': False,
         },
@@ -56,11 +64,17 @@ HELPER_SETTINGS = {
             {'code': 'it'},
             {'code': 'fr'},
         ),
+        2: (
+            {'code': 'en'},
+        ),
         'default': {
             'fallback': 'en',
             'hide_untranslated': False,
         }
     },
+    'MIDDLEWARE_CLASSES': [
+        'django.contrib.messages.middleware.MessageMiddleware',
+    ],
     'META_SITE_PROTOCOL': 'http',
     'META_SITE_DOMAIN': 'example.com',
     'META_USE_OG_PROPERTIES': True,
@@ -73,6 +87,7 @@ HELPER_SETTINGS = {
         'easy_thumbnails.processors.filters',
     ),
     'FILE_UPLOAD_TEMP_DIR': mkdtemp(),
+    'SITE_ID': 1
 }
 if 'test' in sys.argv:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')

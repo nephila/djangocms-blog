@@ -3,7 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.translation import activate
 from django.utils.timezone import now
-from djangocms_blog.models import Post
+from parler.utils.context import switch_language
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import (PostListView, PostDetailView,
@@ -27,6 +27,14 @@ class ViewTest(BaseTest):
         self.assertEqual(list(view_obj.get_queryset()), [post1])
 
         request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        activate('en')
+        view_obj.request = request
+        view_obj.kwargs = {}
+        qs = view_obj.get_queryset()
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(set(qs), set([post1]))
+
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=True)
         view_obj.request = request
         self.assertEqual(set(view_obj.get_queryset()), set([post1, post2]))
 
@@ -41,7 +49,7 @@ class ViewTest(BaseTest):
         response = view_obj.render_to_response(context)
         self.assertContains(response, context['post_list'][0].get_absolute_url())
 
-        request = self.get_page_request(page1, self.user, r'/it/blog/', lang_code='it', edit=False)
+        request = self.get_page_request(page1, self.user, r'/it/blog/', lang_code='it', edit=True)
         activate('it')
         view_obj.request = request
         view_obj.object_list = view_obj.get_queryset()
@@ -54,34 +62,33 @@ class ViewTest(BaseTest):
         page1, page2 = self.get_pages()
         post1, post2 = self.get_posts()
 
-        request = self.get_page_request(page1, AnonymousUser(), r'/en/blog/', edit=False)
-        activate('en')
-        view_obj = PostDetailView()
-        view_obj.request = request
+        with switch_language(post1, 'en'):
+            request = self.get_page_request(page1, AnonymousUser(), r'/en/blog/', edit=False)
+            view_obj = PostDetailView()
+            view_obj.request = request
 
-        with self.assertRaises(Http404):
-            view_obj.kwargs = {'slug': 'not-existing'}
+            with self.assertRaises(Http404):
+                view_obj.kwargs = {'slug': 'not-existing'}
+                post_obj = view_obj.get_object()
+
+            view_obj.kwargs = {'slug': post1.slug}
             post_obj = view_obj.get_object()
+            self.assertEqual(post_obj, post1)
+            self.assertEqual(post_obj.language_code, 'en')
 
-        view_obj.kwargs = {'slug': post1.slug}
-        post_obj = view_obj.get_object()
-        self.assertEqual(post_obj, post1)
-        self.assertEqual(post_obj.language_code, 'en')
+        with switch_language(post1, 'it'):
+            request = self.get_page_request(page1, AnonymousUser(), r'/it/blog/', lang_code='it', edit=False)
+            view_obj.request = request
+            view_obj.kwargs = {'slug': post1.slug}
+            post_obj = view_obj.get_object()
+            self.assertEqual(post_obj, post1)
+            self.assertEqual(post_obj.language_code, 'it')
 
-        request = self.get_page_request(page1, AnonymousUser(), r'/it/blog/', lang_code='it', edit=False)
-        activate('it')
-        post1.set_current_language('it')
-        view_obj.request = request
-        view_obj.kwargs = {'slug': post1.slug}
-        post_obj = view_obj.get_object()
-        self.assertEqual(post_obj, post1)
-        self.assertEqual(post_obj.language_code, 'it')
-
-        view_obj.object = post_obj
-        context = view_obj.get_context_data()
-        self.assertEqual(context['post'], post1)
-        self.assertEqual(context['post'].language_code, 'it')
-        self.assertTrue(context['meta'])
+            view_obj.object = post_obj
+            context = view_obj.get_context_data()
+            self.assertEqual(context['post'], post1)
+            self.assertEqual(context['post'].language_code, 'it')
+            self.assertTrue(context['meta'])
 
     def test_post_archive_view(self):
         page1, page2 = self.get_pages()
@@ -106,7 +113,7 @@ class ViewTest(BaseTest):
         page1, page2 = self.get_pages()
         post1, post2 = self.get_posts()
 
-        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=True)
         activate('en')
         view_obj = CategoryEntriesView()
         view_obj.request = request
@@ -129,7 +136,7 @@ class ViewTest(BaseTest):
         page1, page2 = self.get_pages()
         post1, post2 = self.get_posts()
 
-        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=True)
         activate('en')
         view_obj = AuthorEntriesView()
         view_obj.request = request
@@ -156,7 +163,7 @@ class ViewTest(BaseTest):
         post2.tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
         post2.save()
 
-        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=False)
+        request = self.get_page_request(page1, self.user, r'/en/blog/', edit=True)
         activate('en')
         view_obj = TaggedListView()
         view_obj.request = request

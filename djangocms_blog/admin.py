@@ -4,10 +4,11 @@ from cms.admin.placeholderadmin import PlaceholderAdminMixin, FrontendEditableAd
 from copy import deepcopy
 from django.contrib import admin
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
 from .models import Post, BlogCategory
-from .settings import BLOG_USE_PLACEHOLDER
+from .settings import get_setting
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
@@ -49,8 +50,10 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
-        if not BLOG_USE_PLACEHOLDER:
+        if not get_setting('USE_PLACEHOLDER'):
             fsets[0][1]['fields'].append('post_text')
+        if get_setting('MULTISITE'):
+            fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
         return fsets
@@ -59,8 +62,12 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
-        if not obj.author_id:
-            obj.author = request.user
+        if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
+            if get_setting('AUTHOR_DEFAULT') is True:
+                user = request.user
+            else:
+                user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
+            obj.author = user
         super(PostAdmin, self).save_model(request, obj, form, change)
 
     class Media:

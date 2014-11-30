@@ -2,25 +2,28 @@
 from cms.models import PlaceholderField, CMSPlugin
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.conf import settings as dj_settings
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.html import strip_tags, escape
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
+from meta_mixin.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.managers import TranslationManager
 from taggit_autosuggest.managers import TaggableManager
 
-from . import settings
-from meta_mixin.models import ModelMeta
+from .settings import get_setting
 from .managers import GenericDateTaggedManager
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
 
 
+@python_2_unicode_compatible
 class BlogCategory(TranslatableModel):
     """
     Blog category
@@ -46,7 +49,7 @@ class BlogCategory(TranslatableModel):
     def count(self):
         return self.blog_posts.filter(publish=True).count()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.safe_translation_getter('name')
 
     def save(self, *args, **kwargs):
@@ -58,6 +61,7 @@ class BlogCategory(TranslatableModel):
         self.save_translations()
 
 
+@python_2_unicode_compatible
 class Post(ModelMeta, TranslatableModel):
     """
     Blog post
@@ -87,8 +91,12 @@ class Post(ModelMeta, TranslatableModel):
                                         blank=True, null=True)
     enable_comments = models.BooleanField(
         verbose_name=_(u'Enable comments on post'),
-        default=settings.BLOG_ENABLE_COMMENTS
+        default=get_setting('ENABLE_COMMENTS')
     )
+    sites = models.ManyToManyField(Site, verbose_name=_(u'Site(s'), blank=True, null=True,
+                                   help_text=_(u'Select sites in which to show the post. If none is set it will be'
+                                               u'visible in all the configured sites.')
+                                   )
 
     translations = TranslatedFields(
         title=models.CharField(_('Title'), max_length=255),
@@ -119,17 +127,17 @@ class Post(ModelMeta, TranslatableModel):
         'keywords': 'get_keywords',
         'locale': None,
         'image': 'get_image_full_url',
-        'object_type': settings.BLOG_TYPE,
-        'og_type': settings.BLOG_FB_TYPE,
-        'og_app_id': settings.BLOG_FB_APPID,
-        'og_profile_id': settings.BLOG_FB_PROFILE_ID,
-        'og_publisher': settings.BLOG_FB_PUBLISHER,
-        'og_author_url': settings.BLOG_FB_AUTHOR_URL,
-        'twitter_type': settings.BLOG_TWITTER_TYPE,
-        'twitter_site': settings.BLOG_TWITTER_SITE,
-        'twitter_author': settings.BLOG_TWITTER_AUTHOR,
-        'gplus_type': settings.BLOG_GPLUS_TYPE,
-        'gplus_author': settings.BLOG_GPLUS_AUTHOR,
+        'object_type': get_setting('TYPE'),
+        'og_type': get_setting('FB_TYPE'),
+        'og_app_id': get_setting('FB_APPID'),
+        'og_profile_id': get_setting('FB_PROFILE_ID'),
+        'og_publisher': get_setting('FB_PUBLISHER'),
+        'og_author_url': get_setting('FB_AUTHOR_URL'),
+        'twitter_type': get_setting('TWITTER_TYPE'),
+        'twitter_site': get_setting('TWITTER_SITE'),
+        'twitter_author': get_setting('TWITTER_AUTHOR'),
+        'gplus_type': get_setting('GPLUS_TYPE'),
+        'gplus_author': get_setting('GPLUS_AUTHOR'),
         'published_time': 'date_published',
         'modified_time': 'date_modified',
         'expiration_time': 'date_published_end',
@@ -150,7 +158,7 @@ class Post(ModelMeta, TranslatableModel):
         description = self.safe_translation_getter('meta_description', any_language=True)
         if not description:
             description = self.safe_translation_getter('abstract', any_language=True)
-        return description.strip()
+        return escape(strip_tags(description)).strip()
 
     def get_image_full_url(self):
         if self.main_image:
@@ -170,50 +178,53 @@ class Post(ModelMeta, TranslatableModel):
         ordering = ('-date_published', '-date_created')
         get_latest_by = 'date_published'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.safe_translation_getter('title')
 
     def save(self, *args, **kwargs):
         super(Post, self).save(*args, **kwargs)
+        main_lang = self.get_current_language()
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.title:
                 self.slug = slugify(self.title)
+        self.set_current_language(main_lang)
         self.save_translations()
 
     def get_absolute_url(self):
         kwargs = {'year': self.date_published.year,
-                  'month': self.date_published.month,
-                  'day': self.date_published.day,
-                  'slug': self.safe_translation_getter('slug', any_language=True)}
+                  'month': '%02d' % self.date_published.month,
+                  'day': '%02d' % self.date_published.day,
+                  'slug': self.safe_translation_getter('slug', language_code=get_language())}
         return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def thumbnail_options(self):
         if self.main_image_thumbnail_id:
             return self.main_image_thumbnail.as_dict
         else:
-            return settings.BLOG_IMAGE_THUMBNAIL_SIZE
+            return get_setting('IMAGE_THUMBNAIL_SIZE')
 
     def full_image_options(self):
         if self.main_image_full_id:
             return self.main_image_full.as_dict
         else:
-            return settings.BLOG_IMAGE_FULL_SIZE
+            return get_setting('IMAGE_FULL_SIZE')
 
     def get_full_url(self):
         return self.make_full_url(self.get_absolute_url())
 
 
+@python_2_unicode_compatible
 class LatestPostsPlugin(CMSPlugin):
 
-    latest_posts = models.IntegerField(_(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+    latest_posts = models.IntegerField(_(u'Articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests articles to be displayed.'))
     tags = models.ManyToManyField('taggit.Tag', blank=True,
                                   help_text=_('Show only the blog articles tagged with chosen tags.'))
     categories = models.ManyToManyField('BlogCategory', blank=True,
                                         help_text=_('Show only the blog articles tagged with chosen categories.'))
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s latest articles by tag' % self.latest_posts
 
     def copy_relations(self, oldinstance):
@@ -227,17 +238,18 @@ class LatestPostsPlugin(CMSPlugin):
         return posts[:self.latest_posts]
 
 
+@python_2_unicode_compatible
 class AuthorEntriesPlugin(CMSPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('Authors'),
         limit_choices_to={'djangocms_blog_post_author__publish': True}
     )
     latest_posts = models.IntegerField(
-        _(u'Articles'), default=settings.BLOG_LATEST_POSTS,
+        _(u'Articles'), default=get_setting('LATEST_POSTS'),
         help_text=_('The number of author articles to be displayed.')
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s latest articles by author' % self.latest_posts
 
     def copy_relations(self, oldinstance):

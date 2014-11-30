@@ -2,64 +2,63 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Bashar Al-Abdulhadi, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-09-01 07:16+0200\n"
-"PO-Revision-Date: 2014-10-12 12:01+0000\n"
-"Last-Translator: Bashar Al-Abdulhadi\n"
-"Language-Team: Arabic (http://www.transifex.com/projects/p/djangocms-blog/language/ar/)\n"
+"PO-Revision-Date: 2014-03-29 15:29+0000\n"
+"Last-Translator: Iacopo Spalletti\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/djangocms-blog/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ar\n"
-"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
 #: cms_app.py:8 cms_plugins.py:32 cms_plugins.py:45 cms_plugins.py:56
 #: cms_plugins.py:67 cms_toolbar.py:18
 msgid "Blog"
-msgstr "المدونة"
+msgstr ""
 
 #: cms_plugins.py:20
 msgid "Latest Blog Articles"
-msgstr "آخر مواضيع المدونة"
+msgstr ""
 
 #: cms_plugins.py:33
 msgid "Author Blog Articles"
-msgstr "ناشر مواضيع المدونة"
+msgstr ""
 
 #: cms_plugins.py:46 templates/djangocms_blog/plugins/tags.html:4
 msgid "Tags"
-msgstr "علامات"
+msgstr ""
 
 #: cms_plugins.py:57 templates/djangocms_blog/plugins/categories.html:4
 msgid "Categories"
-msgstr "الأقسام"
+msgstr ""
 
 #: cms_plugins.py:68 templates/djangocms_blog/post_list.html:12
 #: templates/djangocms_blog/plugins/archive.html:4
 msgid "Archive"
-msgstr "الأرشيف"
+msgstr ""
 
 #: cms_toolbar.py:20
 msgid "Post list"
-msgstr "قائمة المواضيع"
+msgstr ""
 
 #: cms_toolbar.py:22
 msgid "Add post"
-msgstr "إضافة موضوع"
+msgstr ""
 
 #: cms_toolbar.py:26
 msgid "Edit Post"
-msgstr "التعديل على موضوع"
+msgstr ""
 
 #: feeds.py:16
 #, python-format
 msgid "Blog articles on %(site_name)s"
-msgstr "مواضيع المدونة على %(site_name)s"
+msgstr ""
 
 #: models.py:28
 msgid "parent"
@@ -236,10 +235,6 @@ msgid "1 article"
 msgid_plural "%(articles)s articles"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
 
 #: templates/djangocms_blog/plugins/archive.html:19
 #: templates/djangocms_blog/plugins/authors.html:11

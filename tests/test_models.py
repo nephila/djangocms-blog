@@ -2,17 +2,90 @@
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
+from copy import deepcopy
+from django.contrib import admin
+from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
+from django.utils.translation import get_language, override
 import parler
 from taggit.models import Tag
 
 from djangocms_blog.models import Post
-from djangocms_blog import settings
+from djangocms_blog.settings import get_setting
 
 
 from . import BaseTest
+
+
+class AdminTest(BaseTest):
+
+    def test_admin_fieldsets(self):
+        request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
+        post_admin = admin.site._registry[Post]
+
+        with self.settings(BLOG_USE_PLACEHOLDER=True):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertFalse('post_text' in fsets[0][1]['fields'])
+
+        with self.settings(BLOG_USE_PLACEHOLDER=False):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('post_text' in fsets[0][1]['fields'])
+
+        with self.settings(BLOG_MULTISITE=True):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('sites' in fsets[1][1]['fields'][0])
+        with self.settings(BLOG_MULTISITE=False):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertFalse('sites' in fsets[1][1]['fields'][0])
+
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue('author' in fsets[1][1]['fields'][0])
+
+    def test_admin_auto_author(self):
+        page1, page2 = self.get_pages()
+        request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
+        data = deepcopy(self.data['en'][0])
+
+        with self.settings(BLOG_AUTHOR_DEFAULT=True):
+            data['date_published_0'] = now().strftime('%Y-%m-%d')
+            data['date_published_1'] = now().strftime('%H:%M:%S')
+            data['categories'] = self.category_1.pk
+            request = self.post_request(page1, 'en', data=data)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.add_view(request)
+            self.assertEqual(Post.objects.count(), 1)
+            self.assertEqual(Post.objects.get(translations__slug='first-post').author_id, 1)
+
+        with self.settings(BLOG_AUTHOR_DEFAULT=False):
+            data = deepcopy(self.data['en'][1])
+            data['date_published_0'] = now().strftime('%Y-%m-%d')
+            data['date_published_1'] = now().strftime('%H:%M:%S')
+            data['categories'] = self.category_1.pk
+            request = self.post_request(page1, 'en', data=data)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.add_view(request)
+            self.assertEqual(Post.objects.count(), 2)
+            self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
+
+        with self.settings(BLOG_AUTHOR_DEFAULT='staff'):
+            data = deepcopy(self.data['en'][2])
+            data['date_published_0'] = now().strftime('%Y-%m-%d')
+            data['date_published_1'] = now().strftime('%H:%M:%S')
+            data['categories'] = self.category_1.pk
+            request = self.post_request(page1, 'en', data=data)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.add_view(request)
+            self.assertEqual(Post.objects.count(), 3)
+            self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
 
 
 class ModelsTest(BaseTest):
@@ -24,7 +97,7 @@ class ModelsTest(BaseTest):
         post.save()
         post.set_current_language('en')
         meta_en = post.as_meta()
-        self.assertEqual(meta_en.og_type, settings.BLOG_FB_TYPE)
+        self.assertEqual(meta_en.og_type, get_setting('FB_TYPE'))
         self.assertEqual(meta_en.title, post.title)
         self.assertTrue(meta_en.url.endswith(post.get_absolute_url()))
         self.assertEqual(meta_en.description, post.meta_description)
@@ -37,27 +110,30 @@ class ModelsTest(BaseTest):
         self.assertNotEqual(meta_it.title, meta_en.title)
         self.assertEqual(meta_it.description, post.meta_description)
 
-        post.set_current_language('en')
-        kwargs = {'year': post.date_published.year,
-                  'month': post.date_published.month,
-                  'day': post.date_published.day,
-                  'slug': post.safe_translation_getter('slug', any_language=True)}
-        url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
-        self.assertEqual(url_en, post.get_absolute_url())
-        post.set_current_language('it')
-        kwargs = {'year': post.date_published.year,
-                  'month': post.date_published.month,
-                  'day': post.date_published.day,
-                  'slug': post.safe_translation_getter('slug', any_language=True)}
-        url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
-        self.assertEqual(url_it, post.get_absolute_url())
-        self.assertNotEqual(url_it, url_en)
+        with override('en'):
+            post.set_current_language(get_language())
+            kwargs = {'year': post.date_published.year,
+                      'month': '%02d' % post.date_published.month,
+                      'day': '%02d' % post.date_published.day,
+                      'slug': post.safe_translation_getter('slug', any_language=get_language())}
+            url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            self.assertEqual(url_en, post.get_absolute_url())
 
-        self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
+        with override('it'):
+            post.set_current_language(get_language())
+            kwargs = {'year': post.date_published.year,
+                      'month': '%02d' % post.date_published.month,
+                      'day': '%02d' % post.date_published.day,
+                      'slug': post.safe_translation_getter('slug', any_language=get_language())}
+            url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            self.assertEqual(url_it, post.get_absolute_url())
+            self.assertNotEqual(url_it, url_en)
+
+            self.assertEqual(post.get_full_url(), 'http://example.com%s' % url_it)
         self.assertEqual(post.get_image_full_url(), 'http://example.com%s' % post.main_image.url)
 
-        self.assertEqual(post.thumbnail_options(), settings.BLOG_IMAGE_THUMBNAIL_SIZE)
-        self.assertEqual(post.full_image_options(), settings.BLOG_IMAGE_FULL_SIZE)
+        self.assertEqual(post.thumbnail_options(), get_setting('IMAGE_THUMBNAIL_SIZE'))
+        self.assertEqual(post.full_image_options(), get_setting('IMAGE_FULL_SIZE'))
 
         post.main_image_thumbnail = self.thumb_1
         post.main_image_full = self.thumb_2
@@ -213,3 +289,17 @@ class ModelsTest(BaseTest):
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
+
+    def test_multisite(self):
+        with override('en'):
+            post1 = self._get_post(self.data['en'][0], sites=(self.site_1,))
+            post2 = self._get_post(self.data['en'][1], sites=(self.site_2,))
+            post3 = self._get_post(self.data['en'][2], sites=(self.site_2, self.site_1))
+
+            self.assertEqual(len(Post.objects.all()), 3)
+            with self.settings(**{'SITE_ID': self.site_1.pk}):
+                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(set(list(Post.objects.all().on_site())), set([post1, post3]))
+            with self.settings(**{'SITE_ID': self.site_2.pk}):
+                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))
