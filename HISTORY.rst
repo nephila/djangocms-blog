@@ -3,13 +3,14 @@
 History
 -------
 
-0.3.0 (Unreleased)
+0.3.0 (unreleased)
 ++++++++++++++++++
 
 * Multisite support
 * Configurable default author support
 * Refactored settings
 * Fix multilanguage issues
+* Fix SEO fields length.
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
