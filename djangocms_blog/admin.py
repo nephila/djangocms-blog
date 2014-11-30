@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from admin_enhancer.admin import EnhancedModelAdminMixin
-from cms.admin.placeholderadmin import PlaceholderAdmin, FrontendEditableAdmin
+from cms.admin.placeholderadmin import PlaceholderAdminMixin, FrontendEditableAdminMixin
 from copy import deepcopy
 from django.contrib import admin
 from django.conf import settings
@@ -21,8 +21,8 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
         }
 
 
-class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdmin,
-                PlaceholderAdmin, TranslatableAdmin):
+class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
+                PlaceholderAdminMixin, TranslatableAdmin, admin.ModelAdmin):
     list_display = ['title', 'author', 'date_published', 'date_published_end']
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
