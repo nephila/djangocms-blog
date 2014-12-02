@@ -10,7 +10,9 @@ History
 * Configurable default author support
 * Refactored settings
 * Fix multilanguage issues
-* Fix SEO fields length.
+* Fix SEO fields length
+* Post absolute url is generated from the title in any language if current is
+  not available..
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
