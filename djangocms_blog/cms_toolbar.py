@@ -40,7 +40,7 @@ class BlogToolbar(CMSToolbar):
                 pass
             # removing page tags menu, if present, to avoid confusion
             try:   # pragma: no cover
-                import djangocms_page_meta
+                import djangocms_page_tags
                 menu = self.request.toolbar.get_or_create_menu('page')
                 pagetags = menu.get_or_create_menu('pagetags', 'tags')
                 menu.remove_item(pagetags)
