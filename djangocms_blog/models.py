@@ -197,7 +197,9 @@ class Post(ModelMeta, TranslatableModel):
         kwargs = {'year': self.date_published.year,
                   'month': '%02d' % self.date_published.month,
                   'day': '%02d' % self.date_published.day,
-                  'slug': self.safe_translation_getter('slug', language_code=get_language())}
+                  'slug': self.safe_translation_getter('slug',
+                                                       language_code=get_language(),
+                                                       any_language=True)}
         return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def thumbnail_options(self):
