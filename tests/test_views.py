@@ -3,6 +3,8 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.translation import activate
 from django.utils.timezone import now
+from parler.tests.utils import override_parler_settings
+from parler.utils.conf import add_default_language_settings
 from parler.utils.context import switch_language
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.sitemaps import BlogSitemap
@@ -57,6 +59,43 @@ class ViewTest(BaseTest):
         self.assertEqual(context['post_list'][0].title, 'Secondo post')
         response = view_obj.render_to_response(context)
         self.assertContains(response, context['post_list'][0].get_absolute_url())
+
+    def test_post_list_view_fallback(self):
+        page1, page2 = self.get_pages()
+        post1, post2 = self.get_posts()
+
+        PARLER_FALLBACK = {
+            1: (
+                {'code': 'en'},
+                {'code': 'it'},
+                {'code': 'fr', 'hide_untranslated': True,},
+            ),
+            'default': {
+                'fallback': 'en',
+                'hide_untranslated': False,
+            }
+        }
+
+        view_obj = PostListView()
+        request = self.get_page_request(page1, self.user, r'/fr/blog/', lang_code='fr', edit=True)
+        activate('fr')
+        view_obj.request = request
+        view_obj.kwargs = {}
+        view_obj.object_list = view_obj.get_queryset()
+        context = view_obj.get_context_data(object_list=view_obj.object_list)
+        self.assertEqual(view_obj.get_queryset().count(), 2)
+
+        PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)
+        with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
+
+            view_obj = PostListView()
+            request = self.get_page_request(page1, self.user, r'/fr/blog/', lang_code='fr', edit=True)
+            activate('fr')
+            view_obj.request = request
+            view_obj.kwargs = {}
+            view_obj.object_list = view_obj.get_queryset()
+            context = view_obj.get_context_data(object_list=view_obj.object_list)
+            self.assertEqual(view_obj.get_queryset().count(), 0)
 
     def test_post_detail_view(self):
         page1, page2 = self.get_pages()
