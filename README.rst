@@ -40,6 +40,13 @@ Supported django CMS versions:
              defaults for search engines. Existing data will not be affected,
              but widgets that enforce the length for new data is now being used.
 
+.. warning:: Starting from 0.3 BlogLatestEntriesPlugin and BlogAuthorPostsPlugin
+             the plugin API has changed: ``BlogLatestEntriesPlugin.get_posts``,
+             ``BlogAuthorPostsPlugin.get_authors`` requires the ``request``
+             argument. Templates has been changed to use a context variable
+             instead. Please update your plugin templates accordingly.
+
+
 Quickstart
 ----------
 

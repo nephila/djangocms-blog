@@ -16,6 +16,7 @@ History
 * If djangocms-page-meta and djangocms-page-tags are installed, the relevant
   toolbar items are removed from the toolbar in the post detail view to avoid
   confusings page meta / tags with post ones
+* Plugin API changed to filter out posts according to the request.
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
