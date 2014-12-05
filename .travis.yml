@@ -30,8 +30,6 @@ matrix:
       env: DJANGO='django>=1.7,<1.8' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
 
   allow_failures:
-    - python: 2.7
-      env: DJANGO='django>=1.7,<1.8' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.3
       env: DJANGO='django>=1.5,<1.6' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.3
