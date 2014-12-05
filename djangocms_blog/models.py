@@ -219,7 +219,23 @@ class Post(ModelMeta, TranslatableModel):
 
 
 @python_2_unicode_compatible
-class LatestPostsPlugin(CMSPlugin):
+class BasePostPlugin(CMSPlugin):
+
+    class Meta:
+        abstract = True
+
+    def post_queryset(self, request):
+        language = get_language()
+        posts = Post._default_manager.active_translations(language_code=language)
+        if not request.toolbar or not request.toolbar.edit_mode:
+            posts = posts.published()
+        return posts
+
+    def __str__(self):
+        return unicode(self.latest_posts)
+
+
+class LatestPostsPlugin(BasePostPlugin):
 
     latest_posts = models.IntegerField(_(u'Articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests articles to be displayed.'))
@@ -234,16 +250,15 @@ class LatestPostsPlugin(CMSPlugin):
     def copy_relations(self, oldinstance):
         self.tags = oldinstance.tags.all()
 
-    def get_posts(self):
-        posts = Post.objects.published()
+    def get_posts(self, request):
+        posts = self.post_queryset(request)
         tags = list(self.tags.all())
         if tags:
             posts = posts.filter(tags__in=tags)
         return posts[:self.latest_posts]
 
 
-@python_2_unicode_compatible
-class AuthorEntriesPlugin(CMSPlugin):
+class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('Authors'),
         limit_choices_to={'djangocms_blog_post_author__publish': True}
@@ -259,8 +274,8 @@ class AuthorEntriesPlugin(CMSPlugin):
     def copy_relations(self, oldinstance):
         self.authors = oldinstance.authors.all()
 
-    def get_posts(self):
-        posts = (Post.objects.published().filter(author__in=self.authors.all()))
+    def get_posts(self, request):
+        posts = self.post_queryset(request)
         return posts[:self.latest_posts]
 
     def get_authors(self):

@@ -24,6 +24,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context['instance'] = instance
+        context['posts_list'] = instance.get_posts(context['request'])
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
@@ -38,6 +39,7 @@ class BlogAuthorPostsPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context['instance'] = instance
+        context['authors_list'] = instance.get_authors()
         return context
 
 
