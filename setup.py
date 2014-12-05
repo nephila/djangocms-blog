@@ -40,7 +40,7 @@ setup(
         'django-cms>=3.0',
         'django-taggit',
         'django-filer',
-        'django-select2',
+        'django-select2-Py3',
         'pytz',
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
