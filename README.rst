@@ -30,6 +30,7 @@ Supported Django versions:
 
 * Django 1.5
 * Django 1.6
+* Django 1.7
 
 Supported django CMS versions:
 
@@ -45,6 +46,11 @@ Supported django CMS versions:
              ``BlogAuthorPostsPlugin.get_authors`` requires the ``request``
              argument. Templates has been changed to use a context variable
              instead. Please update your plugin templates accordingly.
+
+.. warning:: To ease migration to version 0.3, djangocms-blog depends on south
+             even on Django 1.7; while this is unnecessary for Dajngo 1.7, it
+             makes transition to version 0.3 painless. Hard dependency will be
+             removed in 0.5.
 
 
 Quickstart

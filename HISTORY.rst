@@ -17,6 +17,7 @@ History
   toolbar items are removed from the toolbar in the post detail view to avoid
   confusings page meta / tags with post ones
 * Plugin API changed to filter out posts according to the request.
+* Django 1.7 support
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
