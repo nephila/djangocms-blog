@@ -2,7 +2,7 @@
 <div class="plugin plugin-blog">
     <h3>{% trans "Authors" %}</h3>
 	<ul class="blog-authors">
-		{% for author in instance.get_authors %}
+		{% for author in authors_list %}
         <li><a href="{% url 'djangocms_blog:posts-author' author.get_username %}">
 		    {{ author.get_full_name }}
             <span>(

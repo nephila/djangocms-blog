@@ -30,6 +30,7 @@ Supported Django versions:
 
 * Django 1.5
 * Django 1.6
+* Django 1.7
 
 Supported django CMS versions:
 
@@ -39,6 +40,18 @@ Supported django CMS versions:
              meta_title fields has been changed according to the most common
              defaults for search engines. Existing data will not be affected,
              but widgets that enforce the length for new data is now being used.
+
+.. warning:: Starting from 0.3 BlogLatestEntriesPlugin and BlogAuthorPostsPlugin
+             the plugin API has changed: ``BlogLatestEntriesPlugin.get_posts``,
+             ``BlogAuthorPostsPlugin.get_authors`` requires the ``request``
+             argument. Templates has been changed to use a context variable
+             instead. Please update your plugin templates accordingly.
+
+.. warning:: To ease migration to version 0.3, djangocms-blog depends on south
+             even on Django 1.7; while this is unnecessary for Dajngo 1.7, it
+             makes transition to version 0.3 painless. Hard dependency will be
+             removed in 0.5.
+
 
 Quickstart
 ----------

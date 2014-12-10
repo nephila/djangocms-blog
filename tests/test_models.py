@@ -4,6 +4,7 @@ from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
 from copy import deepcopy
 from django.contrib import admin
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
@@ -243,13 +244,22 @@ class ModelsTest(BaseTest):
         post2 = self._get_post(self.data['en'][1])
         post1.tags.add('tag 1')
         post1.save()
+        request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
+        request_auth = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
+        request_edit = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=True)
         plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en')
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
-        self.assertEqual(len(plugin.get_posts()), 0)
+        # unauthenticated users get no post
+        self.assertEqual(len(plugin.get_posts(request)), 0)
+        # staff users not in edit mode get no post
+        self.assertEqual(len(plugin.get_posts(request_auth)), 0)
+        # staff users in edit mode get the post
+        self.assertEqual(len(plugin.get_posts(request_edit)), 1)
+
         post1.publish = True
         post1.save()
-        self.assertEqual(len(plugin.get_posts()), 1)
+        self.assertEqual(len(plugin.get_posts(request)), 1)
 
     def test_copy_plugin_latest(self):
         post1 = self._get_post(self.data['en'][0])
@@ -265,19 +275,20 @@ class ModelsTest(BaseTest):
     def test_plugin_author(self):
         post1 = self._get_post(self.data['en'][0])
         post2 = self._get_post(self.data['en'][1])
+        request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
         plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en')
         plugin.authors.add(self.user)
-        self.assertEqual(len(plugin.get_posts()), 0)
+        self.assertEqual(len(plugin.get_posts(request)), 0)
         self.assertEqual(plugin.get_authors()[0].count, 0)
 
         post1.publish = True
         post1.save()
-        self.assertEqual(len(plugin.get_posts()), 1)
+        self.assertEqual(len(plugin.get_posts(request)), 1)
         self.assertEqual(plugin.get_authors()[0].count, 1)
 
         post2.publish = True
         post2.save()
-        self.assertEqual(len(plugin.get_posts()), 2)
+        self.assertEqual(len(plugin.get_posts(request)), 2)
         self.assertEqual(plugin.get_authors()[0].count, 2)
 
     def test_copy_plugin_author(self):

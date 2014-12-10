@@ -10,7 +10,14 @@ History
 * Configurable default author support
 * Refactored settings
 * Fix multilanguage issues
-* Fix SEO fields length.
+* Fix SEO fields length
+* Post absolute url is generated from the title in any language if current is
+  not available
+* If djangocms-page-meta and djangocms-page-tags are installed, the relevant
+  toolbar items are removed from the toolbar in the post detail view to avoid
+  confusings page meta / tags with post ones
+* Plugin API changed to filter out posts according to the request.
+* Django 1.7 support
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
