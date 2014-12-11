@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
+* Leonardo Cavallucci
 * Max Vyaznikov
+* Tadas Dailyda

@@ -18,6 +18,8 @@ History
   confusings page meta / tags with post ones
 * Plugin API changed to filter out posts according to the request.
 * Django 1.7 support
+* Python 3.3 and 3.4 support
+
 
 0.2.0 (2014-09-24)
 ++++++++++++++++++
