@@ -23,6 +23,7 @@ if sys.argv[-1] == 'publish':
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
+
 setup(
     name='djangocms-blog',
     version=version,
@@ -40,7 +41,7 @@ setup(
         'django-cms>=3.0',
         'django-taggit',
         'django-filer',
-        'django-select2',
+        'django-select2' if sys.version_info[0]==2 else 'django-select2-py3',
         'pytz',
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
@@ -49,7 +50,7 @@ setup(
         'cmsplugin-filer',
         'django-meta>=0.2',
         'django-meta-mixin>=0.1.1',
-	'south>=1.0.1',
+    	'south>=1.0.1',
     ],
     license="BSD",
     zip_safe=False,
@@ -63,5 +64,7 @@ setup(
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ],
 )

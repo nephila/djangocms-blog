@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
                 ('enable_comments', models.BooleanField(default=True, verbose_name='Enable comments on post')),
                 ('author', models.ForeignKey(related_name='djangocms_blog_post_author', verbose_name='Author', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('categories', models.ManyToManyField(related_name='blog_posts', verbose_name='category', to='djangocms_blog.BlogCategory')),
-                ('content', cms.models.fields.PlaceholderField(slotname=b'post_content', editable=False, to='cms.Placeholder', null=True)),
+                ('content', cms.models.fields.PlaceholderField(slotname='post_content', editable=False, to='cms.Placeholder', null=True)),
                 ('main_image', filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', verbose_name='Main image', blank=True, to='filer.Image', null=True)),
                 ('main_image_full', models.ForeignKey(related_name='djangocms_blog_post_full', verbose_name='Main image full', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
                 ('main_image_thumbnail', models.ForeignKey(related_name='djangocms_blog_post_thumbnail', verbose_name='Main image thumbnail', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
