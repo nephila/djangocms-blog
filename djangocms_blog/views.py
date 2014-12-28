@@ -18,7 +18,7 @@ class BaseBlogView(ViewUrlMixin):
     def get_queryset(self):
         language = get_language()
         queryset = self.model._default_manager.active_translations(language_code=language)
-        if not self.request.toolbar or not self.request.toolbar.edit_mode:
+        if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
         return queryset.on_site()
 
