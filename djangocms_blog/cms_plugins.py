@@ -15,7 +15,28 @@ class BlogPlugin(CMSPluginBase):
 
 
 class BlogLatestEntriesPlugin(BlogPlugin):
+    """
+    Non cached plugin which returns the latest posts taking into account the
+      user / toolbar state
+    """
+    render_template = 'djangocms_blog/plugins/latest_entries.html'
+    name = _('Latest Blog Articles')
+    model = LatestPostsPlugin
+    form = LatestEntriesForm
+    filter_horizontal = ('categories',)
+    cache = False
 
+    def render(self, context, instance, placeholder):
+        context['instance'] = instance
+        context['posts_list'] = instance.get_posts(context['request'])
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
+
+
+class BlogLatestEntriesPluginCached(BlogPlugin):
+    """
+    Cached plugin which returns the latest published posts
+    """
     render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
     model = LatestPostsPlugin
@@ -24,7 +45,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context['instance'] = instance
-        context['posts_list'] = instance.get_posts(context['request'])
+        context['posts_list'] = instance.get_posts()
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 

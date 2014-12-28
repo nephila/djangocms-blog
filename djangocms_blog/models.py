@@ -224,10 +224,10 @@ class BasePostPlugin(CMSPlugin):
     class Meta:
         abstract = True
 
-    def post_queryset(self, request):
+    def post_queryset(self, request=None):
         language = get_language()
         posts = Post._default_manager.active_translations(language_code=language)
-        if not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
+        if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
             posts = posts.published()
         return posts
 
