@@ -94,3 +94,14 @@ HELPER_SETTINGS = {
 }
 if 'test' in sys.argv:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
+
+
+def run():
+    from collections import defaultdict
+    from djangocms_helper import main
+    args = defaultdict(str)
+    args['<application>'] = 'djangocms_blog'
+    args['test'] = True
+    args['--cms'] = True
+    args['--nose-runner'] = True
+    main.core(args=args, application='djangocms_blog')
