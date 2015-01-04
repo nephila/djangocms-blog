@@ -100,6 +100,7 @@ if 'test' in sys.argv:
 
 def run():
     from djangocms_helper import runner
+    sys.argv.append('--nose-runner')
     runner.cms('djangocms_blog')
 
 if __name__ == "__main__":
