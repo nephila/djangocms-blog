@@ -10,9 +10,9 @@ python:
 
 env:
   matrix:
-  - DJANGO='django15' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
-  - DJANGO='django16' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
-  - DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+  - DJANGO='django15'
+  - DJANGO='django16'
+  - DJANGO='django17'
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
@@ -30,18 +30,18 @@ after_success: coveralls
 matrix:
   exclude:
     - python: 2.6
-      env: DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django17'
 
   allow_failures:
     - python: 3.3
-      env: DJANGO='django15' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django15'
     - python: 3.3
-      env: DJANGO='django16' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django16'
     - python: 3.3
-      end: DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      end: DJANGO='django17'
     - python: 3.4
-      env: DJANGO='django15' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django15'
     - python: 3.4
-      env: DJANGO='django16' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django16'
     - python: 3.4
-      env: DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django17'
