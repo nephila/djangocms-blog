@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import sys
 from tempfile import mkdtemp
 gettext = lambda s: s
@@ -97,11 +99,8 @@ if 'test' in sys.argv:
 
 
 def run():
-    from collections import defaultdict
-    from djangocms_helper import main
-    args = defaultdict(str)
-    args['<application>'] = 'djangocms_blog'
-    args['test'] = True
-    args['--cms'] = True
-    args['--nose-runner'] = True
-    main.core(args=args, application='djangocms_blog')
+    from djangocms_helper import runner
+    runner.cms('djangocms_blog')
+
+if __name__ == "__main__":
+    run()
