@@ -10,35 +10,38 @@ python:
 
 env:
   matrix:
-  - DJANGO='django>=1.5,<1.6' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
-  - DJANGO='django>=1.6,<1.7' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
-  - DJANGO='django>=1.7,<1.8' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+  - DJANGO='django15' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+  - DJANGO='django16' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+  - DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install $DJANGO
-  - pip install -r requirements-test.txt
+  - pip install -U tox>=1.8 coveralls
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then export PYVER=py26; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then export PYVER=py27; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then export PYVER=py33; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then export PYVER=py34; fi"
 
 # command to run tests, e.g. python setup.py test
-script: djangocms-helper djangocms_blog test --cms --nose-runner
+script: COMMAND='coverage run' tox -e"$PYVER-$DJANGO"
 
 after_success: coveralls
 
 matrix:
   exclude:
     - python: 2.6
-      env: DJANGO='django>=1.7,<1.8' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
 
   allow_failures:
     - python: 3.3
-      env: DJANGO='django>=1.5,<1.6' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django15' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.3
-      env: DJANGO='django>=1.6,<1.7' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django16' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.3
-      end: DJANGO='django>=1.7,<1.8' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      end: DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.4
-      env: DJANGO='django>=1.5,<1.6' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django15' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.4
-      env: DJANGO='django>=1.6,<1.7' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django16' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
     - python: 3.4
-      env: DJANGO='django>=1.7,<1.8' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1
+      env: DJANGO='django17' NOSE_COVER_PACKAGE="djangocms_blog" NOSE_WITH_COVERAGE=1

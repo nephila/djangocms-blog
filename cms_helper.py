@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import sys
 from tempfile import mkdtemp
 gettext = lambda s: s
@@ -94,3 +96,12 @@ HELPER_SETTINGS = {
 }
 if 'test' in sys.argv:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
+
+
+def run():
+    from djangocms_helper import runner
+    sys.argv.append('--nose-runner')
+    runner.cms('djangocms_blog')
+
+if __name__ == "__main__":
+    run()

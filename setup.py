@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -50,11 +50,12 @@ setup(
         'cmsplugin-filer',
         'django-meta>=0.2',
         'django-meta-mixin>=0.1.1',
-    	'south>=1.0.1',
+        'south>=1.0.1',
     ],
     license="BSD",
     zip_safe=False,
     keywords='djangocms-blog, blog, django, wordpress, multilingual',
+    test_suite='cms_helper.run',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Django',
