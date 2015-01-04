@@ -60,7 +60,8 @@ class AdminTest(BaseTest):
             post_admin = admin.site._registry[Post]
             post_admin.add_view(request)
             self.assertEqual(Post.objects.count(), 1)
-            self.assertEqual(Post.objects.get(translations__slug='first-post').author_id, 1)
+            self.assertEqual(Post.objects.get(translations__slug='first-post').author_id,
+                             request.user.pk)
 
         with self.settings(BLOG_AUTHOR_DEFAULT=False):
             data = deepcopy(self.data['en'][1])
