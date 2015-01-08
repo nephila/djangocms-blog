@@ -3,6 +3,12 @@
 History
 -------
 
+0.3.1 (2015-01-07)
+++++++++++++++++++
+
+* Fix page_name in template
+* Set cascade to set null for post image and thumbnail options
+
 0.3.0 (2015-01-04)
 ++++++++++++++++++
 
