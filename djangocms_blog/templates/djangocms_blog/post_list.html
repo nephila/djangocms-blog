@@ -23,17 +23,16 @@
 	{% if author or archive_date or tagged_entries %}
 	<p class="blog-back"><a href="{% url 'djangocms_blog:posts-latest' %}">{% trans "Back" %}</a></p>
 	{% endif %}
-
     {% if is_paginated %}
     <nav class="{% firstof css_grid instance.css_grid %} pagination">
         {% if page_obj.has_previous %}
-            <a href="?{{ page_name }}={{ page_obj.previous_page_number }}">&laquo; {% trans "previous" %}</a>
+            <a href="?{{ view.page_kwarg }}={{ page_obj.previous_page_number }}">&laquo; {% trans "previous" %}</a>
         {% endif %}
         <span class="current">
             {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ paginator.num_pages }}
         </span>
         {% if page_obj.has_next %}
-            <a href="?{{ page_name }}={{ page_obj.next_page_number }}">{% trans "next" %} &raquo;</a>
+            <a href="?{{ view.page_kwarg }}={{ page_obj.next_page_number }}">{% trans "next" %} &raquo;</a>
         {% endif %}
     </nav>
     {% endif %}
