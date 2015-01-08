@@ -80,14 +80,17 @@ class Post(ModelMeta, TranslatableModel):
     categories = models.ManyToManyField(BlogCategory, verbose_name=_('category'),
                                         related_name='blog_posts',)
     main_image = FilerImageField(verbose_name=_('Main image'), blank=True, null=True,
+                                 on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
     main_image_thumbnail = models.ForeignKey(ThumbnailOption,
                                              verbose_name=_('Main image thumbnail'),
                                              related_name='djangocms_blog_post_thumbnail',
+                                             on_delete=models.SET_NULL,
                                              blank=True, null=True)
     main_image_full = models.ForeignKey(ThumbnailOption,
                                         verbose_name=_('Main image full'),
                                         related_name='djangocms_blog_post_full',
+                                        on_delete=models.SET_NULL,
                                         blank=True, null=True)
     enable_comments = models.BooleanField(
         verbose_name=_(u'Enable comments on post'),
@@ -115,7 +118,7 @@ class Post(ModelMeta, TranslatableModel):
         post_text=HTMLField(_('Text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
-    content = PlaceholderField('post_content')
+    content = PlaceholderField('post_content', related_name='post_content')
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
