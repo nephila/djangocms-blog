@@ -3,22 +3,21 @@ djangocms-blog
 ==============
 
 
-.. image:: https://pypip.in/v/djangocms-blog/badge.png
+.. image:: https://img.shields.io/pypi/v/djangocms-blog.svg
         :target: https://pypi.python.org/pypi/djangocms-blog
         :alt: Latest PyPI version
-    
-.. image:: https://travis-ci.org/nephila/djangocms-blog.png?branch=master
+
+.. image:: https://img.shields.io/travis/nephila/djangocms-blog.svg
         :target: https://travis-ci.org/nephila/djangocms-blog
         :alt: Latest Travis CI build status
 
-.. image:: https://pypip.in/d/djangocms-blog/badge.png
+.. image:: https://img.shields.io/pypi/dm/djangocms-blog.svg
         :target: https://pypi.python.org/pypi/djangocms-blog
         :alt: Monthly downloads
 
-.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png?branch=master
-        :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
+.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png
+        :target: https://coveralls.io/r/nephila/djangocms-blog
         :alt: Test coverage
-
 
 
 A djangoCMS 3 blog application.
