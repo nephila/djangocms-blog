@@ -132,7 +132,7 @@ suited for your deployment.
 * To start your blog create a new page from the CMS and hook it to the blog application:
  
   * Create a new django CMS page
-  * Go to Advanced settings and sele select Blog from the Application selector;
+  * Go to Advanced settings and select Blog from the Application selector;
   * Eventually customise the Application instance name;
   * Restart the project instance to properly load blog urls.
 
