@@ -15,12 +15,12 @@ class BlogCategoryMenu(CMSAttachMenu):
     def get_nodes(self, request):
         nodes = []
         qs = BlogCategory.objects.translated(get_language())
-        qs = qs.order_by('parent_id', 'translations__name').distinct()
+        qs = qs.order_by('parent_id', 'translations__name')
         for category in qs:
             kwargs = { 'category': category.slug }
             node = NavigationNode(
                 category.name,
-                reverse('djangocms_blog:posts-category', kwargs=kwargs),
+                category.get_absolute_url(),
                 category.pk,
                 category.parent_id
             )

@@ -49,6 +49,16 @@ class BlogCategory(TranslatableModel):
     def count(self):
         return self.blog_posts.filter(publish=True).count()
 
+    def get_absolute_url(self):
+        slug = None
+        lang = get_language()
+        if self.has_translation(lang):
+            slug = self.safe_translation_getter('slug', language_code=lang)
+        if slug is not None:
+            return reverse('djangocms_blog:posts-category', kwargs={'category':slug})
+        # fallback to url with id in case there is no translation of slug
+        return reverse('djangocms_blog:posts-category-id', kwargs={'category_id':self.pk})
+ 
     def __str__(self):
         return self.safe_translation_getter('name')
 

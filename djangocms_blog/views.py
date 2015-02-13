@@ -133,12 +133,21 @@ class CategoryEntriesView(BaseBlogView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = BlogCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).latest('pk')
+            if 'category' in self.kwargs:
+                self._category = BlogCategory.objects.active_translations(get_language(), slug=self.kwargs['category']).latest('pk')
+            else:
+                self._category = BlogCategory.objects.get(pk=self.kwargs['category_id'])
         return self._category
+
+    def get(self, *args, **kwargs):
+        # submit object to cms toolbar to get correct language switcher behavior
+        if hasattr(self.request, 'toolbar'):
+            self.request.toolbar.set_object(self.category)
+        return super(CategoryEntriesView, self).get(*args, **kwargs)
 
     def get_queryset(self):
         qs = super(CategoryEntriesView, self).get_queryset()
-        if 'category' in self.kwargs:
+        if 'category' in self.kwargs or 'category_id' in self.kwargs:
             qs = qs.filter(categories=self.category.pk)
         return qs
 
