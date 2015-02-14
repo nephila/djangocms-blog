@@ -33,7 +33,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [('title', 'categories', 'publish'), 'abstract']
+            'fields': [('title', 'categories', 'publish')]
         }),
         ('Info', {
             'fields': (['slug', 'tags'],
@@ -62,6 +62,8 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
+        if get_setting('USE_ABSTRACT'):
+            fsets[0][1]['fields'].append('abstract')
         if not get_setting('USE_PLACEHOLDER'):
             fsets[0][1]['fields'].append('post_text')
         if get_setting('MULTISITE'):
