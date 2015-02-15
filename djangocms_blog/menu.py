@@ -2,6 +2,7 @@
 from cms.menu_bases import CMSAttachMenu
 from menus.base import NavigationNode
 from menus.menu_pool import menu_pool
+from django.db.models.signals import post_save, post_delete
 from django.utils.translation import ugettext_lazy as _, get_language
 from .models import BlogCategory
 
@@ -26,3 +27,9 @@ class BlogCategoryMenu(CMSAttachMenu):
 
 menu_pool.register_menu(BlogCategoryMenu)
 
+
+def clear_menu_cache(**kwargs):
+    menu_pool.clear(all=True)
+
+post_save.connect(clear_menu_cache, sender=BlogCategory)
+post_delete.connect(clear_menu_cache, sender=BlogCategory)
