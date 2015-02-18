@@ -10,6 +10,7 @@ import cms.models.fields
 import django.utils.timezone
 from django.conf import settings
 from django.conf import settings
+from djangocms_blog.settings import get_setting
 
 
 class Migration(migrations.Migration):
@@ -87,10 +88,10 @@ class Migration(migrations.Migration):
                 ('date_published', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Published Since')),
                 ('date_published_end', models.DateTimeField(null=True, verbose_name='Published Until', blank=True)),
                 ('publish', models.BooleanField(default=False, verbose_name='Publish')),
-                ('enable_comments', models.BooleanField(default=True, verbose_name='Enable comments on post')),
+                ('enable_comments', models.BooleanField(default=get_setting('ENABLE_COMMENTS'), verbose_name='Enable comments on post')),
                 ('author', models.ForeignKey(related_name='djangocms_blog_post_author', verbose_name='Author', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('categories', models.ManyToManyField(related_name='blog_posts', verbose_name='category', to='djangocms_blog.BlogCategory')),
-                ('content', cms.models.fields.PlaceholderField(slotname='post_content', editable=False, to='cms.Placeholder', null=True)),
+                ('content', cms.models.fields.PlaceholderField(slotname='post_content', to='cms.Placeholder', null=True, related_name='post_content', editable=False)),
                 ('main_image', filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', verbose_name='Main image', blank=True, to='filer.Image', null=True)),
                 ('main_image_full', models.ForeignKey(related_name='djangocms_blog_post_full', verbose_name='Main image full', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
                 ('main_image_thumbnail', models.ForeignKey(related_name='djangocms_blog_post_thumbnail', verbose_name='Main image thumbnail', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
