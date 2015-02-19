@@ -137,6 +137,7 @@ suited for your deployment.
 * Add the following to your ``urls.py``::
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+    url(r'^blog/', include('djangocms_blog.urls', namespace='djangocms_blog')),
 
 * To start your blog create a new page from the CMS and hook it to the blog application:
  
