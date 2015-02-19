@@ -8,7 +8,7 @@
             <ul class="post-detail">
 				{% if post.author %}
                 <li>
-                    {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{{ post.author.get_full_name }}</a>
+                    {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{% if post.author.get_full_name %}{{ post.author.get_full_name }}{% else %}{{ post.author }}{% endif %}</a>
                 </li>
 				{% endif %}
                 <li>
