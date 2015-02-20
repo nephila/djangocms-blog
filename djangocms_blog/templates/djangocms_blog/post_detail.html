@@ -42,10 +42,11 @@
         <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
     {% endif %}
+    {% endspaceless %}
 	{% if use_placeholder %}
 		<div class="blog-content">{% render_placeholder post.content %}</div>
 	{% else %}
 		<div class="blog-content">{% render_model post "post_text" "post_text" %}</div>
 	{% endif %}
 </article>
-{% endspaceless %}{% endblock content_blog %}
+{% endblock content_blog %}
