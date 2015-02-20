@@ -138,13 +138,22 @@ suited for your deployment.
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
-* To start your blog create a new page from the CMS and hook it to the blog application:
+* To start your blog you need to use `AppHooks from django CMS <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/apphooks.html>`_ 
+  to add the blog to a django CMS page:
  
   * Create a new django CMS page
   * Go to Advanced settings and select Blog from the Application selector;
   * Eventually customise the Application instance name;
   * Restart the project instance to properly load blog urls.
 
+* Add and edit blog by creating them in the admin or using the toolbar,
+  and the use the `django CMS frontend editor <http://django-cms.readthedocs.org/en/support-3.0.x/user/reference/page_admin.html#the-interface>`_
+  to edit the blog content:
+  
+  * Create a new blog entry in django admin backend or from the toolbar
+  * Click on "view on site" button to view the post detail page
+  * Edit the post via djangocms frontend by adding / editing plugins
+  * Publish the blog post by flagging the "Publish" switch in the blog post admin
 
 Templates
 +++++++++
