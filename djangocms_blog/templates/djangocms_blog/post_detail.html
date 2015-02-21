@@ -11,9 +11,9 @@
 <article id="post-{{ post.slug }}" class="post-item post-detail">
     <header>
         <h2>{% render_model post "title" %}</h2>
-		{% block blog_meta %}
-			{% include "djangocms_blog/includes/blog_meta.html" %}
-		{% endblock %}
+        {% block blog_meta %}
+            {% include "djangocms_blog/includes/blog_meta.html" %}
+        {% endblock %}
     </header>
     {% if post.main_image_id %}
     <div class="blog-visual">
@@ -22,10 +22,10 @@
     </div>
     {% endif %}
     {% endspaceless %}
-	{% if use_placeholder %}
-		<div class="blog-content">{% render_placeholder post.content %}</div>
-	{% else %}
-		<div class="blog-content">{% render_model post "post_text" "post_text" %}</div>
-	{% endif %}
+    {% if use_placeholder %}
+        <div class="blog-content">{% render_placeholder post.content %}</div>
+    {% else %}
+        <div class="blog-content">{% render_model post "post_text" "post_text" %}</div>
+    {% endif %}
 </article>
 {% endblock content_blog %}
