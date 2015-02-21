@@ -5,30 +5,7 @@
     <header>
         <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
 		{% block blog_meta %}
-            <ul class="post-detail">
-				{% if post.author %}
-                <li>
-                    {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{% if post.author.get_full_name %}{{ post.author.get_full_name }}{% else %}{{ post.author }}{% endif %}</a>
-                </li>
-				{% endif %}
-                <li>
-                    {{ post.date_published|date:"M d, Y" }}
-                </li>
-            </ul>
-            <ul class="post-detail tags">
-                {% if post.categories.exists %}
-                    {% for category in post.categories.all %}
-                        {% if category.slug %}
-                            <li class="category_{{ forloop.counter }}"><a href="{% url 'djangocms_blog:posts-category' category=category.slug %}" class="blog-categories-{{ category.count }}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}</li>
-                        {% endif %}
-                    {% endfor %}
-			    {% endif %}
-                {% if post.tags.exists %}
-                    {% for tag in post.tags.all %}
-                        <li class="tag_{{ forloop.counter }}"><a href="{% url 'djangocms_blog:posts-tagged' tag=tag.slug %}" class="blog-tag blog-tag-{{ tag.count }}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}</li>
-                    {% endfor %}
-			    {% endif %}
-            </ul>
+			{% include "djangocms_blog/includes/blog_meta.html" %}
 		{% endblock %}
     </header>
     {% if image and post.main_image %}
