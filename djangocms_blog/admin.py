@@ -33,10 +33,10 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [('title', 'slug', 'publish'), 'abstract']
+            'fields': [('title', 'categories', 'publish'), 'abstract']
         }),
         ('Info', {
-            'fields': (['categories', 'tags'],
+            'fields': (['slug', 'tags'],
                        ('date_published', 'date_published_end', 'enable_comments')),
             'classes': ('collapse',)
         }),
