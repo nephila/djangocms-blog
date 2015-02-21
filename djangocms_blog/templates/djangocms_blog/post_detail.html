@@ -12,7 +12,7 @@
     <header>
         <h2>{% render_model post "title" %}</h2>
 		{% block blog_meta %}
-            {% include "djangocms_blog/includes/blog_meta.html" %}
+			{% include "djangocms_blog/includes/blog_meta.html" %}
 		{% endblock %}
     </header>
     {% if post.main_image_id %}

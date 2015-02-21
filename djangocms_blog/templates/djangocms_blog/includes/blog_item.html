@@ -5,7 +5,7 @@
     <header>
         <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
 		{% block blog_meta %}
-            {% include "djangocms_blog/includes/blog_meta.html" %}
+			{% include "djangocms_blog/includes/blog_meta.html" %}
 		{% endblock %}
     </header>
     {% if image and post.main_image %}
