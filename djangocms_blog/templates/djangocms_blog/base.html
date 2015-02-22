@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block meta %}
-	{%  if meta %}
-		{% include "meta_mixin/meta.html" %}
-	{% endif %}
+    {%  if meta %}
+        {% include "meta_mixin/meta.html" %}
+    {% endif %}
 {% endblock meta %}
 
 {% block content %}
 <div class="app app-blog span8">
-	{% block content_blog %}{% endblock %}
+    {% block content_blog %}{% endblock %}
 </div>
 {% endblock content %}
