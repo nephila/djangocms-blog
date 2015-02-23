@@ -13,3 +13,4 @@ Contributors
 * Leonardo Cavallucci
 * Max Vyaznikov
 * Tadas Dailyda
+* Jens Diemer
