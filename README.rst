@@ -27,7 +27,6 @@ you encounter any issue, please open an issue.
 
 Supported Django versions:
 
-* Django 1.5
 * Django 1.6
 * Django 1.7
 
