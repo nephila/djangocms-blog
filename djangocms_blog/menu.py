@@ -13,7 +13,7 @@ class BlogCategoryMenu(CMSAttachMenu):
     def get_nodes(self, request):
         nodes = []
         qs = BlogCategory.objects.translated(get_language())
-        qs = qs.order_by('parent_id', 'translations__name')
+        qs = qs.order_by('parent__id', 'translations__name')
         for category in qs:
             kwargs = { 'category': category.slug }
             node = NavigationNode(
