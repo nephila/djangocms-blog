@@ -3,6 +3,15 @@
 History
 -------
 
+0.4.0 (unreleased)
+++++++++++++++++++
+
+* Fix Django 1.7 issues
+* Fix dependencies on python 3 when using wheel packages
+* Drop Django 1.5 support
+* Fix various templates issues
+* UX fixes in the admin
+
 0.3.1 (2015-01-07)
 ++++++++++++++++++
 
