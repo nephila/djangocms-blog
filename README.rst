@@ -124,7 +124,9 @@ suited for your deployment.
        'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
     }
     
-  Please check `django CMS installation <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/integrate.html#installing-and-configuring-django-cms-in-your-django-project>`_, `cmsplugin-filer README <https://github.com/stefanfoulis/cmsplugin-filer#installation>_`
+  Please check
+  `django CMS installation <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/integrate.html#installing-and-configuring-django-cms-in-your-django-project>`_,
+  `cmsplugin-filer README <https://github.com/stefanfoulis/cmsplugin-filer#installation>`_
   for detailed information.
 
 * Configure parler according to your languages::
