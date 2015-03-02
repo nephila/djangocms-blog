@@ -218,7 +218,8 @@ Social media tags settings
 * BLOG_GPLUS_TYPE: Google+ Snippet type for the post object; (default: Blog)
 * BLOG_GPLUS_AUTHOR: Google+ account of the post author
 
-.. image:: https://d2weczhvl823v0.cloudfront.net/nephila/djangocms-blog/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
 
+Known djangocms-blog websites
++++++++++++++++++++++++++++++
+
+http://nephila.co.uk/blog
