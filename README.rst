@@ -117,11 +117,11 @@ suited for your deployment.
 * If you are using Django 1.7, be aware than ``filer``, ``cmsplugin_filer``
   and ``django-cms`` currently requires you to setup ``MIGRATION_MODULES`` in settings::
   
-  MIGRATION_MODULES = {
-     'cms': 'cms.migrations_django',
-     'filer': 'filer.migrations_django',
-     'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-}
+    MIGRATION_MODULES = {
+       'cms': 'cms.migrations_django',
+       'filer': 'filer.migrations_django',
+       'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
+    }
 
 * Configure parler according to your languages::
 
