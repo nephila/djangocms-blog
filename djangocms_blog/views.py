@@ -78,7 +78,9 @@ class PostArchiveView(BaseBlogView, ListView):
         kwargs['year'] = int(self.kwargs.get('year')) if 'year' in self.kwargs else None
         if kwargs['year']:
             kwargs['archive_date'] = now().replace(kwargs['year'], kwargs['month'] or 1, 1)
-        return super(PostArchiveView, self).get_context_data(**kwargs)
+        context = super(PostArchiveView, self).get_context_data(**kwargs)
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
 
 
 class TaggedListView(BaseBlogView, ListView):
@@ -95,7 +97,9 @@ class TaggedListView(BaseBlogView, ListView):
     def get_context_data(self, **kwargs):
         kwargs['tagged_entries'] = (self.kwargs.get('tag')
                                     if 'tag' in self.kwargs else None)
-        return super(TaggedListView, self).get_context_data(**kwargs)
+        context = super(TaggedListView, self).get_context_data(**kwargs)
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
 
 
 class AuthorEntriesView(BaseBlogView, ListView):
@@ -113,7 +117,9 @@ class AuthorEntriesView(BaseBlogView, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs['author'] = User.objects.get(**{User.USERNAME_FIELD: self.kwargs.get('username')})
-        return super(AuthorEntriesView, self).get_context_data(**kwargs)
+        context = super(AuthorEntriesView, self).get_context_data(**kwargs)
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
 
 
 class CategoryEntriesView(BaseBlogView, ListView):
@@ -138,4 +144,6 @@ class CategoryEntriesView(BaseBlogView, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs['category'] = self.category
-        return super(CategoryEntriesView, self).get_context_data(**kwargs)
+        context = super(CategoryEntriesView, self).get_context_data(**kwargs)
+        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        return context
