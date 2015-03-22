@@ -3,7 +3,7 @@
 History
 -------
 
-0.4.0 (unreleased)
+0.4.0 (2015-03-22)
 ++++++++++++++++++
 
 * Fix Django 1.7 issues
