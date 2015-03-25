@@ -38,9 +38,14 @@ class BlogNavModifier(Modifier):
         if not post_cut: return nodes
         if not hasattr(request, 'toolbar'):
             return nodes
-        if request.toolbar.get_object_model() != 'djangocms_blog.post':
+        models = ('djangocms_blog.post', 'djangocms_blog.blogcategory')
+        model = request.toolbar.get_object_model()
+        if model not in models:
             return nodes
-        cat = request.toolbar.obj.categories.first()
+        if model == 'djangocms_blog.blogcategory':
+            cat = request.toolbar.obj
+        else:
+            cat = request.toolbar.obj.categories.first()
         if not cat: return nodes
 
         for node in nodes:
