@@ -5,15 +5,15 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 
-from .models import BLOG_CURRENT_POST_IDENTIFIER
+from .models import BLOG_CURRENT_POST_IDENTIFIER, Post
 
 
 @toolbar_pool.register
 class BlogToolbar(CMSToolbar):
+    watch_models = [Post]
 
     def populate(self):
-        # TODO: Readd if not self.is_current_app condition when CMS 3.0.4 is released
-        if not self.request.user.has_perm('djangocms_blog.add_post'):
+        if not (self.is_current_app and self.request.user.has_perm('djangocms_blog.add_post')):
             return   # pragma: no cover
         admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
         url = reverse('admin:djangocms_blog_post_changelist')
