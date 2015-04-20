@@ -255,9 +255,10 @@ class LatestPostsPlugin(BasePostPlugin):
 
     def get_posts(self, request):
         posts = self.post_queryset(request)
-        tags = list(self.tags.all())
-        if tags:
-            posts = posts.filter(tags__in=tags)
+        if self.tags.exists():
+            posts = posts.filter(tags__in=list(self.tags.all()))
+        if self.categories.exists():
+            posts = posts.filter(categories__in=list(self.categories.all()))
         return posts[:self.latest_posts]
 
 

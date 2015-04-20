@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from taggit.models import Tag
 
 from . import BaseTest
+from djangocms_blog.models import BlogCategory
 
 
 class PluginTest(BaseTest):
@@ -19,6 +20,7 @@ class PluginTest(BaseTest):
         post1.publish = True
         post1.save()
         ph = page1.placeholders.get(slot='content')
+
         plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
@@ -30,6 +32,24 @@ class PluginTest(BaseTest):
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find(post1.get_absolute_url()) > -1)
+
+
+        category_2 = BlogCategory.objects.create(name=u'category 2')
+        category_2.set_current_language('it', initialize=True)
+        category_2.name = u'categoria 2'
+        category_2.save()
+        category_2.set_current_language('en')
+        post2.categories.add(category_2)
+        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
+        plugin.categories.add(category_2)
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
+        context = RequestContext(request, {})
+        rendered = plugin.render_plugin(context, ph)
+        self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-2') > -1)
+        self.assertTrue(rendered.find(reverse('djangocms_blog:posts-category', kwargs={'category': category_2.slug})) > -1)
+        self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
+        self.assertTrue(rendered.find('<article id="post-second-post"') > -1)
+        self.assertTrue(rendered.find(post2.get_absolute_url()) > -1)
 
     def test_plugin_authors(self):
         page1, page2 = self.get_pages()
