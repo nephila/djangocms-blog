@@ -32,7 +32,7 @@ Supported Django versions:
 
 Supported django CMS versions:
 
-* django CMS 3.0
+* django CMS 3.x
 
 .. warning:: Starting from version 0.3 the length of the meta_description and
              meta_title fields has been changed according to the most common
