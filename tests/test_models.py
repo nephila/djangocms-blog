@@ -18,6 +18,7 @@ from djangocms_blog.settings import get_setting
 
 
 from . import BaseTest
+from djangocms_helper.utils import CMS_30
 
 
 class AdminTest(BaseTest):
@@ -268,7 +269,10 @@ class ModelsTest(BaseTest):
         tag = Tag.objects.create(name='tag 1')
         plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en')
         plugin.tags.add(tag)
-        plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+        if CMS_30:
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+        else:
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].tags.all()), set([tag]))
@@ -297,7 +301,10 @@ class ModelsTest(BaseTest):
         post2 = self._get_post(self.data['en'][1])
         plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en')
         plugin.authors.add(self.user)
-        plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+        if CMS_30:
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+        else:
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
