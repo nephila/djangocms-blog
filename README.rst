@@ -229,3 +229,4 @@ Known djangocms-blog websites
 +++++++++++++++++++++++++++++
 
 * http://nephila.co.uk/blog
+* https://blog.ungleich.ch/
