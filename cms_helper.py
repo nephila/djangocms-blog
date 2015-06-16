@@ -77,7 +77,6 @@ HELPER_SETTINGS = {
     ],
     'MIGRATION_MODULES': {
         'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-        'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations_django',
     },
     'META_SITE_PROTOCOL': 'http',
     'META_SITE_DOMAIN': 'example.com',
