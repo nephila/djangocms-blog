@@ -42,10 +42,9 @@ Supported django CMS versions:
              argument. Templates has been changed to use a context variable
              instead. Please update your plugin templates accordingly.
 
-.. warning:: To ease migration to version 0.3, djangocms-blog depends on south
-             even on Django 1.7; while this is unnecessary for Django 1.7, it
-             makes transition to version 0.3 painless. Hard dependency will be
-             removed in 0.5.
+.. warning:: Starting from version 0.5, this package does not declare dependency
+             on South anymore; please install it separately if using this
+             application on Django 1.6.
 
 
 Quickstart
