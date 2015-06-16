@@ -22,9 +22,6 @@ djangocms-blog
 
 A djangoCMS 3 blog application.
 
-Still experimental and untested. You are welcome if you want to try it; if
-you encounter any issue, please open an issue.
-
 Supported Django versions:
 
 * Django 1.6
@@ -46,7 +43,7 @@ Supported django CMS versions:
              instead. Please update your plugin templates accordingly.
 
 .. warning:: To ease migration to version 0.3, djangocms-blog depends on south
-             even on Django 1.7; while this is unnecessary for Dajngo 1.7, it
+             even on Django 1.7; while this is unnecessary for Django 1.7, it
              makes transition to version 0.3 painless. Hard dependency will be
              removed in 0.5.
 
