@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.conf import settings
-import django_select2
 from parler.forms import TranslatableModelForm
+from taggit_autosuggest.widgets import TagAutoSuggest
 
 from .models import Post
 
 
 class LatestEntriesForm(forms.ModelForm):
 
-    class Meta:
-        widgets = {
-            'tags': django_select2.Select2MultipleWidget
-        }
+    def __init__(self, *args, **kwargs):
+        super(LatestEntriesForm, self).__init__(*args, **kwargs)
+        self.fields['tags'].widget = TagAutoSuggest('taggit.Tag')
 
     class Media:
         css = {

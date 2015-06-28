@@ -20,7 +20,6 @@ HELPER_SETTINGS = {
         'easy_thumbnails',
         'djangocms_text_ckeditor',
         'cmsplugin_filer_image',
-        'django_select2',
         'taggit_autosuggest',
     ],
     'LANGUAGE_CODE': 'en',
