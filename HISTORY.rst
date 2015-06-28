@@ -3,6 +3,12 @@
 History
 -------
 
+0.5.0 (XXXX-XX-XX)
+++++++++++++++++++
+
+* Drop dependency on Django select2
+* Code cleanups
+
 0.4.0 (2015-03-22)
 ++++++++++++++++++
 
