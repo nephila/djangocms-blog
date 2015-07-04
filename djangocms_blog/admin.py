@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
+
 from admin_enhancer.admin import EnhancedModelAdminMixin
 from cms.admin.placeholderadmin import PlaceholderAdminMixin, FrontendEditableAdminMixin
-from copy import deepcopy
-from django.contrib import admin
+from django import forms
 from django.conf import settings
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
-from .forms import PostAdminForm
 from .models import Post, BlogCategory
 from .settings import get_setting
 
@@ -24,8 +25,7 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
 
 
 class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
-                PlaceholderAdminMixin, TranslatableAdmin, admin.ModelAdmin):
-    form = PostAdminForm
+                PlaceholderAdminMixin, TranslatableAdmin):
     list_display = ['title', 'author', 'date_published', 'date_published_end']
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
@@ -49,6 +49,16 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
             'classes': ('collapse',)
         }),
     ]
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        field = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        if db_field.name == 'meta_description':
+            original_attrs = field.widget.attrs
+            original_attrs['maxlength'] = 160
+            field.widget = forms.TextInput(original_attrs)
+        elif db_field.name == 'meta_title':
+            field.max_length = 70
+        return field
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
