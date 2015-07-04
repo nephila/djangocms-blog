@@ -90,6 +90,20 @@ class AdminTest(BaseTest):
             self.assertEqual(Post.objects.count(), 3)
             self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
 
+    def test_admin_post_text(self):
+        page1, page2 = self.get_pages()
+        post = self._get_post(self.data['en'][0])
+
+        with self.settings(BLOG_USE_PLACEHOLDER=False):
+            data = {'post_text': 'ehi text'}
+            request = self.post_request(page1, 'en', data=data, path='/en/?edit_fields=post_text')
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin.edit_field(request, post.pk, 'en')
+            modified_post = Post.objects.get(pk=post.pk)
+            self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
+
 
 class ModelsTest(BaseTest):
 
