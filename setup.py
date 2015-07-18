@@ -15,9 +15,9 @@ version = djangocms_blog.__version__
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
-    print("You probably want to also tag the version now:")
-    print("  git tag -a %s -m 'version %s'" % (version, version))
-    print("  git push --tags")
+    print('You probably want to also tag the version now:')
+    print('  git tag -a %s -m "version %s"' % (version, version))
+    print('  git push --tags')
     sys.exit()
 
 readme = open('README.rst').read()
@@ -50,7 +50,7 @@ setup(
         'django-meta>=0.2',
         'django-meta-mixin>=0.1.1',
     ],
-    license="BSD",
+    license='BSD',
     zip_safe=False,
     keywords='djangocms-blog, blog, django, wordpress, multilingual',
     test_suite='cms_helper.run',
@@ -63,9 +63,10 @@ setup(
         'Framework :: Django',
         'Framework :: Django :: 1.6',
         'Framework :: Django :: 1.7',
-        "Programming Language :: Python :: 2",
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
     ],
