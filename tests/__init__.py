@@ -145,8 +145,10 @@ class BaseTest(TestCase):
         request.errors = StringIO()
         return request
 
-    def post_request(self, page, lang, data):
-        request = self.request_factory.post(page.get_path(lang), data)
+    def post_request(self, page, lang, data, path=None):
+        if not path:
+            path = page.get_path(lang)
+        request = self.request_factory.post(path, data)
         request.current_page = page
         request.user = self.user
         request.session = {}

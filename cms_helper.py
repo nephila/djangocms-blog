@@ -71,9 +71,6 @@ HELPER_SETTINGS = {
             'hide_untranslated': False,
         }
     },
-    'MIDDLEWARE_CLASSES': [
-        'django.contrib.messages.middleware.MessageMiddleware',
-    ],
     'MIGRATION_MODULES': {
         'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
     },
