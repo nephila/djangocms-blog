@@ -3,7 +3,6 @@ from cms.toolbar.items import ModalItem
 from django.core.urlresolvers import reverse
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
 
-
 from . import BaseTest
 
 
@@ -24,4 +23,3 @@ class ToolbarTest(BaseTest):
         self.assertEqual(len(blog_menu.find_items(ModalItem, url=reverse('admin:djangocms_blog_post_changelist'))), 1)
         self.assertEqual(len(blog_menu.find_items(ModalItem, url=reverse('admin:djangocms_blog_post_add'))), 1)
         self.assertEqual(len(blog_menu.find_items(ModalItem, url=reverse('admin:djangocms_blog_post_change', args=(post.pk,)))), 1)
-

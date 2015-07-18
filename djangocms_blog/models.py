@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from cms.models import PlaceholderField, CMSPlugin
+from cms.models import CMSPlugin, PlaceholderField
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.conf import settings as dj_settings
 from django.contrib.sites.models import Site
@@ -7,18 +7,19 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 from django.utils.encoding import force_text, python_2_unicode_compatible
-from django.utils.html import strip_tags, escape
+from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta_mixin.models import ModelMeta
-from parler.models import TranslatableModel, TranslatedFields
 from parler.managers import TranslationManager
+from parler.models import TranslatableModel, TranslatedFields
 from taggit_autosuggest.managers import TaggableManager
 
-from .settings import get_setting
 from .managers import GenericDateTaggedManager
+from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
 

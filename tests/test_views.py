@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
-from django.utils.translation import activate
 from django.utils.timezone import now
+from django.utils.translation import activate
+from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
+from djangocms_blog.sitemaps import BlogSitemap
+from djangocms_blog.views import (AuthorEntriesView, CategoryEntriesView, PostArchiveView,
+                                  PostDetailView, PostListView, TaggedListView)
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import switch_language
-from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
-from djangocms_blog.sitemaps import BlogSitemap
-from djangocms_blog.views import (PostListView, PostDetailView,
-                                  PostArchiveView, CategoryEntriesView,
-                                  AuthorEntriesView, TaggedListView)
 
 from . import BaseTest
 
@@ -68,7 +67,7 @@ class ViewTest(BaseTest):
             1: (
                 {'code': 'en'},
                 {'code': 'it'},
-                {'code': 'fr', 'hide_untranslated': True,},
+                {'code': 'fr', 'hide_untranslated': True},
             ),
             'default': {
                 'fallback': 'en',
@@ -82,7 +81,7 @@ class ViewTest(BaseTest):
         view_obj.request = request
         view_obj.kwargs = {}
         view_obj.object_list = view_obj.get_queryset()
-        context = view_obj.get_context_data(object_list=view_obj.object_list)
+        view_obj.get_context_data(object_list=view_obj.object_list)
         self.assertEqual(view_obj.get_queryset().count(), 2)
 
         PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)
@@ -94,7 +93,7 @@ class ViewTest(BaseTest):
             view_obj.request = request
             view_obj.kwargs = {}
             view_obj.object_list = view_obj.get_queryset()
-            context = view_obj.get_context_data(object_list=view_obj.object_list)
+            view_obj.get_context_data(object_list=view_obj.object_list)
             self.assertEqual(view_obj.get_queryset().count(), 0)
 
     def test_post_detail_view(self):
@@ -147,7 +146,7 @@ class ViewTest(BaseTest):
         view_obj.object_list = qs
         context = view_obj.get_context_data(object_list=view_obj.object_list)
         self.assertEqual(context['archive_date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
-        
+
     def test_category_entries_view(self):
         page1, page2 = self.get_pages()
         post1, post2 = self.get_posts()
@@ -247,7 +246,7 @@ class ViewTest(BaseTest):
 
         feed = TagFeed()
         self.assertEqual(list(feed.items('tag-2')), [post1])
-        
+
     def test_sitemap(self):
         post1, post2 = self.get_posts()
         post1.tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
@@ -256,7 +255,7 @@ class ViewTest(BaseTest):
         post2.publish = True
         post2.save()
         post1.set_current_language('en')
-        
+
         sitemap = BlogSitemap()
         self.assertEqual(sitemap.items().count(), 2)
         for item in sitemap.items():

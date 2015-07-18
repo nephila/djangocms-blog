@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 
-from .views import (PostListView, PostDetailView, TaggedListView,
-                    AuthorEntriesView, PostArchiveView, CategoryEntriesView)
 from .feeds import LatestEntriesFeed, TagFeed
-
+from .views import (AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView,
+                    PostListView, TaggedListView)
 
 urlpatterns = patterns(
     '',
