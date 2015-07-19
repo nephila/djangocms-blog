@@ -91,7 +91,7 @@ if 'test' in sys.argv or len(sys.argv) == 1:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
 
 try:
-    import admin_enhancer
+    import admin_enhancer  # pragma: no cover # NOQA
     HELPER_SETTINGS['INSTALLED_APPS'].append('admin_enhancer')
 except ImportError:
     pass
