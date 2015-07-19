@@ -64,7 +64,6 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         'parler',
         'taggit',
         'taggit_autosuggest',
-        'django_select2',
         'meta',
         'meta_mixin',
         'admin_enhancer',
