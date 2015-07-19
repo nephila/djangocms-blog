@@ -35,6 +35,13 @@ class AdminTest(BaseTest):
             fsets = post_admin.get_fieldsets(request)
             self.assertTrue('post_text' in fsets[0][1]['fields'])
 
+        with self.settings(BLOG_USE_ABSTRACT=True):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('abstract' in fsets[0][1]['fields'])
+        with self.settings(BLOG_USE_ABSTRACT=False):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertFalse('abstract' in fsets[0][1]['fields'])
+
         with self.settings(BLOG_MULTISITE=True):
             fsets = post_admin.get_fieldsets(request)
             self.assertTrue('sites' in fsets[1][1]['fields'][0])
