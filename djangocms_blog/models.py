@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from cms.models import CMSPlugin, PlaceholderField
-from cmsplugin_filer_image.models import ThumbnailOption
 from django.conf import settings as dj_settings
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -87,31 +85,28 @@ class Post(ModelMeta, TranslatableModel):
     date_published_end = models.DateTimeField(_(u'published Until'), null=True,
                                               blank=True)
     publish = models.BooleanField(_(u'publish'), default=False)
-    categories = models.ManyToManyField(BlogCategory, verbose_name=_(u'category'),
+    categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_(u'category'),
                                         related_name='blog_posts',)
     main_image = FilerImageField(verbose_name=_(u'main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
-    main_image_thumbnail = models.ForeignKey(ThumbnailOption,
+    main_image_thumbnail = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
                                              verbose_name=_(u'main image thumbnail'),
                                              related_name='djangocms_blog_post_thumbnail',
                                              on_delete=models.SET_NULL,
                                              blank=True, null=True)
-    main_image_full = models.ForeignKey(ThumbnailOption,
+    main_image_full = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
                                         verbose_name=_(u'main image full'),
                                         related_name='djangocms_blog_post_full',
                                         on_delete=models.SET_NULL,
                                         blank=True, null=True)
-    enable_comments = models.BooleanField(
-        verbose_name=_(u'enable comments on post'),
-        default=get_setting('ENABLE_COMMENTS')
-    )
-    sites = models.ManyToManyField(Site, verbose_name=_(u'Site(s)'), blank=True,
+    enable_comments = models.BooleanField(verbose_name=_(u'enable comments on post'),
+                                          default=get_setting('ENABLE_COMMENTS'))
+    sites = models.ManyToManyField('sites.Site', verbose_name=_(u'Site(s)'), blank=True,
                                    null=True,
                                    help_text=_(u'Select sites in which to show the post. '
                                                u'If none is set it will be '
-                                               u'visible in all the configured sites.')
-                                   )
+                                               u'visible in all the configured sites.'))
 
     translations = TranslatedFields(
         title=models.CharField(_(u'title'), max_length=255),
@@ -254,7 +249,7 @@ class LatestPostsPlugin(BasePostPlugin):
                                        help_text=_(u'The number of latests articles to be displayed.'))
     tags = models.ManyToManyField('taggit.Tag', blank=True, verbose_name=_(u'filter by tag'),
                                   help_text=_(u'Show only the blog articles tagged with chosen tags.'))
-    categories = models.ManyToManyField('BlogCategory', blank=True, verbose_name=_(u'filter by category'),
+    categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True, verbose_name=_(u'filter by category'),
                                         help_text=_(u'Show only the blog articles tagged with chosen categories.'))
 
     def __str__(self):

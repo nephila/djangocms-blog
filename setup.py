@@ -44,7 +44,6 @@ setup(
         'pytz',
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
-        'django-admin-enhancer',
         'djangocms-text-ckeditor',
         'cmsplugin-filer',
         'django-meta>=0.2',
@@ -54,6 +53,10 @@ setup(
     zip_safe=False,
     keywords='djangocms-blog, blog, django, wordpress, multilingual',
     test_suite='cms_helper.run',
+    extras_require={
+        'admin-enhancer': ['django-admin-enhancer'],
+    },
+
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Django',

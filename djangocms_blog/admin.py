@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
 
-from admin_enhancer.admin import EnhancedModelAdminMixin
+try:
+    from admin_enhancer.admin import EnhancedModelAdminMixin
+except ImportError:
+    class EnhancedModelAdminMixin(object):
+        pass
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings

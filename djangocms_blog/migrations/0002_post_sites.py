@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sites', '0001_initial'),
+        ('sites', '__latest__'),
         ('djangocms_blog', '0001_initial'),
     ]
 

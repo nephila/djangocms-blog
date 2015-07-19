@@ -6,8 +6,10 @@ History
 0.5.0 (XXXX-XX-XX)
 ++++++++++++++++++
 
+* Add support for Django 1.8
 * Drop dependency on Django select2
 * Code cleanups
+* Enforce flake8 / isort checks
 
 0.4.0 (2015-03-22)
 ++++++++++++++++++

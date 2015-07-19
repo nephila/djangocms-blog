@@ -11,15 +11,14 @@ HELPER_SETTINGS = dict(
     ],
     ROOT_URLCONF='tests.test_utils.urls',
     INSTALLED_APPS=[
-        'admin_enhancer',
         'filer',
         'parler',
-        'taggit',
         'meta',
         'meta_mixin',
         'easy_thumbnails',
         'djangocms_text_ckeditor',
         'cmsplugin_filer_image',
+        'taggit',
         'taggit_autosuggest',
     ],
     LANGUAGE_CODE='en',
@@ -90,6 +89,12 @@ HELPER_SETTINGS = dict(
 )
 if 'test' in sys.argv or len(sys.argv) == 1:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
+
+try:
+    import admin_enhancer
+    HELPER_SETTINGS['INSTALLED_APPS'].append('admin_enhancer')
+except ImportError:
+    pass
 
 
 def run():
