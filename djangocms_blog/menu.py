@@ -30,12 +30,12 @@ menu_pool.register_menu(BlogCategoryMenu)
 
 class BlogNavModifier(Modifier):
     """
-    This navigation modifier makes sure that when 
-    a particular blog post is viewed, 
+    This navigation modifier makes sure that when
+    a particular blog post is viewed,
     a corresponding category is selected in menu
     """
     def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
-        if not post_cut: return nodes
+        if post_cut: return nodes
         if not hasattr(request, 'toolbar'):
             return nodes
         models = ('djangocms_blog.post', 'djangocms_blog.blogcategory')
