@@ -51,7 +51,8 @@ class BlogNavModifier(Modifier):
             if (node.namespace.startswith(BlogCategoryMenu.__name__) and
                     cat.pk == node.id):
                 node.selected = True
-                break
+                # no break here because django-cms maintains two menu structures
+                # for every apphook (attached to published page and draft page)
         return nodes
 
 menu_pool.register_modifier(BlogNavModifier)
