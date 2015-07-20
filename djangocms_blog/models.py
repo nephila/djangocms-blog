@@ -106,7 +106,7 @@ class Post(ModelMeta, TranslatableModel):
     translations = TranslatedFields(
         title=models.CharField(_('Title'), max_length=255),
         slug=models.SlugField(_('slug'), blank=True, db_index=True),
-        abstract=HTMLField(_('Abstract')),
+        abstract=HTMLField(_('Abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_(u'Post meta description'),
                                           blank=True, default=''),
         meta_keywords=models.TextField(verbose_name=_(u'Post meta keywords'),
