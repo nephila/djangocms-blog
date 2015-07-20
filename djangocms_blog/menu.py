@@ -15,7 +15,6 @@ class BlogCategoryMenu(CMSAttachMenu):
         qs = BlogCategory.objects.translated(get_language())
         qs = qs.order_by('parent__id', 'translations__name')
         for category in qs:
-            kwargs = { 'category': category.slug }
             node = NavigationNode(
                 category.name,
                 category.get_absolute_url(),
@@ -49,7 +48,7 @@ class BlogNavModifier(Modifier):
         if not cat: return nodes
 
         for node in nodes:
-            if (node.namespace == BlogCategoryMenu.__name__ and
+            if (node.namespace.startswith(BlogCategoryMenu.__name__) and
                     cat.pk == node.id):
                 node.selected = True
                 break
