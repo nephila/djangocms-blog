@@ -111,7 +111,9 @@ class BaseTest(TestCase):
                                         file=file_obj)
 
     def _get_category(self, data, category=None, lang='en'):
-        data = {k: (v() if hasattr(v, '__call__') else v) for k, v in data.items()}
+        for k, v in data.items():
+            if hasattr(v, '__call__'):
+                data[k] = v()
         if not category:
             category = BlogCategory.objects.create(**data)
         else:
