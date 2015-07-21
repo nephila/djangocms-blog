@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
 
-from admin_enhancer.admin import EnhancedModelAdminMixin
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
@@ -11,6 +10,12 @@ from parler.admin import TranslatableAdmin
 
 from .models import BlogCategory, Post
 from .settings import get_setting
+
+try:
+    from admin_enhancer.admin import EnhancedModelAdminMixin
+except ImportError:
+    class EnhancedModelAdminMixin(object):
+        pass
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):

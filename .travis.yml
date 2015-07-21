@@ -18,6 +18,8 @@ env:
   - DJANGO='django17' CMS='cms30'
   - DJANGO='django17' CMS='cms31'
   - DJANGO='django17' CMS='cms32'
+  - DJANGO='django18' CMS='cms31'
+  - DJANGO='django18' CMS='cms32'
   - TOXENV='pep8'
   - TOXENV='isort'
 
@@ -56,11 +58,17 @@ matrix:
     env: DJANGO='django16' CMS='cms32'
   - python: 2.7
     env: DJANGO='django17' CMS='cms32'
+  - python: 2.7
+    env: DJANGO='django18' CMS='cms32'
   - python: 3.3
     env: DJANGO='django16' CMS='cms32'
   - python: 3.3
     env: DJANGO='django17' CMS='cms32'
+  - python: 3.3
+    env: DJANGO='django18' CMS='cms32'
   - python: 3.4
     env: DJANGO='django16' CMS='cms32'
   - python: 3.4
     env: DJANGO='django17' CMS='cms32'
+  - python: 3.4
+    env: DJANGO='django18' CMS='cms32'

@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-import taggit_autosuggest.managers
-import filer.fields.image
-import meta_mixin.models
-import djangocms_text_ckeditor.fields
 import cms.models.fields
 import django.utils.timezone
+import djangocms_text_ckeditor.fields
+import filer.fields.image
+import meta_mixin.models
+import taggit_autosuggest.managers
 from django.conf import settings
-from django.conf import settings
+from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('cms', '0003_auto_20140926_2347'),
-        ('taggit', '__first__'),
-        ('filer', '0001_initial'),
-        ('cmsplugin_filer_image', '0001_initial'),
+        ('cms', '__latest__'),
+        ('taggit', '__latest__'),
+        ('filer', '__latest__'),
+        ('cmsplugin_filer_image', '__latest__'),
     ]
 
     operations = [
