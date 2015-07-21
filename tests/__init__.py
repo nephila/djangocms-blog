@@ -22,6 +22,7 @@ from djangocms_blog.models import BlogCategory, Post
 
 User = get_user_model()
 
+
 def _get_cat_pk(lang, name):
     return lambda: BlogCategory.objects.translated(lang, name=name).get().pk
 
