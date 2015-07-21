@@ -26,6 +26,7 @@ Supported Django versions:
 
 * Django 1.6
 * Django 1.7
+* Django 1.8
 
 Supported django CMS versions:
 
@@ -109,7 +110,7 @@ suited for your deployment.
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
     
-* If you are using Django 1.7, be aware than ``filer`` < 0.9.10, ``cmsplugin_filer``
+* If you are using Django 1.7+, be aware than ``filer`` < 0.9.10, ``cmsplugin_filer``
   and ``django-cms`` < 3.1 currently requires you to setup ``MIGRATION_MODULES`` in settings::
   
     MIGRATION_MODULES = {
@@ -189,6 +190,8 @@ Settings
   to control the chosen comments framework; (default: True)
 * BLOG_USE_PLACEHOLDER: Post content is managed via placeholder; if ``False`` a
   simple HTMLField is used; (default: True)
+* BLOG_USE_ABSTRACT: Use an abstract field for the post; if ``False`` no abstract field
+  is available for every post; (default: True)
 * BLOG_IMAGE_THUMBNAIL_SIZE: Size of the main image when shown on the post lists;
   it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
   (default: ``{'size': '120x120', 'crop': True,'upscale': False}``)

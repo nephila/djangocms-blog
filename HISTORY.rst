@@ -10,6 +10,8 @@ History
 * Drop dependency on Django select2
 * Code cleanups
 * Enforce flake8 / isort checks
+* Add categories menu
+* Add option to disable the abstract
 
 0.4.0 (2015-03-22)
 ++++++++++++++++++
