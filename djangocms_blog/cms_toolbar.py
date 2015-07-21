@@ -4,7 +4,6 @@ from cms.toolbar_pool import toolbar_pool
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-
 from .models import BLOG_CURRENT_POST_IDENTIFIER
 
 
@@ -32,7 +31,7 @@ class BlogToolbar(CMSToolbar):
         if current_post and self.request.user.has_perm('djangocms_blog.change_post'):   # pragma: no cover
             # removing page meta menu, if present, to avoid confusion
             try:   # pragma: no cover
-                import djangocms_page_meta
+                import djangocms_page_meta  # NOQA
                 menu = self.request.toolbar.get_or_create_menu('page')
                 pagemeta = menu.get_or_create_menu('pagemeta', 'meta')
                 menu.remove_item(pagemeta)
@@ -40,7 +39,7 @@ class BlogToolbar(CMSToolbar):
                 pass
             # removing page tags menu, if present, to avoid confusion
             try:   # pragma: no cover
-                import djangocms_page_tags
+                import djangocms_page_tags  # NOQA
                 menu = self.request.toolbar.get_or_create_menu('page')
                 pagetags = menu.get_or_create_menu('pagetags', 'tags')
                 menu.remove_item(pagetags)

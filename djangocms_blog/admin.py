@@ -2,14 +2,14 @@
 from copy import deepcopy
 
 from admin_enhancer.admin import EnhancedModelAdminMixin
-from cms.admin.placeholderadmin import PlaceholderAdminMixin, FrontendEditableAdminMixin
+from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
 
-from .models import Post, BlogCategory
+from .models import BlogCategory, Post
 from .settings import get_setting
 
 

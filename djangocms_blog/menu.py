@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from cms.menu_bases import CMSAttachMenu
+from django.db.models.signals import post_delete, post_save
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
-from django.db.models.signals import post_save, post_delete
-from django.utils.translation import ugettext_lazy as _, get_language
+
 from .models import BlogCategory
 
 
@@ -34,7 +36,8 @@ class BlogNavModifier(Modifier):
     a corresponding category is selected in menu
     """
     def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
-        if post_cut: return nodes
+        if post_cut:
+            return nodes
         if not hasattr(request, 'toolbar'):
             return nodes
         models = ('djangocms_blog.post', 'djangocms_blog.blogcategory')
@@ -45,7 +48,8 @@ class BlogNavModifier(Modifier):
             cat = request.toolbar.obj
         else:
             cat = request.toolbar.obj.categories.first()
-        if not cat: return nodes
+        if not cat:
+            return nodes
 
         for node in nodes:
             if (node.namespace.startswith(BlogCategoryMenu.__name__) and
@@ -56,6 +60,7 @@ class BlogNavModifier(Modifier):
         return nodes
 
 menu_pool.register_modifier(BlogNavModifier)
+
 
 def clear_menu_cache(**kwargs):
     menu_pool.clear(all=True)

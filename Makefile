@@ -23,7 +23,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 djangocms_blog
+	flake8 djangocms_blog tests
 	djangocms-helper djangocms_blog pyflakes --cms
 
 test:

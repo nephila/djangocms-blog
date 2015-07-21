@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import re
+
 from cms.api import add_plugin
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.utils.timezone import now
+from djangocms_blog.models import BlogCategory
 from taggit.models import Tag
 
 from . import BaseTest
-from djangocms_blog.models import BlogCategory
 
 
 class PluginTest(BaseTest):
@@ -32,7 +33,6 @@ class PluginTest(BaseTest):
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find(post1.get_absolute_url()) > -1)
-
 
         category_2 = BlogCategory.objects.create(name=u'category 2')
         category_2.set_current_language('it', initialize=True)

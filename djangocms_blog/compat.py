@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from operator import itemgetter
 from heapq import nlargest
-from itertools import repeat, ifilter
+from itertools import ifilter, repeat
+from operator import itemgetter
 
 
 class Counter(dict):

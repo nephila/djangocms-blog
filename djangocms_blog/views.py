@@ -3,11 +3,10 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import resolve
 from django.utils.timezone import now
 from django.utils.translation import get_language
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
+from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
-from parler.views import ViewUrlMixin, TranslatableSlugMixin
-
-from .models import Post, BlogCategory, BLOG_CURRENT_POST_IDENTIFIER
+from .models import BLOG_CURRENT_POST_IDENTIFIER, BlogCategory, Post
 from .settings import get_setting
 
 User = get_user_model()

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.utils.translation import ugettext_lazy as _
-
 from cms.models.pluginmodel import CMSPlugin
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from django.utils.translation import ugettext_lazy as _
 
-from .models import AuthorEntriesPlugin, LatestPostsPlugin, Post, BlogCategory
 from .forms import LatestEntriesForm
+from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post
 from .settings import get_setting
 
 

@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-import django
-from django.contrib.sites.models import Site
-from django.db.models import Q
-
 try:
     from collections import Counter
 except ImportError:
     from .compat import Counter
 
+import django
+from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.timezone import now
-from parler.managers import TranslationManager, TranslatableQuerySet
+from parler.managers import TranslatableQuerySet, TranslationManager
 
 
 class TaggedFilterItem(object):
@@ -78,7 +76,8 @@ class GenericDateQuerySet(TranslatableQuerySet):
     publish_field = 'publish'
 
     def on_site(self):
-        return self.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current().pk))
+        return self.filter(models.Q(sites__isnull=True) |
+                           models.Q(sites=Site.objects.get_current().pk))
 
     def published(self):
         queryset = self.published_future()

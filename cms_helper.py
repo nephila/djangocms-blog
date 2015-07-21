@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import sys
 from tempfile import mkdtemp
+
 gettext = lambda s: s
 
-HELPER_SETTINGS = {
-    'NOSE_ARGS': [
+HELPER_SETTINGS = dict(
+    NOSE_ARGS=[
         '-s',
     ],
-    'ROOT_URLCONF': 'tests.test_utils.urls',
-    'INSTALLED_APPS': [
+    ROOT_URLCONF='tests.test_utils.urls',
+    INSTALLED_APPS=[
         'admin_enhancer',
         'filer',
         'parler',
@@ -22,13 +22,13 @@ HELPER_SETTINGS = {
         'cmsplugin_filer_image',
         'taggit_autosuggest',
     ],
-    'LANGUAGE_CODE': 'en',
-    'LANGUAGES': (
+    LANGUAGE_CODE='en',
+    LANGUAGES=(
         ('en', gettext('English')),
         ('fr', gettext('French')),
         ('it', gettext('Italiano')),
     ),
-    'CMS_LANGUAGES': {
+    CMS_LANGUAGES={
         1: [
             {
                 'code': 'en',
@@ -57,7 +57,7 @@ HELPER_SETTINGS = {
             'hide_untranslated': False,
         },
     },
-    'PARLER_LANGUAGES': {
+    PARLER_LANGUAGES={
         1: (
             {'code': 'en'},
             {'code': 'it'},
@@ -71,30 +71,31 @@ HELPER_SETTINGS = {
             'hide_untranslated': False,
         }
     },
-    'MIGRATION_MODULES': {
+    MIGRATION_MODULES={
         'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
     },
-    'META_SITE_PROTOCOL': 'http',
-    'META_SITE_DOMAIN': 'example.com',
-    'META_USE_OG_PROPERTIES': True,
-    'META_USE_TWITTER_PROPERTIES': True,
-    'META_USE_GOOGLEPLUS_PROPERTIES': True,
-    'THUMBNAIL_PROCESSORS': (
+    META_SITE_PROTOCOL='http',
+    META_SITE_DOMAIN='example.com',
+    META_USE_OG_PROPERTIES=True,
+    META_USE_TWITTER_PROPERTIES=True,
+    META_USE_GOOGLEPLUS_PROPERTIES=True,
+    THUMBNAIL_PROCESSORS=(
         'easy_thumbnails.processors.colorspace',
         'easy_thumbnails.processors.autocrop',
         'filer.thumbnail_processors.scale_and_crop_with_subject_location',
         'easy_thumbnails.processors.filters',
     ),
-    'FILE_UPLOAD_TEMP_DIR': mkdtemp(),
-    'SITE_ID': 1
-}
-if 'test' in sys.argv:
+    FILE_UPLOAD_TEMP_DIR=mkdtemp(),
+    SITE_ID=1
+)
+if 'test' in sys.argv or len(sys.argv) == 1:
     HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
 
 
 def run():
     from djangocms_helper import runner
-    sys.argv.append('--nose-runner')
+    if 'test' in sys.argv or len(sys.argv) == 1:
+        sys.argv.append('--nose-runner')
     runner.cms('djangocms_blog')
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from copy import deepcopy
+
+import parler
 from cms.api import add_plugin
 from cms.utils.copy_plugins import copy_plugins_to
 from cms.utils.plugins import downcast_plugins
-from copy import deepcopy
 from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
@@ -10,15 +12,13 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
-import parler
-from taggit.models import Tag
-
 from djangocms_blog.models import Post
 from djangocms_blog.settings import get_setting
+from taggit.models import Tag
 
+from djangocms_helper.utils import CMS_30
 
 from . import BaseTest
-from djangocms_helper.utils import CMS_30
 
 
 class AdminTest(BaseTest):
@@ -199,7 +199,7 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.available()), 1)
 
         # If post is published but publishing date is in the future
-        post2.date_published = now().replace(year=now().year+1, month=now().month, day=1)
+        post2.date_published = now().replace(year=now().year + 1, month=now().month, day=1)
         post2.publish = True
         post2.save()
         self.assertEqual(len(Post.objects.available()), 2)
@@ -207,15 +207,15 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.archived()), 0)
 
         # If post is published but end publishing date is in the past
-        post2.date_published = now().replace(year=now().year-2, month=now().month, day=1)
-        post2.date_published_end = now().replace(year=now().year-1, month=now().month, day=1)
+        post2.date_published = now().replace(year=now().year - 2, month=now().month, day=1)
+        post2.date_published_end = now().replace(year=now().year - 1, month=now().month, day=1)
         post2.save()
         self.assertEqual(len(Post.objects.available()), 2)
         self.assertEqual(len(Post.objects.published()), 1)
         self.assertEqual(len(Post.objects.archived()), 1)
 
         # counting with language fallback enabled
-        post = self._get_post(self.data['it'][0], post1, 'it')
+        self._get_post(self.data['it'][0], post1, 'it')
         self.assertEqual(len(Post.objects.filter_by_language('it')), 2)
 
         # No fallback
@@ -264,7 +264,7 @@ class ModelsTest(BaseTest):
 
     def test_plugin_latest(self):
         post1 = self._get_post(self.data['en'][0])
-        post2 = self._get_post(self.data['en'][1])
+        self._get_post(self.data['en'][1])
         post1.tags.add('tag 1')
         post1.save()
         request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
