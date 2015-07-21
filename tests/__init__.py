@@ -22,6 +22,9 @@ from djangocms_blog.models import BlogCategory, Post
 
 User = get_user_model()
 
+def _get_cat_pk(lang, name):
+    return lambda: BlogCategory.objects.translated(lang, name=name).get().pk
+
 
 class BaseTest(TestCase):
     """
@@ -59,6 +62,22 @@ class BaseTest(TestCase):
         ]
     }
 
+    cat_data = {
+        'it': [
+            {'name': u'Fortissimo'},
+            {'name': u'Pianississimo'},
+            {'name': u'Mezzo'},
+            {'name': u'Forte', 'parent_id': _get_cat_pk('it', 'Mezzo')},
+        ],
+        'en': [
+            {'name': u'Very loud'},
+            {'name': u'Very very silent'},
+            {'name': u'Almost'},
+            {'name': u'Loud', 'parent_id': _get_cat_pk('en', 'Almost')},
+            {'name': u'Silent', 'parent_id': _get_cat_pk('en', 'Almost')},
+        ]
+    }
+
     @classmethod
     def setUpClass(cls):
         cls.request_factory = RequestFactory()
@@ -91,6 +110,19 @@ class BaseTest(TestCase):
                                         original_filename=self.image_name,
                                         file=file_obj)
 
+    def _get_category(self, data, category=None, lang='en'):
+        for k, v in data.items():
+            if hasattr(v, '__call__'):
+                data[k] = v()
+        if not category:
+            category = BlogCategory.objects.create(**data)
+        else:
+            category.set_current_language(lang)
+            for attr, val in data.items():
+                setattr(category, attr, val)
+            category.save()
+        return category
+
     def _get_post(self, data, post=None, lang='en', sites=None):
         if not post:
             post_data = {
@@ -117,7 +149,7 @@ class BaseTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         User.objects.all().delete()
-    
+
     def tearDown(self):
         for post in Post.objects.all():
             post.delete()
