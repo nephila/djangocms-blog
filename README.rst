@@ -145,6 +145,7 @@ suited for your deployment.
   * Create a new django CMS page
   * Go to Advanced settings and select Blog from the Application selector;
   * Eventually customise the Application instance name;
+  * Publish the page
   * Restart the project instance to properly load blog urls.
 
 * Add and edit blog by creating them in the admin or using the toolbar,
