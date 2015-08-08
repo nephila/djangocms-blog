@@ -13,6 +13,7 @@ help:
 clean: clean-build clean-pyc
 
 clean-build:
+	python setup.py clean --all
 	rm -fr build/
 	rm -fr dist/
 	rm -fr *.egg-info
