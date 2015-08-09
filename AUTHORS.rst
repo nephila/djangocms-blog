@@ -10,7 +10,13 @@ Development Lead
 Contributors
 ------------
 
+* Christoph Reimers
+* Davide Truffo
+* Jens Diemer
+* Kamil Gałuszka
 * Leonardo Cavallucci
 * Max Vyaznikov
+* MotleyTech
+* Nico Schottelius
+* Stefan Wehrmeyer
 * Tadas Dailyda
-* Jens Diemer
