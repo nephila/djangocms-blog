@@ -3,7 +3,7 @@
 History
 -------
 
-0.5.0 (XXXX-XX-XX)
+0.5.0 (2015-08-09)
 ++++++++++++++++++
 
 * Add support for Django 1.8
