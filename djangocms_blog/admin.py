@@ -45,7 +45,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
                        ('date_published', 'date_published_end', 'enable_comments')),
             'classes': ('collapse',)
         }),
-        ('Immagine', {
+        ('Images', {
             'fields': (('main_image', 'main_image_thumbnail', 'main_image_full'),),
             'classes': ('collapse',)
         }),
