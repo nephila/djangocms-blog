@@ -32,16 +32,11 @@ Supported django CMS versions:
 
 * django CMS 3.x
 
-.. warning:: Starting from version 0.3 the length of the meta_description and
-             meta_title fields has been changed according to the most common
-             defaults for search engines. Existing data will not be affected,
-             but widgets that enforce the length for new data is now being used.
 
-.. warning:: Starting from 0.3 BlogLatestEntriesPlugin and BlogAuthorPostsPlugin
-             the plugin API has changed: ``BlogLatestEntriesPlugin.get_posts``,
-             ``BlogAuthorPostsPlugin.get_authors`` requires the ``request``
-             argument. Templates has been changed to use a context variable
-             instead. Please update your plugin templates accordingly.
+.. warning:: Version 0.6 changes the field of LatestPostsPlugin.tags field.
+             A datamigration is in place to migrate the data, but check that
+             works ok for your project before upgrading, as this might delete
+             some relevant data.
 
 .. warning:: Starting from version 0.5, this package does not declare dependency
              on South anymore; please install it separately if using this
