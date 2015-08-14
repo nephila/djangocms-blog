@@ -286,16 +286,19 @@ class ModelsTest(BaseTest):
     def test_copy_plugin_latest(self):
         post1 = self._get_post(self.data['en'][0])
         post2 = self._get_post(self.data['en'][1])
-        tag = Tag.objects.create(name='tag 1')
+        tag1 = Tag.objects.create(name='tag 1')
+        tag2 = Tag.objects.create(name='tag 2')
         plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en')
-        plugin.tags.add(tag)
+        plugin.tags.add(tag1)
+        plugin.tags.add(tag2)
         if CMS_30:
             plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
         else:
             plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
-        self.assertEqual(set(new[0].tags.all()), set([tag]))
+        self.assertEqual(set(new[0].tags.all()), set([tag1, tag2]))
+        self.assertEqual(set(new[0].tags.all()), set(plugin.tags.all()))
 
     def test_plugin_author(self):
         post1 = self._get_post(self.data['en'][0])

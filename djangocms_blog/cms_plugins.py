@@ -23,6 +23,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
+    fields = ('latest_posts', 'tags', 'categories')
     cache = False
 
     def render(self, context, instance, placeholder):
@@ -41,6 +42,7 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
+    fields = ('latest_posts', 'tags', 'categories')
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
