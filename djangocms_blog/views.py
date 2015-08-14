@@ -47,7 +47,6 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     view_url_name = 'djangocms_blog:post-detail'
 
     def get(self, *args, **kwargs):
-        # submit object to cms to get corrent language switcher and selected category behavior
         if hasattr(self.request, 'toolbar'):
             self.request.toolbar.set_object(self.get_object())
         return super(PostDetailView, self).get(*args, **kwargs)
