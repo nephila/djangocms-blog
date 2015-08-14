@@ -47,6 +47,12 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
 
+    def get(self, *args, **kwargs):
+        # submit object to cms to get current language switcher and selected category behavior
+        if hasattr(self.request, 'toolbar'):
+            self.request.toolbar.set_object(self.get_object())
+        return super(PostDetailView, self).get(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)
         context['meta'] = self.get_object().as_meta()
