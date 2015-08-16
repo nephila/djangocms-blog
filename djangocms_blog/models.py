@@ -247,8 +247,9 @@ class LatestPostsPlugin(BasePostPlugin):
 
     latest_posts = models.IntegerField(_(u'articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_(u'The number of latests articles to be displayed.'))
-    tags = models.ManyToManyField('taggit.Tag', blank=True, verbose_name=_(u'filter by tag'),
-                                  help_text=_(u'Show only the blog articles tagged with chosen tags.'))
+    tags = TaggableManager(_(u'filter by tag'), blank=True,
+                           help_text=_(u'Show only the blog articles tagged with chosen tags.'),
+                           related_name='djangocms_blog_latest_post')
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True, verbose_name=_(u'filter by category'),
                                         help_text=_(u'Show only the blog articles tagged with chosen categories.'))
 
@@ -256,7 +257,8 @@ class LatestPostsPlugin(BasePostPlugin):
         return _(u'%s latest articles by tag') % self.latest_posts
 
     def copy_relations(self, oldinstance):
-        self.tags = oldinstance.tags.all()
+        for tag in oldinstance.tags.all():
+            self.tags.add(tag)
 
     def get_posts(self, request):
         posts = self.post_queryset(request)
@@ -264,7 +266,7 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(tags__in=list(self.tags.all()))
         if self.categories.exists():
             posts = posts.filter(categories__in=list(self.categories.all()))
-        return posts[:self.latest_posts]
+        return posts.distinct()[:self.latest_posts]
 
 
 class AuthorEntriesPlugin(BasePostPlugin):
