@@ -1,0 +1,275 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Rüstem Mirzaoğlu, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: djangocms-blog\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-30 12:49+0100\n"
+"PO-Revision-Date: 2015-01-26 12:41+0000\n"
+"Last-Translator: Rüstem Mirzaoğlu\n"
+"Language-Team: Turkish (http://www.transifex.com/nephila/djangocms-blog/language/tr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: cms_app.py:8 cms_plugins.py:32 cms_plugins.py:45 cms_plugins.py:56
+#: cms_plugins.py:67 cms_toolbar.py:18
+msgid "Blog"
+msgstr "Blog"
+
+#: cms_plugins.py:20
+msgid "Latest Blog Articles"
+msgstr "Blog'un son makaleleri"
+
+#: cms_plugins.py:33
+msgid "Author Blog Articles"
+msgstr "Blog'un makale yazarı"
+
+#: cms_plugins.py:46 templates/djangocms_blog/plugins/tags.html:4
+msgid "Tags"
+msgstr "Etiketler"
+
+#: cms_plugins.py:57 templates/djangocms_blog/plugins/categories.html:4
+msgid "Categories"
+msgstr "Kategoriler"
+
+#: cms_plugins.py:68 templates/djangocms_blog/post_list.html:12
+#: templates/djangocms_blog/plugins/archive.html:4
+msgid "Archive"
+msgstr "Arşiv"
+
+#: cms_toolbar.py:20
+msgid "Post list"
+msgstr "Makale listesi"
+
+#: cms_toolbar.py:22
+msgid "Add post"
+msgstr "Makale ekle"
+
+#: cms_toolbar.py:26
+msgid "Edit Post"
+msgstr "Makaleyi düzenle"
+
+#: feeds.py:16
+#, python-format
+msgid "Blog articles on %(site_name)s"
+msgstr "%(site_name)s 'ki blog makaleleri"
+
+#: models.py:31
+msgid "parent"
+msgstr "üst öğe"
+
+#: models.py:33
+msgid "created at"
+msgstr "oluşturma tarihi"
+
+#: models.py:34
+msgid "modified at"
+msgstr "düzenleme tarihi"
+
+#: models.py:37
+msgid "name"
+msgstr "isim"
+
+#: models.py:38 models.py:105
+msgid "slug"
+msgstr "okunaklı URL"
+
+#: models.py:45
+msgid "blog category"
+msgstr "blog kategorisi"
+
+#: models.py:46
+msgid "blog categories"
+msgstr "blog kategorileri"
+
+#: models.py:70
+msgid "Author"
+msgstr "Yazar"
+
+#: models.py:75
+msgid "Published Since"
+msgstr "Yayınlama tarihi"
+
+#: models.py:77
+msgid "Published Until"
+msgstr "Yayından kaldırma tarihi"
+
+#: models.py:79
+msgid "Publish"
+msgstr "Yayınla"
+
+#: models.py:80
+msgid "category"
+msgstr "kategori"
+
+#: models.py:82
+msgid "Main image"
+msgstr "Ana resim"
+
+#: models.py:85
+msgid "Main image thumbnail"
+msgstr "Ana resmin küçük kopyası"
+
+#: models.py:89
+msgid "Main image full"
+msgstr "Ana resim - büyükboy"
+
+#: models.py:93
+msgid "Enable comments on post"
+msgstr "Makale için yorumları etkinleştir"
+
+#: models.py:96
+msgid "Site(s)"
+msgstr "Web site(ler)"
+
+#: models.py:98
+msgid ""
+"Select sites in which to show the post. If none is set it will be visible in"
+" all the configured sites."
+msgstr "Yayınlamak istediğiniz web siteleri seçiniz. Eğer herhangi seçim yapılmaz ise, yayında olan tüm web sitelerde görünecektir."
+
+#: models.py:104
+msgid "Title"
+msgstr "Başlık"
+
+#: models.py:106
+msgid "Abstract"
+msgstr "Makale özeti"
+
+#: models.py:107
+msgid "Post meta description"
+msgstr "Makalenin kısa tanımı"
+
+#: models.py:109
+msgid "Post meta keywords"
+msgstr "Makalenin anahtar kelimeleri"
+
+#: models.py:111
+msgid "Post meta title"
+msgstr "Makalenin web tarayıcıdaki başlığı"
+
+#: models.py:112
+msgid "used in title tag and social sharing"
+msgstr "başlık etiketinde veya sosyal paylaşımda kullanılır"
+
+#: models.py:115
+msgid "Text"
+msgstr "Metin"
+
+#: models.py:178
+msgid "blog article"
+msgstr "blog makalesi"
+
+#: models.py:179
+msgid "blog articles"
+msgstr "blog makaleleri"
+
+#: models.py:222 models.py:250
+msgid "Articles"
+msgstr "Makaleler"
+
+#: models.py:223
+msgid "The number of latests articles to be displayed."
+msgstr "Ğörütülenecek olan makale sayısı"
+
+#: models.py:225
+msgid "Show only the blog articles tagged with chosen tags."
+msgstr "Sadece seçili etiketlerle işaretlenmiş makaleleri göster."
+
+#: models.py:227
+msgid "Show only the blog articles tagged with chosen categories."
+msgstr "Sadece seçili kategorilerde bulunan makaleleri ğöster"
+
+#: models.py:246 templates/djangocms_blog/plugins/authors.html:3
+msgid "Authors"
+msgstr "Yazarlar"
+
+#: models.py:251
+msgid "The number of author articles to be displayed."
+msgstr "İlgili yazarın gösterilecek olan makale sayısı."
+
+#: templates/djangocms_blog/post_detail.html:18
+#: templates/djangocms_blog/includes/blog_item.html:11
+msgid "by"
+msgstr "tarafından"
+
+#: templates/djangocms_blog/post_list.html:11
+msgid "Articles by"
+msgstr "Makaleler"
+
+#: templates/djangocms_blog/post_list.html:13
+msgid "Tag"
+msgstr "Etiket"
+
+#: templates/djangocms_blog/post_list.html:14
+msgid "Category"
+msgstr "Kategori"
+
+#: templates/djangocms_blog/post_list.html:21
+#: templates/djangocms_blog/plugins/archive.html:27
+#: templates/djangocms_blog/plugins/authors.html:15
+#: templates/djangocms_blog/plugins/categories.html:16
+#: templates/djangocms_blog/plugins/latest_entries.html:7
+#: templates/djangocms_blog/plugins/tags.html:16
+msgid "No article found."
+msgstr "Makale bulunamadı."
+
+#: templates/djangocms_blog/post_list.html:24
+msgid "Back"
+msgstr "Geri"
+
+#: templates/djangocms_blog/post_list.html:30
+msgid "previous"
+msgstr "önceki"
+
+#: templates/djangocms_blog/post_list.html:33
+msgid "Page"
+msgstr "Sayfa"
+
+#: templates/djangocms_blog/post_list.html:33
+msgid "of"
+msgstr "biri"
+
+#: templates/djangocms_blog/post_list.html:36
+msgid "next"
+msgstr "sonraki"
+
+#: templates/djangocms_blog/includes/blog_item.html:46
+msgid "read more"
+msgstr "devamını oku"
+
+#: templates/djangocms_blog/plugins/archive.html:18
+#: templates/djangocms_blog/plugins/authors.html:10
+#: templates/djangocms_blog/plugins/categories.html:11
+#: templates/djangocms_blog/plugins/tags.html:11
+#, python-format
+msgid "1 article"
+msgid_plural "%(articles)s articles"
+msgstr[0] "1 makale"
+msgstr[1] "%(articles)s makale"
+
+#: templates/djangocms_blog/plugins/archive.html:19
+#: templates/djangocms_blog/plugins/authors.html:11
+#: templates/djangocms_blog/plugins/categories.html:12
+#: templates/djangocms_blog/plugins/tags.html:12
+msgid "0 articles"
+msgstr "0 makale"
+
+#~ msgid "blog post"
+#~ msgstr "blog post"
+
+#~ msgid "Posts"
+#~ msgstr "Posts"
+
+#~ msgid "Entries by"
+#~ msgstr "Entries by"
+
+#~ msgid "No entry found."
+#~ msgstr "No entry found."

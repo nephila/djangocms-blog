@@ -1,0 +1,276 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+# Matas Dailyda <matas@dailyda.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: djangocms-blog\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-30 12:49+0100\n"
+"PO-Revision-Date: 2015-02-23 20:11+0000\n"
+"Last-Translator: Matas Dailyda <matas@dailyda.com>\n"
+"Language-Team: Lithuanian (http://www.transifex.com/nephila/djangocms-blog/language/lt/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: lt\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: cms_app.py:8 cms_plugins.py:32 cms_plugins.py:45 cms_plugins.py:56
+#: cms_plugins.py:67 cms_toolbar.py:18
+msgid "Blog"
+msgstr "Tinklaraštis"
+
+#: cms_plugins.py:20
+msgid "Latest Blog Articles"
+msgstr "Naujausi tinklaraščio straipsniai"
+
+#: cms_plugins.py:33
+msgid "Author Blog Articles"
+msgstr "Tinklaraščio straipsnių autorius"
+
+#: cms_plugins.py:46 templates/djangocms_blog/plugins/tags.html:4
+msgid "Tags"
+msgstr "Žymenos"
+
+#: cms_plugins.py:57 templates/djangocms_blog/plugins/categories.html:4
+msgid "Categories"
+msgstr "Kategorijos"
+
+#: cms_plugins.py:68 templates/djangocms_blog/post_list.html:12
+#: templates/djangocms_blog/plugins/archive.html:4
+msgid "Archive"
+msgstr "Archyvas"
+
+#: cms_toolbar.py:20
+msgid "Post list"
+msgstr "Straipsnių sąrašas"
+
+#: cms_toolbar.py:22
+msgid "Add post"
+msgstr "Pridėti straipsnį"
+
+#: cms_toolbar.py:26
+msgid "Edit Post"
+msgstr "Redaguoti straipsnį"
+
+#: feeds.py:16
+#, python-format
+msgid "Blog articles on %(site_name)s"
+msgstr "Tinklaraščio straipsniai %(site_name)s"
+
+#: models.py:31
+msgid "parent"
+msgstr "pirminis elementas"
+
+#: models.py:33
+msgid "created at"
+msgstr "sukurta"
+
+#: models.py:34
+msgid "modified at"
+msgstr "redaguota"
+
+#: models.py:37
+msgid "name"
+msgstr "pavadinimas"
+
+#: models.py:38 models.py:105
+msgid "slug"
+msgstr "nuoroda"
+
+#: models.py:45
+msgid "blog category"
+msgstr "tinklaraščio kategorija"
+
+#: models.py:46
+msgid "blog categories"
+msgstr "tinklaraščio kategorijos"
+
+#: models.py:70
+msgid "Author"
+msgstr "Autorius"
+
+#: models.py:75
+msgid "Published Since"
+msgstr "Publikuota nuo"
+
+#: models.py:77
+msgid "Published Until"
+msgstr "Publikuota iki"
+
+#: models.py:79
+msgid "Publish"
+msgstr "Publikuoti"
+
+#: models.py:80
+msgid "category"
+msgstr "kategorija"
+
+#: models.py:82
+msgid "Main image"
+msgstr "Pagrindinis paveikslėlis"
+
+#: models.py:85
+msgid "Main image thumbnail"
+msgstr "Pagrindinio paveikslėlio miniatiūra"
+
+#: models.py:89
+msgid "Main image full"
+msgstr "Pagrindinis paveikslėlis pilnas"
+
+#: models.py:93
+msgid "Enable comments on post"
+msgstr "Įgalinti straipsniui komentarus"
+
+#: models.py:96
+msgid "Site(s)"
+msgstr "Tinklalapis(iai)"
+
+#: models.py:98
+msgid ""
+"Select sites in which to show the post. If none is set it will be visible in"
+" all the configured sites."
+msgstr "Pasirinkite puslapius kuriuose bus rodomas straipsnis. Jei nepasirinktas nei vienas puslapis, straipsnis bus rodomas visuose puslapiuose."
+
+#: models.py:104
+msgid "Title"
+msgstr "Pavadinimas"
+
+#: models.py:106
+msgid "Abstract"
+msgstr "Santrauka"
+
+#: models.py:107
+msgid "Post meta description"
+msgstr "Straipsnio meta apibūdinimas"
+
+#: models.py:109
+msgid "Post meta keywords"
+msgstr "Straipsnio meta raktažodžiai"
+
+#: models.py:111
+msgid "Post meta title"
+msgstr "Straipsnio meta pavadinimas"
+
+#: models.py:112
+msgid "used in title tag and social sharing"
+msgstr "naudojama pavadinimo žymenoje ir socialiniuose tinkluose"
+
+#: models.py:115
+msgid "Text"
+msgstr "Tekstas"
+
+#: models.py:178
+msgid "blog article"
+msgstr "tinklaraščio straipsnis"
+
+#: models.py:179
+msgid "blog articles"
+msgstr "tinklaraščio straipsniai"
+
+#: models.py:222 models.py:250
+msgid "Articles"
+msgstr "Straipsniai"
+
+#: models.py:223
+msgid "The number of latests articles to be displayed."
+msgstr "Atvaizduojamas naujausių straipsnių kiekis."
+
+#: models.py:225
+msgid "Show only the blog articles tagged with chosen tags."
+msgstr "Atvaizduoti straipsnius su pasirinktomis žymenomis."
+
+#: models.py:227
+msgid "Show only the blog articles tagged with chosen categories."
+msgstr "Atvaizduoti straipsnius su pasirinktomis kategorijomis."
+
+#: models.py:246 templates/djangocms_blog/plugins/authors.html:3
+msgid "Authors"
+msgstr "Autoriai"
+
+#: models.py:251
+msgid "The number of author articles to be displayed."
+msgstr "Atvaizduojamas autoriaus straipsnių kiekis."
+
+#: templates/djangocms_blog/post_detail.html:18
+#: templates/djangocms_blog/includes/blog_item.html:11
+msgid "by"
+msgstr "pagal"
+
+#: templates/djangocms_blog/post_list.html:11
+msgid "Articles by"
+msgstr "Straipsniai pagal"
+
+#: templates/djangocms_blog/post_list.html:13
+msgid "Tag"
+msgstr "Žymena"
+
+#: templates/djangocms_blog/post_list.html:14
+msgid "Category"
+msgstr "Kategorija"
+
+#: templates/djangocms_blog/post_list.html:21
+#: templates/djangocms_blog/plugins/archive.html:27
+#: templates/djangocms_blog/plugins/authors.html:15
+#: templates/djangocms_blog/plugins/categories.html:16
+#: templates/djangocms_blog/plugins/latest_entries.html:7
+#: templates/djangocms_blog/plugins/tags.html:16
+msgid "No article found."
+msgstr "Nerasta jokių straipsnių."
+
+#: templates/djangocms_blog/post_list.html:24
+msgid "Back"
+msgstr "Atgal"
+
+#: templates/djangocms_blog/post_list.html:30
+msgid "previous"
+msgstr "buvęs"
+
+#: templates/djangocms_blog/post_list.html:33
+msgid "Page"
+msgstr "Puslapis"
+
+#: templates/djangocms_blog/post_list.html:33
+msgid "of"
+msgstr "iš"
+
+#: templates/djangocms_blog/post_list.html:36
+msgid "next"
+msgstr "kitas"
+
+#: templates/djangocms_blog/includes/blog_item.html:46
+msgid "read more"
+msgstr "skaityti daugiau"
+
+#: templates/djangocms_blog/plugins/archive.html:18
+#: templates/djangocms_blog/plugins/authors.html:10
+#: templates/djangocms_blog/plugins/categories.html:11
+#: templates/djangocms_blog/plugins/tags.html:11
+#, python-format
+msgid "1 article"
+msgid_plural "%(articles)s articles"
+msgstr[0] "%(articles)s straipsnis"
+msgstr[1] "%(articles)s straipsniai"
+msgstr[2] "%(articles)s straipsnių"
+
+#: templates/djangocms_blog/plugins/archive.html:19
+#: templates/djangocms_blog/plugins/authors.html:11
+#: templates/djangocms_blog/plugins/categories.html:12
+#: templates/djangocms_blog/plugins/tags.html:12
+msgid "0 articles"
+msgstr "0 straipsnių"
+
+#~ msgid "blog post"
+#~ msgstr "blog post"
+
+#~ msgid "Posts"
+#~ msgstr "Posts"
+
+#~ msgid "Entries by"
+#~ msgstr "Entries by"
+
+#~ msgid "No entry found."
+#~ msgstr "No entry found."
