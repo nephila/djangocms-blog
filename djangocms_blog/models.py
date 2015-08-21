@@ -266,13 +266,7 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(tags__in=list(self.tags.all()))
         if self.categories.exists():
             posts = posts.filter(categories__in=list(self.categories.all()))
-<<<<<<< HEAD
         return posts.distinct()[:self.latest_posts]
-=======
-        posts = posts.distinct()
-        return posts[:self.latest_posts]
->>>>>>> f2451d47b60c95cbd62a85a0c18db81ae3fefe0d
-
 
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
