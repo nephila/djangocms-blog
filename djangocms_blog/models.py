@@ -158,6 +158,7 @@ class Post(ModelMeta, TranslatableModel):
         'og_profile_id': 'get_meta_attribute',
         'og_publisher': 'get_meta_attribute',
         'og_author_url': 'get_meta_attribute',
+        'og_author': 'get_meta_attribute',
         'twitter_type': 'get_meta_attribute',
         'twitter_site': 'get_meta_attribute',
         'twitter_author': 'get_meta_attribute',
