@@ -46,7 +46,7 @@ class BlogCategory(TranslatableModel):
 
     @property
     def count(self):
-        return self.blog_posts.filter(publish=True).count()
+        return self.blog_posts.published().count()
 
     def get_absolute_url(self):
         lang = get_language()
