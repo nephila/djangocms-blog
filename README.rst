@@ -19,6 +19,10 @@ djangocms-blog
         :target: https://coveralls.io/r/nephila/djangocms-blog
         :alt: Test coverage
 
+.. image:: https://codeclimate.com/github/nephila/djangocms-blog/badges/gpa.svg
+   :target: https://codeclimate.com/github/nephila/djangocms-blog
+   :alt: Code Climate
+
 
 A djangoCMS 3 blog application.
 
