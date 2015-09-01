@@ -14,6 +14,9 @@ from . import BaseTest
 
 class PluginTest(BaseTest):
 
+    def get_context(self, contenxt):
+        pass
+
     def test_plugin_latest(self):
         page1, page2 = self.get_pages()
         post1 = self._get_post(self.data['en'][0])
