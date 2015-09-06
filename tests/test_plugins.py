@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import os.path
 import re
 
 from cms.api import add_plugin
@@ -132,3 +133,21 @@ class PluginTest(BaseTest):
         context = plugin_class.render(context, plugin, ph)
         self.assertEqual(context['dates'][0]['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
         self.assertEqual(context['dates'][0]['count'], 1)
+
+    def test_templates(self):
+        posts = self.get_posts()
+        pages = self.get_pages()
+
+        ph = pages[0].placeholders.get(slot='content')
+        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+
+        context = self.get_plugin_context(pages[0], 'en', plugin)
+        plugin_class = plugin.get_plugin_class_instance()
+        self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('djangocms_blog', plugin_class.base_render_template))
+
+        self.app_config_1.app_data.config.template_prefix = 'whatever'
+        self.app_config_1.save()
+        self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('whatever', plugin_class.base_render_template))
+        self.app_config_1.app_data.config.template_prefix = ''
+        self.app_config_1.save()
+

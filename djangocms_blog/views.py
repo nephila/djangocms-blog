@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import os.path
+
 from aldryn_apphooks_config.mixins import AppConfigMixin
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
@@ -27,11 +29,17 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
             queryset = queryset.published()
         return queryset
 
+    def get_template_names(self):
+        if self.config.template_prefix:
+            return os.path.join(self.config.template_prefix, self.base_template_name)
+        else:
+            return os.path.join('djangocms_blog', self.base_template_name)
+
 
 class PostListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = 'djangocms_blog/post_list.html'
+    base_template_name = 'post_list.html'
     view_url_name = 'djangocms_blog:posts-latest'
 
     def get_context_data(self, **kwargs):
@@ -46,7 +54,7 @@ class PostListView(BaseBlogView, ListView):
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     model = Post
     context_object_name = 'post'
-    template_name = 'djangocms_blog/post_detail.html'
+    base_template_name = 'post_detail.html'
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
 
@@ -73,7 +81,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
 class PostArchiveView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = 'djangocms_blog/post_list.html'
+    base_template_name = 'post_list.html'
     date_field = 'date_published'
     allow_empty = True
     allow_future = True
@@ -101,7 +109,7 @@ class PostArchiveView(BaseBlogView, ListView):
 class TaggedListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = 'djangocms_blog/post_list.html'
+    base_template_name = 'post_list.html'
     paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-tagged'
 
@@ -120,7 +128,7 @@ class TaggedListView(BaseBlogView, ListView):
 class AuthorEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = 'djangocms_blog/post_list.html'
+    base_template_name = 'post_list.html'
     paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-authors'
 
@@ -140,7 +148,7 @@ class AuthorEntriesView(BaseBlogView, ListView):
 class CategoryEntriesView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
-    template_name = 'djangocms_blog/post_list.html'
+    base_template_name = 'post_list.html'
     _category = None
     paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-category'

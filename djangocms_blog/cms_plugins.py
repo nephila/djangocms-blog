@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import os.path
+
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext_lazy as _
@@ -13,19 +15,25 @@ from .settings import get_setting
 class BlogPlugin(CMSPluginBase):
     module = 'Blog'
 
+    def get_render_template(self, context, instance, placeholder):
+        if instance.app_config.template_prefix:
+            return os.path.join(instance.app_config.template_prefix, self.base_render_template)
+        else:
+            return os.path.join('djangocms_blog', self.base_render_template)
+
 
 class BlogLatestEntriesPlugin(BlogPlugin):
     """
     Non cached plugin which returns the latest posts taking into account the
       user / toolbar state
     """
-    render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
     fields = ('latest_posts', 'tags', 'categories')
     cache = False
+    base_render_template = 'plugins/latest_entries.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
@@ -38,12 +46,12 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     """
     Cached plugin which returns the latest published posts
     """
-    render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
     fields = ('latest_posts', 'tags', 'categories')
+    base_render_template = 'plugins/latest_entries.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
@@ -56,7 +64,7 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Author Blog Articles')
     model = AuthorEntriesPlugin
-    render_template = 'djangocms_blog/plugins/authors.html'
+    base_render_template = 'plugins/authors.html'
     filter_horizontal = ['authors']
 
     def render(self, context, instance, placeholder):
@@ -69,7 +77,7 @@ class BlogTagsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Tags')
     model = GenericBlogPlugin
-    render_template = 'djangocms_blog/plugins/tags.html'
+    base_render_template = 'plugins/tags.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
@@ -85,7 +93,7 @@ class BlogCategoryPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Categories')
     model = GenericBlogPlugin
-    render_template = 'djangocms_blog/plugins/categories.html'
+    base_render_template = 'plugins/categories.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
@@ -100,7 +108,7 @@ class BlogArchivePlugin(BlogPlugin):
     module = _('Blog')
     name = _('Archive')
     model = GenericBlogPlugin
-    render_template = 'djangocms_blog/plugins/archive.html'
+    base_render_template = 'plugins/archive.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)

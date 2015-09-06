@@ -2,6 +2,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
 from aldryn_apphooks_config.utils import get_app_instance
 
+import os.path
+
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.timezone import now
@@ -299,3 +301,21 @@ class ViewTest(BaseTest):
         self.assertEqual(sitemap.items().count(), 3)
         for item in sitemap.items():
             self.assertTrue(sitemap.lastmod(item).date(), now().today())
+
+    def test_templates(self):
+        posts = self.get_posts()
+        pages = self.get_pages()
+
+        with smart_override('en'):
+            request = self.get_page_request(pages[1], self.user, edit=True)
+            view_obj = PostListView()
+            view_obj.request = request
+            view_obj.namespace = self.app_config_1.namespace
+            view_obj.config = self.app_config_1
+            self.assertEqual(view_obj.get_template_names(), os.path.join('djangocms_blog', 'post_list.html'))
+
+            self.app_config_1.app_data.config.template_prefix = 'whatever'
+            self.app_config_1.save()
+            self.assertEqual(view_obj.get_template_names(), os.path.join('whatever', 'post_list.html'))
+            self.app_config_1.app_data.config.template_prefix = ''
+            self.app_config_1.save()
