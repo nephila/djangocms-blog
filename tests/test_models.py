@@ -137,7 +137,6 @@ class AdminTest(BaseTest):
                 msg_mid.process_request(request)
                 post_admin = admin.site._registry[Post]
                 response = post_admin.edit_field(request, post.pk, 'en')
-                #print(response.content.decode('utf-8'))
                 self.assertEqual(response.status_code, 200)
                 modified_post = Post.objects.language('en').get(pk=post.pk)
                 self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
@@ -171,7 +170,11 @@ class ModelsTest(BaseTest):
                       'month': '%02d' % post.date_published.month,
                       'day': '%02d' % post.date_published.day,
                       'slug': post.safe_translation_getter('slug', any_language=get_language())}
-            url_en = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            url_en = reverse(
+                '%s:post-detail' % self.app_config_1.namespace,
+                kwargs=kwargs,
+                current_app=self.app_config_1
+            )
             self.assertEqual(url_en, post.get_absolute_url())
 
         with override('it'):
@@ -180,7 +183,11 @@ class ModelsTest(BaseTest):
                       'month': '%02d' % post.date_published.month,
                       'day': '%02d' % post.date_published.day,
                       'slug': post.safe_translation_getter('slug', any_language=get_language())}
-            url_it = reverse('djangocms_blog:post-detail', kwargs=kwargs)
+            url_it = reverse(
+                '%s:post-detail' % self.app_config_1.namespace,
+                kwargs=kwargs,
+                current_app=self.app_config_1
+            )
             self.assertEqual(url_it, post.get_absolute_url())
             self.assertNotEqual(url_it, url_en)
 

@@ -255,22 +255,27 @@ class ViewTest(BaseTest):
             self.assertEqual(context['post_list'][0].title, 'Second post')
 
     def test_feed(self):
-        pages = self.get_pages()
         posts = self.get_posts()
+        pages = self.get_pages()
         posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
         posts[0].save()
         posts[1].tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
         posts[1].save()
         posts[0].set_current_language('en')
 
-        feed = LatestEntriesFeed()
-        feed.namespace = self.app_config_1.namespace
-        feed.config = self.app_config_1
-        self.assertEqual(list(feed.items()), [posts[0]])
-        request = self.get_page_request(pages[1], self.user, lang='en', edit=False)
-        xml = feed(request)
-        self.assertContains(xml, posts[0].get_absolute_url())
-        self.assertContains(xml, 'Blog articles on example.com')
+        with smart_override('en'):
+            with switch_language(posts[0], 'en'):
+
+                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+
+                feed = LatestEntriesFeed()
+                feed.namespace = self.app_config_1.namespace
+                feed.config = self.app_config_1
+                self.assertEqual(list(feed.items()), [posts[0]])
+                self.reload_urlconf()
+                xml = feed(request)
+                self.assertContains(xml, posts[0].get_absolute_url())
+                self.assertContains(xml, 'Blog articles on example.com')
 
         with smart_override('it'):
             with switch_language(posts[0], 'it'):
@@ -278,7 +283,7 @@ class ViewTest(BaseTest):
                 feed.namespace = self.app_config_1.namespace
                 feed.config = self.app_config_1
                 self.assertEqual(list(feed.items()), [posts[0]])
-                request = self.get_page_request(pages[1], self.user, lang='en', edit=False)
+                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
                 xml = feed(request)
                 self.assertContains(xml, posts[0].get_absolute_url())
                 self.assertContains(xml, 'Articoli del blog su example.com')
