@@ -2,10 +2,9 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from aldryn_apphooks_config.utils import get_app_instance
-
 from django.utils.translation import activate
 from menus.menu_pool import menu_pool
-from parler.utils.context import switch_language, smart_override
+from parler.utils.context import smart_override, switch_language
 
 from djangocms_blog.views import CategoryEntriesView, PostDetailView
 

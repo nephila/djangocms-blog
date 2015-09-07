@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
-from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 
 from aldryn_apphooks_config.fields import AppHookConfigField
+from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
 from django.core.urlresolvers import reverse

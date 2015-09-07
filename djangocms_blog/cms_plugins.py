@@ -6,7 +6,7 @@ from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import LatestEntriesForm
-from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post, GenericBlogPlugin
+from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
 from .settings import get_setting
 
 

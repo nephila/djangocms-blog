@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
 
+from aldryn_apphooks_config.models import AppHookConfig
+from aldryn_apphooks_config.utils import setup_config
+from app_data import AppDataForm
 from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
-from aldryn_apphooks_config.utils import setup_config
-from aldryn_apphooks_config.models import AppHookConfig
-from app_data import AppDataForm
-from parler.models import TranslatableModel
-from parler.models import TranslatedFields
+from parler.models import TranslatableModel, TranslatedFields
 
 from .settings import get_setting
 

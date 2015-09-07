@@ -2,9 +2,8 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import django
-
 from aldryn_apphooks_config.managers.parler import (
-    AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset
+    AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset,
 )
 from django.contrib.sites.models import Site
 from django.db import models
