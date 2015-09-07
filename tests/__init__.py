@@ -3,15 +3,16 @@
 Tests for `djangocms_blog` module.
 """
 from __future__ import absolute_import, print_function, unicode_literals
+
 from copy import deepcopy
 
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
-from parler.utils.context import smart_override
-from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_helper.base_test import BaseTestCase
+from parler.utils.context import smart_override
 
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.models import BlogCategory, Post
 
 User = get_user_model()
