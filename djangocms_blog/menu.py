@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from cms.menu_bases import CMSAttachMenu
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import ugettext_lazy as _, get_language_from_request
-from menus.base import Modifier, NavigationNode
+from menus.base import NavigationNode
 from menus.menu_pool import menu_pool
 
 from .models import BlogCategory, Post
@@ -50,6 +50,7 @@ class BlogCategoryMenu(CMSAttachMenu):
         return nodes
 
 menu_pool.register_menu(BlogCategoryMenu)
+
 
 def clear_menu_cache(**kwargs):
     menu_pool.clear(all=True)
