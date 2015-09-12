@@ -96,6 +96,11 @@ class BaseTest(BaseTestCase):
         )
         self.img = self.create_filer_image_object()
 
+    def tearDown(self):
+        for post in Post.objects.all():
+            post.delete()
+        super(BaseTest, self).tearDown()
+
     def _get_category(self, data, category=None, lang='en'):
         for k, v in data.items():
             if hasattr(v, '__call__'):
