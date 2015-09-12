@@ -12,6 +12,6 @@ class BlogApp(CMSApp):
     name = _('Blog')
     urls = ['djangocms_blog.urls']
     app_name = 'djangocms_blog'
-    menus = [BlogCategoryMenu]
+    # menus = [BlogCategoryMenu]
 
 apphook_pool.register(BlogApp)

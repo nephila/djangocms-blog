@@ -55,7 +55,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
         return queryset
 
     def get(self, *args, **kwargs):
-        # submit object to cms to get corrent language switcher and selected category behavior
+        # submit object to cms to get current language switcher and selected category behavior
         if hasattr(self.request, 'toolbar'):
             self.request.toolbar.set_object(self.get_object())
         return super(PostDetailView, self).get(*args, **kwargs)

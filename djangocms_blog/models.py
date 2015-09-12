@@ -267,11 +267,10 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(categories__in=list(self.categories.all()))
         return posts.distinct()[:self.latest_posts]
 
-
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
-        dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
-        limit_choices_to={'djangocms_blog_post_author__publish': True}
+        dj_settings.AUTH_USER_MODEL, verbose_name=_('Authors'),
+        # limit_choices_to={'djangocms_blog_post_author__publish': True}
     )
     latest_posts = models.IntegerField(
         _('articles'), default=get_setting('LATEST_POSTS'),
