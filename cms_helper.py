@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
+from __future__ import absolute_import, print_function, unicode_literals
+
 from tempfile import mkdtemp
 
 gettext = lambda s: s
 
 HELPER_SETTINGS = dict(
-    NOSE_ARGS=[
-        '-s',
-    ],
     ROOT_URLCONF='tests.test_utils.urls',
     INSTALLED_APPS=[
         'filer',
@@ -87,8 +85,6 @@ HELPER_SETTINGS = dict(
     FILE_UPLOAD_TEMP_DIR=mkdtemp(),
     SITE_ID=1
 )
-if 'test' in sys.argv or len(sys.argv) == 1:
-    HELPER_SETTINGS['INSTALLED_APPS'].append('django_nose')
 
 try:
     import admin_enhancer  # pragma: no cover # NOQA
@@ -99,8 +95,6 @@ except ImportError:
 
 def run():
     from djangocms_helper import runner
-    if 'test' in sys.argv or len(sys.argv) == 1:
-        sys.argv.append('--nose-runner')
     runner.cms('djangocms_blog')
 
 if __name__ == "__main__":

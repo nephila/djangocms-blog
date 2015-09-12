@@ -2,22 +2,14 @@
 """
 Tests for `djangocms_blog` module.
 """
-import os
+from __future__ import absolute_import, print_function, unicode_literals
 
-from cms.utils.i18n import get_language_list
 from cmsplugin_filer_image.models import ThumbnailOption
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
-from django.core.files import File as DjangoFile
-from django.http import SimpleCookie
-from django.test import TestCase, RequestFactory
 from django.utils.translation import activate
-from filer.models import File, Image
-from PIL import Image as PilImage, ImageDraw
-from six import StringIO
+from djangocms_helper.base_test import BaseTestCase
 
-from djangocms_helper.utils import create_user
 from djangocms_blog.models import BlogCategory, Post
 
 User = get_user_model()
@@ -27,16 +19,22 @@ def _get_cat_pk(lang, name):
     return lambda: BlogCategory.objects.translated(lang, name=name).get().pk
 
 
-class BaseTest(TestCase):
+class BaseTest(BaseTestCase):
     """
     Base class with utility function
     """
-    request_factory = None
-    user = None
-    languages = get_language_list()
     category_1 = None
     thumb_1 = None
     thumb_2 = None
+
+    _pages_data = (
+        {'en': {'title': 'page one', 'template': 'page.html', 'publish': True},
+         'fr': {'title': 'page un', 'publish': True},
+         'it': {'title': 'pagina uno', 'publish': True}},
+        {'en': {'title': 'page two', 'template': 'page.html', 'publish': True},
+         'fr': {'title': 'page deux', 'publish': True},
+         'it': {'title': 'pagina due', 'publish': True}},
+    )
 
     data = {
         'it': [
@@ -81,11 +79,7 @@ class BaseTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.request_factory = RequestFactory()
-        cls.user = create_user('admin', 'admin@admin.com', 'admin', is_staff=True, is_superuser=True)
-        cls.user_staff = create_user('staff', 'staff@admin.com', 'staff', is_staff=True)
-        cls.user_normal = create_user('normal', 'normal@admin.com', 'normal')
-        cls.site_1 = Site.objects.get(pk=1)
+        super(BaseTest, cls).setUpClass()
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
 
     def setUp(self):
@@ -101,15 +95,12 @@ class BaseTest(TestCase):
         self.thumb_2 = ThumbnailOption.objects.create(
             name='main', width=200, height=200, crop=False, upscale=False
         )
-        img = create_image()
-        self.image_name = 'test_file.jpg'
-        self.filename = os.path.join(settings.FILE_UPLOAD_TEMP_DIR,
-                                     self.image_name)
-        img.save(self.filename, 'JPEG')
-        file_obj = DjangoFile(open(self.filename, 'rb'), name=self.image_name)
-        self.img = Image.objects.create(owner=self.user,
-                                        original_filename=self.image_name,
-                                        file=file_obj)
+        self.img = self.create_filer_image_object()
+
+    def tearDown(self):
+        for post in Post.objects.all():
+            post.delete()
+        super(BaseTest, self).tearDown()
 
     def _get_category(self, data, category=None, lang='en'):
         for k, v in data.items():
@@ -147,67 +138,6 @@ class BaseTest(TestCase):
                 post.sites.add(site)
         return post
 
-    @classmethod
-    def tearDownClass(cls):
-        User.objects.all().delete()
-
-    def tearDown(self):
-        for post in Post.objects.all():
-            post.delete()
-        os.remove(self.filename)
-        for f in File.objects.all():
-            f.delete()
-
-    def get_pages(self):
-        from cms.api import create_page, create_title
-        page = create_page(u'page one', 'fullwidth.html', language='en')
-        page_2 = create_page(u'page two', 'fullwidth.html', language='en')
-        create_title(language='fr', title=u'page un', page=page)
-        create_title(language='it', title=u'pagina uno', page=page)
-        for lang in self.languages:
-            page.publish(lang)
-        page_2.publish('en')
-        return page.get_draft_object(), page_2.get_draft_object()
-
-    def get_request(self, page, lang):
-        request = self.request_factory.get(page.get_path(lang))
-        request.current_page = page
-        request.user = self.user
-        request.session = {}
-        request.cookies = SimpleCookie()
-        request.errors = StringIO()
-        return request
-
-    def post_request(self, page, lang, data, path=None):
-        if not path:
-            path = page.get_path(lang)
-        request = self.request_factory.post(path, data)
-        request.current_page = page
-        request.user = self.user
-        request.session = {}
-        request.cookies = SimpleCookie()
-        request.errors = StringIO()
-        request._dont_enforce_csrf_checks = True
-        return request
-
-    def get_page_request(self, page, user, path=None, edit=False, lang_code='en'):
-        from cms.middleware.toolbar import ToolbarMiddleware
-        path = path or page and page.get_absolute_url()
-        if edit:
-            path += '?edit'
-        request = RequestFactory().get(path)
-        request.session = {}
-        request.user = user
-        request.LANGUAGE_CODE = lang_code
-        if edit:
-            request.GET = {'edit': None}
-        else:
-            request.GET = {'edit_off': None}
-        request.current_page = page
-        mid = ToolbarMiddleware()
-        mid.process_request(request)
-        return request
-
     def get_posts(self, sites=None):
         post1 = self._get_post(self.data['en'][0], sites=sites)
         post1 = self._get_post(self.data['it'][0], post1, 'it')
@@ -219,12 +149,3 @@ class BaseTest(TestCase):
         post2.main_image = self.img
         post2.save()
         return post1, post2
-
-
-def create_image(mode='RGB', size=(800, 600)):
-    image = PilImage.new(mode, size)
-    draw = ImageDraw.Draw(image)
-    x_bit, y_bit = size[0] // 10, size[1] // 10
-    draw.rectangle((x_bit, y_bit * 2, x_bit * 7, y_bit * 3), 'red')
-    draw.rectangle((x_bit * 2, y_bit, x_bit * 3, y_bit * 8), 'red')
-    return image

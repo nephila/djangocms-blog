@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function, unicode_literals
+
 from copy import deepcopy
 
 import parler
@@ -12,10 +14,11 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
-from djangocms_blog.models import Post
-from djangocms_blog.settings import get_setting
 from djangocms_helper.utils import CMS_30
 from taggit.models import Tag
+
+from djangocms_blog.models import Post
+from djangocms_blog.settings import get_setting
 
 from . import BaseTest
 
@@ -54,61 +57,66 @@ class AdminTest(BaseTest):
 
     def test_admin_auto_author(self):
         page1, page2 = self.get_pages()
-        request = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
         data = deepcopy(self.data['en'][0])
 
-        with self.settings(BLOG_AUTHOR_DEFAULT=True):
-            data['date_published_0'] = now().strftime('%Y-%m-%d')
-            data['date_published_1'] = now().strftime('%H:%M:%S')
-            data['categories'] = self.category_1.pk
-            request = self.post_request(page1, 'en', data=data)
-            msg_mid = MessageMiddleware()
-            msg_mid.process_request(request)
-            post_admin = admin.site._registry[Post]
-            post_admin.add_view(request)
-            self.assertEqual(Post.objects.count(), 1)
-            self.assertEqual(Post.objects.get(translations__slug='first-post').author_id,
-                             request.user.pk)
+        with self.login_user_context(self.user):
+            with self.settings(BLOG_AUTHOR_DEFAULT=True):
+                data['date_published_0'] = now().strftime('%Y-%m-%d')
+                data['date_published_1'] = now().strftime('%H:%M:%S')
+                data['categories'] = self.category_1.pk
+                request = self.post_request(page1, 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
+                msg_mid = MessageMiddleware()
+                msg_mid.process_request(request)
+                post_admin = admin.site._registry[Post]
+                response = post_admin.add_view(request)
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(Post.objects.count(), 1)
+                self.assertEqual(Post.objects.get(translations__slug='first-post').author_id,
+                                 request.user.pk)
 
-        with self.settings(BLOG_AUTHOR_DEFAULT=False):
-            data = deepcopy(self.data['en'][1])
-            data['date_published_0'] = now().strftime('%Y-%m-%d')
-            data['date_published_1'] = now().strftime('%H:%M:%S')
-            data['categories'] = self.category_1.pk
-            request = self.post_request(page1, 'en', data=data)
-            msg_mid = MessageMiddleware()
-            msg_mid.process_request(request)
-            post_admin = admin.site._registry[Post]
-            post_admin.add_view(request)
-            self.assertEqual(Post.objects.count(), 2)
-            self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
+            with self.settings(BLOG_AUTHOR_DEFAULT=False):
+                data = deepcopy(self.data['en'][1])
+                data['date_published_0'] = now().strftime('%Y-%m-%d')
+                data['date_published_1'] = now().strftime('%H:%M:%S')
+                data['categories'] = self.category_1.pk
+                request = self.post_request(page1, 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
+                msg_mid = MessageMiddleware()
+                msg_mid.process_request(request)
+                post_admin = admin.site._registry[Post]
+                response = post_admin.add_view(request)
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(Post.objects.count(), 2)
+                self.assertEqual(Post.objects.get(translations__slug='second-post').author_id, None)
 
-        with self.settings(BLOG_AUTHOR_DEFAULT='staff'):
-            data = deepcopy(self.data['en'][2])
-            data['date_published_0'] = now().strftime('%Y-%m-%d')
-            data['date_published_1'] = now().strftime('%H:%M:%S')
-            data['categories'] = self.category_1.pk
-            request = self.post_request(page1, 'en', data=data)
-            msg_mid = MessageMiddleware()
-            msg_mid.process_request(request)
-            post_admin = admin.site._registry[Post]
-            post_admin.add_view(request)
-            self.assertEqual(Post.objects.count(), 3)
-            self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
+            with self.settings(BLOG_AUTHOR_DEFAULT='staff'):
+                data = deepcopy(self.data['en'][2])
+                data['date_published_0'] = now().strftime('%Y-%m-%d')
+                data['date_published_1'] = now().strftime('%H:%M:%S')
+                data['categories'] = self.category_1.pk
+                request = self.post_request(page1, 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
+                msg_mid = MessageMiddleware()
+                msg_mid.process_request(request)
+                post_admin = admin.site._registry[Post]
+                response = post_admin.add_view(request)
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(Post.objects.count(), 3)
+                self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
 
     def test_admin_post_text(self):
         page1, page2 = self.get_pages()
         post = self._get_post(self.data['en'][0])
 
-        with self.settings(BLOG_USE_PLACEHOLDER=False):
-            data = {'post_text': 'ehi text'}
-            request = self.post_request(page1, 'en', data=data, path='/en/?edit_fields=post_text')
-            msg_mid = MessageMiddleware()
-            msg_mid.process_request(request)
-            post_admin = admin.site._registry[Post]
-            post_admin.edit_field(request, post.pk, 'en')
-            modified_post = Post.objects.get(pk=post.pk)
-            self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
+        with self.login_user_context(self.user):
+            with self.settings(BLOG_USE_PLACEHOLDER=False):
+                data = {'post_text': 'ehi text'}
+                request = self.post_request(page1, 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
+                msg_mid = MessageMiddleware()
+                msg_mid.process_request(request)
+                post_admin = admin.site._registry[Post]
+                response = post_admin.edit_field(request, post.pk, 'en')
+                self.assertEqual(response.status_code, 200)
+                modified_post = Post.objects.language('en').get(pk=post.pk)
+                self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
 
 
 class ModelsTest(BaseTest):

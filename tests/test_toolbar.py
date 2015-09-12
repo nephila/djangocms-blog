@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function, unicode_literals
+
 from cms.toolbar.items import ModalItem
 from django.core.urlresolvers import reverse
+
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
 
 from . import BaseTest
