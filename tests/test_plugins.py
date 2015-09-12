@@ -2,6 +2,7 @@
 import re
 
 from cms.api import add_plugin
+from cms.plugin_rendering import PluginContext, render_placeholder
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.template.loader import get_template
@@ -26,15 +27,9 @@ class PluginTest(BaseTest):
         plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
 
-        context = RequestContext(request)
-        try:
-            template = get_template('page.html').template
-            with context.bind_template(template):
-                rendered = plugin.render_plugin(context, ph)
-        except AttributeError:
-            rendered = plugin.render_plugin(context, ph)
+        context = self.get_plugin_context(page1, 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
         self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
         self.assertTrue(rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1)
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
@@ -49,14 +44,9 @@ class PluginTest(BaseTest):
         post2.categories.add(category_2)
         plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
         plugin.categories.add(category_2)
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
-        context = RequestContext(request)
-        try:
-            template = get_template('page.html').template
-            with context.bind_template(template):
-                rendered = plugin.render_plugin(context, ph)
-        except AttributeError:
-            rendered = plugin.render_plugin(context, ph)
+
+        context = self.get_plugin_context(page1, 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
         self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-2') > -1)
         self.assertTrue(rendered.find(reverse('djangocms_blog:posts-category', kwargs={'category': category_2.slug})) > -1)
         self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
@@ -74,14 +64,9 @@ class PluginTest(BaseTest):
         ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en')
         plugin.authors.add(self.user)
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
-        context = RequestContext(request)
-        try:
-            template = get_template('page.html').template
-            with context.bind_template(template):
-                rendered = plugin.render_plugin(context, ph)
-        except AttributeError:
-            rendered = plugin.render_plugin(context, ph)
+
+        context = self.get_plugin_context(page1, 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
         self.assertTrue(rendered.find(reverse('djangocms_blog:posts-author', kwargs={'username': self.user.get_username()})) > -1)
         self.assertTrue(rendered.find('2 articles') > -1)
 
@@ -97,14 +82,8 @@ class PluginTest(BaseTest):
         post2.save()
         ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogTagsPlugin', language='en')
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
-        context = RequestContext(request)
-        try:
-            template = get_template('page.html').template
-            with context.bind_template(template):
-                rendered = plugin.render_plugin(context, ph).replace('\n', '')
-        except AttributeError:
-            rendered = plugin.render_plugin(context, ph).replace('\n', '')
+        context = self.get_plugin_context(page1, 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
         for tag in Tag.objects.all():
             self.assertTrue(rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1)
             if tag.slug == 'test-tag':
@@ -123,15 +102,9 @@ class PluginTest(BaseTest):
         post2.save()
         ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogCategoryPlugin', language='en')
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         plugin_class = plugin.get_plugin_class_instance()
-        context = RequestContext(request)
-        try:
-            template = get_template('page.html').template
-            with context.bind_template(template):
-                context = plugin_class.render(context, plugin, ph)
-        except AttributeError:
-            context = plugin_class.render(context, plugin, ph)
+        context = self.get_plugin_context(page1, 'en', plugin, edit=True)
+        context = plugin_class.render(context, plugin, ph)
         self.assertTrue(context['categories'])
         self.assertEqual(list(context['categories']), [self.category_1])
 
@@ -144,20 +117,15 @@ class PluginTest(BaseTest):
         post2.save()
         ph = page1.placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogArchivePlugin', language='en')
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=True)
         plugin_class = plugin.get_plugin_class_instance()
-        context = RequestContext(request)
-        try:
-            template = get_template('page.html').template
-            with context.bind_template(template):
-                context = plugin_class.render(context, plugin, ph)
-        except AttributeError:
-            context = plugin_class.render(context, plugin, ph)
+
+        context = self.get_plugin_context(page1, 'en', plugin, edit=True)
+        context = plugin_class.render(context, plugin, ph)
         self.assertEqual(context['dates'][0]['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
         self.assertEqual(context['dates'][0]['count'], 2)
 
         post2.publish = False
         post2.save()
-        context = plugin_class.render(RequestContext(request, {'request': request}), plugin, ph)
+        context = plugin_class.render(context, plugin, ph)
         self.assertEqual(context['dates'][0]['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
         self.assertEqual(context['dates'][0]['count'], 1)

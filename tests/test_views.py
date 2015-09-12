@@ -50,7 +50,7 @@ class ViewTest(BaseTest):
         response = view_obj.render_to_response(context)
         self.assertContains(response, context['post_list'][0].get_absolute_url())
 
-        request = self.get_page_request(page1, self.user, r'/it/blog/', lang_code='it', edit=True)
+        request = self.get_page_request(page1, self.user, r'/it/blog/', lang='it', edit=True)
         activate('it')
         view_obj.request = request
         view_obj.object_list = view_obj.get_queryset()
@@ -76,7 +76,7 @@ class ViewTest(BaseTest):
         }
 
         view_obj = PostListView()
-        request = self.get_page_request(page1, self.user, r'/fr/blog/', lang_code='fr', edit=True)
+        request = self.get_page_request(page1, self.user, r'/fr/blog/', lang='fr', edit=True)
         activate('fr')
         view_obj.request = request
         view_obj.kwargs = {}
@@ -88,7 +88,7 @@ class ViewTest(BaseTest):
         with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
 
             view_obj = PostListView()
-            request = self.get_page_request(page1, self.user, r'/fr/blog/', lang_code='fr', edit=True)
+            request = self.get_page_request(page1, self.user, r'/fr/blog/', lang='fr', edit=True)
             activate('fr')
             view_obj.request = request
             view_obj.kwargs = {}
@@ -115,7 +115,7 @@ class ViewTest(BaseTest):
             self.assertEqual(post_obj.language_code, 'en')
 
         with switch_language(post1, 'it'):
-            request = self.get_page_request(page1, AnonymousUser(), r'/it/blog/', lang_code='it', edit=False)
+            request = self.get_page_request(page1, AnonymousUser(), r'/it/blog/', lang='it', edit=False)
             view_obj.request = request
             view_obj.kwargs = {'slug': post1.slug}
             post_obj = view_obj.get_object()
@@ -230,7 +230,7 @@ class ViewTest(BaseTest):
 
         feed = LatestEntriesFeed()
         self.assertEqual(list(feed.items()), [post1])
-        request = self.get_page_request(page1, self.user, r'/en/blog/', lang_code='en', edit=False)
+        request = self.get_page_request(page1, self.user, r'/en/blog/', lang='en', edit=False)
         xml = feed(request)
         self.assertContains(xml, post1.get_absolute_url())
         self.assertContains(xml, 'Blog articles on example.com')
@@ -239,7 +239,7 @@ class ViewTest(BaseTest):
         post1.set_current_language('it')
         feed = LatestEntriesFeed()
         self.assertEqual(list(feed.items()), [post1])
-        request = self.get_page_request(page1, self.user, r'/it/blog/', lang_code='it', edit=False)
+        request = self.get_page_request(page1, self.user, r'/it/blog/', lang='it', edit=False)
         xml = feed(request)
         self.assertContains(xml, post1.get_absolute_url())
         self.assertContains(xml, 'Articoli del blog su example.com')
