@@ -2,13 +2,16 @@
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.timezone import now
-from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
-from djangocms_blog.sitemaps import BlogSitemap
-from djangocms_blog.views import (AuthorEntriesView, CategoryEntriesView, PostArchiveView,
-                                  PostDetailView, PostListView, TaggedListView)
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
-from parler.utils.context import switch_language, smart_override
+from parler.utils.context import smart_override, switch_language
+
+from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
+from djangocms_blog.sitemaps import BlogSitemap
+from djangocms_blog.views import (
+    AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
+    TaggedListView,
+)
 
 from . import BaseTest
 

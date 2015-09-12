@@ -2,13 +2,11 @@
 import re
 
 from cms.api import add_plugin
-from cms.plugin_rendering import PluginContext, render_placeholder
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
-from django.template.loader import get_template
 from django.utils.timezone import now
-from djangocms_blog.models import BlogCategory
 from taggit.models import Tag
+
+from djangocms_blog.models import BlogCategory
 
 from . import BaseTest
 

@@ -2,9 +2,10 @@
 import copy
 
 from django.utils.translation import activate
-from djangocms_blog.views import CategoryEntriesView, PostDetailView
 from menus.menu_pool import menu_pool
 from parler.utils.context import switch_language
+
+from djangocms_blog.views import CategoryEntriesView, PostDetailView
 
 from . import BaseTest
 

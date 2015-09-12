@@ -21,14 +21,14 @@ class BlogToolbar(CMSToolbar):
         admin_menu.add_modal_item(_('Add post'), url=url)
 
         current_post = getattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, None)
-        if current_post and self.request.user.has_perm('djangocms_blog.change_post'):   # pragma: no cover
+        if current_post and self.request.user.has_perm('djangocms_blog.change_post'):  # pragma: no cover  # NOQA
             admin_menu.add_modal_item(_('Edit Post'), reverse(
                 'admin:djangocms_blog_post_change', args=(current_post.pk,)),
                 active=True)
 
     def post_template_populate(self):
         current_post = getattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, None)
-        if current_post and self.request.user.has_perm('djangocms_blog.change_post'):   # pragma: no cover
+        if current_post and self.request.user.has_perm('djangocms_blog.change_post'):  # pragma: no cover  # NOQA
             # removing page meta menu, if present, to avoid confusion
             try:   # pragma: no cover
                 import djangocms_page_meta  # NOQA

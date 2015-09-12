@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
 from tempfile import mkdtemp
 
 gettext = lambda s: s

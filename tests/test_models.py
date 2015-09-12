@@ -12,10 +12,11 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
-from djangocms_blog.models import Post
-from djangocms_blog.settings import get_setting
 from djangocms_helper.utils import CMS_30
 from taggit.models import Tag
+
+from djangocms_blog.models import Post
+from djangocms_blog.settings import get_setting
 
 from . import BaseTest
 

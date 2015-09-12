@@ -7,8 +7,7 @@ from django.utils import timezone
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import get_language
+from django.utils.translation import get_language, ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta_mixin.models import ModelMeta
@@ -241,12 +240,15 @@ class BasePostPlugin(CMSPlugin):
 class LatestPostsPlugin(BasePostPlugin):
 
     latest_posts = models.IntegerField(_(u'articles'), default=get_setting('LATEST_POSTS'),
-                                       help_text=_(u'The number of latests articles to be displayed.'))
+                                       help_text=_(u'The number of latests '
+                                                   u'articles to be displayed.'))
     tags = TaggableManager(_(u'filter by tag'), blank=True,
                            help_text=_(u'Show only the blog articles tagged with chosen tags.'),
                            related_name='djangocms_blog_latest_post')
-    categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True, verbose_name=_(u'filter by category'),
-                                        help_text=_(u'Show only the blog articles tagged with chosen categories.'))
+    categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True,
+                                        verbose_name=_(u'filter by category'),
+                                        help_text=_(u'Show only the blog articles tagged '
+                                                    u'with chosen categories.'))
 
     def __str__(self):
         return _(u'%s latest articles by tag') % self.latest_posts
