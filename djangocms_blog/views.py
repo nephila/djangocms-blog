@@ -16,10 +16,10 @@ class BaseBlogView(ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        queryset = self.model._default_manager.active_translations(language_code=language)
+        queryset = self.model._default_manager.all().active_translations(language_code=language)
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
-        return queryset.on_site()
+        return queryset
 
     def render_to_response(self, context, **response_kwargs):
         response_kwargs['current_app'] = resolve(self.request.path).namespace
@@ -45,6 +45,12 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     template_name = 'djangocms_blog/post_detail.html'
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
+
+    def get_queryset(self):
+        queryset = self.model._default_manager.all()
+        if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
+            queryset = queryset.published()
+        return queryset
 
     def get(self, *args, **kwargs):
         # submit object to cms to get corrent language switcher and selected category behavior
