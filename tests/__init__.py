@@ -2,6 +2,7 @@
 """
 Tests for `djangocms_blog` module.
 """
+from __future__ import absolute_import, print_function, unicode_literals
 
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth import get_user_model

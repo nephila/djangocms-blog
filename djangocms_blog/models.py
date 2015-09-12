@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function, unicode_literals
+
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
 from django.core.urlresolvers import reverse
@@ -74,52 +76,52 @@ class Post(ModelMeta, TranslatableModel):
     Blog post
     """
     author = models.ForeignKey(dj_settings.AUTH_USER_MODEL,
-                               verbose_name=_(u'author'), null=True, blank=True,
+                               verbose_name=_('author'), null=True, blank=True,
                                related_name='djangocms_blog_post_author')
 
-    date_created = models.DateTimeField(_(u'created'), auto_now_add=True)
-    date_modified = models.DateTimeField(_(u'last modified'), auto_now=True)
-    date_published = models.DateTimeField(_(u'published Since'),
+    date_created = models.DateTimeField(_('created'), auto_now_add=True)
+    date_modified = models.DateTimeField(_('last modified'), auto_now=True)
+    date_published = models.DateTimeField(_('published Since'),
                                           default=timezone.now)
-    date_published_end = models.DateTimeField(_(u'published Until'), null=True,
+    date_published_end = models.DateTimeField(_('published Until'), null=True,
                                               blank=True)
-    publish = models.BooleanField(_(u'publish'), default=False)
-    categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_(u'category'),
+    publish = models.BooleanField(_('publish'), default=False)
+    categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_('category'),
                                         related_name='blog_posts',)
-    main_image = FilerImageField(verbose_name=_(u'main image'), blank=True, null=True,
+    main_image = FilerImageField(verbose_name=_('main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
     main_image_thumbnail = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
-                                             verbose_name=_(u'main image thumbnail'),
+                                             verbose_name=_('main image thumbnail'),
                                              related_name='djangocms_blog_post_thumbnail',
                                              on_delete=models.SET_NULL,
                                              blank=True, null=True)
     main_image_full = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
-                                        verbose_name=_(u'main image full'),
+                                        verbose_name=_('main image full'),
                                         related_name='djangocms_blog_post_full',
                                         on_delete=models.SET_NULL,
                                         blank=True, null=True)
-    enable_comments = models.BooleanField(verbose_name=_(u'enable comments on post'),
+    enable_comments = models.BooleanField(verbose_name=_('enable comments on post'),
                                           default=get_setting('ENABLE_COMMENTS'))
-    sites = models.ManyToManyField('sites.Site', verbose_name=_(u'Site(s)'), blank=True,
+    sites = models.ManyToManyField('sites.Site', verbose_name=_('Site(s)'), blank=True,
                                    null=True,
-                                   help_text=_(u'Select sites in which to show the post. '
+                                   help_text=_('Select sites in which to show the post. '
                                                u'If none is set it will be '
                                                u'visible in all the configured sites.'))
 
     translations = TranslatedFields(
-        title=models.CharField(_(u'title'), max_length=255),
-        slug=models.SlugField(_(u'slug'), blank=True, db_index=True),
-        abstract=HTMLField(_(u'abstract'), blank=True, default=''),
-        meta_description=models.TextField(verbose_name=_(u'post meta description'),
+        title=models.CharField(_('title'), max_length=255),
+        slug=models.SlugField(_('slug'), blank=True, db_index=True),
+        abstract=HTMLField(_('abstract'), blank=True, default=''),
+        meta_description=models.TextField(verbose_name=_('post meta description'),
                                           blank=True, default=''),
-        meta_keywords=models.TextField(verbose_name=_(u'post meta keywords'),
+        meta_keywords=models.TextField(verbose_name=_('post meta keywords'),
                                        blank=True, default=''),
-        meta_title=models.CharField(verbose_name=_(u'post meta title'),
-                                    help_text=_(u'used in title tag and social sharing'),
+        meta_title=models.CharField(verbose_name=_('post meta title'),
+                                    help_text=_('used in title tag and social sharing'),
                                     max_length=255,
                                     blank=True, default=''),
-        post_text=HTMLField(_(u'text'), default='', blank=True),
+        post_text=HTMLField(_('text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField('post_content', related_name='post_content')
@@ -239,19 +241,19 @@ class BasePostPlugin(CMSPlugin):
 
 class LatestPostsPlugin(BasePostPlugin):
 
-    latest_posts = models.IntegerField(_(u'articles'), default=get_setting('LATEST_POSTS'),
-                                       help_text=_(u'The number of latests '
+    latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
+                                       help_text=_('The number of latests '
                                                    u'articles to be displayed.'))
-    tags = TaggableManager(_(u'filter by tag'), blank=True,
-                           help_text=_(u'Show only the blog articles tagged with chosen tags.'),
+    tags = TaggableManager(_('filter by tag'), blank=True,
+                           help_text=_('Show only the blog articles tagged with chosen tags.'),
                            related_name='djangocms_blog_latest_post')
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True,
-                                        verbose_name=_(u'filter by category'),
-                                        help_text=_(u'Show only the blog articles tagged '
+                                        verbose_name=_('filter by category'),
+                                        help_text=_('Show only the blog articles tagged '
                                                     u'with chosen categories.'))
 
     def __str__(self):
-        return _(u'%s latest articles by tag') % self.latest_posts
+        return _('%s latest articles by tag') % self.latest_posts
 
     def copy_relations(self, oldinstance):
         for tag in oldinstance.tags.all():
@@ -272,12 +274,12 @@ class AuthorEntriesPlugin(BasePostPlugin):
         limit_choices_to={'djangocms_blog_post_author__publish': True}
     )
     latest_posts = models.IntegerField(
-        _(u'articles'), default=get_setting('LATEST_POSTS'),
-        help_text=_(u'The number of author articles to be displayed.')
+        _('articles'), default=get_setting('LATEST_POSTS'),
+        help_text=_('The number of author articles to be displayed.')
     )
 
     def __str__(self):
-        return _(u'%s latest articles by author') % self.latest_posts
+        return _('%s latest articles by author') % self.latest_posts
 
     def copy_relations(self, oldinstance):
         self.authors = oldinstance.authors.all()

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, print_function, unicode_literals
+
 from cms.menu_bases import CMSAttachMenu
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import get_language, ugettext_lazy as _
