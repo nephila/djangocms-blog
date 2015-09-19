@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 
+from aldryn_apphooks_config.fields import AppHookConfigField
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
 from django.core.urlresolvers import reverse
@@ -13,10 +15,10 @@ from django.utils.translation import get_language, ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta_mixin.models import ModelMeta
-from parler.managers import TranslationManager
 from parler.models import TranslatableModel, TranslatedFields
 from taggit_autosuggest.managers import TaggableManager
 
+from .cms_appconfig import BlogConfig
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -28,10 +30,10 @@ class BlogCategory(TranslatableModel):
     """
     Blog category
     """
-    parent = models.ForeignKey('self', verbose_name=_('parent'), null=True,
-                               blank=True)
+    parent = models.ForeignKey('self', verbose_name=_('parent'), null=True, blank=True)
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
     date_modified = models.DateTimeField(_('modified at'), auto_now=True)
+    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'))
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
@@ -39,7 +41,7 @@ class BlogCategory(TranslatableModel):
         meta={'unique_together': (('language_code', 'slug'),)}
     )
 
-    objects = TranslationManager()
+    objects = AppHookConfigTranslatableManager()
 
     class Meta:
         verbose_name = _('blog category')
@@ -47,16 +49,23 @@ class BlogCategory(TranslatableModel):
 
     @property
     def count(self):
-        return self.blog_posts.published().count()
+        return self.blog_posts.namespace(self.app_config.namespace).published().count()
 
-    def get_absolute_url(self):
-        lang = get_language()
-        if self.has_translation(lang):
+    def get_absolute_url(self, lang=None):
+        if not lang:
+            lang = get_language()
+        if self.has_translation(lang, ):
             slug = self.safe_translation_getter('slug', language_code=lang)
-            return reverse('djangocms_blog:posts-category', kwargs={'category': slug})
+            return reverse(
+                '%s:posts-category' % self.app_config.namespace,
+                kwargs={'category': slug},
+                current_app=self.app_config.namespace
+            )
         # in case category doesn't exist in this language, gracefully fallback
         # to posts-latest
-        return reverse('djangocms_blog:posts-latest')
+        return reverse(
+            '%s:posts-latest' % self.app_config.namespace, current_app=self.app_config.namespace
+        )
 
     def __str__(self):
         return self.safe_translation_getter('name')
@@ -108,6 +117,7 @@ class Post(ModelMeta, TranslatableModel):
                                    help_text=_('Select sites in which to show the post. '
                                                u'If none is set it will be '
                                                u'visible in all the configured sites.'))
+    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'))
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
@@ -165,19 +175,21 @@ class Post(ModelMeta, TranslatableModel):
     def __str__(self):
         return self.safe_translation_getter('title')
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, lang=None):
+        if not lang:
+            lang = get_language()
         kwargs = {'year': self.date_published.year,
                   'month': '%02d' % self.date_published.month,
                   'day': '%02d' % self.date_published.day,
                   'slug': self.safe_translation_getter('slug',
-                                                       language_code=get_language(),
+                                                       language_code=lang,
                                                        any_language=True)}
-        return reverse('djangocms_blog:post-detail', kwargs=kwargs)
+        return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
 
-    def save(self, *args, **kwargs):
-        if not self.slug and self.title:
-            self.slug = slugify(self.title)
-        super(Post, self).save(*args, **kwargs)
+    def save_translation(self, translation, *args, **kwargs):
+        if not translation.slug and translation.title:
+            translation.slug = slugify(translation.title)
+        super(Post, self).save_translation(translation, *args, **kwargs)
 
     def get_title(self):
         title = self.safe_translation_getter('meta_title', any_language=True)
@@ -230,7 +242,10 @@ class BasePostPlugin(CMSPlugin):
 
     def post_queryset(self, request=None):
         language = get_language()
-        posts = Post._default_manager.active_translations(language_code=language)
+        posts = Post._default_manager
+        if self.app_config:
+            posts = posts.namespace(self.app_config.namespace)
+        posts = posts.active_translations(language_code=language)
         if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
             posts = posts.published()
         return posts
@@ -240,7 +255,7 @@ class BasePostPlugin(CMSPlugin):
 
 
 class LatestPostsPlugin(BasePostPlugin):
-
+    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
     latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests '
                                                    u'articles to be displayed.'))
@@ -269,6 +284,7 @@ class LatestPostsPlugin(BasePostPlugin):
 
 
 class AuthorEntriesPlugin(BasePostPlugin):
+    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
         limit_choices_to={'djangocms_blog_post_author__publish': True}
@@ -292,6 +308,17 @@ class AuthorEntriesPlugin(BasePostPlugin):
         authors = self.authors.all()
         for author in authors:
             author.count = 0
-            if author.djangocms_blog_post_author.filter(publish=True).exists():
-                author.count = author.djangocms_blog_post_author.filter(publish=True).count()
+            qs = author.djangocms_blog_post_author
+            if self.app_config:
+                qs = qs.namespace(self.app_config.namespace)
+            count = qs.filter(publish=True).count()
+            if count:
+                author.count = count
         return authors
+
+
+class GenericBlogPlugin(BasePostPlugin):
+    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
+
+    def __str__(self):
+        return _('generic blog plugin')

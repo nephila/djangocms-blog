@@ -21,7 +21,7 @@
     </div>
     {% endif %}
     {% endspaceless %}
-    {% if use_placeholder %}
+    {% if post.app_config.use_placeholder %}
         <div class="blog-content">{% render_placeholder post.content %}</div>
     {% else %}
         <div class="blog-content">{% render_model post "post_text" "post_text" %}</div>

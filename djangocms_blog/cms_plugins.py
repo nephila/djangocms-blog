@@ -7,7 +7,7 @@ from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import LatestEntriesForm
-from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post
+from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post, GenericBlogPlugin
 from .settings import get_setting
 
 
@@ -70,36 +70,47 @@ class BlogAuthorPostsPlugin(BlogPlugin):
 class BlogTagsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Tags')
-    model = CMSPlugin
+    model = GenericBlogPlugin
     render_template = 'djangocms_blog/plugins/tags.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
-        context['tags'] = Post.objects.tag_cloud(queryset=Post.objects.published())
+        qs = Post._default_manager
+        qs_post = qs
+        if instance.app_config:
+            qs_post = qs_post.namespace(instance.app_config.namespace)
+        context['tags'] = qs.tag_cloud(queryset=qs_post.published())
         return context
 
 
 class BlogCategoryPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Categories')
-    model = CMSPlugin
+    model = GenericBlogPlugin
     render_template = 'djangocms_blog/plugins/categories.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
-        context['categories'] = BlogCategory.objects.all()
+        qs = BlogCategory._default_manager
+        if instance.app_config:
+            qs = qs.namespace(instance.app_config.namespace)
+        context['categories'] = qs
         return context
 
 
 class BlogArchivePlugin(BlogPlugin):
     module = _('Blog')
     name = _('Archive')
-    model = CMSPlugin
+    model = GenericBlogPlugin
     render_template = 'djangocms_blog/plugins/archive.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)
-        context['dates'] = Post.objects.get_months(queryset=Post.objects.published())
+        qs = Post._default_manager
+        qs_post = qs
+        if instance.app_config:
+            qs_post = qs.namespace(instance.app_config.namespace)
+        context['dates'] = qs.get_months(queryset=qs_post.published())
         return context
 
 

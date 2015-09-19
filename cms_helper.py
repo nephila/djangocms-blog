@@ -18,6 +18,7 @@ HELPER_SETTINGS = dict(
         'cmsplugin_filer_image',
         'taggit',
         'taggit_autosuggest',
+        'aldryn_apphooks_config',
     ],
     LANGUAGE_CODE='en',
     LANGUAGES=(

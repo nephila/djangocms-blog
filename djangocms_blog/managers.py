@@ -2,10 +2,13 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import django
+
+from aldryn_apphooks_config.managers.parler import (
+    AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset
+)
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.timezone import now
-from parler.managers import TranslatableQuerySet, TranslationManager
 
 try:
     from collections import Counter
@@ -76,7 +79,7 @@ class TaggedFilterItem(object):
         return sorted(tags, key=lambda x: -x.count)
 
 
-class GenericDateQuerySet(TranslatableQuerySet):
+class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
     start_date_field = 'date_published'
     end_date_field = 'date_published_end'
     publish_field = 'publish'
@@ -120,7 +123,7 @@ class GenericDateQuerySet(TranslatableQuerySet):
         return self.active_translations(language_code=language).on_site()
 
 
-class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
+class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):
     use_for_related_fields = True
 
     queryset_class = GenericDateQuerySet

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from aldryn_apphooks_config.mixins import AppConfigMixin
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import resolve
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
@@ -14,31 +14,33 @@ from .settings import get_setting
 User = get_user_model()
 
 
-class BaseBlogView(ViewUrlMixin):
+class BaseBlogView(AppConfigMixin, ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        queryset = self.model._default_manager.all().active_translations(language_code=language)
+        queryset = self.model._default_manager.namespace(
+            self.namespace
+        ).active_translations(
+            language_code=language
+        )
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
         return queryset
-
-    def render_to_response(self, context, **response_kwargs):
-        response_kwargs['current_app'] = resolve(self.request.path).namespace
-        return super(BaseBlogView, self).render_to_response(context, **response_kwargs)
 
 
 class PostListView(BaseBlogView, ListView):
     model = Post
     context_object_name = 'post_list'
     template_name = 'djangocms_blog/post_list.html'
-    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-latest'
 
     def get_context_data(self, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
+
+    def get_paginate_by(self, queryset):
+        return self.config.paginate_by
 
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):

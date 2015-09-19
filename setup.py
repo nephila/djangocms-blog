@@ -48,6 +48,7 @@ setup(
         'cmsplugin-filer',
         'django-meta>=0.2',
         'django-meta-mixin>=0.1.1',
+        'aldryn-apphooks-config',
     ],
     license='BSD',
     zip_safe=False,

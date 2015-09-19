@@ -3,11 +3,13 @@
 Tests for `djangocms_blog` module.
 """
 from __future__ import absolute_import, print_function, unicode_literals
+from copy import deepcopy
 
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
-from django.utils.translation import activate
+from parler.utils.context import smart_override
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_helper.base_test import BaseTestCase
 
 from djangocms_blog.models import BlogCategory, Post
@@ -31,85 +33,123 @@ class BaseTest(BaseTestCase):
         {'en': {'title': 'page one', 'template': 'page.html', 'publish': True},
          'fr': {'title': 'page un', 'publish': True},
          'it': {'title': 'pagina uno', 'publish': True}},
-        {'en': {'title': 'page two', 'template': 'page.html', 'publish': True},
+        {'en': {'title': 'page two', 'template': 'page.html', 'publish': True,
+                'apphook': 'BlogApp', 'apphook_namespace': 'sample_app'},
          'fr': {'title': 'page deux', 'publish': True},
          'it': {'title': 'pagina due', 'publish': True}},
+        {'en': {'title': 'page three', 'template': 'page.html', 'publish': True,
+                'apphook': 'BlogApp', 'apphook_namespace': 'sample_app2'},
+         'fr': {'title': 'page trois', 'publish': True},
+         'it': {'title': 'pagina tre', 'publish': True}},
     )
 
-    data = {
-        'it': [
-            {'title': u'Primo post', 'abstract': u'<p>prima riga</p>',
-             'description': u'Questa è la descrizione', 'keywords': u'keyword1, keyword2',
-             'text': u'Testo del post'},
-            {'title': u'Secondo post', 'abstract': u'<p>prima riga del secondo post</p>',
-             'description': u'Descrizione del secondo post', 'keywords': u'keyword3, keyword4',
-             'text': u'Testo del secondo post'},
-            {'title': u'Terzo post', 'abstract': u'<p>prima riga del terzo post</p>',
-             'description': u'Descrizione del terzo post', 'keywords': u'keyword5, keyword6',
-             'text': u'Testo del terzo post'},
-        ],
-        'en': [
-            {'title': u'First post', 'abstract': u'<p>first line</p>',
-             'description': u'This is the description', 'keywords': u'keyword1, keyword2',
-             'text': u'Post text'},
-            {'title': u'Second post', 'abstract': u'<p>second post first line</p>',
-             'description': u'Second post description', 'keywords': u'keyword3, keyword4',
-             'text': u'Second post text'},
-            {'title': u'Third post', 'abstract': u'<p>third post first line</p>',
-             'description': u'third post description', 'keywords': u'keyword5, keyword6',
-             'text': u'Third post text'}
-        ]
-    }
+    _post_data = (
+        {'en': {'title': 'First post', 'abstract': '<p>first line</p>',
+                'description': 'This is the description', 'keywords': 'keyword1, keyword2',
+                'text': 'Post text', 'app_config': 'sample_app', 'publish': True},
+         'it': {'title': 'Primo post', 'abstract': '<p>prima riga</p>',
+                'description': 'Questa è la descrizione', 'keywords': 'keyword1, keyword2',
+                'text': 'Testo del post'},
+         },
+        {'en': {'title': 'Second post', 'abstract': '<p>second post first line</p>',
+                'description': 'Second post description', 'keywords': 'keyword3, keyword4',
+                'text': 'Second post text', 'app_config': 'sample_app', 'publish': False},
+         'it': {'title': 'Secondo post', 'abstract': '<p>prima riga del secondo post</p>',
+                'description': 'Descrizione del secondo post', 'keywords': 'keyword3, keyword4',
+                'text': 'Testo del secondo post', 'app_config': 'sample_app'},
+         },
+        {'en': {'title': 'Third post', 'abstract': '<p>third post first line</p>',
+                'description': 'third post description', 'keywords': 'keyword5, keyword6',
+                'text': 'Third post text', 'app_config': 'sample_app', 'publish': False},
+         'it': {'title': 'Terzo post', 'abstract': '<p>prima riga del terzo post</p>',
+                'description': 'Descrizione del terzo post', 'keywords': 'keyword5, keyword6',
+                'text': 'Testo del terzo post'},
+         },
+        {'en': {'title': 'Different appconfig', 'abstract': '<p>Different appconfig first line</p>',
+                'description': 'Different appconfig description', 'keywords': 'keyword5, keyword6',
+                'text': 'Different appconfig text', 'app_config': 'sample_app2', 'publish': True},
+         'it': {'title': 'Altro appconfig', 'abstract': '<p>prima riga del Altro appconfig</p>',
+                'description': 'Descrizione Altro appconfig', 'keywords': 'keyword5, keyword6',
+                'text': 'Testo del Altro appconfig'},
+         },
+    )
 
-    cat_data = {
-        'it': [
-            {'name': u'Fortissimo'},
-            {'name': u'Pianississimo'},
-            {'name': u'Mezzo'},
-            {'name': u'Forte', 'parent_id': _get_cat_pk('it', 'Mezzo')},
-        ],
-        'en': [
-            {'name': u'Very loud'},
-            {'name': u'Very very silent'},
-            {'name': u'Almost'},
-            {'name': u'Loud', 'parent_id': _get_cat_pk('en', 'Almost')},
-            {'name': u'Silent', 'parent_id': _get_cat_pk('en', 'Almost')},
-        ]
-    }
+    _categories_data = (
+        {'en': {'name': 'Very loud', 'app_config': 'sample_app'},
+         'it': {'name': 'Fortissimo'},
+         },
+        {'en': {'name': 'Very very silent', 'app_config': 'sample_app'},
+         'it': {'name': 'Pianississimo'},
+         },
+        {'en': {'name': 'Almost', 'app_config': 'sample_app'},
+         'it': {'name': 'Mezzo'},
+         },
+        {'en': {'name': 'Loud', 'parent_id': _get_cat_pk('en', 'Almost'), 'app_config': 'sample_app'},
+         'it': {'name': 'Forte', 'parent_id': _get_cat_pk('it', 'Mezzo')},
+         },
+        {'en': {'name': 'Silent', 'parent_id': _get_cat_pk('en', 'Almost'), 'app_config': 'sample_app'},
+         },
+        {'en': {'name': 'Drums', 'app_config': 'sample_app2'},
+         'it': {'name': 'Tamburi'},
+         },
+        {'en': {'name': 'Guitars', 'app_config': 'sample_app2'},
+         'it': {'name': 'Chitarre'},
+         },
+    )
 
     @classmethod
     def setUpClass(cls):
         super(BaseTest, cls).setUpClass()
+        cls.thumb_1 = ThumbnailOption.objects.create(
+            name='base', width=100, height=100, crop=True, upscale=False
+        )
+        cls.thumb_2 = ThumbnailOption.objects.create(
+            name='main', width=200, height=200, crop=False, upscale=False
+        )
+        cls.app_config_1 = BlogConfig.objects.create(
+            namespace='sample_app', app_title='app1'
+        )
+        cls.app_config_2 = BlogConfig.objects.create(
+            namespace='sample_app2', app_title='app2'
+        )
+        cls.app_config_1.app_data.config.paginate_by = 1
+        cls.app_config_1.save()
+        cls.app_config_2.app_data.config.paginate_by = 2
+        cls.app_config_2.save()
+        cls.app_configs = {
+            'sample_app': cls.app_config_1,
+            'sample_app2': cls.app_config_2,
+        }
+        cls.category_1 = BlogCategory.objects.create(name='category 1', app_config=cls.app_config_1)
+        cls.category_1.set_current_language('it', initialize=True)
+        cls.category_1.name = 'categoria 1'
+        cls.category_1.save()
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
 
     def setUp(self):
-        activate('en')
         super(BaseTest, self).setUp()
-        self.category_1 = BlogCategory.objects.create(name=u'category 1')
-        self.category_1.set_current_language('it', initialize=True)
-        self.category_1.name = u'categoria 1'
-        self.category_1.save()
-        self.thumb_1 = ThumbnailOption.objects.create(
-            name='base', width=100, height=100, crop=True, upscale=False
-        )
-        self.thumb_2 = ThumbnailOption.objects.create(
-            name='main', width=200, height=200, crop=False, upscale=False
-        )
         self.img = self.create_filer_image_object()
 
     def tearDown(self):
-        for post in Post.objects.all():
-            post.delete()
+        Post.objects.all().delete()
         super(BaseTest, self).tearDown()
 
+    @classmethod
+    def tearDownClass(cls):
+        BlogConfig.objects.all().delete()
+        super(BaseTest, cls).tearDownClass()
+
     def _get_category(self, data, category=None, lang='en'):
+        data = deepcopy(data)
         for k, v in data.items():
             if hasattr(v, '__call__'):
                 data[k] = v()
         if not category:
-            category = BlogCategory.objects.create(**data)
+            with smart_override(lang):
+                data['app_config'] = self.app_configs[data['app_config']]
+                category = BlogCategory.objects.create(**data)
         else:
-            category.set_current_language(lang)
+            category.set_current_language(lang, initialize=True)
             for attr, val in data.items():
                 setattr(category, attr, val)
             category.save()
@@ -123,15 +163,18 @@ class BaseTest(BaseTestCase):
                 'abstract': data['abstract'],
                 'meta_description': data['description'],
                 'meta_keywords': data['keywords'],
+                'app_config': self.app_configs[data['app_config']]
             }
             post = Post.objects.create(**post_data)
         else:
-            post.set_current_language(lang)
-            post.title = data['title']
-            post.abstract = data['abstract']
-            post.meta_description = data['description']
-            post.meta_keywords = data['keywords']
-            post.save()
+            post.create_translation(
+                lang,
+                title=data['title'],
+                abstract=data['abstract'],
+                meta_description=data['description'],
+                meta_keywords=data['keywords']
+            )
+        post = self.reload_model(post)
         post.categories.add(self.category_1)
         if sites:
             for site in sites:
@@ -139,13 +182,12 @@ class BaseTest(BaseTestCase):
         return post
 
     def get_posts(self, sites=None):
-        post1 = self._get_post(self.data['en'][0], sites=sites)
-        post1 = self._get_post(self.data['it'][0], post1, 'it')
-        post1.publish = True
-        post1.main_image = self.img
-        post1.save()
-        post2 = self._get_post(self.data['en'][1], sites=sites)
-        post2 = self._get_post(self.data['it'][1], post2, 'it')
-        post2.main_image = self.img
-        post2.save()
-        return post1, post2
+        posts = []
+        for post in self._post_data:
+            post1 = self._get_post(post['en'], sites=sites)
+            post1 = self._get_post(post['it'], post=post1, lang='it')
+            post1.publish = post['en']['publish']
+            post1.main_image = self.img
+            post1.save()
+            posts.append(post1)
+        return posts
