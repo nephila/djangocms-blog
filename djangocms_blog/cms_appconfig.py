@@ -25,25 +25,65 @@ class BlogConfig(TranslatableModel, AppHookConfig):
 
 
 class BlogConfigForm(AppDataForm):
-    default_published = forms.BooleanField(label=_('Post published by default'), required=False,
-                                           initial=get_setting('DEFAULT_PUBLISHED'))
-    use_placeholder = forms.BooleanField(label=_('Use placeholder and plugins for article body'),
-                                         required=False,
-                                         initial=get_setting('USE_PLACEHOLDER'))
-    use_abstract = forms.BooleanField(label=_('Use abstract field'),
-                                      required=False,
-                                      initial=get_setting('USE_ABSTRACT'))
-    set_author = forms.BooleanField(label=_('Set author'),
-                                    required=False,
-                                    help_text=_('Set author by default'),
-                                    initial=get_setting('AUTHOR_DEFAULT'))
-    paginate_by = forms.IntegerField(label=_('Paginate size'),
-                                     required=False,
-                                     initial=get_setting('PAGINATION'),
-                                     help_text=_('When paginating list views, '
-                                                 'how many articles per page?'))
-    template_prefix = forms.CharField(label=_('Template prefix'), required=False, initial='',
-                                      help_text=_('Alternative directory to load the blog '
-                                                  'templates from')
-                                      )
+    default_published = forms.BooleanField(
+        label=_('Post published by default'), required=False,
+        initial=get_setting('DEFAULT_PUBLISHED')
+    )
+    use_placeholder = forms.BooleanField(
+        label=_('Use placeholder and plugins for article body'), required=False,
+        initial=get_setting('USE_PLACEHOLDER')
+    )
+    use_abstract = forms.BooleanField(
+        label=_('Use abstract field'), required=False,
+        initial=get_setting('USE_ABSTRACT')
+    )
+    set_author = forms.BooleanField(
+        label=_('Set author'), required=False, help_text=_('Set author by default'),
+        initial=get_setting('AUTHOR_DEFAULT')
+    )
+    paginate_by = forms.IntegerField(
+        label=_('Paginate size'), required=False, initial=get_setting('PAGINATION'),
+        help_text=_('When paginating list views, how many articles per page?')
+    )
+    template_prefix = forms.CharField(
+        label=_('Template prefix'), required=False, initial='',
+        help_text=_('Alternative directory to load the blog templates from')
+    )
+    object_type = forms.ChoiceField(
+        label=_('Object type'), required=False,
+        choices=get_setting('TYPES_GENERIC'), initial=get_setting('TYPE')
+    )
+    og_type = forms.ChoiceField(
+        label=_('Facebook type'), required=False,
+        choices=get_setting('TYPES_FACEBOOK'), initial=get_setting('TYPES_FACEBOOK')[0][0]
+    )
+    og_app_id = forms.CharField(
+        max_length=200, label=_('Facebook application ID'), required=False,
+    )
+    og_profile_id = forms.CharField(
+        max_length=200, label=_('Facebook profile ID'), required=False,
+    )
+    og_publisher = forms.CharField(
+        max_length=200, label=_('Facebook page URL'), required=False
+    )
+    og_author_url = forms.CharField(
+        max_length=200, label=_('Facebook author URL'), required=False
+    )
+    twitter_type = forms.ChoiceField(
+        label=_('Twitter type'), required=False,
+        choices=get_setting('TYPES_TWITTER'), initial=get_setting('TYPES_TWITTER')[0][0]
+    )
+    twitter_site = forms.CharField(
+        max_length=200, label=_('Twitter site handle'), required=False
+    )
+    twitter_author = forms.CharField(
+        max_length=200, label=_('Twitter author handle'), required=False
+    )
+    gplus_type = forms.CharField(
+        max_length=200, label=_('Google+ type'), required=False,
+        choices=get_setting('TYPES_GPLUS'), initial=get_setting('TYPES_GPLUS')[0][0]
+    )
+    gplus_author = forms.CharField(
+        max_length=200, label=_('Google+ author name'), required=False
+    )
 setup_config(BlogConfigForm, BlogConfig)
