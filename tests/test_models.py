@@ -21,7 +21,7 @@ from djangocms_helper.utils import CMS_30
 from taggit.models import Tag
 
 from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
-from djangocms_blog.models import Post
+from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import get_setting
 
 from . import BaseTest
@@ -68,6 +68,22 @@ class AdminTest(BaseTest):
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
         self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
         self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" value="sample_app" />')
+
+    def test_admin_category_views(self):
+        post_admin = admin.site._registry[BlogCategory]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        # Add view only has an empty form - no type
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
+
+        # Changeview is 'normal', with a few preselected items
+        response = post_admin.change_view(request, str(self.category_1.pk))
+        # response.render()
+        # print(response.content.decode('utf-8'))
+        self.assertContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
     def test_admin_fieldsets(self):
         post_admin = admin.site._registry[Post]
