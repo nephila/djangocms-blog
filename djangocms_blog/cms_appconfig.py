@@ -51,11 +51,11 @@ class BlogConfigForm(AppDataForm):
     )
     object_type = forms.ChoiceField(
         label=_('Object type'), required=False,
-        choices=get_setting('TYPES_GENERIC'), initial=get_setting('TYPE')
+        choices=get_setting('TYPES'), initial=get_setting('TYPE')
     )
     og_type = forms.ChoiceField(
         label=_('Facebook type'), required=False,
-        choices=get_setting('TYPES_FACEBOOK'), initial=get_setting('TYPES_FACEBOOK')[0][0]
+        choices=get_setting('FB_TYPES'), initial=get_setting('FB_TYPES')[0][0]
     )
     og_app_id = forms.CharField(
         max_length=200, label=_('Facebook application ID'), required=False,
@@ -71,7 +71,7 @@ class BlogConfigForm(AppDataForm):
     )
     twitter_type = forms.ChoiceField(
         label=_('Twitter type'), required=False,
-        choices=get_setting('TYPES_TWITTER'), initial=get_setting('TYPES_TWITTER')[0][0]
+        choices=get_setting('TWITTER_TYPES'), initial=get_setting('TWITTER_TYPES')[0][0]
     )
     twitter_site = forms.CharField(
         max_length=200, label=_('Twitter site handle'), required=False
@@ -79,9 +79,9 @@ class BlogConfigForm(AppDataForm):
     twitter_author = forms.CharField(
         max_length=200, label=_('Twitter author handle'), required=False
     )
-    gplus_type = forms.CharField(
-        max_length=200, label=_('Google+ type'), required=False,
-        choices=get_setting('TYPES_GPLUS'), initial=get_setting('TYPES_GPLUS')[0][0]
+    gplus_type = forms.ChoiceField(
+        label=_('Google+ type'), required=False,
+        choices=get_setting('GPLUS_TYPES'), initial=get_setting('GPLUS_TYPES')[0][0]
     )
     gplus_author = forms.CharField(
         max_length=200, label=_('Google+ author name'), required=False

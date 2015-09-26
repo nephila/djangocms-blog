@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
-from aldryn_apphooks_config.utils import get_app_instance
 
 import os.path
 
+from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
 from django.utils.timezone import now

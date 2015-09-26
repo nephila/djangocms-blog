@@ -141,6 +141,7 @@ class Post(ModelMeta, TranslatableModel):
     _metadata = {
         'title': 'get_title',
         'description': 'get_description',
+        'keywords': 'get_keywords',
         'og_description': 'get_description',
         'twitter_description': 'get_description',
         'gplus_description': 'get_description',
