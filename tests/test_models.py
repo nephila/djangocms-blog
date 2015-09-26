@@ -20,6 +20,7 @@ from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
 from taggit.models import Tag
 
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.models import Post
 from djangocms_blog.settings import get_setting
 
@@ -31,6 +32,39 @@ class AdminTest(BaseTest):
     def setUp(self):
         super(AdminTest, self).setUp()
         admin.autodiscover()
+
+    def test_admin_post_views(self):
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        # Add view only contains the apphook selection widget
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text"')
+        self.assertContains(response, '<option value="1">Blog / sample_app</option>')
+
+        # Changeview is 'normal'
+        response = post_admin.change_view(request, str(post.pk))
+        self.assertContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text" value="first-post" />')
+        self.assertContains(response, '<option value="1" selected="selected">Blog / sample_app</option>')
+
+    def test_admin_blogconfig_views(self):
+        post_admin = admin.site._registry[BlogConfig]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        # Add view only has an empty form - no type
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
+        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" />')
+
+        # Changeview is 'normal', with a few preselected items
+        response = post_admin.change_view(request, str(self.app_config_1.pk))
+        self.assertContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
+        self.assertContains(response, '<option value="Article" selected="selected">Article</option>')
+        self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
+        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" value="sample_app" />')
 
     def test_admin_fieldsets(self):
         post_admin = admin.site._registry[Post]
