@@ -177,12 +177,19 @@ class Post(ModelMeta, TranslatableModel):
     def get_absolute_url(self, lang=None):
         if not lang:
             lang = get_language()
-        kwargs = {'year': self.date_published.year,
-                  'month': '%02d' % self.date_published.month,
-                  'day': '%02d' % self.date_published.day,
-                  'slug': self.safe_translation_getter('slug',
-                                                       language_code=lang,
-                                                       any_language=True)}
+        category = self.categories.first()
+        kwargs = {}
+        urlconf = get_setting('PERMALINK_URLS')[self.app_config.url_patterns]
+        if '<year>' in urlconf:
+            kwargs['year'] = self.date_published.year
+        if '<month>' in urlconf:
+            kwargs['month'] = '%02d' % self.date_published.month
+        if '<day>' in urlconf:
+            kwargs['day'] = '%02d' % self.date_published.day
+        if '<slug>' in urlconf:
+            kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
+        if '<category>' in urlconf:
+            kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
         return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
 
     def get_meta_attribute(self, param):

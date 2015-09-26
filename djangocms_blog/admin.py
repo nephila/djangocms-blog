@@ -123,11 +123,46 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
 
 class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
 
-    def get_config_fields(self):
-        return (
-            'app_title', 'config.paginate_by', 'config.set_author', 'config.default_published',
-            'config.use_placeholder', 'config.use_abstract',
-        )
+    @property
+    def declared_fieldsets(self):
+        return [
+            (None, {
+                'fields': ('type', 'namespace',)
+            }),
+            ('Generic', {
+                'fields': (
+                    'config.default_published', 'config.use_placeholder', 'config.use_abstract',
+                    'config.set_author',
+                )
+            }),
+            ('Layout', {
+                'fields': (
+                    'config.paginate_by', 'config.url_patterns', 'config.template_prefix',
+                ),
+                'classes': ('collapse',)
+            }),
+            ('Meta', {
+                'fields': (
+                    'config.object_type',
+                )
+            }),
+            ('Open Graph', {
+                'fields': (
+                    'config.og_type', 'config.og_app_id', 'config.og_profile_id',
+                    'config.og_publisher', 'config.og_author_url',
+                )
+            }),
+            ('Twitter', {
+                'fields': (
+                    'config.twitter_type', 'config.twitter_site', 'config.twitter_author',
+                )
+            }),
+            ('Google+', {
+                'fields': (
+                    'config.gplus_type', 'config.gplus_author',
+                )
+            }),
+        ]
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
 admin.site.register(Post, PostAdmin)

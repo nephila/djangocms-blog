@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import re
 from copy import deepcopy
 
 import parler
@@ -219,6 +220,44 @@ class ModelsTest(BaseTest):
         post.set_current_language('en')
         post.meta_title = 'meta title'
         self.assertEqual(post.get_title(), 'meta title')
+
+    def test_urls(self):
+        self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        # default
+        self.assertTrue(re.match(r'.*\d{4}/\d{2}/\d{2}/%s/$' % post.slug, post.get_absolute_url()))
+
+        # full date
+        self.app_config_1.app_data.config.url_patterns = 'full_date'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*\d{4}/\d{2}/\d{2}/%s/$' % post.slug, post.get_absolute_url()))
+
+        # short date
+        self.app_config_1.app_data.config.url_patterns = 'short_date'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*\d{4}/\d{2}/%s/$' % post.slug, post.get_absolute_url()))
+
+        # category
+        self.app_config_1.app_data.config.url_patterns = 'category'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*/\w[-\w]*/%s/$' % post.slug, post.get_absolute_url()))
+        self.assertTrue(
+            re.match(
+                r'.*%s/%s/$' % (post.categories.first().slug, post.slug),
+                post.get_absolute_url()
+            )
+        )
+
+        # slug only
+        self.app_config_1.app_data.config.url_patterns = 'category'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*/%s/$' % post.slug, post.get_absolute_url()))
 
     def test_manager(self):
         post1 = self._get_post(self._post_data[0]['en'])

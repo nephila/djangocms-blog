@@ -29,6 +29,11 @@ class BlogConfigForm(AppDataForm):
         label=_('Post published by default'), required=False,
         initial=get_setting('DEFAULT_PUBLISHED')
     )
+    url_patterns = forms.ChoiceField(
+        label=_('Permalink structure'), required=False,
+        initial=get_setting('AVAILABLE_PERMALINK_STYLES')[0][0],
+        choices=get_setting('AVAILABLE_PERMALINK_STYLES')
+    )
     use_placeholder = forms.BooleanField(
         label=_('Use placeholder and plugins for article body'), required=False,
         initial=get_setting('USE_PLACEHOLDER')

@@ -13,6 +13,19 @@ def get_setting(name):
     )
     BLOG_TYPES = getattr(settings, 'BLOG_TYPES', OBJECT_TYPES)
 
+    PERMALINKS = (
+        ('full_date', _('Full date')),
+        ('short_date', _('Year /  Month')),
+        ('category', _('Category')),
+        ('slug', _('Just slug')),
+    )
+    PERMALINKS_URLS = {
+        'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'category': r'^(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
+        'slug': r'^(?P<slug>\w[-\w]*)/$',
+    }
+
     default = {
         'BLOG_IMAGE_THUMBNAIL_SIZE': getattr(settings, 'BLOG_IMAGE_THUMBNAIL_SIZE', {
             'size': '120x120',
@@ -55,5 +68,7 @@ def get_setting(name):
         'BLOG_MULTISITE': getattr(settings, 'BLOG_MULTISITE', True),
         'BLOG_AUTHOR_DEFAULT': getattr(settings, 'BLOG_AUTHOR_DEFAULT', True),
         'BLOG_DEFAULT_PUBLISHED': getattr(settings, 'BLOG_DEFAULT_PUBLISHED', False),
+        'BLOG_AVAILABLE_PERMALINK_STYLES': getattr(settings, 'BLOG_AVAILABLE_PERMALINK_STYLES', PERMALINKS),  # NOQA
+        'BLOG_PERMALINK_URLS': getattr(settings, 'BLOG_PERMALINK_URLS', PERMALINKS_URLS),
     }
     return default['BLOG_%s' % name]
