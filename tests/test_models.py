@@ -12,6 +12,8 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.utils.encoding import force_text
+from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
@@ -145,6 +147,8 @@ class AdminTest(BaseTest):
 class ModelsTest(BaseTest):
 
     def test_model_attributes(self):
+        self.get_pages()
+
         post = self._get_post(self._post_data[0]['en'])
         post = self._get_post(self._post_data[0]['it'], post, 'it')
         post.main_image = self.create_filer_image_object()
@@ -242,6 +246,7 @@ class ModelsTest(BaseTest):
         post2.save()
         self.assertEqual(len(Post.objects.available()), 2)
         self.assertEqual(len(Post.objects.published()), 1)
+        self.assertEqual(len(Post.objects.published_future()), 2)
         self.assertEqual(len(Post.objects.archived()), 0)
 
         # If post is published but end publishing date is in the past
@@ -299,6 +304,15 @@ class ModelsTest(BaseTest):
         post1.save()
         self.assertEqual(set(Post.objects.tag_cloud()), set(tags_1))
         self.assertEqual(set(Post.objects.tag_cloud(published=False)), set(tags))
+
+        tags1 = set(Post.objects.tag_list(Post))
+        tags2 = set(Tag.objects.all())
+        self.assertEqual(tags1, tags2)
+
+        self.assertEqual(
+            list(Post.objects.tagged(queryset=Post.objects.filter(pk=post1.pk)).order_by('pk').values_list('pk')),
+            list(Post.objects.filter(pk__in=(post1.pk, post2.pk)).order_by('pk').values_list('pk'))
+        )
 
     def test_plugin_latest(self):
         post1 = self._get_post(self._post_data[0]['en'])
@@ -384,3 +398,25 @@ class ModelsTest(BaseTest):
             with self.settings(**{'SITE_ID': self.site_2.pk}):
                 self.assertEqual(len(Post.objects.all().on_site()), 2)
                 self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))
+
+    def test_str_repr(self):
+        post1 = self._get_post(self._post_data[0]['en'])
+        post1.meta_description = ''
+        post1.main_image = None
+        post1.save()
+
+        self.assertEqual(force_text(post1), post1.title)
+        self.assertEqual(post1.get_description(), strip_tags(post1.abstract))
+        self.assertEqual(post1.get_image_full_url(), '')
+        self.assertEqual(post1.get_author(), self.user)
+
+        self.assertEqual(force_text(post1.categories.first()), 'category 1')
+
+        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        self.assertEqual(force_text(plugin.__str__()), '5 latest articles by author')
+
+        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        self.assertEqual(force_text(plugin.__str__()), '5 latest articles by tag')
+
+        plugin = add_plugin(post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1)
+        self.assertEqual(force_text(plugin.__str__()), 'generic blog plugin')

@@ -5,6 +5,7 @@ import os.path
 
 from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.auth.models import AnonymousUser
+from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 from django.utils.timezone import now
 from parler.tests.utils import override_parler_settings
@@ -69,6 +70,31 @@ class ViewTest(BaseTest):
             self.assertEqual(context['post_list'][0].title, 'Terzo post')
             response = view_obj.render_to_response(context)
             self.assertContains(response, context['post_list'][0].get_absolute_url())
+
+    def test_get_view_url(self):
+        posts = self.get_posts()
+        pages = self.get_pages()
+
+        # Test the custom version of get_view_url against the different namespaces
+        request = self.get_request(pages[1], 'en', AnonymousUser())
+        view_obj_1 = PostListView()
+        view_obj_1.request = request
+        view_obj_1.args = ()
+        view_obj_1.kwargs = {}
+        view_obj_1.namespace, view_obj_1.config = get_app_instance(request)
+        self.assertEqual(view_obj_1.get_view_url(), pages[1].get_absolute_url())
+
+        request = self.get_request(pages[2], 'en', AnonymousUser())
+        view_obj_2 = PostListView()
+        view_obj_2.request = request
+        view_obj_2.args = ()
+        view_obj_2.kwargs = {}
+        view_obj_2.namespace, view_obj_2.config = get_app_instance(request)
+        self.assertEqual(view_obj_2.get_view_url(), pages[2].get_absolute_url())
+
+        view_obj_2.view_url_name = None
+        with self.assertRaises(ImproperlyConfigured):
+            view_obj_2.get_view_url()
 
     def test_post_list_view_fallback(self):
         posts = self.get_posts()

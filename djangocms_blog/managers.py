@@ -23,7 +23,7 @@ class TaggedFilterItem(object):
         o con gli stessi tag di un model o un queryset
         """
         tags = self._taglist(other_model, queryset)
-        return self.get_queryset().filter(taglist__in=tags)
+        return self.get_queryset().filter(tags__in=tags).distinct()
 
     def _taglist(self, other_model=None, queryset=None):
         """
@@ -31,21 +31,21 @@ class TaggedFilterItem(object):
         o queryset passati come argomento
         """
         from taggit.models import TaggedItem
-        filtro = None
+        filter = None
         if queryset is not None:
-            filtro = set()
+            filter = set()
             for item in queryset.all():
-                filtro.update(item.tags.all())
-            filtro = set([tag.id for tag in filtro])
+                filter.update(item.tags.all())
+            filter = set([tag.id for tag in filter])
         elif other_model is not None:
-            filtro = set(TaggedItem.objects.filter(
+            filter = set(TaggedItem.objects.filter(
                 content_type__model=other_model.__name__.lower()
             ).values_list('tag_id', flat=True))
         tags = set(TaggedItem.objects.filter(
             content_type__model=self.model.__name__.lower()
         ).values_list('tag_id', flat=True))
-        if filtro is not None:
-            tags = tags.intersection(filtro)
+        if filter is not None:
+            tags = tags.intersection(filter)
         return list(tags)
 
     def tag_list(self, other_model=None, queryset=None):

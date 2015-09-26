@@ -5,6 +5,8 @@ import os.path
 
 from aldryn_apphooks_config.mixins import AppConfigMixin
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
@@ -17,6 +19,19 @@ User = get_user_model()
 
 
 class BaseBlogView(AppConfigMixin, ViewUrlMixin):
+
+    def get_view_url(self):
+        if not self.view_url_name:
+            raise ImproperlyConfigured(
+                'Missing `view_url_name` attribute on {0}'.format(self.__class__.__name__)
+            )
+
+        return reverse(
+            self.view_url_name,
+            args=self.args,
+            kwargs=self.kwargs,
+            current_app=self.namespace
+        )
 
     def get_queryset(self):
         language = get_language()

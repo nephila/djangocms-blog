@@ -242,6 +242,7 @@ class Post(ModelMeta, TranslatableModel):
 
 @python_2_unicode_compatible
 class BasePostPlugin(CMSPlugin):
+    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
 
     class Meta:
         abstract = True
@@ -257,11 +258,10 @@ class BasePostPlugin(CMSPlugin):
         return posts
 
     def __str__(self):
-        return force_text(self.latest_posts)
+        return _('generic blog plugin')
 
 
 class LatestPostsPlugin(BasePostPlugin):
-    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
     latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests '
                                                    u'articles to be displayed.'))
@@ -290,7 +290,6 @@ class LatestPostsPlugin(BasePostPlugin):
 
 
 class AuthorEntriesPlugin(BasePostPlugin):
-    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
         limit_choices_to={'djangocms_blog_post_author__publish': True}
@@ -324,7 +323,6 @@ class AuthorEntriesPlugin(BasePostPlugin):
 
 
 class GenericBlogPlugin(BasePostPlugin):
-    app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'), blank=True)
 
-    def __str__(self):
-        return _('generic blog plugin')
+    class Meta:
+        abstract = False
