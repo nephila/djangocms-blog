@@ -43,12 +43,12 @@ class AdminTest(BaseTest):
         # Add view only contains the apphook selection widget
         response = post_admin.add_view(request)
         self.assertNotContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text"')
-        self.assertContains(response, '<option value="1">Blog / sample_app</option>')
+        self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal'
         response = post_admin.change_view(request, str(post.pk))
         self.assertContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text" value="first-post" />')
-        self.assertContains(response, '<option value="1" selected="selected">Blog / sample_app</option>')
+        self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
     def test_admin_blogconfig_views(self):
         post_admin = admin.site._registry[BlogConfig]
@@ -64,7 +64,6 @@ class AdminTest(BaseTest):
         self.assertContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
         self.assertContains(response, '<option value="Article" selected="selected">Article</option>')
         # check that all the form fields are visible in the admin
-        response.render()
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
         self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')

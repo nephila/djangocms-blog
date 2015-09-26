@@ -2,9 +2,9 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django.conf.urls import patterns, url
-from djangocms_blog.settings import get_setting
 
 from .feeds import LatestEntriesFeed, TagFeed
+from .settings import get_setting
 from .views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
     TaggedListView,
