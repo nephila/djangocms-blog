@@ -127,6 +127,13 @@ class BaseTest(BaseTestCase):
         cls.category_1.save()
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
 
+    @classmethod
+    def tearDownClass(cls):
+        super(BaseTest, cls).tearDownClass()
+        BlogConfig.objects.all().delete()
+        BlogCategory.objects.all().delete()
+        ThumbnailOption.objects.all().delete()
+
     def _get_category(self, data, category=None, lang='en'):
         data = deepcopy(data)
         for k, v in data.items():

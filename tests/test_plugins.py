@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import os.path
 import re
 
 from cms.api import add_plugin
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
+from djangocms_helper.utils import get_user_model
 from taggit.models import Tag
 
 from djangocms_blog.models import BlogCategory
@@ -67,12 +69,10 @@ class PluginTest(BaseTest):
         posts[1].save()
         ph = pages[0].placeholders.get(slot='content')
         plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
-        plugin.authors.add(self.user)
 
         context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
         rendered = plugin.render_plugin(context, ph)
-        self.assertTrue(rendered.find(reverse('djangocms_blog:posts-author', kwargs={'username': self.user.get_username()})) > -1)
-        self.assertTrue(rendered.find('2 articles') > -1)
+        self.assertTrue(rendered.find('No article found') > -1)
 
     def test_plugin_tags(self):
         pages = self.get_pages()
@@ -132,3 +132,20 @@ class PluginTest(BaseTest):
         context = plugin_class.render(context, plugin, ph)
         self.assertEqual(context['dates'][0]['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
         self.assertEqual(context['dates'][0]['count'], 1)
+
+    def test_templates(self):
+        posts = self.get_posts()
+        pages = self.get_pages()
+
+        ph = pages[0].placeholders.get(slot='content')
+        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+
+        context = self.get_plugin_context(pages[0], 'en', plugin)
+        plugin_class = plugin.get_plugin_class_instance()
+        self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('djangocms_blog', plugin_class.base_render_template))
+
+        self.app_config_1.app_data.config.template_prefix = 'whatever'
+        self.app_config_1.save()
+        self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('whatever', plugin_class.base_render_template))
+        self.app_config_1.app_data.config.template_prefix = ''
+        self.app_config_1.save()

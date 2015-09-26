@@ -4,7 +4,14 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 def get_setting(name):
     from django.conf import settings
+    from django.utils.translation import ugettext_lazy as _
     from meta_mixin import settings as meta_settings
+
+    OBJECT_TYPES = (
+        ('Article', _('Article')),
+        ('Website', _('Website')),
+    )
+    BLOG_TYPES = getattr(settings, 'BLOG_TYPES', OBJECT_TYPES)
 
     default = {
         'BLOG_IMAGE_THUMBNAIL_SIZE': getattr(settings, 'BLOG_IMAGE_THUMBNAIL_SIZE', {
@@ -23,30 +30,25 @@ def get_setting(name):
         'BLOG_TAGCLOUD_MAX': getattr(settings, 'BLOG_TAGCLOUD_MAX', 10),
         'BLOG_PAGINATION': getattr(settings, 'BLOG_PAGINATION', 10),
         'BLOG_LATEST_POSTS': getattr(settings, 'BLOG_LATEST_POSTS', 5),
-        'BLOG_POSTS_LIST_TRUNCWORDS_COUNT': getattr(settings,
-                                                    'BLOG_POSTS_LIST_TRUNCWORDS_COUNT',
-                                                    100),
+        'BLOG_POSTS_LIST_TRUNCWORDS_COUNT': getattr(
+            settings, 'BLOG_POSTS_LIST_TRUNCWORDS_COUNT', 100
+        ),
         'BLOG_TYPE': getattr(settings, 'BLOG_TYPE', 'Article'),
+        'BLOG_TYPES': BLOG_TYPES,
         'BLOG_FB_TYPE': getattr(settings, 'BLOG_FB_TYPE', 'Article'),
-        'BLOG_FB_APPID': getattr(settings, 'BLOG_FB_APPID',
-                                 meta_settings.FB_APPID),
-        'BLOG_FB_PROFILE_ID': getattr(settings, 'BLOG_FB_PROFILE_ID',
-                                      meta_settings.FB_PROFILE_ID),
-        'BLOG_FB_PUBLISHER': getattr(settings, 'BLOG_FB_PUBLISHER',
-                                     meta_settings.FB_PUBLISHER),
-        'BLOG_FB_AUTHOR_URL': getattr(settings, 'BLOG_FB_AUTHOR_URL',
-                                      'get_author_url'),
-        'BLOG_FB_AUTHOR': getattr(settings, 'BLOG_FB_AUTHOR',
-                                  'get_author_name'),
+        'BLOG_FB_TYPES': getattr(settings, 'BLOG_FB_TYPES', BLOG_TYPES),
+        'BLOG_FB_APPID': getattr(settings, 'BLOG_FB_APPID', meta_settings.FB_APPID),
+        'BLOG_FB_PROFILE_ID': getattr(settings, 'BLOG_FB_PROFILE_ID', meta_settings.FB_PROFILE_ID),
+        'BLOG_FB_PUBLISHER': getattr(settings, 'BLOG_FB_PUBLISHER', meta_settings.FB_PUBLISHER),
+        'BLOG_FB_AUTHOR_URL': getattr(settings, 'BLOG_FB_AUTHOR_URL', 'get_author_url'),
+        'BLOG_FB_AUTHOR': getattr(settings, 'BLOG_FB_AUTHOR', 'get_author_name'),
         'BLOG_TWITTER_TYPE': getattr(settings, 'BLOG_TWITTER_TYPE', 'Summary'),
-        'BLOG_TWITTER_SITE': getattr(settings, 'BLOG_TWITTER_SITE',
-                                     meta_settings.TWITTER_SITE),
-        'BLOG_TWITTER_AUTHOR': getattr(settings, 'BLOG_TWITTER_AUTHOR',
-                                       'get_author_twitter'),
-        'BLOG_GPLUS_TYPE': getattr(settings, 'BLOG_GPLUS_SCOPE_CATEGORY',
-                                   'Blog'),
-        'BLOG_GPLUS_AUTHOR': getattr(settings, 'BLOG_GPLUS_AUTHOR',
-                                     'get_author_gplus'),
+        'BLOG_TWITTER_TYPES': getattr(settings, 'BLOG_TWITTER_TYPES', BLOG_TYPES),
+        'BLOG_TWITTER_SITE': getattr(settings, 'BLOG_TWITTER_SITE', meta_settings.TWITTER_SITE),
+        'BLOG_TWITTER_AUTHOR': getattr(settings, 'BLOG_TWITTER_AUTHOR', 'get_author_twitter'),
+        'BLOG_GPLUS_TYPE': getattr(settings, 'BLOG_GPLUS_SCOPE_CATEGORY', 'Blog'),
+        'BLOG_GPLUS_TYPES': getattr(settings, 'BLOG_GPLUS_TYPES', BLOG_TYPES),
+        'BLOG_GPLUS_AUTHOR': getattr(settings, 'BLOG_GPLUS_AUTHOR', 'get_author_gplus'),
         'BLOG_ENABLE_COMMENTS': getattr(settings, 'BLOG_ENABLE_COMMENTS', True),
         'BLOG_USE_ABSTRACT': getattr(settings, 'BLOG_USE_ABSTRACT', True),
         'BLOG_USE_PLACEHOLDER': getattr(settings, 'BLOG_USE_PLACEHOLDER', True),
