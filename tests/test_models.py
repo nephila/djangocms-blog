@@ -20,7 +20,7 @@ from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
 from taggit.models import Tag
 
-from djangocms_blog.cms_appconfig import BlogConfig
+from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
 from djangocms_blog.models import Post
 from djangocms_blog.settings import get_setting
 
@@ -63,6 +63,10 @@ class AdminTest(BaseTest):
         response = post_admin.change_view(request, str(self.app_config_1.pk))
         self.assertContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
         self.assertContains(response, '<option value="Article" selected="selected">Article</option>')
+        # check that all the form fields are visible in the admin
+        response.render()
+        for fieldname in BlogConfigForm.base_fields:
+            self.assertContains(response, 'id="id_config-%s"' % fieldname)
         self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
         self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" value="sample_app" />')
 
