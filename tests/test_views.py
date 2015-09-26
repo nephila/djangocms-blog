@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
+from aldryn_apphooks_config.utils import get_app_instance
 
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
@@ -24,24 +25,25 @@ class ViewTest(BaseTest):
         posts = self.get_posts()
         pages = self.get_pages()
 
-        request = self.get_page_request(pages[0], AnonymousUser(), r'/en/blog/', edit=False)
+        request = self.get_request(pages[1], 'en', AnonymousUser())
 
         with smart_override('en'):
             view_obj = PostListView()
             view_obj.request = request
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
+            view_obj.namespace, view_obj.config = get_app_instance(request)
 
             self.assertEqual(list(view_obj.get_queryset()), [posts[0]])
 
-            request = self.get_page_request(pages[1], self.user, edit=False)
+            request = self.get_page_request(pages[1], self.user, lang='en', edit=False)
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
             view_obj.kwargs = {}
             qs = view_obj.get_queryset()
             self.assertEqual(qs.count(), 1)
             self.assertEqual(set(qs), set([posts[0]]))
 
-            request = self.get_page_request(pages[1], self.user, edit=True)
+            request = self.get_page_request(pages[1], self.user, lang='en', edit=True)
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
             self.assertEqual(set(view_obj.get_queryset()), set([posts[0], posts[1], posts[2]]))
 
@@ -58,6 +60,7 @@ class ViewTest(BaseTest):
 
         with smart_override('it'):
             request = self.get_page_request(pages[1], self.user, lang='it', edit=True)
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
             view_obj.object_list = view_obj.get_queryset()
             context = view_obj.get_context_data(object_list=view_obj.object_list)
@@ -83,10 +86,9 @@ class ViewTest(BaseTest):
 
         with smart_override('fr'):
             view_obj = PostListView()
-            request = self.get_page_request(pages[0], self.user, r'/fr/blog/', lang='fr', edit=True)
+            request = self.get_page_request(pages[1], self.user, lang='fr', edit=True)
             view_obj.request = request
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.kwargs = {}
             view_obj.object_list = view_obj.get_queryset()
             view_obj.get_context_data(object_list=view_obj.object_list)
@@ -96,10 +98,9 @@ class ViewTest(BaseTest):
             with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
 
                 view_obj = PostListView()
-                request = self.get_page_request(pages[0], self.user, r'/fr/blog/', lang='fr', edit=True)
+                request = self.get_page_request(pages[1], self.user, lang='fr', edit=True)
                 view_obj.request = request
-                view_obj.namespace = self.app_config_1.namespace
-                view_obj.config = self.app_config_1
+                view_obj.namespace, view_obj.config = get_app_instance(request)
                 view_obj.kwargs = {}
                 view_obj.object_list = view_obj.get_queryset()
                 view_obj.get_context_data(object_list=view_obj.object_list)
@@ -111,11 +112,10 @@ class ViewTest(BaseTest):
 
         with smart_override('en'):
             with switch_language(posts[0], 'en'):
-                request = self.get_page_request(pages[0], AnonymousUser(), r'/en/blog/', edit=False)
+                request = self.get_page_request(pages[1], AnonymousUser(), lang='en', edit=False)
                 view_obj = PostDetailView()
                 view_obj.request = request
-                view_obj.namespace = self.app_config_1.namespace
-                view_obj.config = self.app_config_1
+                view_obj.namespace, view_obj.config = get_app_instance(request)
 
                 with self.assertRaises(Http404):
                     view_obj.kwargs = {'slug': 'not-existing'}
@@ -128,11 +128,10 @@ class ViewTest(BaseTest):
 
         with smart_override('it'):
             with switch_language(posts[0], 'it'):
-                request = self.get_page_request(pages[0], AnonymousUser(), r'/it/blog/', lang='it', edit=False)
+                request = self.get_page_request(pages[1], AnonymousUser(), lang='it', edit=False)
                 view_obj = PostDetailView()
                 view_obj.request = request
-                view_obj.namespace = self.app_config_1.namespace
-                view_obj.config = self.app_config_1
+                view_obj.namespace, view_obj.config = get_app_instance(request)
 
                 view_obj.kwargs = {'slug': posts[0].slug}
                 post_obj = view_obj.get_object()
@@ -150,11 +149,10 @@ class ViewTest(BaseTest):
         pages = self.get_pages()
 
         with smart_override('en'):
-            request = self.get_page_request(pages[0], AnonymousUser(), r'/en/blog/', edit=False)
+            request = self.get_page_request(pages[1], AnonymousUser(), lang='en', edit=False)
             view_obj = PostArchiveView()
             view_obj.request = request
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.kwargs = {'year': now().year, 'month': now().month}
 
             # One post only, anonymous request
@@ -171,11 +169,10 @@ class ViewTest(BaseTest):
         pages = self.get_pages()
 
         with smart_override('en'):
-            request = self.get_page_request(pages[0], self.user, r'/en/blog/', edit=True)
+            request = self.get_page_request(pages[1], self.user, lang='en', edit=True)
             view_obj = CategoryEntriesView()
             view_obj.request = request
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.kwargs = {'category': 'category-1'}
             qs = view_obj.get_queryset()
             self.assertEqual(qs.count(), 3)
@@ -201,10 +198,9 @@ class ViewTest(BaseTest):
         pages = self.get_pages()
 
         with smart_override('en'):
-            request = self.get_page_request(pages[1], self.user, edit=True)
+            request = self.get_page_request(pages[1], self.user, lang='en', edit=True)
             view_obj = AuthorEntriesView()
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
             view_obj.kwargs = {'username': self.user.get_username()}
             qs = view_obj.get_queryset()
@@ -235,11 +231,10 @@ class ViewTest(BaseTest):
         posts[1].save()
 
         with smart_override('en'):
-            request = self.get_page_request(pages[1], self.user, edit=True)
+            request = self.get_page_request(pages[1], self.user, lang='en', edit=True)
             view_obj = TaggedListView()
             view_obj.request = request
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
+            view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.kwargs = {'tag': 'tag-2'}
             qs = view_obj.get_queryset()
             self.assertEqual(qs.count(), 2)
@@ -269,8 +264,7 @@ class ViewTest(BaseTest):
                 request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
 
                 feed = LatestEntriesFeed()
-                feed.namespace = self.app_config_1.namespace
-                feed.config = self.app_config_1
+                feed.namespace, feed.config = get_app_instance(request)
                 self.assertEqual(list(feed.items()), [posts[0]])
                 self.reload_urlconf()
                 xml = feed(request)
@@ -280,8 +274,7 @@ class ViewTest(BaseTest):
         with smart_override('it'):
             with switch_language(posts[0], 'it'):
                 feed = LatestEntriesFeed()
-                feed.namespace = self.app_config_1.namespace
-                feed.config = self.app_config_1
+                feed.namespace, feed.config = get_app_instance(request)
                 self.assertEqual(list(feed.items()), [posts[0]])
                 request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
                 xml = feed(request)

@@ -147,7 +147,7 @@ class ModelsTest(BaseTest):
     def test_model_attributes(self):
         post = self._get_post(self._post_data[0]['en'])
         post = self._get_post(self._post_data[0]['it'], post, 'it')
-        post.main_image = self.img
+        post.main_image = self.create_filer_image_object()
         post.save()
         post.set_current_language('en')
         meta_en = post.as_meta()

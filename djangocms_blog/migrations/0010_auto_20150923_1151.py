@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import aldryn_apphooks_config.fields
 import app_data.fields
 import djangocms_text_ckeditor.fields
-
 from cms.models import Page
 from cms.utils.conf import get_languages
 from django.db import models, migrations
@@ -113,6 +112,11 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='blogconfigtranslation',
             unique_together=set([('language_code', 'master')]),
+        ),
+        migrations.AlterField(
+            model_name='post',
+            name='sites',
+            field=models.ManyToManyField(to='sites.Site', help_text='Select sites in which to show the post. If none is set it will be visible in all the configured sites.', blank=True, verbose_name='Site(s)'),
         ),
         migrations.RunPython(forwards, backwards)
     ]

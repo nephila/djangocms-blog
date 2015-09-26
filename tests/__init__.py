@@ -127,19 +127,6 @@ class BaseTest(BaseTestCase):
         cls.category_1.save()
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
 
-    def setUp(self):
-        super(BaseTest, self).setUp()
-        self.img = self.create_filer_image_object()
-
-    def tearDown(self):
-        Post.objects.all().delete()
-        super(BaseTest, self).tearDown()
-
-    @classmethod
-    def tearDownClass(cls):
-        BlogConfig.objects.all().delete()
-        super(BaseTest, cls).tearDownClass()
-
     def _get_category(self, data, category=None, lang='en'):
         data = deepcopy(data)
         for k, v in data.items():
@@ -188,7 +175,7 @@ class BaseTest(BaseTestCase):
             post1 = self._get_post(post['en'], sites=sites)
             post1 = self._get_post(post['it'], post=post1, lang='it')
             post1.publish = post['en']['publish']
-            post1.main_image = self.img
+            post1.main_image = self.create_filer_image_object()
             post1.save()
             posts.append(post1)
         return posts

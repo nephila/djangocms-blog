@@ -56,7 +56,6 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Author Blog Articles')
     model = AuthorEntriesPlugin
-    form = LatestEntriesForm
     render_template = 'djangocms_blog/plugins/authors.html'
     filter_horizontal = ['authors']
 

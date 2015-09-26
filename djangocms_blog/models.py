@@ -113,10 +113,9 @@ class Post(ModelMeta, TranslatableModel):
     enable_comments = models.BooleanField(verbose_name=_('enable comments on post'),
                                           default=get_setting('ENABLE_COMMENTS'))
     sites = models.ManyToManyField('sites.Site', verbose_name=_('Site(s)'), blank=True,
-                                   null=True,
                                    help_text=_('Select sites in which to show the post. '
-                                               u'If none is set it will be '
-                                               u'visible in all the configured sites.'))
+                                               'If none is set it will be '
+                                               'visible in all the configured sites.'))
     app_config = AppHookConfigField(BlogConfig, verbose_name=_('app. config'))
 
     translations = TranslatedFields(

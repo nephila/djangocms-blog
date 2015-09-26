@@ -125,8 +125,8 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
 
     def get_config_fields(self):
         return (
-            'app_title', 'paginate_by', 'set_author', 'config.default_published',
-            'config.use_placeholder'
+            'app_title', 'config.paginate_by', 'config.set_author', 'config.default_published',
+            'config.use_placeholder', 'config.use_abstract',
         )
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
