@@ -4,10 +4,23 @@ from __future__ import absolute_import, print_function, unicode_literals
 from django.conf.urls import patterns, url
 
 from .feeds import LatestEntriesFeed, TagFeed
+from .settings import get_setting
 from .views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
     TaggedListView,
 )
+
+
+def get_urls():
+    urls = get_setting('PERMALINK_URLS')
+    details = []
+    for urlconf in urls.values():
+        details.append(
+            url(urlconf, PostDetailView.as_view(), name='post-detail'),
+        )
+    return details
+
+detail_urls = get_urls()
 
 urlpatterns = patterns(
     '',
@@ -19,8 +32,7 @@ urlpatterns = patterns(
         PostArchiveView.as_view(), name='posts-archive'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         PostArchiveView.as_view(), name='posts-archive'),
-    url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
-        PostDetailView.as_view(), name='post-detail'),
+) + detail_urls + [
     url(r'^author/(?P<username>[\w\.@+-]+)/$',
         AuthorEntriesView.as_view(), name='posts-author'),
     url(r'^category/(?P<category>[\w\.@+-]+)/$',
@@ -29,4 +41,4 @@ urlpatterns = patterns(
         TaggedListView.as_view(), name='posts-tagged'),
     url(r'^tag/(?P<tag>[-\w]+)/feed/$',
         TagFeed(), name='posts-tagged-feed'),
-)
+]

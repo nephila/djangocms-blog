@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import re
 from copy import deepcopy
 
 import parler
@@ -19,7 +20,8 @@ from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
 from taggit.models import Tag
 
-from djangocms_blog.models import Post
+from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
+from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import get_setting
 
 from . import BaseTest
@@ -30,6 +32,58 @@ class AdminTest(BaseTest):
     def setUp(self):
         super(AdminTest, self).setUp()
         admin.autodiscover()
+
+    def test_admin_post_views(self):
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        # Add view only contains the apphook selection widget
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text"')
+        self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
+
+        # Changeview is 'normal'
+        response = post_admin.change_view(request, str(post.pk))
+        self.assertContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text" value="first-post" />')
+        self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
+
+    def test_admin_blogconfig_views(self):
+        post_admin = admin.site._registry[BlogConfig]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        # Add view only has an empty form - no type
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
+        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" />')
+
+        # Changeview is 'normal', with a few preselected items
+        response = post_admin.change_view(request, str(self.app_config_1.pk))
+        self.assertContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
+        self.assertContains(response, '<option value="Article" selected="selected">Article</option>')
+        # check that all the form fields are visible in the admin
+        for fieldname in BlogConfigForm.base_fields:
+            self.assertContains(response, 'id="id_config-%s"' % fieldname)
+        self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
+        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" value="sample_app" />')
+
+    def test_admin_category_views(self):
+        post_admin = admin.site._registry[BlogCategory]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        # Add view only has an empty form - no type
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
+
+        # Changeview is 'normal', with a few preselected items
+        response = post_admin.change_view(request, str(self.category_1.pk))
+        # response.render()
+        # print(response.content.decode('utf-8'))
+        self.assertContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
     def test_admin_fieldsets(self):
         post_admin = admin.site._registry[Post]
@@ -219,6 +273,44 @@ class ModelsTest(BaseTest):
         post.set_current_language('en')
         post.meta_title = 'meta title'
         self.assertEqual(post.get_title(), 'meta title')
+
+    def test_urls(self):
+        self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        # default
+        self.assertTrue(re.match(r'.*\d{4}/\d{2}/\d{2}/%s/$' % post.slug, post.get_absolute_url()))
+
+        # full date
+        self.app_config_1.app_data.config.url_patterns = 'full_date'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*\d{4}/\d{2}/\d{2}/%s/$' % post.slug, post.get_absolute_url()))
+
+        # short date
+        self.app_config_1.app_data.config.url_patterns = 'short_date'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*\d{4}/\d{2}/%s/$' % post.slug, post.get_absolute_url()))
+
+        # category
+        self.app_config_1.app_data.config.url_patterns = 'category'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*/\w[-\w]*/%s/$' % post.slug, post.get_absolute_url()))
+        self.assertTrue(
+            re.match(
+                r'.*%s/%s/$' % (post.categories.first().slug, post.slug),
+                post.get_absolute_url()
+            )
+        )
+
+        # slug only
+        self.app_config_1.app_data.config.url_patterns = 'category'
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r'.*/%s/$' % post.slug, post.get_absolute_url()))
 
     def test_manager(self):
         post1 = self._get_post(self._post_data[0]['en'])
