@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ #-*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 import aldryn_apphooks_config.fields
@@ -11,6 +11,7 @@ from django.db import models, migrations
 
 def forwards(apps, schema_editor):
     BlogConfig = apps.get_model('djangocms_blog', 'BlogConfig')
+    BlogConfigTranslation = apps.get_model('djangocms_blog', 'BlogConfigTranslation')
     Post = apps.get_model('djangocms_blog', 'Post')
     BlogCategory = apps.get_model('djangocms_blog', 'BlogCategory')
     GenericBlogPlugin = apps.get_model('djangocms_blog', 'GenericBlogPlugin')
@@ -19,8 +20,9 @@ def forwards(apps, schema_editor):
     config = None
     for page in Page.objects.drafts().filter(application_urls='BlogApp'):
         config = BlogConfig.objects.create(namespace=page.application_namespace)
-        for lang in get_languages():
-            config.create_translation(lang, app_title='Blog')
+        for lang in get_language_list():
+            title = page.get_title(lang)
+            translation = BlogConfigTranslation.objects.create(language_code=lang, master_id=config.pk, app_title=title)
     if config:
         for model in (Post, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, AuthorEntriesPlugin):
             for item in model.objects.all():
