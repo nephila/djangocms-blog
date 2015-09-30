@@ -12,7 +12,7 @@ from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
-from .models import BLOG_CURRENT_POST_IDENTIFIER, BlogCategory, Post
+from .models import BLOG_CURRENT_NAMESPACE, BLOG_CURRENT_POST_IDENTIFIER, BlogCategory, Post
 from .settings import get_setting
 
 User = get_user_model()
@@ -42,6 +42,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         )
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
+        setattr(self.request, BLOG_CURRENT_NAMESPACE, self.config)
         return queryset
 
     def get_template_names(self):

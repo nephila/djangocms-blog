@@ -23,6 +23,7 @@ from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
+BLOG_CURRENT_NAMESPACE = 'djangocms_post_current_config'
 
 
 @python_2_unicode_compatible

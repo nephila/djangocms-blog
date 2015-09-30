@@ -4,15 +4,19 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 
 from aldryn_apphooks_config.utils import get_app_instance
+from cms.toolbar.items import ModalItem
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
+from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
@@ -34,8 +38,10 @@ class ViewTest(BaseTest):
             view_obj = PostListView()
             view_obj.request = request
             view_obj.namespace, view_obj.config = get_app_instance(request)
+            self.assertEqual(getattr(request, BLOG_CURRENT_NAMESPACE, None), None)
 
             self.assertEqual(list(view_obj.get_queryset()), [posts[0]])
+            self.assertEqual(getattr(request, BLOG_CURRENT_NAMESPACE), self.app_config_1)
 
             request = self.get_page_request(pages[1], self.user, lang='en', edit=False)
             view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -60,16 +66,33 @@ class ViewTest(BaseTest):
             self.assertEqual(context['post_list'][0].title, 'Third post')
             response = view_obj.render_to_response(context)
             self.assertContains(response, context['post_list'][0].get_absolute_url())
+            self.assertEqual(getattr(request, BLOG_CURRENT_NAMESPACE), self.app_config_1)
 
         with smart_override('it'):
             request = self.get_page_request(pages[1], self.user, lang='it', edit=True)
+            view_obj = PostListView()
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
+            view_obj.kwargs = {}
             view_obj.object_list = view_obj.get_queryset()
             context = view_obj.get_context_data(object_list=view_obj.object_list)
             self.assertEqual(context['post_list'][0].title, 'Terzo post')
             response = view_obj.render_to_response(context)
             self.assertContains(response, context['post_list'][0].get_absolute_url())
+            blog_menu = request.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
+
+            self.assertEqual(len(blog_menu.items), 3)
+            self.assertEqual(len(blog_menu.find_items(
+                ModalItem, url=reverse('admin:djangocms_blog_post_changelist')
+            )), 1)
+            self.assertEqual(len(blog_menu.find_items(
+                ModalItem, url=reverse('admin:djangocms_blog_post_add')
+            )), 1)
+            self.assertEqual(len(blog_menu.find_items(
+                ModalItem, url=reverse(
+                    'admin:djangocms_blog_blogconfig_change', args=(self.app_config_1.pk,)
+                )
+            )), 1)
 
     def test_get_view_url(self):
         posts = self.get_posts()
