@@ -5,7 +5,7 @@ import aldryn_apphooks_config.fields
 import app_data.fields
 import djangocms_text_ckeditor.fields
 from cms.models import Page
-from cms.utils.conf import get_languages
+from cms.utils.i18n import get_language_list
 from django.db import models, migrations
 
 

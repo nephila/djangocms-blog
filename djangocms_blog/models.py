@@ -91,9 +91,9 @@ class Post(ModelMeta, TranslatableModel):
 
     date_created = models.DateTimeField(_('created'), auto_now_add=True)
     date_modified = models.DateTimeField(_('last modified'), auto_now=True)
-    date_published = models.DateTimeField(_('published Since'),
+    date_published = models.DateTimeField(_('published since'),
                                           default=timezone.now)
-    date_published_end = models.DateTimeField(_('published Until'), null=True,
+    date_published_end = models.DateTimeField(_('published until'), null=True,
                                               blank=True)
     publish = models.BooleanField(_('publish'), default=False)
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_('category'),
