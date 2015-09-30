@@ -39,7 +39,10 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, Translatabl
 class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 ModelAppHookConfig, TranslatableAdmin):
     form = PostAdminForm
-    list_display = ['title', 'author', 'date_published', 'date_published_end']
+    list_display = [
+        'title', 'author', 'date_published', 'app_config', 'languages', 'date_published_end'
+    ]
+    list_filter = ('app_config',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
@@ -66,6 +69,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     app_config_values = {
         'default_published': 'publish'
     }
+
+    def languages(self, obj):
+        return ','.join(obj.get_available_languages())
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         field = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
