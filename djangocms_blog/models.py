@@ -34,7 +34,9 @@ class BlogCategory(TranslatableModel):
     parent = models.ForeignKey('self', verbose_name=_('parent'), null=True, blank=True)
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
     date_modified = models.DateTimeField(_('modified at'), auto_now=True)
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_('app. config'))
+    app_config = AppHookConfigField(
+        BlogConfig, null=True, verbose_name=_('app. config')
+    )
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
@@ -117,7 +119,9 @@ class Post(ModelMeta, TranslatableModel):
                                    help_text=_('Select sites in which to show the post. '
                                                'If none is set it will be '
                                                'visible in all the configured sites.'))
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_('app. config'))
+    app_config = AppHookConfigField(
+        BlogConfig, null=True, verbose_name=_('app. config')
+    )
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
@@ -250,7 +254,9 @@ class Post(ModelMeta, TranslatableModel):
 
 @python_2_unicode_compatible
 class BasePostPlugin(CMSPlugin):
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_('app. config'), blank=True)
+    app_config = AppHookConfigField(
+        BlogConfig, null=True, verbose_name=_('app. config'), blank=True
+    )
 
     class Meta:
         abstract = True

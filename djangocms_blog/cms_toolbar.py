@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext_lazy as _, override
+from django.utils.translation import override, ugettext_lazy as _
 
 from .models import BLOG_CURRENT_NAMESPACE, BLOG_CURRENT_POST_IDENTIFIER
 
