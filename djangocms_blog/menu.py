@@ -11,7 +11,7 @@ from .models import BlogCategory, Post
 
 
 class BlogCategoryMenu(CMSAttachMenu):
-    name = _('Blog Category menu')
+    name = _('Blog menu')
 
     def get_nodes(self, request):
         nodes = []
