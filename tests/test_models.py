@@ -128,6 +128,14 @@ class AdminTest(BaseTest):
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue('author' in fsets[1][1]['fields'][0])
 
+        with self.login_user_context(self.user):
+            request = self.get_request('/', 'en', user=self.user, path=r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            response = post_admin.add_view(request)
+            self.assertContains(response, '<option value="1">category 1</option>')
+
     def test_admin_auto_author(self):
         pages = self.get_pages()
         data = deepcopy(self._post_data[0]['en'])

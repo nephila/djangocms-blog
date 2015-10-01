@@ -6,7 +6,7 @@ from django.conf import settings
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
 
-from .models import BlogCategory, Post
+from .models import BlogCategory, BlogConfig, Post
 
 
 class LatestEntriesForm(forms.ModelForm):
@@ -35,7 +35,8 @@ class PostAdminForm(TranslatableModelForm):
         if getattr(self.instance, 'app_config_id', None):
             qs = qs.namespace(self.instance.app_config.namespace)
         elif 'initial' in kwargs and 'app_config' in kwargs['initial']:
-            qs = qs.namespace(kwargs['initial']['app_config'])
+            config = BlogConfig.objects.get(pk=kwargs['initial']['app_config'])
+            qs = qs.namespace(config.namespace)
 
         if 'categories' in self.fields:
             self.fields['categories'].queryset = qs
