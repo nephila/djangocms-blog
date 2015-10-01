@@ -134,7 +134,9 @@ class AdminTest(BaseTest):
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.add_view(request)
-            self.assertContains(response, '<option value="1">category 1</option>')
+            self.assertContains(response, '<option value="%s">%s</option>' % (
+                self.category_1.pk, self.category_1.safe_translation_getter('name', language_code='en')
+            ))
 
     def test_admin_auto_author(self):
         pages = self.get_pages()
