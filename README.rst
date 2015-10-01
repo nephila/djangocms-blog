@@ -94,7 +94,7 @@ Quick hint
 The following are minimal defaults to get the blog running; they may not be
 suited for your deployment.
 
-* Add the following settings to your project::    
+* Add the following settings to your project::
 
     SOUTH_MIGRATION_MODULES = {
         'easy_thumbnails': 'easy_thumbnails.south_migrations',
@@ -108,17 +108,17 @@ suited for your deployment.
     )
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
-    
+
 * If you are using Django 1.7+, be aware than ``filer`` < 0.9.10, ``cmsplugin_filer``
   and ``django-cms`` < 3.1 currently requires you to setup ``MIGRATION_MODULES`` in settings::
-  
+
     MIGRATION_MODULES = {
        'cms': 'cms.migrations_django', # only for django CMS 3.0
        'menus': 'menus.migrations_django',  # only for django CMS 3.0
        'filer': 'filer.migrations_django',  # only for django filer 0.9.9 and below
        'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
     }
-    
+
   Please check
   `django CMS installation <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/integrate.html#installing-and-configuring-django-cms-in-your-django-project>`_,
   `cmsplugin-filer README <https://github.com/stefanfoulis/cmsplugin-filer#installation>`_
@@ -138,9 +138,9 @@ suited for your deployment.
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
-* To start your blog you need to use `AppHooks from django CMS <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/apphooks.html>`_ 
+* To start your blog you need to use `AppHooks from django CMS <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/apphooks.html>`_
   to add the blog to a django CMS page:
- 
+
   * Create a new django CMS page
   * Go to Advanced settings and select Blog from the Application selector;
   * Eventually customise the Application instance name;
@@ -150,11 +150,34 @@ suited for your deployment.
 * Add and edit blog by creating them in the admin or using the toolbar,
   and the use the `django CMS frontend editor <http://django-cms.readthedocs.org/en/support-3.0.x/user/reference/page_admin.html#the-interface>`_
   to edit the blog content:
-  
+
   * Create a new blog entry in django admin backend or from the toolbar
   * Click on "view on site" button to view the post detail page
   * Edit the post via djangocms frontend by adding / editing plugins
   * Publish the blog post by flagging the "Publish" switch in the blog post admin
+
+Configurable permalinks
++++++++++++++++++++++++
+
+Blog comes with four different styles of permalinks styles:
+
+* Full date: ``YYYY/MM/DD/SLUG``
+* Year /  Month: ``YYYY/MM/SLUG``
+* Category: ``CATEGORY/SLUG``
+* Just slug: ``SLUG``
+
+As all the styles are loaded in the urlconf, the latter two does not allow to have CMS pages
+beneath the page the blog is attached to. If you want to do this, you have to override the default
+urlconfs by setting somethik like the following in the project settings::
+
+    BLOG_PERMALINKS_URLS = {
+        'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'category': r'^post/(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
+        'slug': r'^post/(?P<slug>\w[-\w]*)/$',
+    }
+
+And change ``post/`` with the desired prefix.
 
 Templates
 +++++++++
