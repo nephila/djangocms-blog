@@ -4,6 +4,8 @@ from django.utils.encoding import force_text
 from aldryn_search.helpers import get_plugin_index_data
 from aldryn_search.utils import get_index_base, strip_tags
 
+from haystack import indexes
+
 from .models import Post
 from .settings import get_setting
 
@@ -13,11 +15,21 @@ class PostIndex(get_index_base()):
 
     index_title = True
 
+    author = indexes.CharField(indexed=True)
+    #category_ids = indexes.MultiValueField(null=True)
+    #category_titles = indexes.MultiValueField(null=True)
+
+    def get_author(self, post):
+        return post.get_author()
+
     def get_title(self, post):
         return post.safe_translation_getter('title')
 
     def get_description(self, post):
-        return post.safe_translation_getter('abstract')
+        return post.get_description()
+
+    def prepare_pub_date(self, post):
+        return post.date_published.strftime("%Y-%m-%d %H:%M:%S")
 
     def index_queryset(self, using=None):
         self._get_backend(using)
@@ -36,8 +48,10 @@ class PostIndex(get_index_base()):
         return Post
 
     def get_search_data(self, post, language, request):
-        description = post.safe_translation_getter('abstract')
-        text_bits = [strip_tags(description)]
+        abstract = post.safe_translation_getter('abstract')
+        text_bits = [strip_tags(abstract)]
+        text_bits.append(post.get_description())
+        text_bits.append(get_keywords)
         for category in post.categories.all():
             text_bits.append(
                 force_text(category.safe_translation_getter('name')))
