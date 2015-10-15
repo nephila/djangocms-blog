@@ -20,6 +20,7 @@ HELPER_SETTINGS = dict(
         'taggit_autosuggest',
         'aldryn_apphooks_config',
         'tests.test_utils',
+        'aldryn_search',
     ],
     LANGUAGE_CODE='en',
     LANGUAGES=(
