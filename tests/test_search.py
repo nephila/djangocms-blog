@@ -22,7 +22,7 @@ class PluginIndexingTests(BaseTest):
         print(indexed)
         self.assertEqual(post.get_title(), indexed['title'])
         self.assertEqual(post.get_description(), indexed['description'])
-        self.assertEqual('First post first line This is the description category 1', indexed['text'])
+        self.assertEqual('First post First post first line This is the description category 1', indexed['text'])
         self.assertEqual(post.get_absolute_url(), indexed['url'])
         self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
 
@@ -36,7 +36,7 @@ class PluginIndexingTests(BaseTest):
         print(indexed)
         self.assertEqual(post.get_title(), indexed['title'])
         self.assertEqual(post.get_description(), indexed['description'])
-        self.assertEqual('First post first line This is the description category 1', indexed['text'])
+        self.assertEqual('First post First post first line This is the description category 1', indexed['text'])
         self.assertEqual(post.get_absolute_url(), indexed['url'])
         self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
 

@@ -54,7 +54,8 @@ class PostIndex(get_index_base()):
     def get_search_data(self, post, language, request):
         optional_attributes = []
         abstract = post.safe_translation_getter('abstract')
-        text_bits = [strip_tags(abstract)]
+        text_bits = [post.get_title()]
+        text_bits.append(strip_tags(abstract))
         text_bits.append(post.get_description())
         #text_bits.append(' '.join(post.get_keywords()))
         for category in post.categories.all():
