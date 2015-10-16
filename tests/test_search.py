@@ -20,10 +20,11 @@ class PluginIndexingTests(BaseTest):
         index.index_queryset(DEFAULT_ALIAS)  # initialises index._backend_alias
         indexed = index.prepare(post)
         print(indexed)
-        self.assertEqual('First post', indexed['title'])
-        self.assertEqual('This is the description', indexed['description'])
+        self.assertEqual(post.get_title(), indexed['title'])
+        self.assertEqual(post.get_description(), indexed['description'])
         self.assertEqual('First post first line This is the description category 1', indexed['text'])
-        self.assertEqual('/en/page-two/2015/10/15/first-post/', indexed['url'])
+        self.assertEqual(post.get_absolute_url(), indexed['url'])
+        self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
 
     def test_blog_post_is_indexed_using_update_object(self):
         """This tests the indexing path way used by the RealTimeSignalProcessor"""
@@ -32,8 +33,10 @@ class PluginIndexingTests(BaseTest):
         index = self.get_post_index()
         index.update_object(post, using=DEFAULT_ALIAS)
         indexed = index.prepared_data
-        self.assertEqual('First post', indexed['title'])
-        self.assertEqual('This is the description', indexed['description'])
+        print(indexed)
+        self.assertEqual(post.get_title(), indexed['title'])
+        self.assertEqual(post.get_description(), indexed['description'])
         self.assertEqual('First post first line This is the description category 1', indexed['text'])
-        self.assertEqual('/en/page-two/2015/10/15/first-post/', indexed['url'])
+        self.assertEqual(post.get_absolute_url(), indexed['url'])
+        self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
 
