@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils.encoding import force_text
-
+from django.utils.text import force_unicode
 from aldryn_search.helpers import get_plugin_index_data
 from aldryn_search.utils import get_index_base, strip_tags
 
@@ -15,12 +15,16 @@ class PostIndex(get_index_base()):
 
     index_title = True
 
-    author = indexes.CharField(indexed=True)
+    author = indexes.CharField(indexed=True, model_attr='get_author')
+    keywords = indexes.CharField(null=True)
+    tags = indexes.CharField(null=True)
+    post_text = indexes.CharField(null=True)
     #category_ids = indexes.MultiValueField(null=True)
     #category_titles = indexes.MultiValueField(null=True)
 
-    def get_author(self, post):
-        return post.get_author()
+
+    def get_keywords(self, post):
+        return ','.join(post.get_keywords())
 
     def get_title(self, post):
         return post.safe_translation_getter('title')
@@ -48,10 +52,11 @@ class PostIndex(get_index_base()):
         return Post
 
     def get_search_data(self, post, language, request):
+        optional_attributes = []
         abstract = post.safe_translation_getter('abstract')
         text_bits = [strip_tags(abstract)]
         text_bits.append(post.get_description())
-        text_bits.append(get_keywords)
+        #text_bits.append(' '.join(post.get_keywords()))
         for category in post.categories.all():
             text_bits.append(
                 force_text(category.safe_translation_getter('name')))
@@ -62,4 +67,16 @@ class PostIndex(get_index_base()):
             for base_plugin in plugins:
                 content = get_plugin_index_data(base_plugin, request)
                 text_bits.append(content)
+        for attribute in optional_attributes:
+            value = force_unicode(getattr(post, attribute))
+            if value and value not in text_bits:
+                text_bits.append(value)
         return ' '.join(text_bits)
+
+    def prepare_fields(self, post, language, request):
+        super(PostIndex, self).prepare_fields(post, language, request)
+        data = [self.prepared_data['text']]
+        self.prepared_data['keywords'] = ' '.join(post.get_keywords())
+        self.prepared_data['tags'] = ' '.join(post.get_tags())
+        self.prepared_data['post_text'] = ' '.join(post.safe_translation_getter('post_text'))
+        self.prepared_data['text'] = ' '.join(data)
