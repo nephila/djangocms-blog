@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 
-from .settings import get_setting
+from .settings import MENU_TYPE_COMPLETE, get_setting
 
 
 class BlogConfig(TranslatableModel, AppHookConfig):
@@ -54,41 +54,57 @@ class BlogConfigForm(AppDataForm):
         label=_('Template prefix'), required=False, initial='',
         help_text=_('Alternative directory to load the blog templates from')
     )
+    menu_structure = forms.ChoiceField(
+        label=_('Menu structure'), required=True,
+        choices=get_setting('MENU_TYPES'), initial=MENU_TYPE_COMPLETE,
+        help_text=_('Structure of the django CMS menu')
+    )
     object_type = forms.ChoiceField(
         label=_('Object type'), required=False,
         choices=get_setting('TYPES'), initial=get_setting('TYPE')
     )
     og_type = forms.ChoiceField(
         label=_('Facebook type'), required=False,
-        choices=get_setting('FB_TYPES'), initial=get_setting('FB_TYPES')[0][0]
+        choices=get_setting('FB_TYPES'), initial=get_setting('FB_TYPE')
     )
     og_app_id = forms.CharField(
         max_length=200, label=_('Facebook application ID'), required=False,
+        initial=get_setting('FB_PROFILE_ID')
     )
     og_profile_id = forms.CharField(
         max_length=200, label=_('Facebook profile ID'), required=False,
+        initial=get_setting('FB_PROFILE_ID')
     )
     og_publisher = forms.CharField(
-        max_length=200, label=_('Facebook page URL'), required=False
+        max_length=200, label=_('Facebook page URL'), required=False,
+        initial=get_setting('FB_PUBLISHER')
     )
     og_author_url = forms.CharField(
-        max_length=200, label=_('Facebook author URL'), required=False
+        max_length=200, label=_('Facebook author URL'), required=False,
+        initial=get_setting('FB_AUTHOR_URL')
+    )
+    og_author = forms.CharField(
+        max_length=200, label=_('Facebook author'), required=False,
+        initial=get_setting('FB_AUTHOR')
     )
     twitter_type = forms.ChoiceField(
         label=_('Twitter type'), required=False,
-        choices=get_setting('TWITTER_TYPES'), initial=get_setting('TWITTER_TYPES')[0][0]
+        choices=get_setting('TWITTER_TYPES'), initial=get_setting('TWITTER_TYPE')
     )
     twitter_site = forms.CharField(
-        max_length=200, label=_('Twitter site handle'), required=False
+        max_length=200, label=_('Twitter site handle'), required=False,
+        initial=get_setting('TWITTER_SITE')
     )
     twitter_author = forms.CharField(
-        max_length=200, label=_('Twitter author handle'), required=False
+        max_length=200, label=_('Twitter author handle'), required=False,
+        initial=get_setting('TWITTER_AUTHOR')
     )
     gplus_type = forms.ChoiceField(
         label=_('Google+ type'), required=False,
-        choices=get_setting('GPLUS_TYPES'), initial=get_setting('GPLUS_TYPES')[0][0]
+        choices=get_setting('GPLUS_TYPES'), initial=get_setting('GPLUS_TYPE')
     )
     gplus_author = forms.CharField(
-        max_length=200, label=_('Google+ author name'), required=False
+        max_length=200, label=_('Google+ author name'), required=False,
+        initial=get_setting('GPLUS_AUTHOR')
     )
 setup_config(BlogConfigForm, BlogConfig)
