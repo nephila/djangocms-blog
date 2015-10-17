@@ -7,10 +7,10 @@ from django.utils.translation import activate
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
 
-from djangocms_blog.views import CategoryEntriesView, PostDetailView
 from djangocms_blog.settings import (
     MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS,
 )
+from djangocms_blog.views import CategoryEntriesView, PostDetailView
 
 from . import BaseTest
 
