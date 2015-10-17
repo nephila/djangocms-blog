@@ -144,6 +144,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             ('Layout', {
                 'fields': (
                     'config.paginate_by', 'config.url_patterns', 'config.template_prefix',
+                    'config.menu_structure',
                 ),
                 'classes': ('collapse',)
             }),
@@ -155,7 +156,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             ('Open Graph', {
                 'fields': (
                     'config.og_type', 'config.og_app_id', 'config.og_profile_id',
-                    'config.og_publisher', 'config.og_author_url',
+                    'config.og_publisher', 'config.og_author_url', 'config.og_author',
                 )
             }),
             ('Twitter', {

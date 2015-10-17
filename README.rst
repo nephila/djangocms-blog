@@ -2,27 +2,33 @@
 djangocms-blog
 ==============
 
+.. image:: https://img.shields.io/pypi/v/djangocms-blog.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/djangocms-blog
+    :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/pypi/v/djangocms-blog.svg
-        :target: https://pypi.python.org/pypi/djangocms-blog
-        :alt: Latest PyPI version
+.. image:: https://img.shields.io/pypi/dm/djangocms-blog.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/djangocms-blog
+    :alt: Monthly downloads
 
-.. image:: https://img.shields.io/travis/nephila/djangocms-blog.svg
-        :target: https://travis-ci.org/nephila/djangocms-blog
-        :alt: Latest Travis CI build status
+.. image:: https://img.shields.io/pypi/pyversions/djangocms-blog.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/djangocms-blog
+    :alt: Python versions
 
-.. image:: https://img.shields.io/pypi/dm/djangocms-blog.svg
-        :target: https://pypi.python.org/pypi/djangocms-blog
-        :alt: Monthly downloads
+.. image:: https://img.shields.io/travis/nephila/djangocms-blog.svg?style=flat-square
+    :target: https://travis-ci.org/nephila/djangocms-blog
+    :alt: Latest Travis CI build status
 
-.. image:: https://coveralls.io/repos/nephila/djangocms-blog/badge.png
-        :target: https://coveralls.io/r/nephila/djangocms-blog
-        :alt: Test coverage
+.. image:: https://img.shields.io/coveralls/nephila/djangocms-blog/master.svg?style=flat-square
+    :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
+    :alt: Test coverage
 
-.. image:: https://codeclimate.com/github/nephila/djangocms-blog/badges/gpa.svg
+.. image:: https://img.shields.io/codecov/c/github/nephila/djangocms-blog/master.svg?style=flat-square
+    :target: https://codecov.io/github/nephila/djangocms-blog
+    :alt: Test coverage
+
+.. image:: https://codeclimate.com/github/nephila/djangocms-blog/badges/gpa.svg?style=flat-square
    :target: https://codeclimate.com/github/nephila/djangocms-blog
    :alt: Code Climate
-
 
 A djangoCMS 3 blog application.
 
@@ -197,6 +203,7 @@ Features
 * Support for Twitter cards, Open Graph and Google+ snippets meta tags
 * Optional support for simpler TextField-based content editing
 * Multisite support (posts can be visible in one or more Django sites on the same project)
+* Per-apphook configuration
 
 Import from Wordpress
 +++++++++++++++++++++
@@ -206,15 +213,8 @@ https://pypi.python.org/pypi/the-real-django-wordpress and
 this gist https://gist.github.com/yakky/11336204 as a base.
 
 
-Settings
---------
-* BLOG_ENABLE_COMMENTS: Whether to enable comments by default on posts;
-  while ``djangocms_blog`` does not ship any comment system, this flag can be used
-  to control the chosen comments framework; (default: True)
-* BLOG_USE_PLACEHOLDER: Post content is managed via placeholder; if ``False`` a
-  simple HTMLField is used; (default: True)
-* BLOG_USE_ABSTRACT: Use an abstract field for the post; if ``False`` no abstract field
-  is available for every post; (default: True)
+Global Settings
+---------------
 * BLOG_IMAGE_THUMBNAIL_SIZE: Size of the main image when shown on the post lists;
   it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
   (default: ``{'size': '120x120', 'crop': True,'upscale': False}``)
@@ -224,27 +224,62 @@ Settings
 * BLOG_PAGINATION: Number of post per page; (default: 10)
 * BLOG_LATEST_POSTS: Default number of post in the **Latest post** plugin; (default: 5)
 * BLOG_POSTS_LIST_TRUNCWORDS_COUNT: Default number of words shown for abstract in the post list; (default: 100)
-* BLOG_MULTISITE: Add support for multisite setup
-* BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
-  current user is set as the default author, if set to ``False`` no default
-  author is set, if set to a string the user with the provided username is
-  used; (default: True)
-
-Social media tags settings
-++++++++++++++++++++++++++
 * BLOG_TYPE: Generic type for the post object; (default: Article)
+* BLOG_TYPES: Choices of available blog types; (default: Article, Website)
 * BLOG_FB_TYPE: Open Graph type for the post object; (default: Article)
+* BLOG_FB_TYPES: Choices of available blog types; (default: Article, Website)
 * BLOG_FB_APPID: Facebook Application ID
 * BLOG_FB_PROFILE_ID: Facebook profile ID of the post author
 * BLOG_FB_PUBLISHER: Facebook URL of the blog publisher
 * BLOG_FB_AUTHOR_URL: Facebook profile URL of the post author
 * BLOG_FB_AUTHOR: Facebook profile URL of the post author
 * BLOG_TWITTER_TYPE: Twitter Card type for the post object; (default: Summary)
+* BLOG_TWITTER_TYPES: Choices of available blog types for twitter; (default: Article, Website)
 * BLOG_TWITTER_SITE: Twitter account of the site
 * BLOG_TWITTER_AUTHOR: Twitter account of the post author
 * BLOG_GPLUS_TYPE: Google+ Snippet type for the post object; (default: Blog)
+* BLOG_GPLUS_TYPES: Choices of available blog types for twitter; (default: Article, Website)
 * BLOG_GPLUS_AUTHOR: Google+ account of the post author
+* BLOG_ENABLE_COMMENTS: Whether to enable comments by default on posts;
+  while ``djangocms_blog`` does not ship any comment system, this flag can be used
+  to control the chosen comments framework; (default: True)
+* BLOG_USE_ABSTRACT: Use an abstract field for the post; if ``False`` no abstract field
+  is available for every post; (default: True)
+* BLOG_USE_PLACEHOLDER: Post content is managed via placeholder; if ``False`` a
+  simple HTMLField is used; (default: True)
+* BLOG_MULTISITE: Add support for multisite setup
+* BLOG_MENU_TYPE: Structure of the Blog menu; (default: Posts and Categories)
+* BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
+  current user is set as the default author, if set to ``False`` no default
+  author is set, if set to a string the user with the provided username is
+  used; (default: True)
+* BLOG_DEFAULT_PUBLISHED: If posts are marked as published by default; (default: False)
+* BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
+* BLOG_PERMALINK_URLS: URLConf corresponding to BLOG_AVAILABLE_PERMALINK_STYLES;
 
+Per-Apphook settings
+--------------------
+
+* default_published: Per-apphook setting for BLOG_DEFAULT_PUBLISHED;
+* Permalink structure: Per-apphook setting for BLOG_AVAILABLE_PERMALINK_STYLES;
+* Use placeholder and plugins for article body: Per-apphook setting for BLOG_USE_PLACEHOLDER;
+* Use abstract field: Per-apphook setting for BLOG_USE_ABSTRACT;
+* Set author: Per-apphook setting for BLOG_AUTHOR_DEFAULT;
+* Paginate sizePer-apphook setting for BLOG_PAGINATION;
+* Template prefix: Alternative directory to load the blog templates from;
+* Menu structure: Per-apphook setting for BLOG_MENU_TYPE
+* Object type:Per-apphook setting for BLOG_TYPE
+* Facebook type: Per-apphook setting for BLOG_FB_TYPE
+* Facebook application ID: Per-apphook setting for BLOG_FB_APP_ID
+* Facebook profile ID: Per-apphook setting for BLOG_FB_PROFILE_ID
+* Facebook page URL: Per-apphook setting for BLOG_FB_PUBLISHER
+* Facebook author URL: Per-apphook setting for BLOG_AUTHOR_URL
+* Facebook author: Per-apphook setting for BLOG_AUTHOR
+* Twitter type: Per-apphook setting for BLOG_TWITTER_TYPE
+* Twitter site handle: Per-apphook setting for BLOG_TWITTER_SITE
+* Twitter author handle: Per-apphook setting for BLOG_TWITTER_AUTHOR
+* Google+ type: Per-apphook setting for BLOG_GPLUS_TYPE
+* Google+ author name: Per-apphook setting for BLOG_GPLUS_AUTHOR
 
 Known djangocms-blog websites
 +++++++++++++++++++++++++++++

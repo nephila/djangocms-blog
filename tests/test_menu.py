@@ -2,10 +2,14 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from aldryn_apphooks_config.utils import get_app_instance
+from django.core.cache import cache
 from django.utils.translation import activate
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
 
+from djangocms_blog.settings import (
+    MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS,
+)
 from djangocms_blog.views import CategoryEntriesView, PostDetailView
 
 from . import BaseTest
@@ -43,6 +47,71 @@ class MenuTest(BaseTest):
                 nodes_url = set([node.url for node in nodes])
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
                 self.assertTrue(cats_url.issubset(nodes_url))
+
+    def test_menu_options(self):
+        """
+        Tests menu structure based on menu_structure configuration
+        """
+        posts = self.get_posts()
+        self.get_pages()
+
+        cats_url = {}
+        posts_url = {}
+
+        languages = ('en', 'it')
+
+        for lang in languages:
+            with smart_override(lang):
+                cats_url[lang] = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
+                posts_url[lang] = set([post.get_absolute_url() for post in posts if post.has_translation(lang) and post.app_config == self.app_config_1])
+
+        # No item in the menu
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_NONE
+        self.app_config_1.save()
+        cache.clear()
+        for lang in languages:
+            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            with smart_override(lang):
+                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes_url = set([node.url for node in nodes])
+                self.assertFalse(cats_url[lang].issubset(nodes_url))
+                self.assertFalse(posts_url[lang].issubset(nodes_url))
+
+        # Only posts in the menu
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_POSTS
+        self.app_config_1.save()
+        cache.clear()
+        for lang in languages:
+            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            with smart_override(lang):
+                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes_url = set([node.url for node in nodes])
+                self.assertFalse(cats_url[lang].issubset(nodes_url))
+                self.assertTrue(posts_url[lang].issubset(nodes_url))
+
+        # Only categories in the menu
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_CATEGORIES
+        self.app_config_1.save()
+        cache.clear()
+        for lang in languages:
+            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            with smart_override(lang):
+                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes_url = set([node.url for node in nodes])
+                self.assertTrue(cats_url[lang].issubset(nodes_url))
+                self.assertFalse(posts_url[lang].issubset(nodes_url))
+
+        # Both types in the menu
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
+        self.app_config_1.save()
+        cache.clear()
+        for lang in languages:
+            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            with smart_override(lang):
+                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes_url = set([node.url for node in nodes])
+                self.assertTrue(cats_url[lang].issubset(nodes_url))
+                self.assertTrue(posts_url[lang].issubset(nodes_url))
 
     def test_modifier(self):
         """
