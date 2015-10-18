@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
+
 try:
     from django.apps import AppConfig
 except ImportError:
@@ -46,7 +47,7 @@ class BlogAppConfig(AppConfig):
                                 get_setting('AUTO_HOME_TITLE'), language=lang,
                                 template=default_template, in_navigation=True, published=True
                             )
-                        else:
+                        elif lang not in home.get_languages():
                             create_title(
                                 language=lang, title=get_setting('AUTO_HOME_TITLE'), page=home
                             )

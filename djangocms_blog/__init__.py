@@ -4,4 +4,3 @@ __email__ = 'i.spalletti@nephila.it'
 __version__ = '0.6.0.dev1'
 
 default_app_config = 'djangocms_blog.apps.BlogAppConfig'
-
