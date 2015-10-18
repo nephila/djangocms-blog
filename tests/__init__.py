@@ -31,14 +31,14 @@ class BaseTest(BaseTestCase):
     thumb_2 = None
 
     _pages_data = (
-        {'en': {'title': 'page one', 'template': 'page.html', 'publish': True},
+        {'en': {'title': 'page one', 'template': 'blog.html', 'publish': True},
          'fr': {'title': 'page un', 'publish': True},
          'it': {'title': 'pagina uno', 'publish': True}},
-        {'en': {'title': 'page two', 'template': 'page.html', 'publish': True,
+        {'en': {'title': 'page two', 'template': 'blog.html', 'publish': True,
                 'apphook': 'BlogApp', 'apphook_namespace': 'sample_app'},
          'fr': {'title': 'page deux', 'publish': True},
          'it': {'title': 'pagina due', 'publish': True}},
-        {'en': {'title': 'page three', 'template': 'page.html', 'publish': True,
+        {'en': {'title': 'page three', 'template': 'blog.html', 'publish': True,
                 'apphook': 'BlogApp', 'apphook_namespace': 'sample_app2'},
          'fr': {'title': 'page trois', 'publish': True},
          'it': {'title': 'pagina tre', 'publish': True}},

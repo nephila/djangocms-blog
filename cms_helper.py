@@ -19,6 +19,7 @@ HELPER_SETTINGS = dict(
         'taggit',
         'taggit_autosuggest',
         'aldryn_apphooks_config',
+        'tests.test_utils',
     ],
     LANGUAGE_CODE='en',
     LANGUAGES=(
@@ -72,6 +73,9 @@ HELPER_SETTINGS = dict(
     MIGRATION_MODULES={
         'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
     },
+    CMS_TEMPLATES=(
+        ('blog.html', 'Blog template'),
+    ),
     META_SITE_PROTOCOL='http',
     META_SITE_DOMAIN='example.com',
     META_USE_OG_PROPERTIES=True,

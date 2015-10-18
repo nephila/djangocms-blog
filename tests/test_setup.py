@@ -54,7 +54,7 @@ class SetupTest(BaseTest):
                 if not home:
                     home = create_page(
                         'a new home', language=lang,
-                        template='page.html', in_navigation=True, published=True
+                        template='blog.html', in_navigation=True, published=True
                     )
                 else:
                     create_title(

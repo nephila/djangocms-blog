@@ -203,7 +203,21 @@ class Post(ModelMeta, TranslatableModel):
         Retrieves django-meta attributes from apphook config instance
         :param param: django-meta attribute passed as key
         """
-        return getattr(self.app_config, param)
+        attr = None
+        value = getattr(self.app_config, param)
+        if value:
+            attr = getattr(self, value, None)
+        if attr is not None:
+            if callable(attr):
+                try:
+                    data = attr(param)
+                except TypeError:
+                    data = attr()
+            else:
+                data = attr
+        else:
+            data = value
+        return data
 
     def save_translation(self, translation, *args, **kwargs):
         if not translation.slug and translation.title:
