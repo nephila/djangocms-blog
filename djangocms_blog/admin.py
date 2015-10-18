@@ -133,7 +133,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
     def declared_fieldsets(self):
         return [
             (None, {
-                'fields': ('type', 'namespace',)
+                'fields': ('type', 'namespace', 'app_title')
             }),
             ('Generic', {
                 'fields': (
