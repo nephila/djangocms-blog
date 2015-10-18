@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import sys
+
 from cms.utils.conf import get_cms_setting
 from django.conf import settings
 from django.conf.urls import include, patterns, url
@@ -22,9 +24,15 @@ urlpatterns = patterns(
 
 urlpatterns += staticfiles_urlpatterns()
 
+if 'server' not in sys.argv:
+    urlpatterns += i18n_patterns(
+        '',
+        url(r'^blog/', include(
+            'djangocms_blog.urls', namespace='djangocms_blog', app_name='djangocms_blog'
+        )),
+    )
 urlpatterns += i18n_patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^blog/', include('djangocms_blog.urls', namespace='djangocms_blog')),
     url(r'^', include('cms.urls')),
 )

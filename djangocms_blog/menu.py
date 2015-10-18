@@ -3,64 +3,73 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.menu_bases import CMSAttachMenu
 from django.db.models.signals import post_delete, post_save
-from django.utils.translation import get_language, ugettext_lazy as _
-from menus.base import Modifier, NavigationNode
+from django.utils.translation import get_language_from_request, ugettext_lazy as _
+from menus.base import NavigationNode
 from menus.menu_pool import menu_pool
 
-from .models import BlogCategory
+from .cms_appconfig import BlogConfig
+from .models import BlogCategory, Post
+from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_POSTS
 
 
 class BlogCategoryMenu(CMSAttachMenu):
-    name = _('Blog Category menu')
+    name = _('Blog menu')
 
     def get_nodes(self, request):
         nodes = []
-        qs = BlogCategory.objects.translated(get_language())
-        qs = qs.order_by('parent__id', 'translations__name')
-        for category in qs:
-            node = NavigationNode(
-                category.name,
-                category.get_absolute_url(),
-                category.pk,
-                category.parent_id
-            )
-            nodes.append(node)
+
+        language = get_language_from_request(request, check_path=True)
+
+        categories_menu = False
+        posts_menu = False
+        config = False
+        if hasattr(self, 'instance') and self.instance:
+            config = BlogConfig.objects.get(namespace=self.instance.application_namespace)
+        if config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
+            categories_menu = True
+        if config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
+            posts_menu = True
+
+        if categories_menu:
+            categories = BlogCategory.objects
+            if config:
+                categories = categories.namespace(self.instance.application_namespace)
+            categories = categories.active_translations(language).distinct()
+            categories = categories.order_by('parent__id', 'translations__name')
+            for category in categories:
+                node = NavigationNode(
+                    category.name,
+                    category.get_absolute_url(),
+                    '%s-%s' % (category.__class__.__name__, category.pk),
+                    ('%s-%s' % (category.__class__.__name__, category.parent.id) if category.parent
+                     else None)
+                )
+                nodes.append(node)
+
+        if posts_menu:
+            posts = Post.objects
+            if hasattr(self, 'instance') and self.instance:
+                posts = posts.namespace(self.instance.application_namespace)
+            posts = posts.active_translations(language).distinct()
+            for post in posts:
+                if categories_menu:
+                    category = post.categories.first()
+                    parent = '%s-%s' % (category.__class__.__name__, category.pk)
+                    post_id = '%s-%s' % (post.__class__.__name__, post.pk),
+                else:
+                    parent = None
+                    post_id = '%s-%s' % (post.__class__.__name__, post.pk),
+                node = NavigationNode(
+                    post.get_title(),
+                    post.get_absolute_url(language),
+                    post_id,
+                    parent
+                )
+                nodes.append(node)
+
         return nodes
 
 menu_pool.register_menu(BlogCategoryMenu)
-
-
-class BlogNavModifier(Modifier):
-    """
-    This navigation modifier makes sure that when
-    a particular blog post is viewed,
-    a corresponding category is selected in menu
-    """
-    def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
-        if post_cut:
-            return nodes
-        if not hasattr(request, 'toolbar'):
-            return nodes
-        models = ('djangocms_blog.post', 'djangocms_blog.blogcategory')
-        model = request.toolbar.get_object_model()
-        if model not in models:
-            return nodes
-        if model == 'djangocms_blog.blogcategory':
-            cat = request.toolbar.obj
-        else:
-            cat = request.toolbar.obj.categories.first()
-        if not cat:
-            return nodes
-
-        for node in nodes:
-            if (node.namespace.startswith(BlogCategoryMenu.__name__) and
-                    cat.pk == node.id):
-                node.selected = True
-                # no break here because django-cms maintains two menu structures
-                # for every apphook (attached to published page and draft page)
-        return nodes
-
-menu_pool.register_modifier(BlogNavModifier)
 
 
 def clear_menu_cache(**kwargs):

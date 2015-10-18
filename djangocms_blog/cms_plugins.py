@@ -1,18 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
-from cms.models.pluginmodel import CMSPlugin
+import os.path
+
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import LatestEntriesForm
-from .models import AuthorEntriesPlugin, BlogCategory, LatestPostsPlugin, Post
+from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
 from .settings import get_setting
 
 
 class BlogPlugin(CMSPluginBase):
     module = 'Blog'
+
+    def get_render_template(self, context, instance, placeholder):
+        if instance.app_config.template_prefix:
+            return os.path.join(instance.app_config.template_prefix, self.base_render_template)
+        else:
+            return os.path.join('djangocms_blog', self.base_render_template)
 
 
 class BlogLatestEntriesPlugin(BlogPlugin):
@@ -20,13 +27,13 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     Non cached plugin which returns the latest posts taking into account the
       user / toolbar state
     """
-    render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
     fields = ('latest_posts', 'tags', 'categories')
     cache = False
+    base_render_template = 'plugins/latest_entries.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
@@ -39,12 +46,12 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     """
     Cached plugin which returns the latest published posts
     """
-    render_template = 'djangocms_blog/plugins/latest_entries.html'
     name = _('Latest Blog Articles')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
     fields = ('latest_posts', 'tags', 'categories')
+    base_render_template = 'plugins/latest_entries.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
@@ -57,8 +64,7 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Author Blog Articles')
     model = AuthorEntriesPlugin
-    form = LatestEntriesForm
-    render_template = 'djangocms_blog/plugins/authors.html'
+    base_render_template = 'plugins/authors.html'
     filter_horizontal = ['authors']
 
     def render(self, context, instance, placeholder):
@@ -70,36 +76,47 @@ class BlogAuthorPostsPlugin(BlogPlugin):
 class BlogTagsPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Tags')
-    model = CMSPlugin
-    render_template = 'djangocms_blog/plugins/tags.html'
+    model = GenericBlogPlugin
+    base_render_template = 'plugins/tags.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
-        context['tags'] = Post.objects.tag_cloud(queryset=Post.objects.published())
+        qs = Post._default_manager
+        qs_post = qs
+        if instance.app_config:
+            qs_post = qs_post.namespace(instance.app_config.namespace)
+        context['tags'] = qs.tag_cloud(queryset=qs_post.published())
         return context
 
 
 class BlogCategoryPlugin(BlogPlugin):
     module = _('Blog')
     name = _('Categories')
-    model = CMSPlugin
-    render_template = 'djangocms_blog/plugins/categories.html'
+    model = GenericBlogPlugin
+    base_render_template = 'plugins/categories.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
-        context['categories'] = BlogCategory.objects.all()
+        qs = BlogCategory._default_manager
+        if instance.app_config:
+            qs = qs.namespace(instance.app_config.namespace)
+        context['categories'] = qs
         return context
 
 
 class BlogArchivePlugin(BlogPlugin):
     module = _('Blog')
     name = _('Archive')
-    model = CMSPlugin
-    render_template = 'djangocms_blog/plugins/archive.html'
+    model = GenericBlogPlugin
+    base_render_template = 'plugins/archive.html'
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)
-        context['dates'] = Post.objects.get_months(queryset=Post.objects.published())
+        qs = Post._default_manager
+        qs_post = qs
+        if instance.app_config:
+            qs_post = qs.namespace(instance.app_config.namespace)
+        context['dates'] = qs.get_months(queryset=qs_post.published())
         return context
 
 

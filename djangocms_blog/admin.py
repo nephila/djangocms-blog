@@ -3,13 +3,17 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from copy import deepcopy
 
+from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
+from .cms_appconfig import BlogConfig
+from .forms import PostAdminForm
 from .models import BlogCategory, Post
 from .settings import get_setting
 
@@ -20,27 +24,33 @@ except ImportError:
         pass
 
 
-class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
+class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     def get_prepopulated_fields(self, request, obj=None):
+        app_config_default = self._app_config_select(request, obj)
+        if app_config_default is None and request.method == 'GET':
+            return {}
         return {'slug': ('name',)}
 
     class Media:
         css = {
-            'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                 'djangocms_blog_admin.css'),)
+            'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL, 'djangocms_blog_admin.css'),)
         }
 
 
-class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
-                PlaceholderAdminMixin, TranslatableAdmin):
-    list_display = ['title', 'author', 'date_published', 'date_published_end']
+class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
+                ModelAppHookConfig, TranslatableAdmin):
+    form = PostAdminForm
+    list_display = [
+        'title', 'author', 'date_published', 'app_config', 'languages', 'date_published_end'
+    ]
+    list_filter = ('app_config',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [('title', 'categories', 'publish')]
+            'fields': [('title', 'categories', 'publish', 'app_config')]
         }),
         ('Info', {
             'fields': (['slug', 'tags'],
@@ -57,6 +67,13 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         }),
     ]
 
+    app_config_values = {
+        'default_published': 'publish'
+    }
+
+    def languages(self, obj):
+        return ','.join(obj.get_available_languages())
+
     def formfield_for_dbfield(self, db_field, **kwargs):
         field = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'meta_description':
@@ -68,11 +85,25 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         return field
 
     def get_fieldsets(self, request, obj=None):
+        app_config_default = self._app_config_select(request, obj)
+        if app_config_default is None and request.method == 'GET':
+            return super(PostAdmin, self).get_fieldsets(request, obj)
+        if not obj:
+            config = app_config_default
+        else:
+            config = obj.app_config
+
         fsets = deepcopy(self._fieldsets)
-        if get_setting('USE_ABSTRACT'):
-            fsets[0][1]['fields'].append('abstract')
-        if not get_setting('USE_PLACEHOLDER'):
-            fsets[0][1]['fields'].append('post_text')
+        if config:
+            if config.use_abstract:
+                fsets[0][1]['fields'].append('abstract')
+            if not config.use_placeholder:
+                fsets[0][1]['fields'].append('post_text')
+        else:
+            if get_setting('USE_ABSTRACT'):
+                fsets[0][1]['fields'].append('abstract')
+            if not get_setting('USE_PLACEHOLDER'):
+                fsets[0][1]['fields'].append('post_text')
         if get_setting('MULTISITE'):
             fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
@@ -83,7 +114,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
-        if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
+        if not obj.author_id and obj.app_config.set_author:
             if get_setting('AUTHOR_DEFAULT') is True:
                 user = request.user
             else:
@@ -93,10 +124,63 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
     class Media:
         css = {
-            'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
-                                                 'djangocms_blog_admin.css'),)
+            'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL, 'djangocms_blog_admin.css'),)
         }
 
 
+class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
+
+    @property
+    def declared_fieldsets(self):
+        return [
+            (None, {
+                'fields': ('type', 'namespace', 'app_title')
+            }),
+            ('Generic', {
+                'fields': (
+                    'config.default_published', 'config.use_placeholder', 'config.use_abstract',
+                    'config.set_author',
+                )
+            }),
+            ('Layout', {
+                'fields': (
+                    'config.paginate_by', 'config.url_patterns', 'config.template_prefix',
+                    'config.menu_structure',
+                ),
+                'classes': ('collapse',)
+            }),
+            ('Meta', {
+                'fields': (
+                    'config.object_type',
+                )
+            }),
+            ('Open Graph', {
+                'fields': (
+                    'config.og_type', 'config.og_app_id', 'config.og_profile_id',
+                    'config.og_publisher', 'config.og_author_url', 'config.og_author',
+                ),
+                'description': _(
+                    'You can provide plain strings, Post model attribute or method names'
+                )
+            }),
+            ('Twitter', {
+                'fields': (
+                    'config.twitter_type', 'config.twitter_site', 'config.twitter_author',
+                ),
+                'description': _(
+                    'You can provide plain strings, Post model attribute or method names'
+                )
+            }),
+            ('Google+', {
+                'fields': (
+                    'config.gplus_type', 'config.gplus_author',
+                ),
+                'description': _(
+                    'You can provide plain strings, Post model attribute or method names'
+                )
+            }),
+        ]
+
 admin.site.register(BlogCategory, BlogCategoryAdmin)
 admin.site.register(Post, PostAdmin)
+admin.site.register(BlogConfig, BlogConfigAdmin)

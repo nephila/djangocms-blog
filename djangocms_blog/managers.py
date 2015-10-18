@@ -2,10 +2,12 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import django
+from aldryn_apphooks_config.managers.parler import (
+    AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset,
+)
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.timezone import now
-from parler.managers import TranslatableQuerySet, TranslationManager
 
 try:
     from collections import Counter
@@ -21,7 +23,7 @@ class TaggedFilterItem(object):
         o con gli stessi tag di un model o un queryset
         """
         tags = self._taglist(other_model, queryset)
-        return self.get_queryset().filter(taglist__in=tags)
+        return self.get_queryset().filter(tags__in=tags).distinct()
 
     def _taglist(self, other_model=None, queryset=None):
         """
@@ -29,21 +31,21 @@ class TaggedFilterItem(object):
         o queryset passati come argomento
         """
         from taggit.models import TaggedItem
-        filtro = None
+        filter = None
         if queryset is not None:
-            filtro = set()
+            filter = set()
             for item in queryset.all():
-                filtro.update(item.tags.all())
-            filtro = set([tag.id for tag in filtro])
+                filter.update(item.tags.all())
+            filter = set([tag.id for tag in filter])
         elif other_model is not None:
-            filtro = set(TaggedItem.objects.filter(
+            filter = set(TaggedItem.objects.filter(
                 content_type__model=other_model.__name__.lower()
             ).values_list('tag_id', flat=True))
         tags = set(TaggedItem.objects.filter(
             content_type__model=self.model.__name__.lower()
         ).values_list('tag_id', flat=True))
-        if filtro is not None:
-            tags = tags.intersection(filtro)
+        if filter is not None:
+            tags = tags.intersection(filter)
         return list(tags)
 
     def tag_list(self, other_model=None, queryset=None):
@@ -76,7 +78,7 @@ class TaggedFilterItem(object):
         return sorted(tags, key=lambda x: -x.count)
 
 
-class GenericDateQuerySet(TranslatableQuerySet):
+class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
     start_date_field = 'date_published'
     end_date_field = 'date_published_end'
     publish_field = 'publish'
@@ -120,7 +122,7 @@ class GenericDateQuerySet(TranslatableQuerySet):
         return self.active_translations(language_code=language).on_site()
 
 
-class GenericDateTaggedManager(TaggedFilterItem, TranslationManager):
+class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):
     use_for_related_fields = True
 
     queryset_class = GenericDateQuerySet
