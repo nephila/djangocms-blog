@@ -12,7 +12,7 @@ from djangocms_blog.settings import (
 )
 from djangocms_blog.views import CategoryEntriesView, PostDetailView
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class MenuTest(BaseTest):

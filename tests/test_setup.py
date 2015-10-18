@@ -10,7 +10,7 @@ from django.utils.translation import override
 
 from djangocms_blog.cms_appconfig import BlogConfig
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class SetupTest(BaseTest):

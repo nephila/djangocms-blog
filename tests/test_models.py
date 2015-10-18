@@ -24,7 +24,7 @@ from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
 from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import get_setting
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class AdminTest(BaseTest):

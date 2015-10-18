@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class ToolbarTest(BaseTest):

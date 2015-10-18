@@ -7,12 +7,11 @@ import re
 from cms.api import add_plugin
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
-from djangocms_helper.utils import get_user_model
 from taggit.models import Tag
 
 from djangocms_blog.models import BlogCategory
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class PluginTest(BaseTest):

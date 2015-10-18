@@ -23,7 +23,7 @@ from djangocms_blog.views import (
     TaggedListView,
 )
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class ViewTest(BaseTest):
