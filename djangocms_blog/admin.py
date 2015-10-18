@@ -9,6 +9,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
@@ -157,16 +158,25 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 'fields': (
                     'config.og_type', 'config.og_app_id', 'config.og_profile_id',
                     'config.og_publisher', 'config.og_author_url', 'config.og_author',
+                ),
+                'description': _(
+                    'You can provide plain strings, Post model attribute or method names'
                 )
             }),
             ('Twitter', {
                 'fields': (
                     'config.twitter_type', 'config.twitter_site', 'config.twitter_author',
+                ),
+                'description': _(
+                    'You can provide plain strings, Post model attribute or method names'
                 )
             }),
             ('Google+', {
                 'fields': (
                     'config.gplus_type', 'config.gplus_author',
+                ),
+                'description': _(
+                    'You can provide plain strings, Post model attribute or method names'
                 )
             }),
         ]

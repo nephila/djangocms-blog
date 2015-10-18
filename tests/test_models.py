@@ -213,6 +213,9 @@ class ModelsTest(BaseTest):
     def test_model_attributes(self):
         self.get_pages()
 
+        self.app_config_1.app_data.config.gplus_author = 'RandomJoe'
+        self.app_config_1.save()
+
         post = self._get_post(self._post_data[0]['en'])
         post = self._get_post(self._post_data[0]['it'], post, 'it')
         post.main_image = self.create_filer_image_object()
@@ -225,6 +228,14 @@ class ModelsTest(BaseTest):
         self.assertEqual(meta_en.description, post.meta_description)
         self.assertEqual(meta_en.keywords, post.meta_keywords.split(','))
         self.assertEqual(meta_en.published_time, post.date_published)
+        self.assertEqual(meta_en.locale, 'en')
+        self.assertEqual(meta_en.twitter_site, '')
+        self.assertEqual(meta_en.twitter_author, '')
+        self.assertEqual(meta_en.twitter_type, 'summary')
+        self.assertEqual(meta_en.gplus_author, 'RandomJoe')
+        self.assertEqual(meta_en.gplus_type, 'Blog')
+        self.assertEqual(meta_en.og_type, 'Article')
+        self.assertEqual(meta_en.facebook_app_id, None)
         post.set_current_language('it')
         meta_it = post.as_meta()
         self.assertEqual(meta_it.title, post.title)

@@ -150,7 +150,7 @@ class Post(ModelMeta, TranslatableModel):
         'og_description': 'get_description',
         'twitter_description': 'get_description',
         'gplus_description': 'get_description',
-        'locale': None,
+        'locale': 'get_locale',
         'image': 'get_image_full_url',
         'object_type': 'get_meta_attribute',
         'og_type': 'get_meta_attribute',
@@ -232,6 +232,9 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_keywords(self):
         return self.safe_translation_getter('meta_keywords').strip().split(',')
+
+    def get_locale(self):
+        return self.get_current_language()
 
     def get_description(self):
         description = self.safe_translation_getter('meta_description', any_language=True)
