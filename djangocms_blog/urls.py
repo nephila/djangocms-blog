@@ -2,7 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from django.conf.urls import patterns, url
-
+from .apps import BlogAppConfig
 from .feeds import LatestEntriesFeed, TagFeed
 from .settings import get_setting
 from .views import (
@@ -42,3 +42,5 @@ urlpatterns = patterns(
     url(r'^tag/(?P<tag>[-\w]+)/feed/$',
         TagFeed(), name='posts-tagged-feed'),
 ]
+
+BlogAppConfig.setup()

@@ -74,5 +74,10 @@ def get_setting(name):
         'BLOG_DEFAULT_PUBLISHED': getattr(settings, 'BLOG_DEFAULT_PUBLISHED', False),
         'BLOG_AVAILABLE_PERMALINK_STYLES': getattr(settings, 'BLOG_AVAILABLE_PERMALINK_STYLES', PERMALINKS),  # NOQA
         'BLOG_PERMALINK_URLS': getattr(settings, 'BLOG_PERMALINK_URLS', PERMALINKS_URLS),
+
+        'BLOG_AUTO_SETUP': getattr(settings, 'BLOG_AUTO_SETUP', True),
+        'BLOG_AUTO_HOME_TITLE': getattr(settings, 'BLOG_AUTO_HOME_TITLE', 'Home'),
+        'BLOG_AUTO_BLOG_TITLE': getattr(settings, 'BLOG_AUTO_BLOG_TITLE', 'Blog'),
+        'BLOG_AUTO_APP_TITLE': getattr(settings, 'BLOG_AUTO_APP_TITLE', 'Blog'),
     }
     return default['BLOG_%s' % name]

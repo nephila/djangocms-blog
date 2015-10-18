@@ -239,6 +239,8 @@ All the items will be created in every language configured for the website
 and the pages will be published. If not using **aldryn-apphook-reload** or
 **django CMS 3.2** auto-reload middleware you are required to reload the
 project instance after this.
+This will only work for the current website as detected by
+``Site.objects.get_current()``.
 
 
 The auto setup is execute once for each server start but it will skip any
