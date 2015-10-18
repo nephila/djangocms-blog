@@ -64,7 +64,10 @@ class PostListView(BaseBlogView, ListView):
         return context
 
     def get_paginate_by(self, queryset):
-        return self.config.paginate_by
+        if self.config.paginate_by:
+            return self.config.paginate_by
+        else:
+            return get_setting('PAGINATION')
 
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
