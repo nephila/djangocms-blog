@@ -23,8 +23,7 @@ def get_urls():
 
 detail_urls = get_urls()
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$',
         PostListView.as_view(), name='posts-latest'),
     url(r'^feed/$',
@@ -33,7 +32,6 @@ urlpatterns = patterns(
         PostArchiveView.as_view(), name='posts-archive'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$',
         PostArchiveView.as_view(), name='posts-archive'),
-) + detail_urls + [
     url(r'^author/(?P<username>[\w\.@+-]+)/$',
         AuthorEntriesView.as_view(), name='posts-author'),
     url(r'^category/(?P<category>[\w\.@+-]+)/$',
@@ -42,6 +40,6 @@ urlpatterns = patterns(
         TaggedListView.as_view(), name='posts-tagged'),
     url(r'^tag/(?P<tag>[-\w]+)/feed/$',
         TagFeed(), name='posts-tagged-feed'),
-]
+] + detail_urls
 
 BlogAppConfig.setup()
