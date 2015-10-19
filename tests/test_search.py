@@ -19,7 +19,7 @@ class PluginIndexingTests(BaseTest):
         index = self.get_post_index()
         index.index_queryset(DEFAULT_ALIAS)  # initialises index._backend_alias
         indexed = index.prepare(post)
-        print(indexed)
+
         self.assertEqual(post.get_title(), indexed['title'])
         self.assertEqual(post.get_description(), indexed['description'])
         self.assertEqual('First post First post first line This is the description category 1', indexed['text'])
@@ -33,7 +33,7 @@ class PluginIndexingTests(BaseTest):
         index = self.get_post_index()
         index.update_object(post, using=DEFAULT_ALIAS)
         indexed = index.prepared_data
-        print(indexed)
+
         self.assertEqual(post.get_title(), indexed['title'])
         self.assertEqual(post.get_description(), indexed['description'])
         self.assertEqual('First post First post first line This is the description category 1', indexed['text'])
