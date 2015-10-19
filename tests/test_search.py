@@ -4,6 +4,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 from djangocms_blog.search_indexes import PostIndex
 from . import BaseTest
 
+from djangocms_blog.models import Post
+
+from haystack.query import SearchQuerySet
 from haystack.constants import DEFAULT_ALIAS
 
 
@@ -40,3 +43,7 @@ class BlogIndexingTests(BaseTest):
         self.assertEqual(post.get_absolute_url(), indexed['url'])
         self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
 
+    def test_searchqueryset(self):
+        posts = self.get_posts()
+        all_results = SearchQuerySet().all()
+        self.assertEqual(len(posts), len(all_results))
