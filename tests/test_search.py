@@ -7,7 +7,7 @@ from . import BaseTest
 from haystack.constants import DEFAULT_ALIAS
 
 
-class PluginIndexingTests(BaseTest):
+class BlogIndexingTests(BaseTest):
 
     def setUp(self):
         self.index = PostIndex()
