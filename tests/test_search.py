@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from haystack.constants import DEFAULT_ALIAS
 from haystack.query import SearchQuerySet
 
-from djangocms_blog.search_indexes import PostIndex
+from djangocms_blog.models import Post
 
 from .base import BaseTest
 
@@ -12,7 +12,7 @@ from .base import BaseTest
 class BlogIndexingTests(BaseTest):
 
     def setUp(self):
-        self.index = PostIndex()
+        self.get_pages()
 
     def test_blog_post_is_indexed_using_prepare(self):
         """This tests the indexing path way used by update_index mgmt command"""
@@ -44,5 +44,5 @@ class BlogIndexingTests(BaseTest):
 
     def test_searchqueryset(self):
         posts = self.get_posts()
-        all_results = SearchQuerySet().all()
+        all_results = SearchQuerySet().models(Post)
         self.assertEqual(len(posts), len(all_results))
