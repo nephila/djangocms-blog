@@ -4,10 +4,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 from haystack.constants import DEFAULT_ALIAS
 from haystack.query import SearchQuerySet
 
-from djangocms_blog.models import Post
 from djangocms_blog.search_indexes import PostIndex
 
-from . import BaseTest
+from .base import BaseTest
 
 
 class BlogIndexingTests(BaseTest):
