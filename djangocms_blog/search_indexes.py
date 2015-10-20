@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from django.utils.encoding import force_text
 try:
     from django.utils.encoding import force_text as force_unicode_or_text
 except ImportError:
@@ -22,9 +21,8 @@ class PostIndex(get_index_base()):
     keywords = indexes.CharField(null=True)
     tags = indexes.CharField(null=True)
     post_text = indexes.CharField(null=True)
-    #category_ids = indexes.MultiValueField(null=True)
-    #category_titles = indexes.MultiValueField(null=True)
-
+    # category_ids = indexes.MultiValueField(null=True)
+    # category_titles = indexes.MultiValueField(null=True)
 
     def get_keywords(self, post):
         return ','.join(post.get_keywords())
@@ -60,7 +58,7 @@ class PostIndex(get_index_base()):
         text_bits = [post.get_title()]
         text_bits.append(strip_tags(abstract))
         text_bits.append(post.get_description())
-        #text_bits.append(' '.join(post.get_keywords()))
+        # text_bits.append(' '.join(post.get_keywords()))
         for category in post.categories.all():
             text_bits.append(
                 force_unicode_or_text(category.safe_translation_getter('name')))
