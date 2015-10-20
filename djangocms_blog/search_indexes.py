@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from aldryn_search.helpers import get_plugin_index_data
 from aldryn_search.utils import get_index_base, strip_tags
-
 from haystack import indexes
 
 from .models import Post

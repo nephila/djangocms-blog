@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
-from djangocms_blog.search_indexes import PostIndex
-from . import BaseTest
+from haystack.constants import DEFAULT_ALIAS
+from haystack.query import SearchQuerySet
 
 from djangocms_blog.models import Post
+from djangocms_blog.search_indexes import PostIndex
 
-from haystack.query import SearchQuerySet
-from haystack.constants import DEFAULT_ALIAS
+from . import BaseTest
 
 
 class BlogIndexingTests(BaseTest):
