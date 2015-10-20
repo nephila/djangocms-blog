@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-try:
-    from django.utils.encoding import force_text as force_unicode_or_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_unicode_or_text
 from aldryn_search.helpers import get_plugin_index_data
 from aldryn_search.utils import get_index_base, strip_tags
 
@@ -10,6 +6,11 @@ from haystack import indexes
 
 from .models import Post
 from .settings import get_setting
+
+try:
+    from django.utils.encoding import force_text as force_unicode_or_text
+except ImportError:
+    from django.utils.encoding import force_unicode as force_unicode_or_text
 
 
 class PostIndex(get_index_base()):
