@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.utils.encoding import force_text
-from django.utils.text import force_unicode
+try:
+    from django.utils.encoding import force_text as force_unicode_or_text
+except ImportError:
+    from django.utils.encoding import force_unicode as force_unicode_or_text
 from aldryn_search.helpers import get_plugin_index_data
 from aldryn_search.utils import get_index_base, strip_tags
 
@@ -60,16 +63,16 @@ class PostIndex(get_index_base()):
         #text_bits.append(' '.join(post.get_keywords()))
         for category in post.categories.all():
             text_bits.append(
-                force_text(category.safe_translation_getter('name')))
+                force_unicode_or_text(category.safe_translation_getter('name')))
         for tag in post.tags.all():
-            text_bits.append(force_text(tag.name))
+            text_bits.append(force_unicode_or_text(tag.name))
         if post.content:
             plugins = post.content.cmsplugin_set.filter(language=language)
             for base_plugin in plugins:
                 content = get_plugin_index_data(base_plugin, request)
                 text_bits.append(content)
         for attribute in optional_attributes:
-            value = force_unicode(getattr(post, attribute))
+            value = force_unicode_or_text(getattr(post, attribute))
             if value and value not in text_bits:
                 text_bits.append(value)
         return ' '.join(text_bits)
