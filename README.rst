@@ -22,7 +22,7 @@ djangocms-blog
     :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
     :alt: Test coverage
 
-.. image:: https://img.shields.io/codecov/c/github/nephila/djangocms-blog/master.svg?style=flat-square
+.. image:: https://img.shields.io/codecov/c/github/nephila/djangocms-blog/develop.svg?style=flat-square
     :target: https://codecov.io/github/nephila/djangocms-blog
     :alt: Test coverage
 

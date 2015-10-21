@@ -7,6 +7,8 @@ from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from djangocms_helper.base_test import BaseTestCase
+from haystack import connections
+from haystack.constants import DEFAULT_ALIAS
 from parler.utils.context import smart_override
 
 from djangocms_blog.cms_appconfig import BlogConfig
@@ -183,3 +185,9 @@ class BaseTest(BaseTestCase):
             post1.save()
             posts.append(post1)
         return posts
+
+    def get_post_index(self):
+        search_conn = connections[DEFAULT_ALIAS]
+        unified_index = search_conn.get_unified_index()
+        index = unified_index.get_index(Post)
+        return index

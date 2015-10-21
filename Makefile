@@ -39,7 +39,7 @@ coverage:
 	coverage report -m
 
 release: clean
-	python setup.py sdist bdist_wheel
+	python setup.py clean --all sdist bdist_wheel
 	twine upload dist/*
 
 sdist: clean

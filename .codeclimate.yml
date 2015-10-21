@@ -4,6 +4,6 @@ languages:
   PHP: false
   Python: true
 exclude_paths:
- - "djangocms_blog/migrations/*"
- - "djangocms_blog/south_migrations/*"
- - "tests/*"
+ - 'djangocms_blog/migrations/*'
+ - 'djangocms_blog/south_migrations/*'
+ - 'tests/*'

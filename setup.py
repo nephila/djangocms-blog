@@ -49,6 +49,7 @@ setup(
         'django-meta>=0.2',
         'django-meta-mixin>=0.2.1',
         'aldryn-apphooks-config>=0.2.6',
+        'aldryn-search'
     ],
     license='BSD',
     zip_safe=False,

@@ -20,6 +20,7 @@ HELPER_SETTINGS = dict(
         'taggit_autosuggest',
         'aldryn_apphooks_config',
         'tests.test_utils',
+        'aldryn_search',
     ],
     LANGUAGE_CODE='en',
     LANGUAGES=(
@@ -88,7 +89,10 @@ HELPER_SETTINGS = dict(
         'easy_thumbnails.processors.filters',
     ),
     FILE_UPLOAD_TEMP_DIR=mkdtemp(),
-    SITE_ID=1
+    SITE_ID=1,
+    HAYSTACK_CONNECTIONS = {
+        "default": {}
+    }
 )
 
 try:
