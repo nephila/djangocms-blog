@@ -25,21 +25,25 @@ class SetupTest(BaseTest):
         self.assertFalse(Page.objects.exists())
         self.assertFalse(BlogConfig.objects.exists())
 
-        # importing urls triggers the auto setup
-        from djangocms_blog import urls  # NOQA
+        # importing admin triggers the auto setup
+        from djangocms_blog import cms_toolbar  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
         self.assertEqual(BlogConfig.objects.count(), 1)
 
     def setUp(self):
-        self.reload_urlconf()
+        from cms.toolbar_pool import toolbar_pool
+        from djangocms_blog import cms_toolbar
+
+        toolbar_pool.unregister(cms_toolbar.BlogToolbar)
         delete = [
             'djangocms_blog',
-            'djangocms_blog.urls',
+            'djangocms_blog.cms_toolbar',
         ]
         for module in delete:
-            del sys.modules[module]
+            if module in sys.modules:
+                del sys.modules[module]
 
     def test_setup_filled(self):
 
@@ -62,8 +66,8 @@ class SetupTest(BaseTest):
                     )
                     home.publish(lang)
 
-        # importing urls triggers the auto setup
-        from djangocms_blog import urls  # NOQA
+        # importing admin triggers the auto setup
+        from djangocms_blog import cms_toolbar  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
