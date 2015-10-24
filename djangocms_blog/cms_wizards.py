@@ -4,7 +4,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 try:
     from cms.wizards.wizard_base import Wizard
     from cms.wizards.wizard_pool import wizard_pool
-    from django import forms
     from django.utils.text import slugify
     from django.utils.translation import ugettext_lazy as _
     from parler.forms import TranslatableModelForm
@@ -12,9 +11,7 @@ try:
     from .cms_appconfig import BlogConfig
     from .models import Post
 
-
     class PostWizardForm(TranslatableModelForm):
-
         default_appconfig = None
 
         def __init__(self, *args, **kwargs):
@@ -28,10 +25,8 @@ try:
             model = Post
             fields = ['app_config', 'title', 'abstract', 'categories']
 
-
     class PostWizard(Wizard):
         template_name = 'djangocms_blog/wizards/create.html'
-
 
     for config in BlogConfig.objects.all().order_by('namespace'):
         new_wizard = type(slugify(config.app_title), (PostWizard,), {})

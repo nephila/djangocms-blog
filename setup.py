@@ -38,7 +38,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'django-parler>=1.2',
-        'django-cms>=3.0',
+        'django-cms',
         'django-taggit>=0.12.2',
         'django-filer',
         'pytz',
