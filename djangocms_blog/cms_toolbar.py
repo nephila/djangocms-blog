@@ -6,6 +6,7 @@ from cms.toolbar_pool import toolbar_pool
 from django.core.urlresolvers import reverse
 from django.utils.translation import override, ugettext_lazy as _
 
+from .apps import BlogAppConfig
 from .models import BLOG_CURRENT_NAMESPACE, BLOG_CURRENT_POST_IDENTIFIER
 
 
@@ -13,8 +14,7 @@ from .models import BLOG_CURRENT_NAMESPACE, BLOG_CURRENT_POST_IDENTIFIER
 class BlogToolbar(CMSToolbar):
 
     def populate(self):
-        # TODO: Readd if not self.is_current_app condition when CMS 3.0.4 is released
-        if not self.request.user.has_perm('djangocms_blog.add_post'):
+        if not self.is_current_app or not self.request.user.has_perm('djangocms_blog.add_post'):
             return   # pragma: no cover
         admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
         with override(self.current_lang):
@@ -52,3 +52,5 @@ class BlogToolbar(CMSToolbar):
                 menu.remove_item(pagetags)
             except ImportError:
                 pass
+
+BlogAppConfig.setup()
