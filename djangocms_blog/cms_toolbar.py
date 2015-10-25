@@ -6,7 +6,6 @@ from cms.toolbar_pool import toolbar_pool
 from django.core.urlresolvers import reverse
 from django.utils.translation import override, ugettext_lazy as _
 
-from .apps import BlogAppConfig
 from .models import BLOG_CURRENT_NAMESPACE, BLOG_CURRENT_POST_IDENTIFIER
 
 
@@ -52,5 +51,3 @@ class BlogToolbar(CMSToolbar):
                 menu.remove_item(pagetags)
             except ImportError:
                 pass
-
-BlogAppConfig.setup()

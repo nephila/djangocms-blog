@@ -3,6 +3,7 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from djangocms_blog.settings import get_setting
 
 
 class Migration(SchemaMigration):
@@ -10,7 +11,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'BlogConfigTranslation.object_name'
         db.add_column('djangocms_blog_blogconfig_translation', 'object_name',
-                      self.gf('django.db.models.fields.CharField')(default='Post', max_length=234),
+                      self.gf('django.db.models.fields.CharField')(default=get_setting('DEFAULT_OBJECT_NAME'), max_length=234),
                       keep_default=False)
 
 

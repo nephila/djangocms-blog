@@ -17,7 +17,23 @@ class SetupTest(BaseTest):
 
     @classmethod
     def setUpClass(cls):
+        # Skipping initialization to start with clean database
         super(BaseTest, cls).setUpClass()
+
+    def setUp(self):
+        super(SetupTest, self).setUp()
+        from cms.apphook_pool import apphook_pool
+
+        delete = [
+            'djangocms_blog',
+            'djangocms_blog.cms_app',
+            'djangocms_blog.cms_apps',
+        ]
+        for module in delete:
+            if module in sys.modules:
+                del sys.modules[module]
+        BlogConfig.cmsapp = None
+        apphook_pool.clear()
 
     def test_setup_from_url(self):
 
@@ -25,25 +41,12 @@ class SetupTest(BaseTest):
         self.assertFalse(Page.objects.exists())
         self.assertFalse(BlogConfig.objects.exists())
 
-        # importing admin triggers the auto setup
-        from djangocms_blog import cms_toolbar  # NOQA
+        # importing cms_app triggers the auto setup
+        from djangocms_blog import cms_app  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
         self.assertEqual(BlogConfig.objects.count(), 1)
-
-    def setUp(self):
-        from cms.toolbar_pool import toolbar_pool
-        from djangocms_blog import cms_toolbar
-
-        toolbar_pool.unregister(cms_toolbar.BlogToolbar)
-        delete = [
-            'djangocms_blog',
-            'djangocms_blog.cms_toolbar',
-        ]
-        for module in delete:
-            if module in sys.modules:
-                del sys.modules[module]
 
     def test_setup_filled(self):
 
@@ -66,8 +69,8 @@ class SetupTest(BaseTest):
                     )
                     home.publish(lang)
 
-        # importing admin triggers the auto setup
-        from djangocms_blog import cms_toolbar  # NOQA
+        # importing cms_app triggers the auto setup
+        from djangocms_blog import cms_app  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
