@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 try:
     from cms.wizards.wizard_base import Wizard
     from cms.wizards.wizard_pool import wizard_pool
+    from django import forms
     from django.utils.text import slugify
     from django.utils.translation import ugettext_lazy as _
     from parler.forms import TranslatableModelForm
@@ -20,11 +21,18 @@ try:
             if kwargs.get('data', False):
                 kwargs['data']['1-app_config'] = self.default_appconfig
             super(PostWizardForm, self).__init__(*args, **kwargs)
+            self.fields['app_config'].widget = forms.Select(
+                attrs=self.fields['app_config'].widget.attrs,
+                choices=self.fields['app_config'].widget.choices,
+            )
             self.fields['app_config'].widget.attrs['disabled'] = True
 
         class Meta:
             model = Post
             fields = ['app_config', 'title', 'abstract', 'categories']
+
+        class Media:
+            js = ('admin/js/jquery.js', 'admin/js/jquery.init.js',)
 
     class PostWizard(Wizard):
         pass
