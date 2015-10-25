@@ -65,6 +65,8 @@ Features
 * Per-Apphook configuration
 * Per-Apphook templates set
 * Auto Apphook setup
+* Support for django CMS 3.2+ Wizard
+* Haystack index support
 
 Quickstart
 ----------
@@ -233,7 +235,7 @@ This feature is enable by default and will create:
 
 * a ``BlogConfig`` with default values
 * a ``Blog`` CMS page and will attach ``djangocms_blog`` instance to it
-* a **home page** is no, home is found.
+* a **home page** if no home is found.
 
 All the items will be created in every language configured for the website
 and the pages will be published. If not using **aldryn-apphook-reload** or
@@ -301,6 +303,7 @@ Global Settings
 * BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
 * BLOG_PERMALINK_URLS: URLConf corresponding to
   BLOG_AVAILABLE_PERMALINK_STYLES;
+* BLOG_DEFAULT_OBJECT_NAME: Default name for Blog item (used in django CMS Wizard);
 * BLOG_AUTO_SETUP: Enable the blog **Auto setup** feature; (default: ``True``)
 * BLOG_AUTO_HOME_TITLE: Title of the home page created by **Auto setup**;
   (default: ``Home``)
@@ -313,6 +316,7 @@ Per-Apphook settings
 --------------------
 
 * application title: Free text title that can be used as title in templates;
+* object name: Free text label for Blog items in django CMS Wizard;
 * Post published by default: Per-Apphook setting for BLOG_DEFAULT_PUBLISHED;
 * Permalink structure: Per-Apphook setting for
   BLOG_AVAILABLE_PERMALINK_STYLES;
