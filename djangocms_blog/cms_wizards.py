@@ -29,8 +29,8 @@ try:
         pass
 
     for config in BlogConfig.objects.all().order_by('namespace'):
-        new_wizard = type(slugify(config.app_title), (PostWizard,), {})
-        new_form = type('{0}Form'.format(slugify(config.app_title)), (PostWizardForm,), {
+        new_wizard = type(str(slugify(config.app_title)), (PostWizard,), {})
+        new_form = type(str('{0}Form').format(slugify(config.app_title)), (PostWizardForm,), {
             'default_appconfig': config.pk
         })
         post_wizard = new_wizard(

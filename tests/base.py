@@ -107,10 +107,10 @@ class BaseTest(BaseTestCase):
             name='main', width=200, height=200, crop=False, upscale=False
         )
         cls.app_config_1 = BlogConfig.objects.create(
-            namespace='sample_app', app_title='app1'
+            namespace='sample_app', app_title='app1', object_name='Blog'
         )
         cls.app_config_2 = BlogConfig.objects.create(
-            namespace='sample_app2', app_title='app2'
+            namespace='sample_app2', app_title='app2', object_name='Article'
         )
         cls.app_config_1.app_data.config.paginate_by = 1
         cls.app_config_1.save()
