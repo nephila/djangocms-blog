@@ -15,8 +15,9 @@ try:
         default_appconfig = None
 
         def __init__(self, *args, **kwargs):
-            kwargs['initial']['app_config'] = self.default_appconfig
-            if 'data' in kwargs:
+            if kwargs.get('initial', False):
+                kwargs['initial']['app_config'] = self.default_appconfig
+            if kwargs.get('data', False):
                 kwargs['data']['1-app_config'] = self.default_appconfig
             super(PostWizardForm, self).__init__(*args, **kwargs)
             self.fields['app_config'].widget.attrs['disabled'] = True
@@ -37,6 +38,7 @@ try:
             title=_('New {0}').format(config.object_name),
             weight=200,
             form=new_form,
+            model=Post,
             description=_('Create a new {0} in {1}').format(config.object_name, config.app_title),
         )
         wizard_pool.register(post_wizard)
