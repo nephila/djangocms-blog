@@ -18,7 +18,9 @@ class BlogConfig(TranslatableModel, AppHookConfig):
     """
     translations = TranslatedFields(
         app_title=models.CharField(_('application title'), max_length=234),
-        object_name=models.CharField(_('object name'), max_length=234, default='Post'),
+        object_name=models.CharField(
+            _('object name'), max_length=234, default=get_setting('DEFAULT_OBJECT_NAME')
+        ),
     )
 
     def get_app_title(self):

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.utils.timezone
 import aldryn_apphooks_config.fields
+from djangocms_blog.settings import get_setting
 
 
 class Migration(migrations.Migration):
@@ -16,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogconfigtranslation',
             name='object_name',
-            field=models.CharField(verbose_name='object name', default='Post', max_length=234),
+            field=models.CharField(verbose_name='object name', default=get_setting('DEFAULT_OBJECT_NAME'), max_length=234),
         ),
         migrations.AlterField(
             model_name='authorentriesplugin',

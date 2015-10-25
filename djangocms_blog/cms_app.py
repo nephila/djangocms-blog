@@ -17,11 +17,16 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     app_name = 'djangocms_blog'
     app_config = BlogConfig
     menus = [BlogCategoryMenu]
-    auto_setup = get_setting('AUTO_SETUP')
-    auto_app_title = get_setting('AUTO_APP_TITLE')
-    auto_home_title = get_setting('AUTO_HOME_TITLE')
-    auto_page_title = get_setting('AUTO_BLOG_TITLE')
-    auto_namespace = get_setting('AUTO_NAMESPACE')
-
+    auto_setup = {
+        'enabled': get_setting('AUTO_SETUP'),
+        'home title': get_setting('AUTO_HOME_TITLE'),
+        'page title': get_setting('AUTO_BLOG_TITLE'),
+        'namespace': get_setting('AUTO_NAMESPACE'),
+        'config_fields': {},
+        'config_translated_fields': {
+            'app_title': get_setting('AUTO_APP_TITLE'),
+            'object_name': get_setting('DEFAULT_OBJECT_NAME')
+        },
+    }
 apphook_pool.register(BlogApp)
 BlogApp.setup()
