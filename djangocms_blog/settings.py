@@ -79,6 +79,8 @@ def get_setting(name):
         'BLOG_AUTO_HOME_TITLE': getattr(settings, 'BLOG_AUTO_HOME_TITLE', 'Home'),
         'BLOG_AUTO_BLOG_TITLE': getattr(settings, 'BLOG_AUTO_BLOG_TITLE', 'Blog'),
         'BLOG_AUTO_APP_TITLE': getattr(settings, 'BLOG_AUTO_APP_TITLE', 'Blog'),
+        'BLOG_AUTO_NAMESPACE': getattr(settings, 'BLOG_AUTO_NAMESPACE', 'Blog'),
+
         'BLOG_ENABLE_SEARCH': getattr(settings, 'BLOG_ENABLE_SEARCH', True),
     }
     return default['BLOG_%s' % name]
