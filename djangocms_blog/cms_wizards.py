@@ -26,7 +26,7 @@ try:
             fields = ['app_config', 'title', 'abstract', 'categories']
 
     class PostWizard(Wizard):
-        template_name = 'djangocms_blog/wizards/create.html'
+        pass
 
     for config in BlogConfig.objects.all().order_by('namespace'):
         new_wizard = type(slugify(config.app_title), (PostWizard,), {})
