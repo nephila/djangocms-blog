@@ -259,7 +259,7 @@ Global Settings
   (default: ``{'size': '640x120', 'crop': True,'upscale': False}``)
 * BLOG_PAGINATION: Number of post per page; (default: ``10``)
 * BLOG_LATEST_POSTS: Default number of post in the **Latest post** plugin;
-  (default: ``5'')
+  (default: ``5``)
 * BLOG_POSTS_LIST_TRUNCWORDS_COUNT: Default number of words shown for
   abstract in the post list; (default: ``100``)
 * BLOG_TYPE: Generic type for the post object; (default: ``Article``)
@@ -293,7 +293,7 @@ Global Settings
   if ``False`` a simple HTMLField is used; (default: ``True``)
 * BLOG_MULTISITE: Add support for multisite setup; (default: ``True``)
 * BLOG_MENU_TYPE: Structure of the Blog menu;
-(default: ``Posts and Categories``)
+  (default: ``Posts and Categories``)
 * BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
   current user is set as the default author, if set to ``False`` no default
   author is set, if set to a string the user with the provided username is
