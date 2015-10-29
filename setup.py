@@ -13,12 +13,6 @@ except ImportError:
 
 version = djangocms_blog.__version__
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist upload')
-    print('You probably want to also tag the version now:')
-    print('  git tag -a %s -m "version %s"' % (version, version))
-    print('  git push --tags')
-    sys.exit()
 
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
@@ -38,7 +32,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'django-parler>=1.2',
-        'django-cms',
+        'django-cms>3.0.11',
         'django-taggit>=0.12.2',
         'django-filer',
         'pytz',

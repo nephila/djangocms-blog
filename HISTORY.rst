@@ -3,9 +3,14 @@
 History
 -------
 
-0.6.0 (unreleased)
+0.6.0 (2015-10-30)
 ++++++++++++++++++
 
+* Add support for django CMS 3.2 Wizard
+* Add support for Apphook Config
+* Add Haystack support
+* Improved support for meta tags
+* Improved admin
 * LatestPostsPlugin tags field has been changed to a plain TaggableManager field.
   A migration is in place to move the data, but backup your data first.
 
