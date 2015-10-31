@@ -58,7 +58,7 @@ class BlogCategory(TranslatableModel):
         return reverse('djangocms_blog:posts-latest')
 
     def __str__(self):
-        return self.safe_translation_getter('name')
+        return self.safe_translation_getter('name', any_language=True)
 
     def save(self, *args, **kwargs):
         super(BlogCategory, self).save(*args, **kwargs)
