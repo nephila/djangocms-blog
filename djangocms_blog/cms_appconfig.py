@@ -66,12 +66,12 @@ class BlogConfigForm(AppDataForm):
         label=_('Sitemap changefreq'), required=True,
         choices=get_setting('SITEMAP_CHANGEFREQ'),
         initial=get_setting('SITEMAP_CHANGEFREQ_DEFAULT'),
-        help_text=_('Changefreq attribute for sidebar items')
+        help_text=_('Changefreq attribute for sitemap items')
     )
     sitemap_priority = forms.CharField(
         label=_('Sitemap priority'), required=True,
         initial=get_setting('SITEMAP_PRIORITY_DEFAULT'),
-        help_text=_('Priority attribute for sidebar items')
+        help_text=_('Priority attribute for sitemap items')
     )
     object_type = forms.ChoiceField(
         label=_('Object type'), required=False,
