@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-18 15:49+0200\n"
-"PO-Revision-Date: 2015-10-18 13:50+0000\n"
+"POT-Creation-Date: 2015-10-31 13:23+0100\n"
+"PO-Revision-Date: 2015-10-31 12:23+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Turkish (http://www.transifex.com/nephila/djangocms-blog/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: admin.py:163 admin.py:171 admin.py:179
+#: admin.py:169 admin.py:177 admin.py:185
 msgid "You can provide plain strings, Post model attribute or method names"
 msgstr ""
 
@@ -26,8 +26,8 @@ msgstr ""
 msgid "django CMS Blog"
 msgstr ""
 
-#: cms_app.py:13 cms_plugins.py:64 cms_plugins.py:77 cms_plugins.py:93
-#: cms_plugins.py:108 cms_toolbar.py:19
+#: cms_app.py:15 cms_plugins.py:64 cms_plugins.py:77 cms_plugins.py:93
+#: cms_plugins.py:108 cms_toolbar.py:18
 msgid "Blog"
 msgstr "Blog"
 
@@ -35,103 +35,123 @@ msgstr "Blog"
 msgid "application title"
 msgstr ""
 
-#: cms_appconfig.py:24
+#: cms_appconfig.py:22
+msgid "object name"
+msgstr ""
+
+#: cms_appconfig.py:27
 msgid "untitled"
 msgstr ""
 
-#: cms_appconfig.py:29
+#: cms_appconfig.py:32
 msgid "Post published by default"
 msgstr ""
 
-#: cms_appconfig.py:33
+#: cms_appconfig.py:36
 msgid "Permalink structure"
 msgstr ""
 
-#: cms_appconfig.py:38
+#: cms_appconfig.py:41
 msgid "Use placeholder and plugins for article body"
 msgstr ""
 
-#: cms_appconfig.py:42
+#: cms_appconfig.py:45
 msgid "Use abstract field"
 msgstr ""
 
-#: cms_appconfig.py:46
+#: cms_appconfig.py:49
 msgid "Set author"
 msgstr ""
 
-#: cms_appconfig.py:46
+#: cms_appconfig.py:49
 msgid "Set author by default"
 msgstr ""
 
-#: cms_appconfig.py:50
+#: cms_appconfig.py:53
 msgid "Paginate size"
 msgstr ""
 
-#: cms_appconfig.py:51
+#: cms_appconfig.py:54
 msgid "When paginating list views, how many articles per page?"
 msgstr ""
 
-#: cms_appconfig.py:54
+#: cms_appconfig.py:57
 msgid "Template prefix"
 msgstr ""
 
-#: cms_appconfig.py:55
+#: cms_appconfig.py:58
 msgid "Alternative directory to load the blog templates from"
 msgstr ""
 
-#: cms_appconfig.py:58
+#: cms_appconfig.py:61
 msgid "Menu structure"
 msgstr ""
 
-#: cms_appconfig.py:60
+#: cms_appconfig.py:63
 msgid "Structure of the django CMS menu"
 msgstr ""
 
-#: cms_appconfig.py:63
+#: cms_appconfig.py:66
+msgid "Sitemap changefreq"
+msgstr ""
+
+#: cms_appconfig.py:69
+msgid "Changefreq attribute for sitemap items"
+msgstr ""
+
+#: cms_appconfig.py:72
+msgid "Sitemap priority"
+msgstr ""
+
+#: cms_appconfig.py:74
+msgid "Priority attribute for sitemap items"
+msgstr ""
+
+#: cms_appconfig.py:77
 msgid "Object type"
 msgstr ""
 
-#: cms_appconfig.py:67
+#: cms_appconfig.py:81
 msgid "Facebook type"
 msgstr ""
 
-#: cms_appconfig.py:71
+#: cms_appconfig.py:85
 msgid "Facebook application ID"
 msgstr ""
 
-#: cms_appconfig.py:75
+#: cms_appconfig.py:89
 msgid "Facebook profile ID"
 msgstr ""
 
-#: cms_appconfig.py:79
+#: cms_appconfig.py:93
 msgid "Facebook page URL"
 msgstr ""
 
-#: cms_appconfig.py:83
+#: cms_appconfig.py:97
 msgid "Facebook author URL"
 msgstr ""
 
-#: cms_appconfig.py:87
+#: cms_appconfig.py:101
 msgid "Facebook author"
 msgstr ""
 
-#: cms_appconfig.py:91
+#: cms_appconfig.py:105
 msgid "Twitter type"
 msgstr ""
 
-#: cms_appconfig.py:95
+#: cms_appconfig.py:109
 msgid "Twitter site handle"
 msgstr ""
 
-#: cms_appconfig.py:99
+#: cms_appconfig.py:113
 msgid "Twitter author handle"
 msgstr ""
 
-#: cms_appconfig.py:103
+#: cms_appconfig.py:117
 msgid "Google+ type"
 msgstr ""
 
-#: cms_appconfig.py:107
+#: cms_appconfig.py:121
 msgid "Google+ author name"
 msgstr ""
 
@@ -151,26 +171,36 @@ msgstr "Etiketler"
 msgid "Categories"
 msgstr "Kategoriler"
 
-#: cms_plugins.py:109 templates/djangocms_blog/post_list.html:12
-#: templates/djangocms_blog/plugins/archive.html:3
+#: cms_plugins.py:109 templates/djangocms_blog/plugins/archive.html:3
+#: templates/djangocms_blog/post_list.html:12
 msgid "Archive"
 msgstr "Arşiv"
 
-#: cms_toolbar.py:22
+#: cms_toolbar.py:21
 msgid "Post list"
 msgstr "Makale listesi"
 
-#: cms_toolbar.py:24
+#: cms_toolbar.py:23
 msgid "Add post"
 msgstr "Makale ekle"
 
-#: cms_toolbar.py:28
+#: cms_toolbar.py:27
 msgid "Edit configuration"
 msgstr ""
 
-#: cms_toolbar.py:32
+#: cms_toolbar.py:31
 msgid "Edit Post"
 msgstr "Makaleyi düzenle"
+
+#: cms_wizards.py:47
+#, python-brace-format
+msgid "New {0}"
+msgstr ""
+
+#: cms_wizards.py:51
+#, python-brace-format
+msgid "Create a new {0} in {1}"
+msgstr ""
 
 #: feeds.py:24
 #, python-format
@@ -381,41 +411,33 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: templates/djangocms_blog/post_list.html:11
-msgid "Articles by"
-msgstr "Makaleler"
+#: settings.py:34
+msgid "always"
+msgstr ""
 
-#: templates/djangocms_blog/post_list.html:13
-msgid "Tag"
-msgstr "Etiket"
+#: settings.py:35
+msgid "hourly"
+msgstr ""
 
-#: templates/djangocms_blog/post_list.html:21
-#: templates/djangocms_blog/plugins/archive.html:26
-#: templates/djangocms_blog/plugins/authors.html:15
-#: templates/djangocms_blog/plugins/latest_entries.html:7
-#: templates/djangocms_blog/plugins/tags.html:15
-msgid "No article found."
-msgstr "Makale bulunamadı."
+#: settings.py:36
+msgid "daily"
+msgstr ""
 
-#: templates/djangocms_blog/post_list.html:24
-msgid "Back"
-msgstr "Geri"
+#: settings.py:37
+msgid "weekly"
+msgstr ""
 
-#: templates/djangocms_blog/post_list.html:29
-msgid "previous"
-msgstr "önceki"
+#: settings.py:38
+msgid "monthly"
+msgstr ""
 
-#: templates/djangocms_blog/post_list.html:32
-msgid "Page"
-msgstr "Sayfa"
+#: settings.py:39
+msgid "yearly"
+msgstr ""
 
-#: templates/djangocms_blog/post_list.html:32
-msgid "of"
-msgstr "biri"
-
-#: templates/djangocms_blog/post_list.html:35
-msgid "next"
-msgstr "sonraki"
+#: settings.py:40
+msgid "never"
+msgstr ""
 
 #: templates/djangocms_blog/includes/blog_item.html:24
 msgid "read more"
@@ -442,6 +464,14 @@ msgstr[1] "%(articles)s makale"
 msgid "0 articles"
 msgstr "0 makale"
 
+#: templates/djangocms_blog/plugins/archive.html:26
+#: templates/djangocms_blog/plugins/authors.html:15
+#: templates/djangocms_blog/plugins/latest_entries.html:7
+#: templates/djangocms_blog/plugins/tags.html:15
+#: templates/djangocms_blog/post_list.html:21
+msgid "No article found."
+msgstr "Makale bulunamadı."
+
 #: templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
 msgstr "Yazarlar"
@@ -449,6 +479,34 @@ msgstr "Yazarlar"
 #: templates/djangocms_blog/plugins/categories.html:15
 msgid "No categories found."
 msgstr ""
+
+#: templates/djangocms_blog/post_list.html:11
+msgid "Articles by"
+msgstr "Makaleler"
+
+#: templates/djangocms_blog/post_list.html:13
+msgid "Tag"
+msgstr "Etiket"
+
+#: templates/djangocms_blog/post_list.html:24
+msgid "Back"
+msgstr "Geri"
+
+#: templates/djangocms_blog/post_list.html:29
+msgid "previous"
+msgstr "önceki"
+
+#: templates/djangocms_blog/post_list.html:32
+msgid "Page"
+msgstr "Sayfa"
+
+#: templates/djangocms_blog/post_list.html:32
+msgid "of"
+msgstr "biri"
+
+#: templates/djangocms_blog/post_list.html:35
+msgid "next"
+msgstr "sonraki"
 
 #~ msgid "Article"
 #~ msgstr "Articles"
