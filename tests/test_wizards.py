@@ -55,6 +55,7 @@ class WizardTest(BaseTest):
         for wiz in wizs:
             app_config = self.app_config_1.pk if wiz.title == 'New Blog' else self.app_config_2.pk
             form = wiz.form()
+            self.assertTrue(form.initial.get('app_config', False), app_config)
             self.assertTrue(form.fields['app_config'].widget.attrs['disabled'])
 
             form = wiz.form(data={
@@ -67,5 +68,5 @@ class WizardTest(BaseTest):
             self.assertTrue(form.cleaned_data['app_config'], app_config)
 
     def test_wizard_import(self):
-        # The following import should to fail in any django CMS version
+        # The following import should not fail in any django CMS version
         from djangocms_blog import cms_wizards  # NOQA
