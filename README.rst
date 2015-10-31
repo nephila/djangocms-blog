@@ -311,6 +311,10 @@ Global Settings
   (default: ``Blog``)
 * BLOG_AUTO_APP_TITLE: Title of the ``BlogConfig`` instance created by
   **Auto setup**; (default: ``Blog``)
+* BLOG_SITEMAP_PRIORITY_DEFAULT: Default priority for sitemap items; (default: ``0.5``)
+* BLOG_SITEMAP_CHANGEFREQ: List for available changefreqs for sitemap items; (default: **always**,
+  **hourly**, **daily**, **weekly**, **monthly**, **yearly**, **never**)
+* BLOG_SITEMAP_CHANGEFREQ_DEFAULT: Default changefreq for sitemap items; (default: ``monthly``)
 
 Per-Apphook settings
 --------------------
@@ -327,6 +331,8 @@ Per-Apphook settings
 * Paginate sizePer-Apphook setting for BLOG_PAGINATION;
 * Template prefix: Alternative directory to load the blog templates from;
 * Menu structure: Per-Apphook setting for BLOG_MENU_TYPE
+* Sitemap changefreq: Per-Apphook setting for BLOG_SITEMAP_CHANGEFREQ_DEFAULT
+* Sitemap priority: Per-Apphook setting for BLOG_SITEMAP_PRIORITY_DEFAULT
 * Object type: Per-Apphook setting for BLOG_TYPE
 * Facebook type: Per-Apphook setting for BLOG_FB_TYPE
 * Facebook application ID: Per-Apphook setting for BLOG_FB_APP_ID

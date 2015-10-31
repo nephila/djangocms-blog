@@ -64,7 +64,7 @@ class BlogConfigForm(AppDataForm):
     )
     sitemap_changefreq = forms.ChoiceField(
         label=_('Sitemap changefreq'), required=True,
-        choices=get_setting('SITEMAP_CHANGEFREQ').items(),
+        choices=get_setting('SITEMAP_CHANGEFREQ'),
         initial=get_setting('SITEMAP_CHANGEFREQ_DEFAULT'),
         help_text=_('Changefreq attribute for sidebar items')
     )

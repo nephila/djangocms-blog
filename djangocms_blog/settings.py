@@ -30,15 +30,15 @@ def get_setting(name):
         (MENU_TYPE_POSTS, _('Posts only')),
         (MENU_TYPE_NONE, _('None')),
     )
-    SITEMAP_CHANGEFREQ_LIST = {
-        'always': _('always'),
-        'hourly': _('hourly'),
-        'daily': _('daily'),
-        'weekly': _('weekly'),
-        'monthly': _('monthly'),
-        'yearly': _('yearly'),
-        'never': _('never'),
-    }
+    SITEMAP_CHANGEFREQ_LIST = (
+        ('always', _('always')),
+        ('hourly', _('hourly')),
+        ('daily', _('daily')),
+        ('weekly', _('weekly')),
+        ('monthly', _('monthly')),
+        ('yearly', _('yearly')),
+        ('never', _('never')),
+    )
     default = {
         'BLOG_IMAGE_THUMBNAIL_SIZE': getattr(settings, 'BLOG_IMAGE_THUMBNAIL_SIZE', {
             'size': '120x120',
@@ -98,7 +98,7 @@ def get_setting(name):
             settings, 'BLOG_SITEMAP_CHANGEFREQ', SITEMAP_CHANGEFREQ_LIST
         ),
         'BLOG_SITEMAP_CHANGEFREQ_DEFAULT': getattr(
-            settings, 'BLOG_SITEMAP_CHANGEFREQ_DEFAULT', list(SITEMAP_CHANGEFREQ_LIST.keys())[0]
+            settings, 'BLOG_SITEMAP_CHANGEFREQ_DEFAULT', 'monthly'
         ),
 
         'BLOG_ENABLE_SEARCH': getattr(settings, 'BLOG_ENABLE_SEARCH', True),
