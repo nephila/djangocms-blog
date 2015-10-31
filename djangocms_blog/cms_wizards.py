@@ -16,9 +16,10 @@ try:
         default_appconfig = None
 
         def __init__(self, *args, **kwargs):
-            if kwargs.get('initial', False):
-                kwargs['initial']['app_config'] = self.default_appconfig
-            if kwargs.get('data', False):
+            if 'initial' not in kwargs or not kwargs.get('initial', False):
+                kwargs['initial'] = {}
+            kwargs['initial']['app_config'] = self.default_appconfig
+            if 'data' in kwargs and kwargs['data'] is not None:
                 kwargs['data']['1-app_config'] = self.default_appconfig
             super(PostWizardForm, self).__init__(*args, **kwargs)
             self.fields['app_config'].widget = forms.Select(
