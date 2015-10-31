@@ -17,6 +17,7 @@ from parler.utils.context import smart_override, switch_language
 
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
+from djangocms_blog.settings import get_setting
 from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
@@ -347,9 +348,39 @@ class ViewTest(BaseTest):
         posts[0].set_current_language('en')
 
         sitemap = BlogSitemap()
-        self.assertEqual(sitemap.items().count(), 3)
+        self.assertEqual(len(sitemap.items()), 6)
         for item in sitemap.items():
             self.assertTrue(sitemap.lastmod(item).date(), now().today())
+            self.assertTrue(
+                sitemap.priority(item), get_setting('SITEMAP_PRIORITY_DEFAULT')
+            )
+            self.assertTrue(
+                sitemap.priority(item), get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
+            )
+
+    def test_sitemap_config(self):
+        posts = self.get_posts()
+        self.app_config_1.app_data.config.sitemap_changefreq = 'daily'
+        self.app_config_1.app_data.config.sitemap_priority = '0.2'
+
+        sitemap = BlogSitemap()
+        self.assertEqual(len(sitemap.items()), 4)
+        for item in sitemap.items():
+            self.assertTrue(sitemap.lastmod(item).date(), now().today())
+            if item.app_config == self.app_config_1:
+                self.assertTrue(
+                    sitemap.priority(item), '0.2'
+                )
+                self.assertTrue(
+                    sitemap.changefreq(item), 'daily'
+                )
+            else:
+                self.assertTrue(
+                    sitemap.priority(item), get_setting('SITEMAP_PRIORITY_DEFAULT')
+                )
+                self.assertTrue(
+                    sitemap.changefreq(item), get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
+                )
 
     def test_templates(self):
         posts = self.get_posts()
