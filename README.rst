@@ -166,7 +166,7 @@ suited for your deployment.
 
 * To start your blog you need to use `AppHooks from django CMS <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/apphooks.html>`_
   to add the blog to a django CMS page; this step is not required when using
-  **Auto setup** (see below):
+  `Auto setup <auto_setup>`_:
 
   * Create a new django CMS page
   * Go to Advanced settings and select Blog from the Application selector and
@@ -239,6 +239,8 @@ To use this feature provide a directory name in **Template prefix** field in
 the **Apphook configuration** admin (in *Layout* section): it will be the
 root of your custom templates set.
 
+.. _auto_setup:
+
 Auto setup
 ++++++++++
 
@@ -268,7 +270,8 @@ Sitemap
 ``djangocms_blog`` provides a sitemap for improved SEO indexing.
 Sitemap returns all the published posts in all the languages each post is available.
 
-The changefreq and priority is configurable per-apphook (see ``BLOG_SITEMAP_*`` in  `settings`_).
+The changefreq and priority is configurable per-apphook (see ``BLOG_SITEMAP_*`` in
+`Global settings <settings>`_).
 
 To add the blog Sitemap, add the following code to the project ``urls.py``::
 
