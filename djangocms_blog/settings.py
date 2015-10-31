@@ -57,7 +57,6 @@ def get_setting(name):
         'BLOG_POSTS_LIST_TRUNCWORDS_COUNT': getattr(
             settings, 'BLOG_POSTS_LIST_TRUNCWORDS_COUNT', 100
         ),
-        'BLOG_MENU_TYPE': MENU_TYPES,
         'BLOG_MENU_TYPES': MENU_TYPES,
         'BLOG_TYPE': getattr(settings, 'BLOG_TYPE', 'Article'),
         'BLOG_TYPES': meta_settings.OBJECT_TYPES,

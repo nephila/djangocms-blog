@@ -63,8 +63,11 @@ Features
 * Multisite support (posts can be visible in one or more Django sites on the
   same project)
 * Per-Apphook configuration
+* Configurable permalinks
+* Configurable django CMS menu support
 * Per-Apphook templates set
 * Auto Apphook setup
+* Django sitemap framework support
 * Support for django CMS 3.2+ Wizard
 * Haystack index support
 
@@ -206,6 +209,16 @@ like the following in the project settings::
 
 And change ``post/`` with the desired prefix.
 
+Menu
+++++
+
+``djangocms_blog`` provides support for django CMS menu framework.
+
+By default all the categories and posts are added to the menu, in a hierarcical structure.
+
+Is it possibile to configure per Apphook, whether the menu includes post and categories
+(the default), only categorie, only posts or no item.
+
 Templates
 +++++++++
 
@@ -248,6 +261,43 @@ This will only work for the current website as detected by
 The auto setup is execute once for each server start but it will skip any
 action if a ``BlogConfig`` instance is found.
 
+
+Sitemap
++++++++
+
+``djangocms_blog`` provides a sitemap for improved SEO indexing.
+Sitemap returns all the published posts in all the languages each post is available.
+
+The changefreq and priority is configurable per-apphook (see ``BLOG_SITEMAP_*`` in  `settings`_).
+
+To add the blog Sitemap, add the following code to the project ``urls.py``::
+
+
+    from cms.sitemaps import CMSSitemap
+    from djangocms_blog.sitemaps import BlogSitemap
+
+
+    urlpatterns = patterns(
+        '',
+        ...
+        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
+            {'sitemaps': {
+                'cmspages': CMSSitemap, 'blog': BlogSitemap,
+            }
+        }),
+    )
+
+
+django CMS 3.2+ Wizard
+++++++++++++++++++++++
+
+django CMS 3.2+ provides a content creation wizard that allows to quickly created supported
+content types, such as blog posts.
+
+For each configured Apphook, a content type is added to the wizard.
+
+
+.. _settings:
 
 Global Settings
 ---------------
@@ -292,8 +342,6 @@ Global Settings
 * BLOG_USE_PLACEHOLDER: Post content is managed via placeholder;
   if ``False`` a simple HTMLField is used; (default: ``True``)
 * BLOG_MULTISITE: Add support for multisite setup; (default: ``True``)
-* BLOG_MENU_TYPE: Structure of the Blog menu;
-  (default: ``Posts and Categories``)
 * BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
   current user is set as the default author, if set to ``False`` no default
   author is set, if set to a string the user with the provided username is
@@ -315,6 +363,15 @@ Global Settings
 * BLOG_SITEMAP_CHANGEFREQ: List for available changefreqs for sitemap items; (default: **always**,
   **hourly**, **daily**, **weekly**, **monthly**, **yearly**, **never**)
 * BLOG_SITEMAP_CHANGEFREQ_DEFAULT: Default changefreq for sitemap items; (default: ``monthly``)
+
+Read-only settings
+++++++++++++++++++
+
+* BLOG_MENU_TYPES: Available structures of the Blog menu; (default list **Posts and Categories**,
+  **Categories only**, **Posts only**, **None**)
+* BLOG_MENU_TYPE: Structure of the Blog menu;
+  (default: ``Posts and Categories``)
+
 
 Per-Apphook settings
 --------------------

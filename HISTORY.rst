@@ -3,6 +3,12 @@
 History
 -------
 
+0.6.1 (2015-10-31)
+++++++++++++++++++
+
+* Improve toolbar: add all languages for each post
+* Improve toolbar: add per-apphook configurable changefreq, priority
+
 0.6.0 (2015-10-30)
 ++++++++++++++++++
 
