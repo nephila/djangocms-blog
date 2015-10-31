@@ -149,6 +149,12 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 ),
                 'classes': ('collapse',)
             }),
+            ('Sitemap', {
+                'fields': (
+                    'config.sitemap_changefreq', 'config.sitemap_priority',
+                ),
+                'classes': ('collapse',)
+            }),
             ('Meta', {
                 'fields': (
                     'config.object_type',
