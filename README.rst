@@ -63,8 +63,11 @@ Features
 * Multisite support (posts can be visible in one or more Django sites on the
   same project)
 * Per-Apphook configuration
+* Configurable permalinks
+* Configurable django CMS menu support
 * Per-Apphook templates set
 * Auto Apphook setup
+* Django sitemap framework support
 * Support for django CMS 3.2+ Wizard
 * Haystack index support
 
@@ -163,7 +166,7 @@ suited for your deployment.
 
 * To start your blog you need to use `AppHooks from django CMS <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/apphooks.html>`_
   to add the blog to a django CMS page; this step is not required when using
-  **Auto setup** (see below):
+  `Auto setup <auto_setup>`_:
 
   * Create a new django CMS page
   * Go to Advanced settings and select Blog from the Application selector and
@@ -206,6 +209,16 @@ like the following in the project settings::
 
 And change ``post/`` with the desired prefix.
 
+Menu
+++++
+
+``djangocms_blog`` provides support for django CMS menu framework.
+
+By default all the categories and posts are added to the menu, in a hierarcical structure.
+
+Is it possibile to configure per Apphook, whether the menu includes post and categories
+(the default), only categorie, only posts or no item.
+
 Templates
 +++++++++
 
@@ -225,6 +238,8 @@ By using **Apphook configuration** you can define a different templates set.
 To use this feature provide a directory name in **Template prefix** field in
 the **Apphook configuration** admin (in *Layout* section): it will be the
 root of your custom templates set.
+
+.. _auto_setup:
 
 Auto setup
 ++++++++++
@@ -248,6 +263,44 @@ This will only work for the current website as detected by
 The auto setup is execute once for each server start but it will skip any
 action if a ``BlogConfig`` instance is found.
 
+
+Sitemap
++++++++
+
+``djangocms_blog`` provides a sitemap for improved SEO indexing.
+Sitemap returns all the published posts in all the languages each post is available.
+
+The changefreq and priority is configurable per-apphook (see ``BLOG_SITEMAP_*`` in
+`Global settings <settings>`_).
+
+To add the blog Sitemap, add the following code to the project ``urls.py``::
+
+
+    from cms.sitemaps import CMSSitemap
+    from djangocms_blog.sitemaps import BlogSitemap
+
+
+    urlpatterns = patterns(
+        '',
+        ...
+        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
+            {'sitemaps': {
+                'cmspages': CMSSitemap, 'blog': BlogSitemap,
+            }
+        }),
+    )
+
+
+django CMS 3.2+ Wizard
+++++++++++++++++++++++
+
+django CMS 3.2+ provides a content creation wizard that allows to quickly created supported
+content types, such as blog posts.
+
+For each configured Apphook, a content type is added to the wizard.
+
+
+.. _settings:
 
 Global Settings
 ---------------
@@ -292,8 +345,6 @@ Global Settings
 * BLOG_USE_PLACEHOLDER: Post content is managed via placeholder;
   if ``False`` a simple HTMLField is used; (default: ``True``)
 * BLOG_MULTISITE: Add support for multisite setup; (default: ``True``)
-* BLOG_MENU_TYPE: Structure of the Blog menu;
-  (default: ``Posts and Categories``)
 * BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
   current user is set as the default author, if set to ``False`` no default
   author is set, if set to a string the user with the provided username is
@@ -311,6 +362,19 @@ Global Settings
   (default: ``Blog``)
 * BLOG_AUTO_APP_TITLE: Title of the ``BlogConfig`` instance created by
   **Auto setup**; (default: ``Blog``)
+* BLOG_SITEMAP_PRIORITY_DEFAULT: Default priority for sitemap items; (default: ``0.5``)
+* BLOG_SITEMAP_CHANGEFREQ: List for available changefreqs for sitemap items; (default: **always**,
+  **hourly**, **daily**, **weekly**, **monthly**, **yearly**, **never**)
+* BLOG_SITEMAP_CHANGEFREQ_DEFAULT: Default changefreq for sitemap items; (default: ``monthly``)
+
+Read-only settings
+++++++++++++++++++
+
+* BLOG_MENU_TYPES: Available structures of the Blog menu; (default list **Posts and Categories**,
+  **Categories only**, **Posts only**, **None**)
+* BLOG_MENU_TYPE: Structure of the Blog menu;
+  (default: ``Posts and Categories``)
+
 
 Per-Apphook settings
 --------------------
@@ -327,6 +391,8 @@ Per-Apphook settings
 * Paginate sizePer-Apphook setting for BLOG_PAGINATION;
 * Template prefix: Alternative directory to load the blog templates from;
 * Menu structure: Per-Apphook setting for BLOG_MENU_TYPE
+* Sitemap changefreq: Per-Apphook setting for BLOG_SITEMAP_CHANGEFREQ_DEFAULT
+* Sitemap priority: Per-Apphook setting for BLOG_SITEMAP_PRIORITY_DEFAULT
 * Object type: Per-Apphook setting for BLOG_TYPE
 * Facebook type: Per-Apphook setting for BLOG_FB_TYPE
 * Facebook application ID: Per-Apphook setting for BLOG_FB_APP_ID

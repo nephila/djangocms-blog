@@ -62,6 +62,17 @@ class BlogConfigForm(AppDataForm):
         choices=get_setting('MENU_TYPES'), initial=MENU_TYPE_COMPLETE,
         help_text=_('Structure of the django CMS menu')
     )
+    sitemap_changefreq = forms.ChoiceField(
+        label=_('Sitemap changefreq'), required=True,
+        choices=get_setting('SITEMAP_CHANGEFREQ'),
+        initial=get_setting('SITEMAP_CHANGEFREQ_DEFAULT'),
+        help_text=_('Changefreq attribute for sidebar items')
+    )
+    sitemap_priority = forms.CharField(
+        label=_('Sitemap priority'), required=True,
+        initial=get_setting('SITEMAP_PRIORITY_DEFAULT'),
+        help_text=_('Priority attribute for sidebar items')
+    )
     object_type = forms.ChoiceField(
         label=_('Object type'), required=False,
         choices=get_setting('TYPES'), initial=get_setting('TYPE')

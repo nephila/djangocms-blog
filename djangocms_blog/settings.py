@@ -30,6 +30,15 @@ def get_setting(name):
         (MENU_TYPE_POSTS, _('Posts only')),
         (MENU_TYPE_NONE, _('None')),
     )
+    SITEMAP_CHANGEFREQ_LIST = (
+        ('always', _('always')),
+        ('hourly', _('hourly')),
+        ('daily', _('daily')),
+        ('weekly', _('weekly')),
+        ('monthly', _('monthly')),
+        ('yearly', _('yearly')),
+        ('never', _('never')),
+    )
     default = {
         'BLOG_IMAGE_THUMBNAIL_SIZE': getattr(settings, 'BLOG_IMAGE_THUMBNAIL_SIZE', {
             'size': '120x120',
@@ -48,7 +57,6 @@ def get_setting(name):
         'BLOG_POSTS_LIST_TRUNCWORDS_COUNT': getattr(
             settings, 'BLOG_POSTS_LIST_TRUNCWORDS_COUNT', 100
         ),
-        'BLOG_MENU_TYPE': MENU_TYPES,
         'BLOG_MENU_TYPES': MENU_TYPES,
         'BLOG_TYPE': getattr(settings, 'BLOG_TYPE', 'Article'),
         'BLOG_TYPES': meta_settings.OBJECT_TYPES,
@@ -72,7 +80,9 @@ def get_setting(name):
         'BLOG_MULTISITE': getattr(settings, 'BLOG_MULTISITE', True),
         'BLOG_AUTHOR_DEFAULT': getattr(settings, 'BLOG_AUTHOR_DEFAULT', True),
         'BLOG_DEFAULT_PUBLISHED': getattr(settings, 'BLOG_DEFAULT_PUBLISHED', False),
-        'BLOG_AVAILABLE_PERMALINK_STYLES': getattr(settings, 'BLOG_AVAILABLE_PERMALINK_STYLES', PERMALINKS),  # NOQA
+        'BLOG_AVAILABLE_PERMALINK_STYLES': getattr(
+            settings, 'BLOG_AVAILABLE_PERMALINK_STYLES', PERMALINKS
+        ),
         'BLOG_PERMALINK_URLS': getattr(settings, 'BLOG_PERMALINK_URLS', PERMALINKS_URLS),
         'BLOG_DEFAULT_OBJECT_NAME': getattr(settings, 'BLOG_DEFAULT_OBJECT_NAME', 'Article'),
 
@@ -81,6 +91,14 @@ def get_setting(name):
         'BLOG_AUTO_BLOG_TITLE': getattr(settings, 'BLOG_AUTO_BLOG_TITLE', 'Blog'),
         'BLOG_AUTO_APP_TITLE': getattr(settings, 'BLOG_AUTO_APP_TITLE', 'Blog'),
         'BLOG_AUTO_NAMESPACE': getattr(settings, 'BLOG_AUTO_NAMESPACE', 'Blog'),
+
+        'BLOG_SITEMAP_PRIORITY_DEFAULT': getattr(settings, 'BLOG_SITEMAP_PRIORITY_DEFAULT', '0.5'),
+        'BLOG_SITEMAP_CHANGEFREQ': getattr(
+            settings, 'BLOG_SITEMAP_CHANGEFREQ', SITEMAP_CHANGEFREQ_LIST
+        ),
+        'BLOG_SITEMAP_CHANGEFREQ_DEFAULT': getattr(
+            settings, 'BLOG_SITEMAP_CHANGEFREQ_DEFAULT', 'monthly'
+        ),
 
         'BLOG_ENABLE_SEARCH': getattr(settings, 'BLOG_ENABLE_SEARCH', True),
     }

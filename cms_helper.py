@@ -14,6 +14,7 @@ HELPER_SETTINGS = dict(
         'meta',
         'meta_mixin',
         'easy_thumbnails',
+        'django.contrib.sitemaps',
         'djangocms_text_ckeditor',
         'cmsplugin_filer_image',
         'taggit',

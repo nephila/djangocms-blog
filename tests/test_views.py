@@ -17,6 +17,7 @@ from parler.utils.context import smart_override, switch_language
 
 from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
+from djangocms_blog.settings import get_setting
 from djangocms_blog.sitemaps import BlogSitemap
 from djangocms_blog.views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
@@ -339,6 +340,7 @@ class ViewTest(BaseTest):
 
     def test_sitemap(self):
         posts = self.get_posts()
+        self.get_pages()
         posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
         posts[0].save()
         posts[1].tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
@@ -347,9 +349,50 @@ class ViewTest(BaseTest):
         posts[0].set_current_language('en')
 
         sitemap = BlogSitemap()
-        self.assertEqual(sitemap.items().count(), 3)
+        self.assertEqual(len(sitemap.items()), 6)
         for item in sitemap.items():
-            self.assertTrue(sitemap.lastmod(item).date(), now().today())
+            self.assertEqual(sitemap.lastmod(item).date(), now().date())
+            self.assertEqual(
+                sitemap.priority(item), get_setting('SITEMAP_PRIORITY_DEFAULT')
+            )
+            self.assertEqual(
+                sitemap.changefreq(item), get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
+            )
+            with smart_override(item.get_current_language()):
+                self.assertEqual(
+                    sitemap.location(item), item.get_absolute_url()
+                )
+
+    def test_sitemap_config(self):
+        posts = self.get_posts()
+        self.app_config_1.app_data.config.sitemap_changefreq = 'daily'
+        self.app_config_1.app_data.config.sitemap_priority = '0.2'
+        self.app_config_1.save()
+
+        sitemap = BlogSitemap()
+        self.assertEqual(len(sitemap.items()), 4)
+        for item in sitemap.items():
+            self.assertEqual(sitemap.lastmod(item).date(), now().date())
+            if item.app_config == self.app_config_1:
+                self.assertEqual(
+                    sitemap.priority(item), '0.2'
+                )
+                self.assertEqual(
+                    sitemap.changefreq(item), 'daily'
+                )
+            else:
+                self.assertEqual(
+                    sitemap.priority(item), get_setting('SITEMAP_PRIORITY_DEFAULT')
+                )
+                self.assertEqual(
+                    sitemap.changefreq(item), get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
+                )
+        self.assertEqual(
+            sitemap.priority(None), get_setting('SITEMAP_PRIORITY_DEFAULT')
+        )
+        self.assertEqual(
+            sitemap.changefreq(None), get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
+        )
 
     def test_templates(self):
         posts = self.get_posts()
