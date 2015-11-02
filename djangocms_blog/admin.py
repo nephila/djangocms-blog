@@ -78,10 +78,9 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         return fsets
 
     def get_prepopulated_fields(self, request, obj=None):
-        return {'slug': ('title',)}
+        return {'slug': ('title',), 'sites': (request.site,)}
 
     def save_model(self, request, obj, form, change):
-        print('############', obj, form)
         if get_setting('MULTISITE') and not obj.sites and not form.sites:
             obj.sites = request.site
 
