@@ -81,6 +81,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
+        print(obj.sites, form)
         if get_setting('MULTISITE') and not obj.sites:
             obj.sites = request.site
 
