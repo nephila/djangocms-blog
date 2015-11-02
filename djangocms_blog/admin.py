@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
-
+from django.contrib.sites.models import Site
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
@@ -29,9 +29,27 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
         }
 
 
+# from django.contrib import admin
+# from django.utils.translation import ugettext_lazy as _
+
+# class SitesFilter(admin.SimpleListFilter):
+#     title = _('Site')
+#     parameter_name = 'sites'
+#
+#     def lookups(self, request, model_admin):
+#         return (('current_site', _('Current Site')),)
+#
+#     def queryset(self, request, queryset):
+#         if self.value() == 'current_site':
+#             return queryset.filter(sites__in=[Site.objects.get_current()])
+#         else:
+#             return queryset
+
+
 class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
                 PlaceholderAdminMixin, TranslatableAdmin):
     list_display = ['title', 'author', 'date_published', 'date_published_end']
+    # list_filter = (SitesFilter,)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
@@ -80,13 +98,15 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('title',)}
 
+    def get_queryset(self, request):
+        current_site = Site.objects.get_current()
+        return Post.objects.filter(sites=current_site)
+
     def save_model(self, request, obj, form, change):
-        print(request)
         obj.sites.add(request.site)
 
         if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
             if get_setting('AUTHOR_DEFAULT') is True:
-                print('here')
                 user = request.user
             else:
                 user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))

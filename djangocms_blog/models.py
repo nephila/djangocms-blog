@@ -163,7 +163,7 @@ class Post(ModelMeta, TranslatableModel):
         get_latest_by = 'date_published'
 
     def __str__(self):
-        return self.safe_translation_getter('title')
+        return self.safe_translation_getter('title', any_language=True)
 
     def get_absolute_url(self):
         kwargs = {'year': self.date_published.year,
