@@ -51,7 +51,8 @@ class BlogCategory(TranslatableModel):
     def get_absolute_url(self):
         lang = get_language()
         if self.has_translation(lang):
-            slug = self.safe_translation_getter('slug', language_code=lang)
+            slug = self.safe_translation_getter(
+                'slug', language_code=lang, any_language=True)
             return reverse('djangocms_blog:posts-category', kwargs={'category': slug})
         # in case category doesn't exist in this language, gracefully fallback
         # to posts-latest
