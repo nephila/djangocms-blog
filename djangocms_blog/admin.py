@@ -87,7 +87,6 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
         if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
             if get_setting('AUTHOR_DEFAULT') is True:
-                print('here')
                 user = request.user
             else:
                 user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
