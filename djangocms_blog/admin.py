@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from parler.admin import TranslatableAdmin
+from django.contrib.sites.models import Site
 
 from .models import BlogCategory, Post
 from .settings import get_setting
@@ -92,6 +93,11 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
                 user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
             obj.author = user
         super(PostAdmin, self).save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        if not form.cleaned_data['sites']:
+            form.cleaned_data['sites'] = [Site.objects.get_current()]
+        super(PostAdmin, self).save_related(request, form, formsets, change)
 
     class Media:
         css = {
