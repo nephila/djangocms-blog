@@ -82,6 +82,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
     def save_model(self, request, obj, form, change):
         obj.sites.add(request.site)
+        obj.sites.save()
 
         if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
             if get_setting('AUTHOR_DEFAULT') is True:
