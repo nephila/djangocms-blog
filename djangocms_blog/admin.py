@@ -82,7 +82,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
 
     def save_model(self, request, obj, form, change):
         print(obj.sites, form)
-        if get_setting('MULTISITE') and not obj.sites:
+        if get_setting('MULTISITE') and not obj.sites and not form.sites:
             obj.sites = request.site
 
         if not obj.author_id and get_setting('AUTHOR_DEFAULT'):
