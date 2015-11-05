@@ -38,6 +38,12 @@ class BlogCategory(TranslatableModel):
         meta={'unique_together': (('language_code', 'slug'),)}
     )
 
+    sites = models.ManyToManyField('sites.Site', verbose_name=_(u'Site(s)'),
+                                   blank=True, null=True,
+                                   help_text=_(u'Select sites in which to show the category. '
+                                               u'If none is set it will be '
+                                               u'visible in all the configured sites.'))
+
     objects = TranslationManager()
 
     class Meta:
@@ -59,7 +65,12 @@ class BlogCategory(TranslatableModel):
         return reverse('djangocms_blog:posts-latest')
 
     def __str__(self):
-        return self.safe_translation_getter('name', any_language=True)
+        lang = get_language()
+        if self.has_translation(lang):
+            return self.safe_translation_getter(
+                'name', language_code=lang, any_language=True)
+        else:
+            return ''
 
     def save(self, *args, **kwargs):
         super(BlogCategory, self).save(*args, **kwargs)
@@ -163,7 +174,12 @@ class Post(ModelMeta, TranslatableModel):
         get_latest_by = 'date_published'
 
     def __str__(self):
-        return self.safe_translation_getter('title', any_language=True)
+        lang = get_language()
+        if self.has_translation(lang):
+            return self.safe_translation_getter(
+                'title', language_code=lang, any_language=True)
+        else:
+            return ''
 
     def get_absolute_url(self):
         kwargs = {'year': self.date_published.year,

@@ -20,12 +20,24 @@ except ImportError:
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
+    exclude = ['parent']
+
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('name',)}
 
     def get_queryset(self, request):
         current_site = Site.objects.get_current()
-        return BlogCategory.objects.filter(blog_posts__sites=current_site)
+        print(current_site)
+        print(
+            BlogCategory.objects.filter(sites=current_site)
+        )
+        return BlogCategory.objects.filter(sites=current_site)
+
+    def save_related(self, request, form, formsets, change):
+        if not form.cleaned_data['sites']:
+            form.cleaned_data['sites'] = [Site.objects.get_current()]
+        super(BlogCategoryAdmin, self).save_related(
+            request, form, formsets, change)
 
     class Media:
         css = {
@@ -91,7 +103,7 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         if db_field.name == "categories":
             kwargs["queryset"] = BlogCategory.objects.filter(
-                blog_posts__sites=Site.objects.get_current())
+                sites=Site.objects.get_current())
         return super(PostAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 
