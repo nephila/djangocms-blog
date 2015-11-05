@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from copy import deepcopy
-from django.contrib.sites.models import Site
-from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
+from cms.admin.placeholderadmin import FrontendEditableAdminMixin, \
+    PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
 from django.contrib import admin
@@ -22,6 +22,10 @@ except ImportError:
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('name',)}
+
+    def get_queryset(self, request):
+        current_site = Site.objects.get_current()
+        return BlogCategory.objects.filter(blog_posts__sites=current_site)
 
     class Media:
         css = {
@@ -83,6 +87,13 @@ class PostAdmin(EnhancedModelAdminMixin, FrontendEditableAdminMixin,
         elif db_field.name == 'meta_title':
             field.max_length = 70
         return field
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == "categories":
+            kwargs["queryset"] = BlogCategory.objects.filter(
+                blog_posts__sites=Site.objects.get_current())
+        return super(PostAdmin, self).formfield_for_manytomany(
+            db_field, request, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
         fsets = deepcopy(self._fieldsets)
