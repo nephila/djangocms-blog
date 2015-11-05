@@ -22,16 +22,28 @@ except ImportError:
 class BlogCategoryAdmin(EnhancedModelAdminMixin, TranslatableAdmin):
     exclude = ['parent']
 
+    _fieldsets = [
+        (None, {
+            'fields': [('name', 'slug')]
+        }),
+        ('Info', {
+            'fields': ([], ),
+            'classes': ('collapse',)
+        }),
+    ]
+
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('name',)}
 
     def get_queryset(self, request):
         current_site = Site.objects.get_current()
-        print(current_site)
-        print(
-            BlogCategory.objects.filter(sites=current_site)
-        )
         return BlogCategory.objects.filter(sites=current_site)
+
+    def get_fieldsets(self, request, obj=None):
+        fsets = deepcopy(self._fieldsets)
+        if get_setting('MULTISITE'):
+            fsets[1][1]['fields'][0].append('sites')
+        return fsets
 
     def save_related(self, request, form, formsets, change):
         if not form.cleaned_data['sites']:

@@ -40,9 +40,9 @@ class BlogCategory(TranslatableModel):
 
     sites = models.ManyToManyField('sites.Site', verbose_name=_(u'Site(s)'),
                                    blank=True, null=True,
-                                   help_text=_(u'Select sites in which to show the category. '
-                                               u'If none is set it will be '
-                                               u'visible in all the configured sites.'))
+                                   help_text=_(u'Select sites in which to show the categpry. '
+                                               u'If no site is set it will '
+                                               u'choose the current site.'))
 
     objects = TranslationManager()
 
@@ -117,8 +117,8 @@ class Post(ModelMeta, TranslatableModel):
     sites = models.ManyToManyField('sites.Site', verbose_name=_(u'Site(s)'), blank=True,
                                    null=True,
                                    help_text=_(u'Select sites in which to show the post. '
-                                               u'If none is set it will be '
-                                               u'visible in all the configured sites.'))
+                                               u'If no site is set it will '
+                                               u'choose the current site.'))
 
     translations = TranslatedFields(
         title=models.CharField(_(u'title'), max_length=255),
