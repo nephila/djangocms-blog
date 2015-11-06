@@ -55,7 +55,6 @@ class BlogCategory(TranslatableModel):
     class Meta:
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
-        # unique_together = ('slug', 'sites', 'language_code')
 
     @property
     def count(self):
@@ -196,7 +195,6 @@ class Post(ModelMeta, TranslatableModel):
         verbose_name_plural = _('blog articles')
         ordering = ('-date_published', '-date_created')
         get_latest_by = 'date_published'
-        unique_together = ('slug', 'sites', 'language_code')
 
     def __str__(self):
         return self.safe_translation_getter('title', any_language=True)
