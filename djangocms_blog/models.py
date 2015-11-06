@@ -15,10 +15,10 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta_mixin.models import ModelMeta
 from parler.managers import TranslationManager
-from parler.models import TranslatableModel, TranslatedFields
+from parler.models import TranslatableModel
 from taggit_autosuggest.managers import TaggableManager
 from django.db import IntegrityError
-
+from .utils import TranslatedFields
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -77,7 +77,8 @@ class BlogCategory(TranslatableModel):
     def save(self, *args, **kwargs):
         if self.id is None:
             exist = BlogCategory.on_site.filter(
-                slug=self.slug, language_code=self.language_code).count()
+                translations__slug=self.slug,
+                translations__language_code=self.language_code).count()
             if exist != 0:
                 site = Site.objects.get_current()
                 raise IntegrityError(
@@ -210,7 +211,8 @@ class Post(ModelMeta, TranslatableModel):
     def save(self, *args, **kwargs):
         if self.id is None:
             exist = Post.on_site.filter(
-                slug=self.slug, language_code=self.language_code).count()
+                translations__slug=self.slug,
+                translations__language_code=self.language_code).count()
             if exist != 0:
                 site = Site.objects.get_current()
                 raise IntegrityError(
