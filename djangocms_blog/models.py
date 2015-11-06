@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -15,6 +17,7 @@ from meta_mixin.models import ModelMeta
 from parler.managers import TranslationManager
 from parler.models import TranslatableModel, TranslatedFields
 from taggit_autosuggest.managers import TaggableManager
+from django.db import IntegrityError
 
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
@@ -45,13 +48,14 @@ class BlogCategory(TranslatableModel):
         help_text=_(u'Select sites in which to show the categpry. '
                     u'If no site is set it will '
                     u'choose the current site.'))
+    on_site = CurrentSiteManager()
 
     objects = TranslationManager()
 
     class Meta:
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
-        unique_together = ('slug', 'sites', 'language_code')
+        # unique_together = ('slug', 'sites', 'language_code')
 
     @property
     def count(self):
@@ -72,6 +76,14 @@ class BlogCategory(TranslatableModel):
         return self.safe_translation_getter('name', any_language=True)
 
     def save(self, *args, **kwargs):
+        if self.id is None:
+            exist = BlogCategory.on_site.filter(
+                slug=self.slug, language_code=self.language_code).count()
+            if exist != 0:
+                site = Site.objects.get_current()
+                raise IntegrityError(
+                    "BlogCategory item with same slug and language code field exist on site %r" % site
+                )
         super(BlogCategory, self).save(*args, **kwargs)
         for lang in self.get_available_languages():
             self.set_current_language(lang)
@@ -127,6 +139,8 @@ class Post(ModelMeta, TranslatableModel):
         help_text=_(u'Select sites in which to show the post. '
                     u'If no site is set it will '
                     u'choose the current site.'))
+
+    on_site = CurrentSiteManager()
 
     translations = TranslatedFields(
         title=models.CharField(_(u'title'), max_length=255),
@@ -196,6 +210,14 @@ class Post(ModelMeta, TranslatableModel):
         return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def save(self, *args, **kwargs):
+        if self.id is None:
+            exist = Post.on_site.filter(
+                slug=self.slug, language_code=self.language_code).count()
+            if exist != 0:
+                site = Site.objects.get_current()
+                raise IntegrityError(
+                    "Post item with same slug and language code field exist on site %r" % site
+                )
         super(Post, self).save(*args, **kwargs)
         main_lang = self.get_current_language()
         for lang in self.get_available_languages():
@@ -302,6 +324,7 @@ class LatestPostsPlugin(BasePostPlugin):
         if self.categories.exists():
             posts = posts.filter(categories__in=list(self.categories.all()))
         return posts.distinct()[:self.latest_posts]
+
 
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
