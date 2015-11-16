@@ -16,7 +16,7 @@ class BlogPlugin(CMSPluginBase):
     module = 'Blog'
 
     def get_render_template(self, context, instance, placeholder):
-        if instance.app_config.template_prefix:
+        if instance.app_config and instance.app_config.template_prefix:
             return os.path.join(instance.app_config.template_prefix, self.base_render_template)
         else:
             return os.path.join('djangocms_blog', self.base_render_template)
