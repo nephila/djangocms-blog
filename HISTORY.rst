@@ -3,6 +3,13 @@
 History
 -------
 
+0.6.2 (2015-11-16)
+++++++++++++++++++
+
+* Add app_config field to BlogLatestEntriesPlugin
+* Fix __str__ plugins method
+* Fix bug when selecting plugins template
+
 0.6.1 (2015-10-31)
 ++++++++++++++++++
 
