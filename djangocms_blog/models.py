@@ -270,7 +270,6 @@ class Post(ModelMeta, TranslatableModel):
         return self.make_full_url(self.get_absolute_url())
 
 
-@python_2_unicode_compatible
 class BasePostPlugin(CMSPlugin):
     app_config = AppHookConfigField(
         BlogConfig, null=True, verbose_name=_('app. config'), blank=True
@@ -287,12 +286,10 @@ class BasePostPlugin(CMSPlugin):
         posts = posts.active_translations(language_code=language)
         if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
             posts = posts.published()
-        return posts
-
-    def __str__(self):
-        return _('generic blog plugin')
+        return posts.all()
 
 
+@python_2_unicode_compatible
 class LatestPostsPlugin(BasePostPlugin):
     latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests '
@@ -306,7 +303,7 @@ class LatestPostsPlugin(BasePostPlugin):
                                                     u'with chosen categories.'))
 
     def __str__(self):
-        return _('%s latest articles by tag') % self.latest_posts
+        return force_text(_('%s latest articles by tag') % self.latest_posts)
 
     def copy_relations(self, oldinstance):
         for tag in oldinstance.tags.all():
@@ -321,6 +318,7 @@ class LatestPostsPlugin(BasePostPlugin):
         return posts.distinct()[:self.latest_posts]
 
 
+@python_2_unicode_compatible
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
@@ -332,7 +330,7 @@ class AuthorEntriesPlugin(BasePostPlugin):
     )
 
     def __str__(self):
-        return _('%s latest articles by author') % self.latest_posts
+        return force_text(_('%s latest articles by author') % self.latest_posts)
 
     def copy_relations(self, oldinstance):
         self.authors = oldinstance.authors.all()
@@ -354,7 +352,11 @@ class AuthorEntriesPlugin(BasePostPlugin):
         return authors
 
 
+@python_2_unicode_compatible
 class GenericBlogPlugin(BasePostPlugin):
 
     class Meta:
         abstract = False
+
+    def __str__(self):
+        return force_text(_('generic blog plugin'))
