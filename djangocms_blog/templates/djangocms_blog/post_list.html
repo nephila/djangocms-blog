@@ -1,7 +1,7 @@
 {% extends "djangocms_blog/base.html" %}
 {% load i18n thumbnail %}{% spaceless %}
 
-{% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
+{% block canonical_url %}<link rel="canonical" href="{{ view.get_view_url }}"/>{% endblock canonical_url %}
 
 {% block content_blog %}
 <section class="blog-list">

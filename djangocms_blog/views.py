@@ -26,12 +26,13 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
                 'Missing `view_url_name` attribute on {0}'.format(self.__class__.__name__)
             )
 
-        return reverse(
+        url = reverse(
             self.view_url_name,
             args=self.args,
             kwargs=self.kwargs,
             current_app=self.namespace
         )
+        return self.request.build_absolute_uri(url)
 
     def get_queryset(self):
         language = get_language()
