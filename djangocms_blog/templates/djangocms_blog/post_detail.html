@@ -3,7 +3,7 @@
 
 {% block meta_description %}{{ post.meta_description }}{% endblock meta_description %}
 {% block meta_keywords %}{{ post.meta_keywords }}{% endblock meta_keywords %}
-{% block canonical_url %}<link rel="canonical" href="{{ SITE.domain }}{{ view.get_view_url }}"/>{% endblock canonical_url %}
+{% block canonical_url %}<link rel="canonical" href="{{ meta.url }}"/>{% endblock canonical_url %}
 {% block title %}{{ post.get_title }}{% endblock %}
 
 {% block content_blog %}{% spaceless %}

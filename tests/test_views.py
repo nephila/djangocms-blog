@@ -58,6 +58,7 @@ class ViewTest(BaseTest):
             self.assertEqual(set(view_obj.get_queryset()), set([posts[0], posts[1], posts[2]]))
 
             view_obj.kwargs = {}
+            view_obj.args = ()
             view_obj.object_list = view_obj.get_queryset()
             view_obj.paginate_by = 1
             context = view_obj.get_context_data(object_list=view_obj.object_list)
@@ -74,6 +75,7 @@ class ViewTest(BaseTest):
             view_obj = PostListView()
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
+            view_obj.args = ()
             view_obj.kwargs = {}
             view_obj.object_list = view_obj.get_queryset()
             context = view_obj.get_context_data(object_list=view_obj.object_list)
@@ -106,7 +108,10 @@ class ViewTest(BaseTest):
         view_obj_1.args = ()
         view_obj_1.kwargs = {}
         view_obj_1.namespace, view_obj_1.config = get_app_instance(request)
-        self.assertEqual(view_obj_1.get_view_url(), pages[1].get_absolute_url())
+        self.assertEqual(
+            view_obj_1.get_view_url(),
+            'http://testserver{0}'.format(pages[1].get_absolute_url())
+        )
 
         request = self.get_request(pages[2], 'en', AnonymousUser())
         view_obj_2 = PostListView()
@@ -114,7 +119,10 @@ class ViewTest(BaseTest):
         view_obj_2.args = ()
         view_obj_2.kwargs = {}
         view_obj_2.namespace, view_obj_2.config = get_app_instance(request)
-        self.assertEqual(view_obj_2.get_view_url(), pages[2].get_absolute_url())
+        self.assertEqual(
+            view_obj_2.get_view_url(),
+            'http://testserver{0}'.format(pages[2].get_absolute_url())
+        )
 
         view_obj_2.view_url_name = None
         with self.assertRaises(ImproperlyConfigured):
