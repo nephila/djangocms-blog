@@ -101,5 +101,11 @@ def get_setting(name):
         ),
 
         'BLOG_ENABLE_SEARCH': getattr(settings, 'BLOG_ENABLE_SEARCH', True),
+        'BLOG_CURRENT_POST_IDENTIFIER': getattr(
+            settings, 'BLOG_CURRENT_POST_IDENTIFIER', 'djangocms_post_current'),
+        'BLOG_CURRENT_NAMESPACE': getattr(
+            settings, 'BLOG_CURRENT_NAMESPACE', 'djangocms_post_current_config'),
+        'BLOG_ENABLE_THROUGH_TOOLBAR_MENU': getattr(
+            settings, 'BLOG_ENABLE_THROUGH_TOOLBAR_MENU', False),
     }
     return default['BLOG_%s' % name]

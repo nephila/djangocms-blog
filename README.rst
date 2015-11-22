@@ -366,6 +366,9 @@ Global Settings
 * BLOG_SITEMAP_CHANGEFREQ: List for available changefreqs for sitemap items; (default: **always**,
   **hourly**, **daily**, **weekly**, **monthly**, **yearly**, **never**)
 * BLOG_SITEMAP_CHANGEFREQ_DEFAULT: Default changefreq for sitemap items; (default: ``monthly``)
+* BLOG_CURRENT_POST_IDENTIFIER: Current post identifier in request (default ``djangocms_post_current``)
+* BLOG_CURRENT_NAMESPACE: Current post config identifier in request  (default: ``djangocms_post_current_config``)
+* BLOG_ENABLE_THROUGH_TOOLBAR_MENU: Is the toolbar menu throught whole all applications (default: ``False``)
 
 Read-only settings
 ++++++++++++++++++
