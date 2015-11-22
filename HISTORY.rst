@@ -3,6 +3,12 @@
 History
 -------
 
+0.6.3 (XXXX-XX-XX)
+++++++++++++++++++
+
+* Ensure correct creation of full URL for canonical urls
+* Move constants to settings
+
 0.6.2 (2015-11-16)
 ++++++++++++++++++
 
