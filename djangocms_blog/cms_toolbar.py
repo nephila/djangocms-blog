@@ -6,14 +6,15 @@ from cms.toolbar_pool import toolbar_pool
 from django.core.urlresolvers import reverse
 from django.utils.translation import override, ugettext_lazy as _
 
-from .models import BLOG_CURRENT_NAMESPACE, BLOG_CURRENT_POST_IDENTIFIER
+from .settings import get_setting
 
 
 @toolbar_pool.register
 class BlogToolbar(CMSToolbar):
 
     def populate(self):
-        if not self.is_current_app or not self.request.user.has_perm('djangocms_blog.add_post'):
+        if (not self.is_current_app and not get_setting('ENABLE_THROUGH_TOOLBAR_MENU')) or \
+                not self.request.user.has_perm('djangocms_blog.add_post'):
             return   # pragma: no cover
         admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
         with override(self.current_lang):
@@ -21,19 +22,19 @@ class BlogToolbar(CMSToolbar):
             admin_menu.add_modal_item(_('Post list'), url=url)
             url = reverse('admin:djangocms_blog_post_add')
             admin_menu.add_modal_item(_('Add post'), url=url)
-            current_config = getattr(self.request, BLOG_CURRENT_NAMESPACE, None)
+            current_config = getattr(self.request, get_setting('CURRENT_NAMESPACE'), None)
             if current_config:
                 url = reverse('admin:djangocms_blog_blogconfig_change', args=(current_config.pk,))
                 admin_menu.add_modal_item(_('Edit configuration'), url=url)
 
-            current_post = getattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, None)
+            current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
             if current_post and self.request.user.has_perm('djangocms_blog.change_post'):  # pragma: no cover  # NOQA
                 admin_menu.add_modal_item(_('Edit Post'), reverse(
                     'admin:djangocms_blog_post_change', args=(current_post.pk,)),
                     active=True)
 
     def post_template_populate(self):
-        current_post = getattr(self.request, BLOG_CURRENT_POST_IDENTIFIER, None)
+        current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
         if current_post and self.request.user.has_perm('djangocms_blog.change_post'):  # pragma: no cover  # NOQA
             # removing page meta menu, if present, to avoid confusion
             try:   # pragma: no cover
