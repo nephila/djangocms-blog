@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from cms.utils.permissions import get_current_user
+from django.contrib.auth import get_user_model
+
+from djangocms_blog.settings import get_setting
+
 try:
     from cms.wizards.wizard_base import Wizard
     from cms.wizards.wizard_pool import wizard_pool
@@ -34,6 +39,15 @@ try:
 
         class Media:
             js = ('admin/js/jquery.js', 'admin/js/jquery.init.js',)
+
+        def save(self, commit=True):
+            if not self.instance.author_id and self.instance.app_config.set_author:
+                if get_setting('AUTHOR_DEFAULT') is True:
+                    user = get_current_user()
+                else:
+                    user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
+                self.instance.author = user
+            return super(PostWizardForm, self).save(commit)
 
     class PostWizard(Wizard):
         pass
