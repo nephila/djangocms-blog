@@ -5,7 +5,6 @@ import sys
 from distutils.version import LooseVersion
 
 import cms
-from cms.utils.permissions import current_user
 
 from .base import BaseTest
 
@@ -48,6 +47,7 @@ class WizardTest(BaseTest):
     @skipIf(LooseVersion(cms.__version__) < LooseVersion('3.2'),
             reason='Wizards not available for django CMS < 3.2')
     def test_wizard_init(self):
+        from cms.utils.permissions import current_user
         from cms.wizards.wizard_pool import wizard_pool
         from djangocms_blog.models import Post
         self.get_pages()
