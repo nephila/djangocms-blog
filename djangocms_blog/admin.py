@@ -8,7 +8,6 @@ from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAd
 from django import forms
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.utils.six import callable
 from django.utils.translation import ugettext_lazy as _
 from parler.admin import TranslatableAdmin
@@ -118,12 +117,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
-        if not obj.author_id and obj.app_config.set_author:
-            if get_setting('AUTHOR_DEFAULT') is True:
-                user = request.user
-            else:
-                user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
-            obj.author = user
+        obj._set_default_author(request.user)
         super(PostAdmin, self).save_model(request, obj, form, change)
 
     class Media:

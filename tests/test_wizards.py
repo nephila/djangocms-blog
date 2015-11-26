@@ -7,7 +7,6 @@ from distutils.version import LooseVersion
 import cms
 from cms.utils.permissions import current_user
 
-from djangocms_blog.settings import get_setting
 from .base import BaseTest
 
 try:
@@ -74,11 +73,15 @@ class WizardTest(BaseTest):
 
             with self.settings(BLOG_AUTHOR_DEFAULT='normal'):
                 for index, wiz in enumerate(wizs):
+                    app_config = self.app_config_1.pk if wiz.title == 'New Blog' else self.app_config_2.pk
                     form = wiz.form(data={
                         '1-title': 'title-2{0}'.format(index),
                         '1-abstract': 'abstract-2{0}'.format(index),
                         '1-categories': [self.category_1.pk],
                     }, prefix=1)
+                    self.assertEqual(form.default_appconfig, app_config)
+                    self.assertTrue(form.is_valid())
+                    self.assertTrue(form.cleaned_data['app_config'], app_config)
                     instance = form.save()
                     self.assertEqual(instance.author, self.user_normal)
 
