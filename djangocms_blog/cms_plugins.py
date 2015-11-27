@@ -5,7 +5,6 @@ import os.path
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from django.utils.translation import ugettext_lazy as _
 
 from .forms import LatestEntriesForm
 from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
@@ -13,7 +12,7 @@ from .settings import get_setting
 
 
 class BlogPlugin(CMSPluginBase):
-    module = 'Blog'
+    module = get_setting('PLUGIN_MODULE_NAME')
 
     def get_render_template(self, context, instance, placeholder):
         if instance.app_config and instance.app_config.template_prefix:
@@ -27,7 +26,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     Non cached plugin which returns the latest posts taking into account the
       user / toolbar state
     """
-    name = _('Latest Blog Articles')
+    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
@@ -46,7 +45,7 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     """
     Cached plugin which returns the latest published posts
     """
-    name = _('Latest Blog Articles')
+    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
@@ -61,8 +60,8 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
 
 
 class BlogAuthorPostsPlugin(BlogPlugin):
-    module = _('Blog')
-    name = _('Author Blog Articles')
+    module = get_setting('PLUGIN_MODULE_NAME')
+    name = get_setting('AUTHOR_POSTS_PLUGIN_NAME')
     model = AuthorEntriesPlugin
     base_render_template = 'plugins/authors.html'
     filter_horizontal = ['authors']
@@ -74,8 +73,8 @@ class BlogAuthorPostsPlugin(BlogPlugin):
 
 
 class BlogTagsPlugin(BlogPlugin):
-    module = _('Blog')
-    name = _('Tags')
+    module = get_setting('PLUGIN_MODULE_NAME')
+    name = get_setting('TAGS_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'plugins/tags.html'
 
@@ -90,8 +89,8 @@ class BlogTagsPlugin(BlogPlugin):
 
 
 class BlogCategoryPlugin(BlogPlugin):
-    module = _('Blog')
-    name = _('Categories')
+    module = get_setting('PLUGIN_MODULE_NAME')
+    name = get_setting('CATEGORY_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'plugins/categories.html'
 
@@ -105,8 +104,8 @@ class BlogCategoryPlugin(BlogPlugin):
 
 
 class BlogArchivePlugin(BlogPlugin):
-    module = _('Blog')
-    name = _('Archive')
+    module = get_setting('PLUGIN_MODULE_NAME')
+    name = get_setting('ARCHIVE_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'plugins/archive.html'
 

@@ -369,6 +369,12 @@ Global Settings
 * BLOG_CURRENT_POST_IDENTIFIER: Current post identifier in request (default ``djangocms_post_current``)
 * BLOG_CURRENT_NAMESPACE: Current post config identifier in request  (default: ``djangocms_post_current_config``)
 * BLOG_ENABLE_THROUGH_TOOLBAR_MENU: Is the toolbar menu throught whole all applications (default: ``False``)
+* BLOG_PLUGIN_MODULE_NAME: Blog plugin module name (default: ``Blog``)
+* BLOG_LATEST_ENTRIES_PLUGIN_NAME: Blog latest entries plugin name (default: ``Latest Blog Articles``)
+* BLOG_AUTHOR_POSTS_PLUGIN_NAME: Blog author posts plugin name (default: ``Author Blog Articles``)
+* BLOG_TAGS_PLUGIN_NAME: Blog tags plugin name (default: ``Tags``)
+* BLOG_CATEGORY_PLUGIN_NAME: Blog categories plugin name (default: ``Categories``)
+* BLOG_ARCHIVE_PLUGIN_NAME: Blog archive plugin name (default: ``Archive``)
 
 Read-only settings
 ++++++++++++++++++
