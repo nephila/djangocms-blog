@@ -107,5 +107,18 @@ def get_setting(name):
             settings, 'BLOG_CURRENT_NAMESPACE', 'djangocms_post_current_config'),
         'BLOG_ENABLE_THROUGH_TOOLBAR_MENU': getattr(
             settings, 'BLOG_ENABLE_THROUGH_TOOLBAR_MENU', False),
+
+        'BLOG_PLUGIN_MODULE_NAME': getattr(settings, 'BLOG_PLUGIN_MODULE_NAME', _('Blog')),
+        'BLOG_LATEST_ENTRIES_PLUGIN_NAME': getattr(
+            settings, 'BLOG_LATEST_ENTRIES_PLUGIN_NAME', _('Latest Blog Articles')),
+        'BLOG_AUTHOR_POSTS_PLUGIN_NAME': getattr(
+            settings, 'BLOG_AUTHOR_POSTS_PLUGIN_NAME', _('Author Blog Articles')),
+        'BLOG_TAGS_PLUGIN_NAME': getattr(
+            settings, 'BLOG_TAGS_PLUGIN_NAME', _('Tags')),
+        'BLOG_CATEGORY_PLUGIN_NAME': getattr(
+            settings, 'BLOG_CATEGORY_PLUGIN_NAME', _('Categories')),
+        'BLOG_ARCHIVE_PLUGIN_NAME': getattr(
+            settings, 'BLOG_ARCHIVE_PLUGIN_NAME', _('Archive')),
+
     }
     return default['BLOG_%s' % name]
