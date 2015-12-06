@@ -78,6 +78,10 @@ Install djangocms-blog::
 
     pip install djangocms-blog
 
+or -when installing in Django 1.6/1.7::
+
+    pip install djangocms-blog[admin-enhancer]
+
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
     INSTALLED_APPS = [
@@ -90,10 +94,18 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         'taggit_autosuggest',
         'meta',
         'meta_mixin',
-        'admin_enhancer',
         'djangocms_blog',
         ...
     ]
+
+If you installed the **admin-enhancer** variant, add ``admin_enhancer`` to ``INSTALLED_APPS::
+
+    INSTALLED_APPS = [
+        ...
+        'admin_enhancer',
+        ...
+    ]
+
 
 Then sync and migrate::
 
