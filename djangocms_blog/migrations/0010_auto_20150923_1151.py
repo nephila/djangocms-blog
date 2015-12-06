@@ -90,25 +90,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='authorentriesplugin',
             name='app_config',
-            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, blank=True, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default'),
+            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, blank=True, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default', null=True),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='blogcategory',
             name='app_config',
-            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default'),
+            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default', null=True),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='latestpostsplugin',
             name='app_config',
-            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, blank=True, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default'),
+            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, blank=True, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default', null=True),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='post',
             name='app_config',
-            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default'),
+            field=aldryn_apphooks_config.fields.AppHookConfigField(default=None, verbose_name='app. config', to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default', null=True),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
