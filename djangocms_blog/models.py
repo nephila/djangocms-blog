@@ -91,7 +91,8 @@ class BlogCategoryTranslation(TranslatedFieldsModel):
     master = models.ForeignKey(
         BlogCategory, related_name='translations', null=True)
     name = models.CharField(_("Name"), max_length=255)
-    slug = models.SlugField(_('Slug'), blank=True, db_index=True)
+    slug = models.SlugField(
+        _('Slug'), blank=True, db_index=True, default_validators=[])
 
     class Meta:
         verbose_name = _("BlogCategory translation")
@@ -101,7 +102,7 @@ class BlogCategoryTranslation(TranslatedFieldsModel):
     def validate_unique(self, exclude=None):
         super(BlogCategoryTranslation, self).validate_unique(exclude=None)
         if self.id is None:
-            if BlogCategory.objects.all().on_site().filter(
+            if BlogCategory.on_site.filter(
                     translations__slug=self.slug,
                     translations__language_code=self.language_code).exists():
                 site = Site.objects.get_current()
