@@ -23,7 +23,6 @@ from .utils import TranslatedFields
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 from django.db.models import CharField
-from . import forms
 
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
@@ -52,6 +51,7 @@ class UnuniqueSlugField(CharField):
         return "UnuniqueSlugField"
 
     def formfield(self, **kwargs):
+        from . import forms
         defaults = {'form_class': forms.UnuniqueSlugField}
         defaults.update(kwargs)
         return super(UnuniqueSlugField, self).formfield(**defaults)
