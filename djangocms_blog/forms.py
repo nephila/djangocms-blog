@@ -3,6 +3,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.sites.models import Site
 from taggit_autosuggest.widgets import TagAutoSuggest
+from django.forms.fields import CharField
 
 from djangocms_blog.models import BlogCategory
 
@@ -23,3 +24,9 @@ class LatestEntriesForm(forms.ModelForm):
             'all': ('%sdjangocms_blog/css/%s' % (settings.STATIC_URL,
                                                  'djangocms_blog_admin.css'),)
         }
+
+
+class UnuniqueSlugField(CharField):
+    def clean(self, value):
+        value = self.to_python(value).strip()
+        return super(UnuniqueSlugField, self).clean(value)

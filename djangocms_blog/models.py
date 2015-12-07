@@ -22,8 +22,39 @@ from django.db import IntegrityError
 from .utils import TranslatedFields
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
+from django.db.models import CharField
+from . import forms
+
 
 BLOG_CURRENT_POST_IDENTIFIER = 'djangocms_post_current'
+
+
+class UnuniqueSlugField(CharField):
+    description = _("Slug (up to %(max_length)s)")
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = kwargs.get('max_length', 50)
+        if 'db_index' not in kwargs:
+            kwargs['db_index'] = True
+        super(UnuniqueSlugField, self).__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(UnuniqueSlugField, self).deconstruct()
+        if kwargs.get("max_length", None) == 50:
+            del kwargs['max_length']
+        if self.db_index is False:
+            kwargs['db_index'] = False
+        else:
+            del kwargs['db_index']
+        return name, path, args, kwargs
+
+    def get_internal_type(self):
+        return "UnuniqueSlugField"
+
+    def formfield(self, **kwargs):
+        defaults = {'form_class': forms.UnuniqueSlugField}
+        defaults.update(kwargs)
+        return super(UnuniqueSlugField, self).formfield(**defaults)
 
 
 @python_2_unicode_compatible
@@ -91,8 +122,7 @@ class BlogCategoryTranslation(TranslatedFieldsModel):
     master = models.ForeignKey(
         BlogCategory, related_name='translations', null=True)
     name = models.CharField(_("Name"), max_length=255)
-    slug = models.SlugField(
-        _('Slug'), blank=True, db_index=True, default_validators=[])
+    slug = UnuniqueSlugField(_('Slug'), blank=True, db_index=True)
 
     class Meta:
         verbose_name = _("BlogCategory translation")
