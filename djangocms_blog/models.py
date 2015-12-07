@@ -14,8 +14,9 @@ from django.utils.translation import get_language
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta_mixin.models import ModelMeta
+from parler.fields import TranslatedField
 from parler.managers import TranslationManager
-from parler.models import TranslatableModel
+from parler.models import TranslatableModel, TranslatedFieldsModel
 from taggit_autosuggest.managers import TaggableManager
 from django.db import IntegrityError
 from .utils import TranslatedFields
@@ -35,10 +36,9 @@ class BlogCategory(TranslatableModel):
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
     date_modified = models.DateTimeField(_('modified at'), auto_now=True)
 
-    translations = TranslatedFields(
-        name=models.CharField(_('name'), max_length=255),
-        slug=models.SlugField(_('slug'), blank=True, db_index=True),
-    )
+    # create the translated fields model manually
+    name = TranslatedField()
+    slug = TranslatedField()
 
     sites = models.ManyToManyField(
         'sites.Site',
@@ -72,24 +72,42 @@ class BlogCategory(TranslatableModel):
         return reverse('djangocms_blog:posts-latest')
 
     def __str__(self):
-        return self.safe_translation_getter('name', any_language=True)
+        return self.name
 
     def save(self, *args, **kwargs):
-        if self.id is None:
-            exist = BlogCategory.on_site.filter(
-                translations__slug=self.slug,
-                translations__language_code=self.language_code).count()
-            if exist != 0:
-                site = Site.objects.get_current()
-                raise IntegrityError(
-                    "BlogCategory item with same slug and language code field exist on site %r" % site
-                )
         super(BlogCategory, self).save(*args, **kwargs)
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.name:
                 self.slug = slugify(force_text(self.name))
         self.save_translations()
+
+
+class BlogCategoryTranslation(TranslatedFieldsModel):
+    """
+    create the translated fields model manually
+    """
+
+    master = models.ForeignKey(
+        BlogCategory, related_name='translations', null=True)
+    name = models.CharField(_("Name"), max_length=255)
+    slug = models.SlugField(_('Slug'), blank=True, db_index=True)
+
+    class Meta:
+        verbose_name = _("BlogCategory translation")
+        verbose_name_plural = _('BlogCategory translations')
+        unique_together = ('master', 'language_code')
+
+    def validate_unique(self, exclude=None):
+        super(BlogCategoryTranslation, self).validate_unique(exclude=None)
+        if self.id is None:
+            if BlogCategory.objects.all().on_site().filter(
+                    translations__slug=self.slug,
+                    translations__language_code=self.language_code).exists():
+                site = Site.objects.get_current()
+                raise IntegrityError(
+                    'BlogCategory item with same slug and language code field '
+                    'exist on site {}'.format(site))
 
 
 @python_2_unicode_compatible
