@@ -48,7 +48,7 @@ class UnuniqueSlugField(CharField):
         return name, path, args, kwargs
 
     def get_internal_type(self):
-        return "UnuniqueSlugField"
+        return "CharField"
 
     def formfield(self, **kwargs):
         from . import forms
