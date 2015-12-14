@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
+from django.utils.six import callable
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
@@ -108,6 +109,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
+        filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
+        if callable(filter_function):
+            fsets = filter_function(fsets, request, obj=obj)
         return fsets
 
     def get_prepopulated_fields(self, request, obj=None):

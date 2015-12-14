@@ -80,6 +80,8 @@ def get_setting(name):
         'BLOG_MULTISITE': getattr(settings, 'BLOG_MULTISITE', True),
         'BLOG_AUTHOR_DEFAULT': getattr(settings, 'BLOG_AUTHOR_DEFAULT', True),
         'BLOG_DEFAULT_PUBLISHED': getattr(settings, 'BLOG_DEFAULT_PUBLISHED', False),
+        'BLOG_ADMIN_POST_FIELDSET_FILTER': getattr(
+            settings, 'BLOG_ADMIN_POST_FIELDSET_FILTER', False),
         'BLOG_AVAILABLE_PERMALINK_STYLES': getattr(
             settings, 'BLOG_AVAILABLE_PERMALINK_STYLES', PERMALINKS
         ),

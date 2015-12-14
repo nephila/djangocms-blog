@@ -351,6 +351,8 @@ Global Settings
   used; (default: ``True``)
 * BLOG_DEFAULT_PUBLISHED: If posts are marked as published by default;
   (default: ``False``)
+* BLOG_ADMIN_POST_FIELDSET_FILTER: Callable function to change(add or filter)
+  fields to fieldsets for admin post edit form; (default: ``False``)
 * BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
 * BLOG_PERMALINK_URLS: URLConf corresponding to
   BLOG_AVAILABLE_PERMALINK_STYLES;
