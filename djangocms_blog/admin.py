@@ -9,8 +9,8 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
 from django.utils.six import callable
+from django.utils.translation import ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
