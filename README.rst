@@ -352,7 +352,11 @@ Global Settings
 * BLOG_DEFAULT_PUBLISHED: If posts are marked as published by default;
   (default: ``False``)
 * BLOG_ADMIN_POST_FIELDSET_FILTER: Callable function to change(add or filter)
-  fields to fieldsets for admin post edit form; (default: ``False``)
+  fields to fieldsets for admin post edit form; (default: ``False``). Function simple example:
+  def fieldset_filter_function(fsets, request, obj=None):
+      if request.user.groups.filter(name='Editor').exists():
+          fsets[1][1]['fields'][0].append('author')  # adding 'author' field if user is Editor
+      return fsets
 * BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
 * BLOG_PERMALINK_URLS: URLConf corresponding to
   BLOG_AVAILABLE_PERMALINK_STYLES;
