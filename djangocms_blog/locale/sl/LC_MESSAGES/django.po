@@ -1,0 +1,509 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-15 13:53+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
+"%100==4 ? 2 : 3);\n"
+
+#: admin.py:169 admin.py:177 admin.py:185
+msgid "You can provide plain strings, Post model attribute or method names"
+msgstr ""
+
+#: apps.py:15
+msgid "django CMS Blog"
+msgstr "django CMS Blog"
+
+#: cms_app.py:15 cms_toolbar.py:19 settings.py:111
+msgid "Blog"
+msgstr "Blog"
+
+#: cms_appconfig.py:20
+msgid "application title"
+msgstr "naziv aplikacije"
+
+#: cms_appconfig.py:22
+msgid "object name"
+msgstr "ime objekta"
+
+#: cms_appconfig.py:27
+msgid "untitled"
+msgstr "nepoimenovano"
+
+#: cms_appconfig.py:32
+msgid "Post published by default"
+msgstr "Objava naj bo samodejno objavljena"
+
+#: cms_appconfig.py:36
+msgid "Permalink structure"
+msgstr "Struktura povezav"
+
+#: cms_appconfig.py:41
+msgid "Use placeholder and plugins for article body"
+msgstr "Za objavo naj bodo uporabljeni vtičniki in označbe mest"
+
+#: cms_appconfig.py:45
+msgid "Use abstract field"
+msgstr "Uporaba abstraktnih polj"
+
+#: cms_appconfig.py:49
+msgid "Set author"
+msgstr "Nastavi avtorja"
+
+#: cms_appconfig.py:49
+msgid "Set author by default"
+msgstr "Avtor naj bo nastavljen samodejno"
+
+#: cms_appconfig.py:53
+msgid "Paginate size"
+msgstr "Število objav na stran"
+
+#: cms_appconfig.py:54
+msgid "When paginating list views, how many articles per page?"
+msgstr "Koliko objav naj bo na eni strani?"
+
+#: cms_appconfig.py:57
+msgid "Template prefix"
+msgstr "Predpona predlog"
+
+#: cms_appconfig.py:58
+msgid "Alternative directory to load the blog templates from"
+msgstr "Alternativni direktorij za nalaganje predlog bloga"
+
+#: cms_appconfig.py:61
+msgid "Menu structure"
+msgstr "Struktura menija"
+
+#: cms_appconfig.py:63
+msgid "Structure of the django CMS menu"
+msgstr "Struktura django CMS menija"
+
+#: cms_appconfig.py:66
+msgid "Sitemap changefreq"
+msgstr ""
+
+#: cms_appconfig.py:69
+msgid "Changefreq attribute for sitemap items"
+msgstr ""
+
+#: cms_appconfig.py:72
+msgid "Sitemap priority"
+msgstr "Sitemap prioriteta"
+
+#: cms_appconfig.py:74
+msgid "Priority attribute for sitemap items"
+msgstr "Prioriteta atributov za elemente sitemapa"
+
+#: cms_appconfig.py:77
+msgid "Object type"
+msgstr "Tip objekta"
+
+#: cms_appconfig.py:81
+msgid "Facebook type"
+msgstr ""
+
+#: cms_appconfig.py:85
+msgid "Facebook application ID"
+msgstr ""
+
+#: cms_appconfig.py:89
+msgid "Facebook profile ID"
+msgstr ""
+
+#: cms_appconfig.py:93
+msgid "Facebook page URL"
+msgstr ""
+
+#: cms_appconfig.py:97
+msgid "Facebook author URL"
+msgstr ""
+
+#: cms_appconfig.py:101
+msgid "Facebook author"
+msgstr "Facebook avtor"
+
+#: cms_appconfig.py:105
+msgid "Twitter type"
+msgstr ""
+
+#: cms_appconfig.py:109
+msgid "Twitter site handle"
+msgstr ""
+
+#: cms_appconfig.py:113
+msgid "Twitter author handle"
+msgstr ""
+
+#: cms_appconfig.py:117
+msgid "Google+ type"
+msgstr ""
+
+#: cms_appconfig.py:121
+msgid "Google+ author name"
+msgstr ""
+
+#: cms_toolbar.py:22
+msgid "Post list"
+msgstr "Seznam objav"
+
+#: cms_toolbar.py:24
+msgid "Add post"
+msgstr "Nova objava"
+
+#: cms_toolbar.py:28
+msgid "Edit configuration"
+msgstr "Uredi nastavitve"
+
+#: cms_toolbar.py:32
+msgid "Edit Post"
+msgstr "Uredi objavo"
+
+#: cms_wizards.py:47
+#, python-brace-format
+msgid "New {0}"
+msgstr "Nov {0}"
+
+#: cms_wizards.py:51
+#, python-brace-format
+msgid "Create a new {0} in {1}"
+msgstr "Ustvari nov {0} v {1}"
+
+#: feeds.py:24
+#, python-format
+msgid "Blog articles on %(site_name)s"
+msgstr "Blog objave na %(site_name)s"
+
+#: menu.py:16
+msgid "Blog menu"
+msgstr "Blog meni"
+
+#: models.py:34
+msgid "parent"
+msgstr "starš"
+
+#: models.py:35
+msgid "created at"
+msgstr "ustvarjeno na"
+
+#: models.py:36
+msgid "modified at"
+msgstr "urejeno na"
+
+#: models.py:38 models.py:123 models.py:275
+msgid "app. config"
+msgstr ""
+
+#: models.py:42
+msgid "name"
+msgstr "ime"
+
+#: models.py:43 models.py:128
+msgid "slug"
+msgstr ""
+
+#: models.py:50
+msgid "blog category"
+msgstr "blog kategorija"
+
+#: models.py:51
+msgid "blog categories"
+msgstr "blog kategorije"
+
+#: models.py:91
+msgid "author"
+msgstr "avtor"
+
+#: models.py:94
+msgid "created"
+msgstr "ustvarjeno"
+
+#: models.py:95
+msgid "last modified"
+msgstr "nazadnje urejeno"
+
+#: models.py:96
+msgid "published since"
+msgstr "objavljeno od"
+
+#: models.py:98
+msgid "published until"
+msgstr "objavljeno do"
+
+#: models.py:100
+msgid "publish"
+msgstr "objavljeno"
+
+#: models.py:101
+msgid "category"
+msgstr "kategorija"
+
+#: models.py:103
+msgid "main image"
+msgstr "glavna slika"
+
+#: models.py:107
+msgid "main image thumbnail"
+msgstr "glavna slika - predogled"
+
+#: models.py:112
+msgid "main image full"
+msgstr "glavna slika - polna"
+
+#: models.py:116
+msgid "enable comments on post"
+msgstr "Omogoči komentarje na objavi"
+
+#: models.py:118
+msgid "Site(s)"
+msgstr "Stran(i)"
+
+#: models.py:119
+msgid ""
+"Select sites in which to show the post. If none is set it will be visible in "
+"all the configured sites."
+msgstr "Izberi strani na katerih naj bo objava prikazana. Če ni izbrano nič, bo objava prikazana na vseh nastavljenih straneh."
+
+#: models.py:127
+msgid "title"
+msgstr "naziv"
+
+#: models.py:129
+msgid "abstract"
+msgstr "osnutek"
+
+#: models.py:130
+msgid "post meta description"
+msgstr "meta opis objave"
+
+#: models.py:132
+msgid "post meta keywords"
+msgstr "meta ključne besede objave"
+
+#: models.py:134
+msgid "post meta title"
+msgstr "meta naziv objave"
+
+#: models.py:135
+msgid "used in title tag and social sharing"
+msgstr "za uporabo v označbi naslova in deljenju na socialnih omrežjih"
+
+#: models.py:138
+msgid "text"
+msgstr "tekst"
+
+#: models.py:175
+msgid "blog article"
+msgstr "blog objava"
+
+#: models.py:176
+msgid "blog articles"
+msgstr "blog objave"
+
+#: models.py:294 models.py:328
+msgid "articles"
+msgstr "objave"
+
+#: models.py:295
+msgid "The number of latests articles to be displayed."
+msgstr "Število najnovejših objav, ki naj bodo prikazane"
+
+#: models.py:297
+msgid "filter by tag"
+msgstr "filtriraj po oznakah"
+
+#: models.py:298
+msgid "Show only the blog articles tagged with chosen tags."
+msgstr "Prikaži le blog objave označene z izbranimi oznakami"
+
+#: models.py:301
+msgid "filter by category"
+msgstr "filtriraj po kategoriji"
+
+#: models.py:302
+msgid "Show only the blog articles tagged with chosen categories."
+msgstr "Prikaži le blog objave označene z izbranimi kategorijami"
+
+#: models.py:306
+#, python-format
+msgid "%s latest articles by tag"
+msgstr "%s najnovejših objav glede na oznako"
+
+#: models.py:324
+msgid "authors"
+msgstr "avtorji"
+
+#: models.py:329
+msgid "The number of author articles to be displayed."
+msgstr "Število avtorjevih objav, ki naj bodo prikazane"
+
+#: models.py:333
+#, python-format
+msgid "%s latest articles by author"
+msgstr "%s najnovejših objav glede na avtorja"
+
+#: models.py:362
+msgid "generic blog plugin"
+msgstr "generični blog vtičnik"
+
+#: settings.py:16
+msgid "Full date"
+msgstr "Datum (poln)"
+
+#: settings.py:17
+msgid "Year /  Month"
+msgstr "Leto / Mesec"
+
+#: settings.py:18 templates/djangocms_blog/post_list.html.py:14
+msgid "Category"
+msgstr "Kategorija"
+
+#: settings.py:19
+msgid "Just slug"
+msgstr ""
+
+#: settings.py:28
+msgid "Categories and posts"
+msgstr "Kategorije in objave"
+
+#: settings.py:29
+msgid "Categories only"
+msgstr "Samo kategorije"
+
+#: settings.py:30
+msgid "Posts only"
+msgstr "Samo objave"
+
+#: settings.py:31
+msgid "None"
+msgstr ""
+
+#: settings.py:34
+msgid "always"
+msgstr "vedno"
+
+#: settings.py:35
+msgid "hourly"
+msgstr "vsako uro"
+
+#: settings.py:36
+msgid "daily"
+msgstr "dnevno"
+
+#: settings.py:37
+msgid "weekly"
+msgstr "tedensko"
+
+#: settings.py:38
+msgid "monthly"
+msgstr "mesečno"
+
+#: settings.py:39
+msgid "yearly"
+msgstr "letno"
+
+#: settings.py:40
+msgid "never"
+msgstr "nikoli"
+
+#: settings.py:113
+msgid "Latest Blog Articles"
+msgstr "Najnovejše blog objave"
+
+#: settings.py:115
+msgid "Author Blog Articles"
+msgstr "Avtorjeve blog objave"
+
+#: settings.py:117 templates/djangocms_blog/plugins/tags.html.py:3
+msgid "Tags"
+msgstr "Oznake"
+
+#: settings.py:119 templates/djangocms_blog/plugins/categories.html.py:3
+msgid "Categories"
+msgstr "Kategorije"
+
+#: settings.py:121 templates/djangocms_blog/plugins/archive.html.py:3
+#: templates/djangocms_blog/post_list.html:12
+msgid "Archive"
+msgstr "Arhiv"
+
+#: templates/djangocms_blog/includes/blog_item.html:24
+msgid "read more"
+msgstr "preberi več"
+
+#: templates/djangocms_blog/includes/blog_meta.html:6
+msgid "by"
+msgstr ""
+
+#: templates/djangocms_blog/plugins/archive.html:17
+#: templates/djangocms_blog/plugins/authors.html:10
+#: templates/djangocms_blog/plugins/categories.html:10
+#: templates/djangocms_blog/plugins/tags.html:10
+#, python-format
+msgid "1 article"
+msgid_plural "%(articles)s articles"
+msgstr[0] "1 objava"
+msgstr[1] "%(articles)s objave"
+
+#: templates/djangocms_blog/plugins/archive.html:18
+#: templates/djangocms_blog/plugins/authors.html:11
+#: templates/djangocms_blog/plugins/categories.html:11
+#: templates/djangocms_blog/plugins/tags.html:11
+msgid "0 articles"
+msgstr "0 objav"
+
+#: templates/djangocms_blog/plugins/archive.html:26
+#: templates/djangocms_blog/plugins/authors.html:15
+#: templates/djangocms_blog/plugins/latest_entries.html:7
+#: templates/djangocms_blog/plugins/tags.html:15
+#: templates/djangocms_blog/post_list.html:21
+msgid "No article found."
+msgstr "Nič objav"
+
+#: templates/djangocms_blog/plugins/authors.html:3
+msgid "Authors"
+msgstr "Avtorji"
+
+#: templates/djangocms_blog/plugins/categories.html:15
+msgid "No categories found."
+msgstr "Nič kategorij"
+
+#: templates/djangocms_blog/post_list.html:11
+msgid "Articles by"
+msgstr "Objave avtorja"
+
+#: templates/djangocms_blog/post_list.html:13
+msgid "Tag"
+msgstr "Oznaka"
+
+#: templates/djangocms_blog/post_list.html:24
+msgid "Back"
+msgstr "Nazaj"
+
+#: templates/djangocms_blog/post_list.html:29
+msgid "previous"
+msgstr "prejšnji/a"
+
+#: templates/djangocms_blog/post_list.html:32
+msgid "Page"
+msgstr "Stran"
+
+#: templates/djangocms_blog/post_list.html:32
+msgid "of"
+msgstr "od"
+
+#: templates/djangocms_blog/post_list.html:35
+msgid "next"
+msgstr "naslednji"
