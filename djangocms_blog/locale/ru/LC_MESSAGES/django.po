@@ -3,13 +3,14 @@
 # 
 # Translators:
 # Iacopo Spalletti, 2014
-# Rüstem Mirzaoğlu, 2015
+# Rustam Mirzaev <mirus@2x2.pw>, 2015
+# Rustam Mirzaev <mirus@2x2.pw>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-31 13:23+0100\n"
-"PO-Revision-Date: 2015-10-31 12:23+0000\n"
+"POT-Creation-Date: 2015-12-20 17:14+0100\n"
+"PO-Revision-Date: 2015-12-20 16:15+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Russian (http://www.transifex.com/nephila/djangocms-blog/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -21,187 +22,175 @@ msgstr ""
 
 #: admin.py:169 admin.py:177 admin.py:185
 msgid "You can provide plain strings, Post model attribute or method names"
-msgstr ""
+msgstr "Вы можете использовать простую строку, атрибут модели статьи или имена методов"
 
 #: apps.py:15
 msgid "django CMS Blog"
-msgstr ""
+msgstr "django CMS Блог"
 
-#: cms_app.py:15 cms_plugins.py:64 cms_plugins.py:77 cms_plugins.py:93
-#: cms_plugins.py:108 cms_toolbar.py:18
+#: cms_app.py:15 cms_toolbar.py:19 settings.py:111
 msgid "Blog"
 msgstr "Блог"
 
 #: cms_appconfig.py:20
 msgid "application title"
-msgstr ""
+msgstr "название приложения"
 
 #: cms_appconfig.py:22
 msgid "object name"
-msgstr ""
+msgstr "название объекта"
 
 #: cms_appconfig.py:27
-msgid "untitled"
+#| msgid "blog categories"
+msgid "blog config"
 msgstr ""
 
-#: cms_appconfig.py:32
-msgid "Post published by default"
+#: cms_appconfig.py:28
+#| msgid "blog categories"
+msgid "blog configs"
 msgstr ""
+
+#: cms_appconfig.py:31
+msgid "untitled"
+msgstr "безымянный"
 
 #: cms_appconfig.py:36
-msgid "Permalink structure"
-msgstr ""
+msgid "Post published by default"
+msgstr "Статья опубликованная по умолчанию"
 
-#: cms_appconfig.py:41
-msgid "Use placeholder and plugins for article body"
-msgstr ""
+#: cms_appconfig.py:40
+msgid "Permalink structure"
+msgstr "Строение постоянной ссылки"
 
 #: cms_appconfig.py:45
+msgid "Use placeholder and plugins for article body"
+msgstr "Используйте местозаполнитель и плагины для тела статьи"
+
+#: cms_appconfig.py:49
 msgid "Use abstract field"
-msgstr ""
-
-#: cms_appconfig.py:49
-msgid "Set author"
-msgstr ""
-
-#: cms_appconfig.py:49
-msgid "Set author by default"
-msgstr ""
+msgstr "Используйте поле краткого описания"
 
 #: cms_appconfig.py:53
-msgid "Paginate size"
-msgstr ""
+msgid "Set author"
+msgstr "Указать автора"
 
-#: cms_appconfig.py:54
-msgid "When paginating list views, how many articles per page?"
-msgstr ""
+#: cms_appconfig.py:53
+msgid "Set author by default"
+msgstr "Указать автора по умолчанию"
 
 #: cms_appconfig.py:57
-msgid "Template prefix"
-msgstr ""
+msgid "Paginate size"
+msgstr "Разбить на части"
 
 #: cms_appconfig.py:58
-msgid "Alternative directory to load the blog templates from"
-msgstr ""
+msgid "When paginating list views, how many articles per page?"
+msgstr "Сколько статей на страницу вы бы хотели использовать при разбиении её на части."
 
 #: cms_appconfig.py:61
+msgid "Template prefix"
+msgstr "Префикс шаблона"
+
+#: cms_appconfig.py:62
+msgid "Alternative directory to load the blog templates from"
+msgstr "Альтернативная директория загрузки шаблонов блога"
+
+#: cms_appconfig.py:65
 msgid "Menu structure"
-msgstr ""
+msgstr "Структура меню"
 
-#: cms_appconfig.py:63
+#: cms_appconfig.py:67
 msgid "Structure of the django CMS menu"
-msgstr ""
+msgstr "Структура меню django CMS "
 
-#: cms_appconfig.py:66
+#: cms_appconfig.py:70
 msgid "Sitemap changefreq"
-msgstr ""
+msgstr "Частота обновления карты сайта"
 
-#: cms_appconfig.py:69
+#: cms_appconfig.py:73
 msgid "Changefreq attribute for sitemap items"
-msgstr ""
+msgstr "Атрибут частоты изменения объектов карты сайта"
 
-#: cms_appconfig.py:72
+#: cms_appconfig.py:76
 msgid "Sitemap priority"
-msgstr ""
+msgstr "Приоритет"
 
-#: cms_appconfig.py:74
+#: cms_appconfig.py:78
 msgid "Priority attribute for sitemap items"
-msgstr ""
-
-#: cms_appconfig.py:77
-msgid "Object type"
-msgstr ""
+msgstr "Приоритет атребута для объектов карты сайта"
 
 #: cms_appconfig.py:81
-msgid "Facebook type"
-msgstr ""
+msgid "Object type"
+msgstr "Тип объекта"
 
 #: cms_appconfig.py:85
-msgid "Facebook application ID"
-msgstr ""
+msgid "Facebook type"
+msgstr "тип в Facebook"
 
 #: cms_appconfig.py:89
-msgid "Facebook profile ID"
-msgstr ""
+msgid "Facebook application ID"
+msgstr "ID приложения на Facebook"
 
 #: cms_appconfig.py:93
-msgid "Facebook page URL"
-msgstr ""
+msgid "Facebook profile ID"
+msgstr "ID профиля на Facebook"
 
 #: cms_appconfig.py:97
-msgid "Facebook author URL"
-msgstr ""
+msgid "Facebook page URL"
+msgstr "URL страницы на Facebook"
 
 #: cms_appconfig.py:101
-msgid "Facebook author"
-msgstr ""
+msgid "Facebook author URL"
+msgstr "URL автора на Facebook "
 
 #: cms_appconfig.py:105
-msgid "Twitter type"
-msgstr ""
+msgid "Facebook author"
+msgstr "автор на Facebook "
 
 #: cms_appconfig.py:109
-msgid "Twitter site handle"
-msgstr ""
+msgid "Twitter type"
+msgstr "тип на Twitter"
 
 #: cms_appconfig.py:113
-msgid "Twitter author handle"
-msgstr ""
+msgid "Twitter site handle"
+msgstr "дескриптор сайта на Twitter"
 
 #: cms_appconfig.py:117
-msgid "Google+ type"
-msgstr ""
+msgid "Twitter author handle"
+msgstr "дескриптор автора на Twitter"
 
 #: cms_appconfig.py:121
+msgid "Google+ type"
+msgstr "тип на Google+"
+
+#: cms_appconfig.py:125
 msgid "Google+ author name"
-msgstr ""
+msgstr "имя автора на Google+"
 
-#: cms_plugins.py:30 cms_plugins.py:49
-msgid "Latest Blog Articles"
-msgstr "Последние статьи блога"
-
-#: cms_plugins.py:65
-msgid "Author Blog Articles"
-msgstr "Автор статей блога"
-
-#: cms_plugins.py:78 templates/djangocms_blog/plugins/tags.html:3
-msgid "Tags"
-msgstr "Метки"
-
-#: cms_plugins.py:94 templates/djangocms_blog/plugins/categories.html:3
-msgid "Categories"
-msgstr "Категории"
-
-#: cms_plugins.py:109 templates/djangocms_blog/plugins/archive.html:3
-#: templates/djangocms_blog/post_list.html:12
-msgid "Archive"
-msgstr "Архив"
-
-#: cms_toolbar.py:21
+#: cms_toolbar.py:22
 msgid "Post list"
 msgstr "Список статей"
 
-#: cms_toolbar.py:23
+#: cms_toolbar.py:24
 msgid "Add post"
 msgstr "Добавить статью"
 
-#: cms_toolbar.py:27
+#: cms_toolbar.py:28
 msgid "Edit configuration"
-msgstr ""
+msgstr "Редактировать настройки"
 
-#: cms_toolbar.py:31
+#: cms_toolbar.py:32
 msgid "Edit Post"
 msgstr "Редактировать статью"
 
 #: cms_wizards.py:47
 #, python-brace-format
 msgid "New {0}"
-msgstr ""
+msgstr "Новых {0}"
 
 #: cms_wizards.py:51
 #, python-brace-format
 msgid "Create a new {0} in {1}"
-msgstr ""
+msgstr "Создать новых {0} из {1}"
 
 #: feeds.py:24
 #, python-format
@@ -210,7 +199,7 @@ msgstr "Статьи блога с сайта: %(site_name)s"
 
 #: menu.py:16
 msgid "Blog menu"
-msgstr ""
+msgstr "Меню блога"
 
 #: models.py:34
 msgid "parent"
@@ -224,9 +213,9 @@ msgstr "время создания"
 msgid "modified at"
 msgstr "время изменения"
 
-#: models.py:38 models.py:123 models.py:276
+#: models.py:38 models.py:123 models.py:275
 msgid "app. config"
-msgstr ""
+msgstr "настройки приложения"
 
 #: models.py:42
 msgid "name"
@@ -246,27 +235,27 @@ msgstr "категории блога"
 
 #: models.py:91
 msgid "author"
-msgstr ""
+msgstr "автор"
 
 #: models.py:94
 msgid "created"
-msgstr ""
+msgstr "создан(о)"
 
 #: models.py:95
 msgid "last modified"
-msgstr ""
+msgstr "последние изменения"
 
 #: models.py:96
 msgid "published since"
-msgstr ""
+msgstr "опубликовано"
 
 #: models.py:98
 msgid "published until"
-msgstr ""
+msgstr "опубликовано до"
 
 #: models.py:100
 msgid "publish"
-msgstr ""
+msgstr "опубликовать"
 
 #: models.py:101
 msgid "category"
@@ -274,19 +263,19 @@ msgstr "категория"
 
 #: models.py:103
 msgid "main image"
-msgstr ""
+msgstr "главная страница"
 
 #: models.py:107
 msgid "main image thumbnail"
-msgstr ""
+msgstr "уменьшенная копия главного изображения"
 
 #: models.py:112
 msgid "main image full"
-msgstr ""
+msgstr "Полноразмерное изображение"
 
 #: models.py:116
 msgid "enable comments on post"
-msgstr ""
+msgstr "Разрешить комментарии к статье"
 
 #: models.py:118
 msgid "Site(s)"
@@ -300,23 +289,23 @@ msgstr "Выберите сайты на которых будет опубли�
 
 #: models.py:127
 msgid "title"
-msgstr ""
+msgstr "Заголовок"
 
 #: models.py:129
 msgid "abstract"
-msgstr ""
+msgstr "Краткое описание"
 
 #: models.py:130
 msgid "post meta description"
-msgstr ""
+msgstr "мета-описание статьи"
 
 #: models.py:132
 msgid "post meta keywords"
-msgstr ""
+msgstr "ключевые слова к статье"
 
 #: models.py:134
 msgid "post meta title"
-msgstr ""
+msgstr "мета-заголовок к статье"
 
 #: models.py:135
 msgid "used in title tag and social sharing"
@@ -324,7 +313,7 @@ msgstr "используется в метках и обмене в социал
 
 #: models.py:138
 msgid "text"
-msgstr ""
+msgstr "текст"
 
 #: models.py:175
 msgid "blog article"
@@ -334,59 +323,59 @@ msgstr "статья блога"
 msgid "blog articles"
 msgstr "статьи блога"
 
-#: models.py:293
-msgid "generic blog plugin"
-msgstr ""
-
-#: models.py:297 models.py:330
+#: models.py:294 models.py:328
 msgid "articles"
-msgstr ""
+msgstr "статьи"
 
-#: models.py:298
+#: models.py:295
 msgid "The number of latests articles to be displayed."
 msgstr "Количество последних статей, которые будут показаны."
 
-#: models.py:300
+#: models.py:297
 msgid "filter by tag"
-msgstr ""
+msgstr "фильтровать по тегам"
 
-#: models.py:301
+#: models.py:298
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Показывать статьи только с выбранными метками."
 
-#: models.py:304
+#: models.py:301
 msgid "filter by category"
-msgstr ""
+msgstr "фильтровать по категориям"
 
-#: models.py:305
+#: models.py:302
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Показывать статьи только из выбранных категорий."
 
-#: models.py:309
+#: models.py:306
 #, python-format
 msgid "%s latest articles by tag"
-msgstr ""
+msgstr "%s последних статей по тегам"
 
-#: models.py:326
+#: models.py:324
 msgid "authors"
-msgstr ""
+msgstr "авторы"
 
-#: models.py:331
+#: models.py:329
 msgid "The number of author articles to be displayed."
 msgstr "Количество статей автора, которые будут показаны."
 
-#: models.py:335
+#: models.py:333
 #, python-format
 msgid "%s latest articles by author"
-msgstr ""
+msgstr "%s последних статей по авторам"
+
+#: models.py:362
+msgid "generic blog plugin"
+msgstr "генерируемый плагин блога"
 
 #: settings.py:16
 msgid "Full date"
-msgstr ""
+msgstr "Полная дата"
 
 #: settings.py:17
 msgid "Year /  Month"
-msgstr ""
+msgstr "Год / Месяц"
 
 #: settings.py:18 templates/djangocms_blog/post_list.html:14
 msgid "Category"
@@ -394,51 +383,72 @@ msgstr "Категория"
 
 #: settings.py:19
 msgid "Just slug"
-msgstr ""
+msgstr "ЧПУ"
 
 #: settings.py:28
 msgid "Categories and posts"
-msgstr ""
+msgstr "Категории и статьи"
 
 #: settings.py:29
 msgid "Categories only"
-msgstr ""
+msgstr "Только категории"
 
 #: settings.py:30
 msgid "Posts only"
-msgstr ""
+msgstr "Только статьи"
 
 #: settings.py:31
 msgid "None"
-msgstr ""
+msgstr "Ничего"
 
 #: settings.py:34
 msgid "always"
-msgstr ""
+msgstr "всегда"
 
 #: settings.py:35
 msgid "hourly"
-msgstr ""
+msgstr "ежечасно"
 
 #: settings.py:36
 msgid "daily"
-msgstr ""
+msgstr "ежедневно"
 
 #: settings.py:37
 msgid "weekly"
-msgstr ""
+msgstr "еженедельно"
 
 #: settings.py:38
 msgid "monthly"
-msgstr ""
+msgstr "ежемесячно"
 
 #: settings.py:39
 msgid "yearly"
-msgstr ""
+msgstr "ежегодно"
 
 #: settings.py:40
 msgid "never"
-msgstr ""
+msgstr "никогда"
+
+#: settings.py:113
+msgid "Latest Blog Articles"
+msgstr "Последние статьи блога"
+
+#: settings.py:115
+msgid "Author Blog Articles"
+msgstr "Автор статей блога"
+
+#: settings.py:117 templates/djangocms_blog/plugins/tags.html:3
+msgid "Tags"
+msgstr "Метки"
+
+#: settings.py:119 templates/djangocms_blog/plugins/categories.html:3
+msgid "Categories"
+msgstr "Категории"
+
+#: settings.py:121 templates/djangocms_blog/plugins/archive.html:3
+#: templates/djangocms_blog/post_list.html:12
+msgid "Archive"
+msgstr "Архив"
 
 #: templates/djangocms_blog/includes/blog_item.html:24
 msgid "read more"
@@ -481,7 +491,7 @@ msgstr "Авторы"
 
 #: templates/djangocms_blog/plugins/categories.html:15
 msgid "No categories found."
-msgstr ""
+msgstr "Не найдено ни одной категории."
 
 #: templates/djangocms_blog/post_list.html:11
 msgid "Articles by"
