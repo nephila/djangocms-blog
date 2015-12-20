@@ -191,6 +191,22 @@ class AdminTest(BaseTest):
                 self.assertEqual(Post.objects.count(), 3)
                 self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
 
+    def test_admin_fieldsets_filter(self):
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user_normal, r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('author' in fsets[1][1]['fields'][0])
+
+        def filter_function(fs, request, obj=None):
+            if request.user == self.user_normal:
+                fs[1][1]['fields'][0].append('author')
+            return fs
+
+        with self.settings(BLOG_ADMIN_POST_FIELDSET_FILTER=filter_function):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('author' in fsets[1][1]['fields'][0])
+
     def test_admin_post_text(self):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]['en'])
