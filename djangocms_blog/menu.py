@@ -25,9 +25,9 @@ class BlogCategoryMenu(CMSAttachMenu):
         config = False
         if hasattr(self, 'instance') and self.instance:
             config = BlogConfig.objects.get(namespace=self.instance.application_namespace)
-        if config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
+        if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
             categories_menu = True
-        if config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
+        if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
             posts_menu = True
 
         if categories_menu:
