@@ -3,11 +3,13 @@
 History
 -------
 
-0.6.3 (XXXX-XX-XX)
+0.6.3 (2015-12-22)
 ++++++++++++++++++
 
+* Add BLOG_ADMIN_POST_FIELDSET_FILTER to filter admin fieldsets
 * Ensure correct creation of full URL for canonical urls
 * Move constants to settings
+* Fix error when no config is found
 
 0.6.2 (2015-11-16)
 ++++++++++++++++++
