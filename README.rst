@@ -98,7 +98,7 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         ...
     ]
 
-If you installed the **admin-enhancer** variant, add ``admin_enhancer`` to ``INSTALLED_APPS::
+If you installed the **admin-enhancer** variant, add ``admin_enhancer`` to ``INSTALLED_APPS``::
 
     INSTALLED_APPS = [
         ...
