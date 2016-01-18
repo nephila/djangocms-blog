@@ -47,6 +47,8 @@ Supported django CMS versions:
              A datamigration is in place to migrate the data, but check that
              works ok for your project before upgrading, as this might delete
              some relevant data.
+             Some plugins have a broken tag management prior to 0.6, in case
+             you have issues with tags, upgrade to latest version to have it fixed.
 
 .. warning:: When upgrading to version 0.6, check that every post as an attached
              category, or select a menu without categories. 
