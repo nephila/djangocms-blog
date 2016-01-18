@@ -4,7 +4,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from tempfile import mkdtemp
 
-gettext = lambda s: s
+
+def gettext(s): return s
 
 HELPER_SETTINGS = dict(
     ROOT_URLCONF='tests.test_utils.urls',
@@ -91,7 +92,7 @@ HELPER_SETTINGS = dict(
     ),
     FILE_UPLOAD_TEMP_DIR=mkdtemp(),
     SITE_ID=1,
-    HAYSTACK_CONNECTIONS = {
+    HAYSTACK_CONNECTIONS={
         "default": {}
     }
 )

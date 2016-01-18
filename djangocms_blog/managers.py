@@ -99,8 +99,8 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         queryset = self.on_site()
         if self.end_date_field:
             qfilter = (
-                models.Q(**{'%s__gte' % self.end_date_field: now()})
-                | models.Q(**{'%s__isnull' % self.end_date_field: True})
+                models.Q(**{'%s__gte' % self.end_date_field: now()}) |
+                models.Q(**{'%s__isnull' % self.end_date_field: True})
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
@@ -109,8 +109,8 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         queryset = self.on_site()
         if self.end_date_field:
             qfilter = (
-                models.Q(**{'%s__lte' % self.end_date_field: now()})
-                | models.Q(**{'%s__isnull' % self.end_date_field: False})
+                models.Q(**{'%s__lte' % self.end_date_field: now()}) |
+                models.Q(**{'%s__isnull' % self.end_date_field: False})
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
