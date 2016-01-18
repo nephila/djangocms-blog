@@ -48,6 +48,9 @@ Supported django CMS versions:
              works ok for your project before upgrading, as this might delete
              some relevant data.
 
+.. warning:: When upgrading to version 0.6, check that every post as an attached
+             category, or select a menu without categories. 
+
 .. warning:: Starting from version 0.5, this package does not declare dependency
              on South anymore; please install it separately if using this
              application on Django 1.6.
@@ -88,6 +91,7 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         ...
         'filer',
         'easy_thumbnails',
+        'aldryn_apphooks_config',
         'cmsplugin_filer_image',
         'parler',
         'taggit',
