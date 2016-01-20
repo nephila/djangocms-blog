@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-20 17:14+0100\n"
-"PO-Revision-Date: 2016-01-20 19:07+0100\n"
+"PO-Revision-Date: 2016-01-20 19:12+0100\n"
 "Last-Translator: Olivier Tabone <olivier.tabone@ripplemotion.fr>\n"
 "Language-Team: FR <>\n"
 "Language: fr\n"
@@ -42,12 +42,12 @@ msgstr "Nom de l’objet"
 #: cms_appconfig.py:27
 #| msgid "blog categories"
 msgid "blog config"
-msgstr "Configuration du blog"
+msgstr "Catégorie du blog"
 
 #: cms_appconfig.py:28
 #| msgid "blog categories"
 msgid "blog configs"
-msgstr "Configurations du blog"
+msgstr "Catégories du blog"
 
 #: cms_appconfig.py:31
 msgid "untitled"
