@@ -176,6 +176,9 @@ suited for your deployment.
             {'code': 'it',},
             {'code': 'fr',},
         ),
+        'default': {
+            'fallbacks': ['en', 'it', 'fr'],
+        }
     }
 
 * Add the following to your ``urls.py``::
