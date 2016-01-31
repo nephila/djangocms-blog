@@ -25,3 +25,4 @@ Contributors
 * Stefan Wehrmeyer
 * Sylvain Fankhauser
 * Tadas Dailyda
+* Olivier Tabone
