@@ -47,25 +47,43 @@ class WizardTest(BaseTest):
     @skipIf(LooseVersion(cms.__version__) < LooseVersion('3.2'),
             reason='Wizards not available for django CMS < 3.2')
     def test_wizard_init(self):
+        from cms.utils.permissions import current_user
         from cms.wizards.wizard_pool import wizard_pool
         from djangocms_blog.models import Post
         self.get_pages()
 
-        wizs = [entry for entry in wizard_pool.get_entries() if entry.model == Post]
-        for wiz in wizs:
-            app_config = self.app_config_1.pk if wiz.title == 'New Blog' else self.app_config_2.pk
-            form = wiz.form()
-            self.assertTrue(form.initial.get('app_config', False), app_config)
-            self.assertTrue(form.fields['app_config'].widget.attrs['disabled'])
+        with current_user(self.user_staff):
+            wizs = [entry for entry in wizard_pool.get_entries() if entry.model == Post]
+            for index, wiz in enumerate(wizs):
+                app_config = self.app_config_1.pk if wiz.title == 'New Blog' else self.app_config_2.pk
+                form = wiz.form()
+                self.assertTrue(form.initial.get('app_config', False), app_config)
+                self.assertTrue(form.fields['app_config'].widget.attrs['disabled'])
 
-            form = wiz.form(data={
-                '1-title': 'title',
-                '1-abstract': 'abstract',
-                '1-categories': [self.category_1.pk],
-            }, prefix=1)
-            self.assertEqual(form.default_appconfig, app_config)
-            self.assertTrue(form.is_valid())
-            self.assertTrue(form.cleaned_data['app_config'], app_config)
+                form = wiz.form(data={
+                    '1-title': 'title{0}'.format(index),
+                    '1-abstract': 'abstract{0}'.format(index),
+                    '1-categories': [self.category_1.pk],
+                }, prefix=1)
+                self.assertEqual(form.default_appconfig, app_config)
+                self.assertTrue(form.is_valid())
+                self.assertTrue(form.cleaned_data['app_config'], app_config)
+                instance = form.save()
+                self.assertEqual(instance.author, self.user_staff)
+
+            with self.settings(BLOG_AUTHOR_DEFAULT='normal'):
+                for index, wiz in enumerate(wizs):
+                    app_config = self.app_config_1.pk if wiz.title == 'New Blog' else self.app_config_2.pk
+                    form = wiz.form(data={
+                        '1-title': 'title-2{0}'.format(index),
+                        '1-abstract': 'abstract-2{0}'.format(index),
+                        '1-categories': [self.category_1.pk],
+                    }, prefix=1)
+                    self.assertEqual(form.default_appconfig, app_config)
+                    self.assertTrue(form.is_valid())
+                    self.assertTrue(form.cleaned_data['app_config'], app_config)
+                    instance = form.save()
+                    self.assertEqual(instance.author, self.user_normal)
 
     def test_wizard_import(self):
         # The following import should not fail in any django CMS version
