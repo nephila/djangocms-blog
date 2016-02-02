@@ -3,6 +3,11 @@
 History
 -------
 
+0.6.4 (unreleased)
+++++++++++++++++++
+
+* Make categories non required
+
 0.6.3 (2015-12-22)
 ++++++++++++++++++
 

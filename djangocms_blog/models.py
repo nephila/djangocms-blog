@@ -100,7 +100,7 @@ class Post(ModelMeta, TranslatableModel):
                                               blank=True)
     publish = models.BooleanField(_('publish'), default=False)
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_('category'),
-                                        related_name='blog_posts',)
+                                        related_name='blog_posts', blank=True)
     main_image = FilerImageField(verbose_name=_('main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
