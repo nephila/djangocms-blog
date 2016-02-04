@@ -37,7 +37,7 @@ class MenuTest(BaseTest):
         """
         Tests if all categories are present in the menu
         """
-        self.get_posts()
+        posts = self.get_posts()
         self.get_pages()
 
         for lang in ('en', 'it'):
@@ -47,6 +47,16 @@ class MenuTest(BaseTest):
                 nodes_url = set([node.url for node in nodes])
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
                 self.assertTrue(cats_url.issubset(nodes_url))
+        menu_pool.clear()
+
+        posts[0].categories.clear()
+        for lang in ('en', 'it'):
+            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            with smart_override(lang):
+                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes_url = set([node.url for node in nodes])
+                self.assertFalse(posts[0].get_absolute_url() in nodes_url)
+                self.assertTrue(posts[1].get_absolute_url() in nodes_url)
 
     def test_menu_options(self):
         """
