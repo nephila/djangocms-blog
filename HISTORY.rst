@@ -7,6 +7,7 @@ History
 ++++++++++++++++++
 
 * Make categories non required
+* Fix redirect after delete issue
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++

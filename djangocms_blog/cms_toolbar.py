@@ -12,6 +12,9 @@ from .settings import get_setting
 @toolbar_pool.register
 class BlogToolbar(CMSToolbar):
 
+    def get_on_delete_redirect_url(self, article):
+        return reverse('{0}:posts-latest'.format(article.app_config.namespace))
+
     def populate(self):
         if (not self.is_current_app and not get_setting('ENABLE_THROUGH_TOOLBAR_MENU')) or \
                 not self.request.user.has_perm('djangocms_blog.add_post'):
