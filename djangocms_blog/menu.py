@@ -53,13 +53,13 @@ class BlogCategoryMenu(CMSAttachMenu):
             posts = posts.active_translations(language).distinct()
             for post in posts:
                 post_id = None
+                parent = None
                 if categories_menu:
                     category = post.categories.first()
                     if category:
                         parent = '%s-%s' % (category.__class__.__name__, category.pk)
                         post_id = '%s-%s' % (post.__class__.__name__, post.pk),
                 else:
-                    parent = None
                     post_id = '%s-%s' % (post.__class__.__name__, post.pk),
                 if post_id:
                     node = NavigationNode(

@@ -69,7 +69,7 @@ HELPER_SETTINGS = dict(
             {'code': 'en'},
         ),
         'default': {
-            'fallback': 'en',
+            'fallbacks': ['en'],
             'hide_untranslated': False,
         }
     },

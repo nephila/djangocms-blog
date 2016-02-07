@@ -3,7 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from aldryn_apphooks_config.utils import get_app_instance
 from django.core.cache import cache
-from django.utils.translation import activate
+from django.utils.translation import activate, override
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
 
@@ -32,28 +32,29 @@ class MenuTest(BaseTest):
         # All cms menu modifiers should be removed from menu_pool.modifiers
         # so that they do not interfere with our menu nodes
         menu_pool.modifiers = [m for m in menu_pool.modifiers if m.__module__.startswith('djangocms_blog')]
+        cache.clear()
 
     def test_menu_nodes(self):
         """
         Tests if all categories are present in the menu
         """
         posts = self.get_posts()
-        self.get_pages()
+        pages = self.get_pages()
 
         for lang in ('en', 'it'):
-            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
             with smart_override(lang):
-                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
                 self.assertTrue(cats_url.issubset(nodes_url))
-        menu_pool.clear()
 
+        cache.clear()
         posts[0].categories.clear()
         for lang in ('en', 'it'):
-            request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
+            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
             with smart_override(lang):
-                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertFalse(posts[0].get_absolute_url() in nodes_url)
                 self.assertTrue(posts[1].get_absolute_url() in nodes_url)
@@ -82,7 +83,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
-                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
@@ -94,7 +95,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
-                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
@@ -106,7 +107,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
-                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
@@ -118,7 +119,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
-                nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
@@ -147,7 +148,7 @@ class MenuTest(BaseTest):
                     view_obj.kwargs = {kwarg: obj.slug}
                     view_obj.get(request)
                     # check if selected menu node points to cat
-                    nodes = menu_pool.get_nodes(request, namespace='BlogCategoryMenu')
+                    nodes = menu_pool.get_nodes(request)
                     found = False
                     for node in nodes:
                         if node.selected:
