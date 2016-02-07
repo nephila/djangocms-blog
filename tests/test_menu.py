@@ -21,6 +21,7 @@ class MenuTest(BaseTest):
     def setUp(self):
         super(MenuTest, self).setUp()
         self.cats = [self.category_1]
+        cache.clear()
         for i, lang_data in enumerate(self._categories_data):
             cat = self._get_category(lang_data['en'])
             if 'it' in lang_data:
