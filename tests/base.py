@@ -6,6 +6,7 @@ from copy import deepcopy
 from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from djangocms_helper.base_test import BaseTestCase
 from haystack import connections
 from haystack.constants import DEFAULT_ALIAS
@@ -18,7 +19,7 @@ User = get_user_model()
 
 
 def _get_cat_pk(lang, name):
-    return lambda: BlogCategory.objects.translated(lang, name=name).get().pk
+    return lambda: BlogCategory.objects.language(lang).translated(lang, name=name).get().pk
 
 
 class BaseTest(BaseTestCase):
@@ -65,7 +66,8 @@ class BaseTest(BaseTestCase):
                 'description': 'Descrizione del terzo post', 'keywords': 'keyword5, keyword6',
                 'text': 'Testo del terzo post'},
          },
-        {'en': {'title': 'Different appconfig', 'abstract': '<p>Different appconfig first line</p>',
+        {'en': {'title': 'Different appconfig',
+                'abstract': '<p>Different appconfig first line</p>',
                 'description': 'Different appconfig description', 'keywords': 'keyword5, keyword6',
                 'text': 'Different appconfig text', 'app_config': 'sample_app2', 'publish': True},
          'it': {'title': 'Altro appconfig', 'abstract': '<p>prima riga del Altro appconfig</p>',
@@ -84,16 +86,18 @@ class BaseTest(BaseTestCase):
         {'en': {'name': 'Almost', 'app_config': 'sample_app'},
          'it': {'name': 'Mezzo'},
          },
-        {'en': {'name': 'Loud', 'parent_id': _get_cat_pk('en', 'Almost'), 'app_config': 'sample_app'},
-         'it': {'name': 'Forte', 'parent_id': _get_cat_pk('it', 'Mezzo')},
-         },
-        {'en': {'name': 'Silent', 'parent_id': _get_cat_pk('en', 'Almost'), 'app_config': 'sample_app'},
-         },
         {'en': {'name': 'Drums', 'app_config': 'sample_app2'},
          'it': {'name': 'Tamburi'},
          },
         {'en': {'name': 'Guitars', 'app_config': 'sample_app2'},
          'it': {'name': 'Chitarre'},
+         },
+        {'en': {'name': 'Loud', 'parent_id': _get_cat_pk('en', 'Almost'),
+                'app_config': 'sample_app'},
+         'it': {'name': 'Forte', 'parent_id': _get_cat_pk('it', 'Mezzo')},
+         },
+        {'en': {'name': 'Silent', 'parent_id': _get_cat_pk('en', 'Almost'),
+                'app_config': 'sample_app'},
          },
     )
 
@@ -120,11 +124,13 @@ class BaseTest(BaseTestCase):
             'sample_app': cls.app_config_1,
             'sample_app2': cls.app_config_2,
         }
-        cls.category_1 = BlogCategory.objects.create(name='category 1', app_config=cls.app_config_1)
+        cls.category_1 = BlogCategory.objects.create(name='category 1',
+                                                     app_config=cls.app_config_1)
         cls.category_1.set_current_language('it', initialize=True)
         cls.category_1.name = 'categoria 1'
         cls.category_1.save()
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
+        cache.clear()
 
     @classmethod
     def tearDownClass(cls):
@@ -168,7 +174,6 @@ class BaseTest(BaseTestCase):
                 meta_description=data['description'],
                 meta_keywords=data['keywords']
             )
-        post = self.reload_model(post)
         post.categories.add(self.category_1)
         if sites:
             for site in sites:
@@ -177,6 +182,7 @@ class BaseTest(BaseTestCase):
 
     def get_posts(self, sites=None):
         posts = []
+        cache.clear()
         for post in self._post_data:
             post1 = self._get_post(post['en'], sites=sites)
             post1 = self._get_post(post['it'], post=post1, lang='it')
