@@ -5,6 +5,7 @@ from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -253,6 +254,14 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_author(self):
         return self.author
+
+    def _set_default_author(self, current_user):
+        if not self.author_id and self.app_config.set_author:
+            if get_setting('AUTHOR_DEFAULT') is True:
+                user = current_user
+            else:
+                user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
+            self.author = user
 
     def thumbnail_options(self):
         if self.main_image_thumbnail_id:

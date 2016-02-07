@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from cms.utils.permissions import get_current_user
+
 try:
     from cms.wizards.wizard_base import Wizard
     from cms.wizards.wizard_pool import wizard_pool
@@ -34,6 +36,10 @@ try:
 
         class Media:
             js = ('admin/js/jquery.js', 'admin/js/jquery.init.js',)
+
+        def save(self, commit=True):
+            self.instance._set_default_author(get_current_user())
+            return super(PostWizardForm, self).save(commit)
 
     class PostWizard(Wizard):
         pass
