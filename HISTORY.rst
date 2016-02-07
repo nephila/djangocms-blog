@@ -7,6 +7,7 @@ History
 ++++++++++++++++++
 
 * Make categories non required
+* Fix tests with parler>=1.6
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++
