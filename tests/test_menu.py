@@ -40,10 +40,11 @@ class MenuTest(BaseTest):
         """
         posts = self.get_posts()
         pages = self.get_pages()
+        self.reload_urlconf()
 
         for lang in ('en', 'it'):
-            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
             with smart_override(lang):
+                request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
@@ -52,12 +53,12 @@ class MenuTest(BaseTest):
         cache.clear()
         posts[0].categories.clear()
         for lang in ('en', 'it'):
-            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
             with smart_override(lang):
+                request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
-                self.assertFalse(posts[0].get_absolute_url() in nodes_url)
-                self.assertTrue(posts[1].get_absolute_url() in nodes_url)
+                self.assertFalse(posts[0].get_absolute_url(lang) in nodes_url)
+                self.assertTrue(posts[1].get_absolute_url(lang) in nodes_url)
 
     def test_menu_options(self):
         """
