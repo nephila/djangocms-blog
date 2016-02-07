@@ -9,3 +9,4 @@ https://github.com/nephila/djangocms-helper/archive/develop.zip
 tox>=2.0
 wheel
 pysolr
+django-parler>=1.6
