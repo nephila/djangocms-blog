@@ -25,6 +25,7 @@ except ImportError:
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
+
     def get_prepopulated_fields(self, request, obj=None):
         app_config_default = self._app_config_select(request, obj)
         if app_config_default is None and request.method == 'GET':
@@ -41,7 +42,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 ModelAppHookConfig, TranslatableAdmin):
     form = PostAdminForm
     list_display = [
-        'title', 'author', 'date_published', 'app_config', 'languages', 'date_published_end'
+        'title', 'author', 'date_published', 'app_config', 'all_languages_column',
+        'date_published_end'
     ]
     list_filter = ('app_config',)
     date_hierarchy = 'date_published'
