@@ -9,10 +9,10 @@ from django import forms
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.six import callable
-from django.utils.translation import ugettext_lazy as _, get_language_from_request
+from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig

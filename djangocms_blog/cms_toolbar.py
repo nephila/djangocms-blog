@@ -3,8 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
-from cms.utils.i18n import force_language
-from cms.utils.urlutils import admin_reverse, add_url_parameters
+from cms.utils.urlutils import admin_reverse
 from django.core.urlresolvers import reverse
 from django.utils.translation import override, ugettext_lazy as _
 
