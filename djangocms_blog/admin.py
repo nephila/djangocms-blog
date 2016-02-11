@@ -7,9 +7,12 @@ from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
+from django.conf.urls import url
 from django.contrib import admin
+from django.core.urlresolvers import reverse, resolve
+from django.http import HttpResponseRedirect
 from django.utils.six import callable
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language_from_request
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
@@ -72,6 +75,27 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     app_config_values = {
         'default_published': 'publish'
     }
+
+    def get_urls(self):
+        urls = [
+            url(r'^publish/([0-9]+)/$', self.admin_site.admin_view(self.publish_post),
+                name='djangocms_blog_publish_article'),
+        ]
+        urls.extend(super(PostAdmin, self).get_urls())
+        return urls
+
+    def publish_post(self, request, pk):
+        language = get_language_from_request(request, check_path=True)
+        try:
+            post = Post.objects.get(pk=int(pk))
+            post.publish = True
+            post.save()
+            return HttpResponseRedirect(post.get_absolute_url(language))
+        except Exception:
+            try:
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+            except KeyError:
+                return HttpResponseRedirect(reverse('djangocms_blog:posts-latest'))
 
     def languages(self, obj):
         return ','.join(obj.get_available_languages())
