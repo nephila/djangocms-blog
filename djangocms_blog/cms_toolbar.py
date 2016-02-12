@@ -35,6 +35,9 @@ class BlogToolbar(CMSToolbar):
                     active=True)
 
     def add_publish_button(self):
+        """
+        Adds the publish button to the toolbar if the current post is unpublished
+        """
         current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
         if (self.toolbar.edit_mode and current_post and
                 not current_post.publish and

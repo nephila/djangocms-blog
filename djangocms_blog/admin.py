@@ -77,6 +77,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     }
 
     def get_urls(self):
+        """
+        Customize the modeladmin urls
+        """
         urls = [
             url(r'^publish/([0-9]+)/$', self.admin_site.admin_view(self.publish_post),
                 name='djangocms_blog_publish_article'),
@@ -85,6 +88,12 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         return urls
 
     def publish_post(self, request, pk):
+        """
+        Admin view to publish a single post
+        :param request: request
+        :param pk: primary key of the post to publish
+        :return: Redirect to the post itself (if found) or fallback urls
+        """
         language = get_language_from_request(request, check_path=True)
         try:
             post = Post.objects.get(pk=int(pk))
@@ -97,9 +106,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             except KeyError:
                 return HttpResponseRedirect(reverse('djangocms_blog:posts-latest'))
 
-    def languages(self, obj):
-        return ','.join(obj.get_available_languages())
-
     def formfield_for_dbfield(self, db_field, **kwargs):
         field = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'meta_description':
@@ -111,6 +117,12 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         return field
 
     def get_fieldsets(self, request, obj=None):
+        """
+        Customize the fieldsets according to the app settings
+        :param request: request
+        :param obj: post
+        :return: fieldsets configuration
+        """
         app_config_default = self._app_config_select(request, obj)
         if app_config_default is None and request.method == 'GET':
             return super(PostAdmin, self).get_fieldsets(request, obj)
@@ -156,6 +168,9 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
 
     @property
     def declared_fieldsets(self):
+        """
+        Fieldsets configuration
+        """
         return [
             (None, {
                 'fields': ('type', 'namespace', 'app_title', 'object_name')
