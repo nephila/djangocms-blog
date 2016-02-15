@@ -11,6 +11,7 @@ History
 * Use all_languages_column to admin
 * Add publish button
 * Fix issues in migrations. Thanks @skirsdeda
+* Fix selecting current menu item according to menu layout
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++

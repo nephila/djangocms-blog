@@ -29,6 +29,7 @@ class MenuTest(BaseTest):
             self.cats.append(cat)
 
         activate('en')
+        menu_pool.clear(all=True)
         menu_pool.discover_menus()
         # All cms menu modifiers should be removed from menu_pool.modifiers
         # so that they do not interfere with our menu nodes
@@ -139,6 +140,10 @@ class MenuTest(BaseTest):
             (PostDetailView, 'slug', posts[0], posts[0].categories.first()),
             (CategoryEntriesView, 'category', self.cats[2], self.cats[2])
         )
+        menu_pool.clear(all=True)
+        cache.clear()
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
+        self.app_config_1.save()
         for view_cls, kwarg, obj, cat in tests:
             request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())
             with smart_override('en'):
@@ -149,12 +154,38 @@ class MenuTest(BaseTest):
                     view_obj.app_config = self.app_config_1
                     view_obj.kwargs = {kwarg: obj.slug}
                     view_obj.get(request)
+                    view_obj.get_context_data()
                     # check if selected menu node points to cat
                     nodes = menu_pool.get_nodes(request)
                     found = False
                     for node in nodes:
                         if node.selected:
                             self.assertEqual(node.url, obj.get_absolute_url())
+                            found = True
+                            break
+                    self.assertTrue(found)
+
+        menu_pool.clear(all=True)
+        cache.clear()
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_CATEGORIES
+        self.app_config_1.save()
+        for view_cls, kwarg, obj, cat in tests:
+            request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())
+            with smart_override('en'):
+                with switch_language(obj, 'en'):
+                    view_obj = view_cls()
+                    view_obj.request = request
+                    view_obj.namespace, view_obj.config = get_app_instance(request)
+                    view_obj.app_config = self.app_config_1
+                    view_obj.kwargs = {kwarg: obj.slug}
+                    view_obj.get(request)
+                    view_obj.get_context_data()
+                    # check if selected menu node points to cat
+                    nodes = menu_pool.get_nodes(request)
+                    found = False
+                    for node in nodes:
+                        if node.selected:
+                            self.assertEqual(node.url, cat.get_absolute_url())
                             found = True
                             break
                     self.assertTrue(found)
