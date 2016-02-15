@@ -10,6 +10,7 @@ History
 * Fix tests with parler>=1.6
 * Use all_languages_column to admin
 * Add publish button
+* Fix issues in migrations. Thanks @skirsdeda
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++
