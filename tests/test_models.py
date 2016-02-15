@@ -261,11 +261,18 @@ class ModelsTest(BaseTest):
         post.main_image = self.create_filer_image_object()
         post.save()
         post.set_current_language('en')
+        post.twitter_description = 'twitter_description en'
+        post.og_description = 'og_description en'
+        post.gplus_description = 'gplus_description en'
+        post.save()
         meta_en = post.as_meta()
         self.assertEqual(meta_en.og_type, get_setting('FB_TYPE'))
         self.assertEqual(meta_en.title, post.title)
         self.assertTrue(meta_en.url.endswith(post.get_absolute_url()))
         self.assertEqual(meta_en.description, post.meta_description)
+        self.assertEqual(meta_en.twitter_description, post.twitter_description)
+        self.assertEqual(meta_en.og_description, post.og_description)
+        self.assertEqual(meta_en.gplus_description, post.gplus_description)
         self.assertEqual(meta_en.keywords, post.meta_keywords.split(','))
         self.assertEqual(meta_en.published_time, post.date_published)
         self.assertEqual(meta_en.locale, 'en')
@@ -277,11 +284,18 @@ class ModelsTest(BaseTest):
         self.assertEqual(meta_en.og_type, 'Article')
         self.assertEqual(meta_en.facebook_app_id, None)
         post.set_current_language('it')
+        post.twitter_description = 'twitter_description it'
+        post.og_description = 'og_description it'
+        post.gplus_description = 'gplus_description it'
+        post.save()
         meta_it = post.as_meta()
         self.assertEqual(meta_it.title, post.title)
         self.assertTrue(meta_it.url.endswith(post.get_absolute_url()))
         self.assertNotEqual(meta_it.title, meta_en.title)
         self.assertEqual(meta_it.description, post.meta_description)
+        self.assertEqual(meta_it.twitter_description, post.twitter_description)
+        self.assertEqual(meta_it.og_description, post.og_description)
+        self.assertEqual(meta_it.gplus_description, post.gplus_description)
 
         with override('en'):
             post.set_current_language(get_language())

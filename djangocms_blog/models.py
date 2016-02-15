@@ -136,6 +136,15 @@ class Post(ModelMeta, TranslatableModel):
                                     help_text=_('used in title tag and social sharing'),
                                     max_length=255,
                                     blank=True, default=''),
+        og_description=models.TextField(
+            verbose_name=_('OpenGraph description'), blank=True, default=''
+        ),
+        twitter_description=models.CharField(
+            _('twitter description'), max_length=255, blank=True, default=''
+        ),
+        gplus_description=models.TextField(
+            verbose_name=_('google+ description'), blank=True, default=''
+        ),
         post_text=HTMLField(_('text'), default='', blank=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
@@ -148,9 +157,9 @@ class Post(ModelMeta, TranslatableModel):
         'title': 'get_title',
         'description': 'get_description',
         'keywords': 'get_keywords',
-        'og_description': 'get_description',
-        'twitter_description': 'get_description',
-        'gplus_description': 'get_description',
+        'og_description': 'get_social_description',
+        'twitter_description': 'get_social_description',
+        'gplus_description': 'get_social_description',
         'locale': 'get_locale',
         'image': 'get_image_full_url',
         'object_type': 'get_meta_attribute',
@@ -238,15 +247,27 @@ class Post(ModelMeta, TranslatableModel):
         return self.get_current_language()
 
     def get_description(self):
+        """
+        Retrieves description from meta_description / abstract
+
+        :return: description
+        """
         description = self.safe_translation_getter('meta_description', any_language=True)
         if not description:
             description = self.safe_translation_getter('abstract', any_language=True)
         return escape(strip_tags(description)).strip()
 
-    def get_image_full_url(self):
-        if self.main_image:
-            return self.make_full_url(self.main_image.url)
-        return ''
+    def get_social_description(self, param):
+        """
+        Retrieves description for social networks. Uses get_description as fallback.
+
+        :return: description
+        """
+        description = self.safe_translation_getter(param, any_language=True)
+        if not description:
+            return self.get_description()
+        else:
+            return escape(strip_tags(description)).strip()
 
     def get_tags(self):
         taglist = [tag.name for tag in self.tags.all()]
@@ -275,8 +296,13 @@ class Post(ModelMeta, TranslatableModel):
         else:
             return get_setting('IMAGE_FULL_SIZE')
 
+    def get_image_full_url(self):
+        if self.main_image:
+            return self.build_absolute_uri(self.main_image.url)
+        return ''
+
     def get_full_url(self):
-        return self.make_full_url(self.get_absolute_url())
+        return self.build_absolute_uri(self.get_absolute_url())
 
 
 class BasePostPlugin(CMSPlugin):

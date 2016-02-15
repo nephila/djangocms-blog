@@ -70,6 +70,10 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             'fields': [('meta_description', 'meta_title', 'meta_keywords')],
             'classes': ('collapse',)
         }),
+        ('Social Network', {
+            'fields': [('og_description', 'twitter_description', 'gplus_description')],
+            'classes': ('collapse',)
+        }),
     ]
 
     app_config_values = {
