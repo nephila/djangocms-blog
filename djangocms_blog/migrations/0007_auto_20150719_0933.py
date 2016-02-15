@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-import filer.fields.image
-import django.utils.timezone
-from django.conf import settings
-import djangocms_text_ckeditor.fields
 import django.db.models.deletion
+import django.utils.timezone
+import djangocms_text_ckeditor.fields
+import filer.fields.image
+from django.conf import settings
+from django.db import migrations, models
+from filer.settings import FILER_IMAGE_MODEL
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('djangocms_blog', '0006_auto_20150214_1907'),
+        migrations.swappable_dependency(FILER_IMAGE_MODEL),
     ]
 
     operations = [
