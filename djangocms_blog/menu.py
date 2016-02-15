@@ -53,9 +53,12 @@ class BlogCategoryMenu(CMSAttachMenu):
                 node = NavigationNode(
                     category.name,
                     category.get_absolute_url(),
-                    '%s-%s' % (category.__class__.__name__, category.pk),
-                    ('%s-%s' % (category.__class__.__name__, category.parent.id) if category.parent
-                     else None)
+                    '{0}-{1}'.format(category.__class__.__name__, category.pk),
+                    (
+                        '{0}-{1}'.format(
+                            category.__class__.__name__, category.parent.id
+                        ) if category.parent else None
+                    )
                 )
                 nodes.append(node)
 
@@ -70,10 +73,10 @@ class BlogCategoryMenu(CMSAttachMenu):
                 if categories_menu:
                     category = post.categories.first()
                     if category:
-                        parent = '%s-%s' % (category.__class__.__name__, category.pk)
-                        post_id = '%s-%s' % (post.__class__.__name__, post.pk),
+                        parent = '{0}-{1}'.format(category.__class__.__name__, category.pk)
+                        post_id = '{0}-{1}'.format(post.__class__.__name__, post.pk),
                 else:
-                    post_id = '%s-%s' % (post.__class__.__name__, post.pk),
+                    post_id = '{0}-{1}'.format(post.__class__.__name__, post.pk),
                 if post_id:
                     node = NavigationNode(
                         post.get_title(),
@@ -95,6 +98,16 @@ class BlogNavModifier(Modifier):
     a corresponding category is selected in menu
     """
     def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
+        """
+        Actual modifier function
+        :param request: request
+        :param nodes: complete list of nodes
+        :param namespace: Menu namespace
+        :param root_id: eventual root_id
+        :param post_cut: flag for modifier stage
+        :param breadcrumb: flag for modifier stage
+        :return: nodeslist
+        """
         app = None
         config = None
         if getattr(request, 'current_page', None) and request.current_page.application_urls:
@@ -115,7 +128,7 @@ class BlogNavModifier(Modifier):
             return nodes
 
         for node in nodes:
-            if '%s-%s' % (category.__class__.__name__, category.pk) == node.id:
+            if '{0}-{1}'.format(category.__class__.__name__, category.pk) == node.id:
                 node.selected = True
         return nodes
 
