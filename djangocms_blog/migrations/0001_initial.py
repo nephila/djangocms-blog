@@ -8,13 +8,17 @@ import filer.fields.image
 import meta_mixin.models
 import taggit_autosuggest.managers
 from django.conf import settings
-from django.db import models, migrations
+from django.db import migrations, models
+from filer.settings import FILER_IMAGE_MODEL
+
+ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or 'filer.Image'
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        migrations.swappable_dependency(ACTUAL_FILER_IMAGE_MODEL),
         ('cms', '__latest__'),
         ('taggit', '__latest__'),
         ('filer', '__latest__'),
@@ -90,7 +94,7 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(related_name='djangocms_blog_post_author', verbose_name='Author', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
                 ('categories', models.ManyToManyField(related_name='blog_posts', verbose_name='category', to='djangocms_blog.BlogCategory')),
                 ('content', cms.models.fields.PlaceholderField(slotname='post_content', editable=False, to='cms.Placeholder', null=True)),
-                ('main_image', filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', verbose_name='Main image', blank=True, to='filer.Image', null=True)),
+                ('main_image', filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', verbose_name='Main image', blank=True, to=ACTUAL_FILER_IMAGE_MODEL, null=True)),
                 ('main_image_full', models.ForeignKey(related_name='djangocms_blog_post_full', verbose_name='Main image full', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
                 ('main_image_thumbnail', models.ForeignKey(related_name='djangocms_blog_post_thumbnail', verbose_name='Main image thumbnail', blank=True, to='cmsplugin_filer_image.ThumbnailOption', null=True)),
                 ('tags', taggit_autosuggest.managers.TaggableManager(to='taggit.Tag', through='taggit.TaggedItem', blank=True, help_text='A comma-separated list of tags.', verbose_name='Tags')),
