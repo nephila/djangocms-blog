@@ -28,12 +28,12 @@ class BlogIndexingTests(BaseTest):
         index.index_queryset(DEFAULT_ALIAS)  # initialises index._backend_alias
         indexed = index.prepare(post)
 
-
         self.assertEqual(post.get_title(), indexed['title'])
         self.assertEqual(post.get_description(), indexed['description'])
+        self.assertEqual(post.get_tags(), indexed['tags'])
         self.assertEqual(self.sample_text, indexed['text'])
         self.assertEqual(post.get_absolute_url(), indexed['url'])
-        #self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
+        self.assertEqual(post.date_published, indexed['pub_date'])
 
     def test_blog_post_is_indexed_using_update_object(self):
         """This tests the indexing path way used by the RealTimeSignalProcessor"""
@@ -44,13 +44,15 @@ class BlogIndexingTests(BaseTest):
 
         index = self.get_post_index()
         index.update_object(post, using=DEFAULT_ALIAS)
+        index = self.get_post_index()
         indexed = index.prepared_data
 
         self.assertEqual(post.get_title(), indexed['title'])
         self.assertEqual(post.get_description(), indexed['description'])
+        self.assertEqual(post.get_tags(), indexed['tags'])
         self.assertEqual(self.sample_text, indexed['text'])
         self.assertEqual(post.get_absolute_url(), indexed['url'])
-        #self.assertEqual(post.date_published.strftime("%Y-%m-%d %H:%M:%S"), indexed['pub_date'])
+        self.assertEqual(post.date_published, indexed['pub_date'])
 
     def test_searchqueryset(self):
         posts = self.get_posts()
