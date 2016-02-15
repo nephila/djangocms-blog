@@ -91,7 +91,7 @@ class AdminTest(BaseTest):
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
         self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
-        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" value="sample_app" />')
+        self.assertContains(response, 'sample_app')
 
     def test_admin_category_views(self):
         post_admin = admin.site._registry[BlogCategory]

@@ -140,14 +140,16 @@ class MenuTest(BaseTest):
             (PostDetailView, 'slug', posts[0], posts[0].categories.first()),
             (CategoryEntriesView, 'category', self.cats[2], self.cats[2])
         )
-        menu_pool.clear(all=True)
-        cache.clear()
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
         self.app_config_1.save()
         for view_cls, kwarg, obj, cat in tests:
-            request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())
             with smart_override('en'):
                 with switch_language(obj, 'en'):
+                    request = self.get_page_request(
+                        pages[1], self.user, path=obj.get_absolute_url()
+                    )
+                    cache.clear()
+                    menu_pool.clear(all=True)
                     view_obj = view_cls()
                     view_obj.request = request
                     view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -157,22 +159,22 @@ class MenuTest(BaseTest):
                     view_obj.get_context_data()
                     # check if selected menu node points to cat
                     nodes = menu_pool.get_nodes(request)
-                    found = False
+                    found = []
                     for node in nodes:
                         if node.selected:
-                            self.assertEqual(node.url, obj.get_absolute_url())
-                            found = True
-                            break
-                    self.assertTrue(found)
+                            found.append(node.get_absolute_url())
+                    self.assertTrue(obj.get_absolute_url() in found)
 
-        menu_pool.clear(all=True)
-        cache.clear()
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_CATEGORIES
         self.app_config_1.save()
         for view_cls, kwarg, obj, cat in tests:
-            request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())
             with smart_override('en'):
                 with switch_language(obj, 'en'):
+                    request = self.get_page_request(
+                        pages[1], self.user, path=obj.get_absolute_url()
+                    )
+                    cache.clear()
+                    menu_pool.clear(all=True)
                     view_obj = view_cls()
                     view_obj.request = request
                     view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -182,10 +184,11 @@ class MenuTest(BaseTest):
                     view_obj.get_context_data()
                     # check if selected menu node points to cat
                     nodes = menu_pool.get_nodes(request)
-                    found = False
+                    found = []
                     for node in nodes:
                         if node.selected:
-                            self.assertEqual(node.url, cat.get_absolute_url())
-                            found = True
-                            break
-                    self.assertTrue(found)
+                            found.append(node.get_absolute_url())
+                    self.assertTrue(cat.get_absolute_url() in found)
+
+        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
+        self.app_config_1.save()
