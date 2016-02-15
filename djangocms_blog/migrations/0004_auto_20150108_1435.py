@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
-import filer.fields.image
 import django.db.models.deletion
+import filer.fields.image
+from django.db import migrations, models
+from filer.settings import FILER_IMAGE_MODEL
+
+ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or 'filer.Image'
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
+        migrations.swappable_dependency(ACTUAL_FILER_IMAGE_MODEL),
         ('djangocms_blog', '0003_auto_20141201_2252'),
     ]
 
@@ -16,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='post',
             name='main_image',
-            field=filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Main image', blank=True, to='filer.Image', null=True),
+            field=filer.fields.image.FilerImageField(related_name='djangocms_blog_post_image', on_delete=django.db.models.deletion.SET_NULL, verbose_name='Main image', blank=True, to=ACTUAL_FILER_IMAGE_MODEL, null=True),
             preserve_default=True,
         ),
         migrations.AlterField(
