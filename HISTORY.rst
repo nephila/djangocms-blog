@@ -3,11 +3,15 @@
 History
 -------
 
-0.6.4 (unreleased)
+0.7.0 (unreleased)
 ++++++++++++++++++
 
 * Make categories non required
 * Fix tests with parler>=1.6
+* Use all_languages_column to admin
+* Add publish button
+* Fix issues in migrations. Thanks @skirsdeda
+* Fix selecting current menu item according to menu layout
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++

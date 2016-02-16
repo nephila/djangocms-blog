@@ -190,11 +190,16 @@ suited for your deployment.
   `Auto setup <auto_setup>`_:
 
   * Create a new django CMS page
-  * Go to Advanced settings and select Blog from the Application selector and
-    create an application configuration;
+  * Go to **Advanced settings** and select Blog from the **Application** selector and
+    create an **Application configuration**;
   * Eventually customise the Application instance name;
   * Publish the page
   * Restart the project instance to properly load blog urls.
+
+.. warning:: After adding the apphook to the page you **cannot** change the **Instance Namspace**
+             field for the defined **AppHokConfig**; if you want to change it, create a new one
+             with the correct namespace, go in the CMS page **Advanced settings** and switch to the
+             new **Application configuration**
 
 * Add and edit blog by creating them in the admin or using the toolbar,
   and the use the `django CMS frontend editor <http://django-cms.readthedocs.org/en/support-3.0.x/user/reference/page_admin.html#the-interface>`_
