@@ -11,7 +11,7 @@ from .base import BaseTest
 
 
 class BlogIndexingTests(BaseTest):
-    sample_text = ('First post First post first line This is the description keyword1  '
+    sample_text = ('First post first line This is the description keyword1  '
                    'keyword2 category 1 a tag test body')
 
     def setUp(self):

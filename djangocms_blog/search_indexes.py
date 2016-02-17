@@ -48,7 +48,7 @@ class PostIndex(get_index_base()):
         abstract = strip_tags(post.safe_translation_getter('abstract', default=''))
         keywords = post.get_keywords()
 
-        text_bits = [post.get_title()]
+        text_bits = []
         if abstract:
             text_bits.append(abstract)
         if description:
