@@ -19,7 +19,7 @@ class PostIndex(get_index_base()):
     post_text = indexes.CharField(null=True)
 
     def get_title(self, post):
-        return post.safe_translation_getter('title')
+        return post.get_title()
 
     def get_description(self, post):
         return post.get_description()
