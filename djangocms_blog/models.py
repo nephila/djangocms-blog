@@ -232,7 +232,7 @@ class Post(ModelMeta, TranslatableModel):
         return title.strip()
 
     def get_keywords(self):
-        return self.safe_translation_getter('meta_keywords').strip().split(',')
+        return self.safe_translation_getter('meta_keywords', default='').strip().split(',')
 
     def get_locale(self):
         return self.get_current_language()

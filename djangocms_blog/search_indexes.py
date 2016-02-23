@@ -15,20 +15,17 @@ class PostIndex(get_index_base()):
 
     author = indexes.CharField(indexed=True, model_attr='get_author')
     keywords = indexes.CharField(null=True)
-    tags = indexes.CharField(null=True)
+    tags = indexes.CharField(null=True, model_attr='get_tags')
     post_text = indexes.CharField(null=True)
 
-    def get_keywords(self, post):
-        return ','.join(post.get_keywords())
-
     def get_title(self, post):
-        return post.safe_translation_getter('title')
+        return post.get_title()
 
     def get_description(self, post):
         return post.get_description()
 
     def prepare_pub_date(self, post):
-        return post.date_published.strftime("%Y-%m-%d %H:%M:%S")
+        return post.date_published
 
     def index_queryset(self, using=None):
         self._get_backend(using)
@@ -47,32 +44,36 @@ class PostIndex(get_index_base()):
         return Post
 
     def get_search_data(self, post, language, request):
-        optional_attributes = []
-        abstract = post.safe_translation_getter('abstract')
-        text_bits = [post.get_title()]
-        text_bits.append(strip_tags(abstract))
-        text_bits.append(post.get_description())
-        text_bits.append(' '.join(post.get_keywords()))
+        description = post.get_description()
+        abstract = strip_tags(post.safe_translation_getter('abstract', default=''))
+        keywords = post.get_keywords()
+
+        text_bits = []
+        if abstract:
+            text_bits.append(abstract)
+        if description:
+            text_bits.append(description)
+        if keywords:
+            text_bits.append(' '.join(keywords))
+            self.prepared_data['keywords'] = ','.join(keywords)
         for category in post.categories.all():
             text_bits.append(
                 force_text(category.safe_translation_getter('name')))
         for tag in post.tags.all():
             text_bits.append(force_text(tag.name))
-        if post.content:
+
+        if get_setting('USE_PLACEHOLDER'):
             plugins = post.content.cmsplugin_set.filter(language=language)
+            content_bits = []
             for base_plugin in plugins:
                 content = get_plugin_index_data(base_plugin, request)
-                text_bits.append(' '.join(content))
-        for attribute in optional_attributes:
-            value = force_text(getattr(post, attribute))
-            if value and value not in text_bits:
-                text_bits.append(value)
-        return ' '.join(text_bits)
+                content_bits.append(' '.join(content))
+            post_text = ' '.join(content_bits)
+        else:
+            post_text = post.safe_translation_getter('post_text')
+            if post_text:
+                post_text = strip_tags(post_text)
+        self.prepared_data['post_text'] = post_text
+        text_bits.append(post_text)
 
-    def prepare_fields(self, post, language, request):
-        super(PostIndex, self).prepare_fields(post, language, request)
-        data = [self.prepared_data['text']]
-        self.prepared_data['keywords'] = ' '.join(post.get_keywords())
-        self.prepared_data['tags'] = ' '.join(post.get_tags())
-        self.prepared_data['post_text'] = ' '.join(post.safe_translation_getter('post_text'))
-        self.prepared_data['text'] = ' '.join(data)
+        return ' '.join(text_bits)
