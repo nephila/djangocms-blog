@@ -7,6 +7,7 @@ import djangocms_text_ckeditor.fields
 import filer.fields.image
 from django.conf import settings
 from django.db import migrations, models
+from djangocms_blog.models import thumbnail_model
 from filer.settings import FILER_IMAGE_MODEL
 
 ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or 'filer.Image'
@@ -109,13 +110,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='post',
             name='main_image_full',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, verbose_name='main image full', to='cmsplugin_filer_image.ThumbnailOption', related_name='djangocms_blog_post_full', null=True),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, verbose_name='main image full', to=thumbnail_model, related_name='djangocms_blog_post_full', null=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='post',
             name='main_image_thumbnail',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, verbose_name='main image thumbnail', to='cmsplugin_filer_image.ThumbnailOption', related_name='djangocms_blog_post_thumbnail', null=True),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, verbose_name='main image thumbnail', to=thumbnail_model, related_name='djangocms_blog_post_thumbnail', null=True),
             preserve_default=True,
         ),
         migrations.AlterField(

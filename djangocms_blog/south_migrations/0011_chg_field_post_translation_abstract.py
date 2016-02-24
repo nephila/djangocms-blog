@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from djangocms_blog.models import thumbnail_model
 from south.db import db
 from south.v2 import SchemaMigration
 
@@ -61,7 +62,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'slot': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '255'})
         },
-        'cmsplugin_filer_image.thumbnailoption': {
+        thumbnail_model: {
             'Meta': {'object_name': 'ThumbnailOption', 'ordering': "('width', 'height')"},
             'crop': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'height': ('django.db.models.fields.IntegerField', [], {}),
@@ -117,8 +118,8 @@ class Migration(SchemaMigration):
             'enable_comments': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'main_image': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'to': "orm['filer.Image']", 'null': 'True', 'related_name': "'djangocms_blog_post_image'"}),
-            'main_image_full': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'to': "orm['cmsplugin_filer_image.ThumbnailOption']", 'null': 'True', 'related_name': "'djangocms_blog_post_full'"}),
-            'main_image_thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'to': "orm['cmsplugin_filer_image.ThumbnailOption']", 'null': 'True', 'related_name': "'djangocms_blog_post_thumbnail'"}),
+            'main_image_full': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'to': "orm[thumbnail_model]", 'null': 'True', 'related_name': "'djangocms_blog_post_full'"}),
+            'main_image_thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'to': "orm[thumbnail_model]", 'null': 'True', 'related_name': "'djangocms_blog_post_thumbnail'"}),
             'publish': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'sites': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'to': "orm['sites.Site']", 'null': 'True', 'symmetrical': 'False'})
         },
