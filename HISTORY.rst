@@ -13,6 +13,7 @@ History
 * Fix issues in migrations. Thanks @skirsdeda
 * Fix selecting current menu item according to menu layout
 * Fix some issues with haystack indexes
+* Add support for moved ThumbnailOption
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++
