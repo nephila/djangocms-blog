@@ -14,6 +14,7 @@ History
 * Fix selecting current menu item according to menu layout
 * Fix some issues with haystack indexes
 * Add support for moved ThumbnailOption
+* Fix Django 1.9 issues
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++
