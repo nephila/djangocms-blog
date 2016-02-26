@@ -67,7 +67,7 @@ class WizardTest(BaseTest):
                 }, prefix=1)
                 self.assertEqual(form.default_appconfig, app_config)
                 self.assertTrue(form.is_valid())
-                self.assertTrue(form.cleaned_data['app_config'], app_config)
+                self.assertEqual(form.cleaned_data['app_config'].pk, app_config)
                 instance = form.save()
                 self.assertEqual(instance.author, self.user_staff)
 
@@ -81,7 +81,7 @@ class WizardTest(BaseTest):
                     }, prefix=1)
                     self.assertEqual(form.default_appconfig, app_config)
                     self.assertTrue(form.is_valid())
-                    self.assertTrue(form.cleaned_data['app_config'], app_config)
+                    self.assertEqual(form.cleaned_data['app_config'].pk, app_config)
                     instance = form.save()
                     self.assertEqual(instance.author, self.user_normal)
 
