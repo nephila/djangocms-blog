@@ -292,7 +292,7 @@ class ModelsTest(BaseTest):
             url_en = reverse(
                 '%s:post-detail' % self.app_config_1.namespace,
                 kwargs=kwargs,
-                current_app=self.app_config_1
+                current_app=self.app_config_1.namespace
             )
             self.assertEqual(url_en, post.get_absolute_url())
 
@@ -305,7 +305,7 @@ class ModelsTest(BaseTest):
             url_it = reverse(
                 '%s:post-detail' % self.app_config_1.namespace,
                 kwargs=kwargs,
-                current_app=self.app_config_1
+                current_app=self.app_config_1.namespace
             )
             self.assertEqual(url_it, post.get_absolute_url())
             self.assertNotEqual(url_it, url_en)

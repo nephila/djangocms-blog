@@ -168,6 +168,9 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
 
     @property
     def declared_fieldsets(self):
+        return self.get_fieldsets(None)
+
+    def get_fieldsets(self, request, obj=None):
         """
         Fieldsets configuration
         """
