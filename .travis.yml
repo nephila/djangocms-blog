@@ -28,7 +28,6 @@ env:
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install -U tox>=1.8 coveralls
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then export PYVER=py26; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then export PYVER=py27; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then export PYVER=py33; fi"
@@ -40,7 +39,7 @@ install:
 script: COMMAND='coverage run' tox -e$TOXENV
 
 before_install:
-  - pip install codecov
+  - pip install -U tox>=1.8 coveralls codecov wheel pip
 after_success:
   - codecov
   - coveralls
@@ -93,4 +92,7 @@ matrix:
 
 cache:
    directories:
-     $HOME/.tox
+     - $HOME/.pip-accel
+     - $HOME/.cache/pip
+
+
