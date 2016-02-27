@@ -89,3 +89,8 @@ matrix:
     env: DJANGO='django17' CMS='cms31'
   - python: 3.5
     env: DJANGO='django17' CMS='cms32'
+
+
+cache:
+   directories:
+     $HOME/.tox
