@@ -467,6 +467,7 @@ Known djangocms-blog websites
 
 * http://nephila.co.uk/blog
 * https://blog.ungleich.ch/
+* https://datafy.it/en/blog/
 
 
 .. _django-meta-mixin settings: https://github.com/nephila/django-meta-mixin#settings
