@@ -50,7 +50,7 @@ Supported django CMS versions:
              Some plugins have a broken tag management prior to 0.6, in case
              you have issues with tags, upgrade to latest version to have it fixed.
 
-.. warning:: When upgrading to version 0.6, check that every post as an attached
+.. warning:: When upgrading to version 0.6, check that every post has an attached
              category, or select a menu without categories.
 
 .. warning:: Starting from version 0.5, this package does not declare dependency
@@ -61,7 +61,7 @@ Features
 --------
 
 * Placeholder content editing
-* Frontend editing using django CMS 3.0 frontend editor
+* Frontend editing using django CMS 3.x frontend editor
 * Multilingual support using django-parler
 * Support for Twitter cards, Open Graph and Google+ snippets meta tags
 * Optional support for simpler TextField-based content editing
@@ -152,7 +152,7 @@ suited for your deployment.
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
 
-* If you are using Django 1.7+, be aware than ``filer`` < 0.9.10,
+* If you are using Django 1.7+, be aware that ``filer`` < 0.9.10,
   ``cmsplugin_filer`` and ``django-cms`` < 3.1 currently requires you to
   setup ``MIGRATION_MODULES`` in settings::
 
@@ -242,8 +242,8 @@ Menu
 
 By default all the categories and posts are added to the menu, in a hierarchical structure.
 
-Is it possibile to configure per Apphook, whether the menu includes post and categories
-(the default), only categorie, only posts or no item.
+It is possibile to configure per Apphook, whether the menu includes post and categories
+(the default), only categories, only posts or no item.
 
 If "post and categories" or "only categories" are set, all the posts not associated with a
 category are not added to the menu.
@@ -467,6 +467,7 @@ Known djangocms-blog websites
 
 * http://nephila.co.uk/blog
 * https://blog.ungleich.ch/
+* https://datafy.it/en/blog/
 
 
 .. _django-meta-mixin settings: https://github.com/nephila/django-meta-mixin#settings
