@@ -7,9 +7,12 @@ from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
 from django.conf import settings
+from django.conf.urls import url
 from django.contrib import admin
-from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.utils.six import callable
+from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
@@ -25,6 +28,7 @@ except ImportError:
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
+
     def get_prepopulated_fields(self, request, obj=None):
         app_config_default = self._app_config_select(request, obj)
         if app_config_default is None and request.method == 'GET':
@@ -41,7 +45,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 ModelAppHookConfig, TranslatableAdmin):
     form = PostAdminForm
     list_display = [
-        'title', 'author', 'date_published', 'app_config', 'languages', 'date_published_end'
+        'title', 'author', 'date_published', 'app_config', 'all_languages_column',
+        'date_published_end'
     ]
     list_filter = ('app_config',)
     date_hierarchy = 'date_published'
@@ -71,8 +76,35 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'default_published': 'publish'
     }
 
-    def languages(self, obj):
-        return ','.join(obj.get_available_languages())
+    def get_urls(self):
+        """
+        Customize the modeladmin urls
+        """
+        urls = [
+            url(r'^publish/([0-9]+)/$', self.admin_site.admin_view(self.publish_post),
+                name='djangocms_blog_publish_article'),
+        ]
+        urls.extend(super(PostAdmin, self).get_urls())
+        return urls
+
+    def publish_post(self, request, pk):
+        """
+        Admin view to publish a single post
+        :param request: request
+        :param pk: primary key of the post to publish
+        :return: Redirect to the post itself (if found) or fallback urls
+        """
+        language = get_language_from_request(request, check_path=True)
+        try:
+            post = Post.objects.get(pk=int(pk))
+            post.publish = True
+            post.save()
+            return HttpResponseRedirect(post.get_absolute_url(language))
+        except Exception:
+            try:
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+            except KeyError:
+                return HttpResponseRedirect(reverse('djangocms_blog:posts-latest'))
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         field = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
@@ -85,6 +117,12 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         return field
 
     def get_fieldsets(self, request, obj=None):
+        """
+        Customize the fieldsets according to the app settings
+        :param request: request
+        :param obj: post
+        :return: fieldsets configuration
+        """
         app_config_default = self._app_config_select(request, obj)
         if app_config_default is None and request.method == 'GET':
             return super(PostAdmin, self).get_fieldsets(request, obj)
@@ -108,18 +146,16 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
+        filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
+        if callable(filter_function):
+            fsets = filter_function(fsets, request, obj=obj)
         return fsets
 
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
-        if not obj.author_id and obj.app_config.set_author:
-            if get_setting('AUTHOR_DEFAULT') is True:
-                user = request.user
-            else:
-                user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
-            obj.author = user
+        obj._set_default_author(request.user)
         super(PostAdmin, self).save_model(request, obj, form, change)
 
     class Media:
@@ -132,6 +168,12 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
 
     @property
     def declared_fieldsets(self):
+        return self.get_fieldsets(None)
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        Fieldsets configuration
+        """
         return [
             (None, {
                 'fields': ('type', 'namespace', 'app_title', 'object_name')

@@ -23,6 +23,10 @@ class BlogConfig(TranslatableModel, AppHookConfig):
         ),
     )
 
+    class Meta:
+        verbose_name = _('blog config')
+        verbose_name_plural = _('blog configs')
+
     def get_app_title(self):
         return getattr(self, 'app_title', _('untitled'))
 

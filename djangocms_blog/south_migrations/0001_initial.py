@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from djangocms_blog.models import thumbnail_model
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -66,8 +67,8 @@ class Migration(SchemaMigration):
             ('date_published_end', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('publish', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('main_image', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['filer.Image'], null=True, blank=True)),
-            ('main_image_thumbnail', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blog_post_thumbnail', null=True, to=orm['cmsplugin_filer_image.ThumbnailOption'])),
-            ('main_image_full', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blog_post_full', null=True, to=orm['cmsplugin_filer_image.ThumbnailOption'])),
+            ('main_image_thumbnail', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blog_post_thumbnail', null=True, to=orm[thumbnail_model])),
+            ('main_image_full', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='blog_post_full', null=True, to=orm[thumbnail_model])),
             ('content', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['cms.Placeholder'], null=True)),
         ))
         db.send_create_signal(u'djangocms_blog', ['Post'])
@@ -218,7 +219,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'slot': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'})
         },
-        u'cmsplugin_filer_image.thumbnailoption': {
+       thumbnail_model: {
             'Meta': {'ordering': "('width', 'height')", 'object_name': 'ThumbnailOption'},
             'crop': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'height': ('django.db.models.fields.IntegerField', [], {}),
@@ -273,8 +274,8 @@ class Migration(SchemaMigration):
             'date_published_end': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'main_image': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['filer.Image']", 'null': 'True', 'blank': 'True'}),
-            'main_image_full': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'blog_post_full'", 'null': 'True', 'to': u"orm['cmsplugin_filer_image.ThumbnailOption']"}),
-            'main_image_thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'blog_post_thumbnail'", 'null': 'True', 'to': u"orm['cmsplugin_filer_image.ThumbnailOption']"}),
+            'main_image_full': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'blog_post_full'", 'null': 'True', 'to': u"orm['%s']" % thumbnail_model}),
+            'main_image_thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'blog_post_thumbnail'", 'null': 'True', 'to': u"orm['%s']" % thumbnail_model}),
             'publish': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         u'djangocms_blog.posttranslation': {

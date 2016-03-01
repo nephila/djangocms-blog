@@ -3,11 +3,27 @@
 History
 -------
 
-0.6.3 (XXXX-XX-XX)
+0.7.0 (unreleased)
 ++++++++++++++++++
 
+* Make categories non required
+* Fix tests with parler>=1.6
+* Use all_languages_column to admin
+* Add publish button
+* Fix issues in migrations. Thanks @skirsdeda
+* Fix selecting current menu item according to menu layout
+* Fix some issues with haystack indexes
+* Add support for moved ThumbnailOption
+* Fix Django 1.9 issues
+* Fix copy relations method in plugins
+
+0.6.3 (2015-12-22)
+++++++++++++++++++
+
+* Add BLOG_ADMIN_POST_FIELDSET_FILTER to filter admin fieldsets
 * Ensure correct creation of full URL for canonical urls
 * Move constants to settings
+* Fix error when no config is found
 
 0.6.2 (2015-11-16)
 ++++++++++++++++++

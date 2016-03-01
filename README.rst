@@ -30,7 +30,7 @@ djangocms-blog
    :target: https://codeclimate.com/github/nephila/djangocms-blog
    :alt: Code Climate
 
-A djangoCMS 3 blog application.
+django CMS blog application - Support for multilingual posts, placeholders, social network meta tags and configurable apphooks.
 
 Supported Django versions:
 
@@ -47,6 +47,11 @@ Supported django CMS versions:
              A datamigration is in place to migrate the data, but check that
              works ok for your project before upgrading, as this might delete
              some relevant data.
+             Some plugins have a broken tag management prior to 0.6, in case
+             you have issues with tags, upgrade to latest version to have it fixed.
+
+.. warning:: When upgrading to version 0.6, check that every post as an attached
+             category, or select a menu without categories.
 
 .. warning:: Starting from version 0.5, this package does not declare dependency
              on South anymore; please install it separately if using this
@@ -88,6 +93,7 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         ...
         'filer',
         'easy_thumbnails',
+        'aldryn_apphooks_config',
         'cmsplugin_filer_image',
         'parler',
         'taggit',
@@ -98,7 +104,7 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         ...
     ]
 
-If you installed the **admin-enhancer** variant, add ``admin_enhancer`` to ``INSTALLED_APPS::
+If you installed the **admin-enhancer** variant, add ``admin_enhancer`` to ``INSTALLED_APPS``::
 
     INSTALLED_APPS = [
         ...
@@ -170,6 +176,9 @@ suited for your deployment.
             {'code': 'it',},
             {'code': 'fr',},
         ),
+        'default': {
+            'fallbacks': ['en', 'it', 'fr'],
+        }
     }
 
 * Add the following to your ``urls.py``::
@@ -181,11 +190,16 @@ suited for your deployment.
   `Auto setup <auto_setup>`_:
 
   * Create a new django CMS page
-  * Go to Advanced settings and select Blog from the Application selector and
-    create an application configuration;
+  * Go to **Advanced settings** and select Blog from the **Application** selector and
+    create an **Application configuration**;
   * Eventually customise the Application instance name;
   * Publish the page
   * Restart the project instance to properly load blog urls.
+
+.. warning:: After adding the apphook to the page you **cannot** change the **Instance Namspace**
+             field for the defined **AppHokConfig**; if you want to change it, create a new one
+             with the correct namespace, go in the CMS page **Advanced settings** and switch to the
+             new **Application configuration**
 
 * Add and edit blog by creating them in the admin or using the toolbar,
   and the use the `django CMS frontend editor <http://django-cms.readthedocs.org/en/support-3.0.x/user/reference/page_admin.html#the-interface>`_
@@ -226,10 +240,13 @@ Menu
 
 ``djangocms_blog`` provides support for django CMS menu framework.
 
-By default all the categories and posts are added to the menu, in a hierarcical structure.
+By default all the categories and posts are added to the menu, in a hierarchical structure.
 
 Is it possibile to configure per Apphook, whether the menu includes post and categories
 (the default), only categorie, only posts or no item.
+
+If "post and categories" or "only categories" are set, all the posts not associated with a
+category are not added to the menu.
 
 Templates
 +++++++++
@@ -363,6 +380,16 @@ Global Settings
   used; (default: ``True``)
 * BLOG_DEFAULT_PUBLISHED: If posts are marked as published by default;
   (default: ``False``)
+* BLOG_ADMIN_POST_FIELDSET_FILTER: Callable function to change(add or filter)
+  fields to fieldsets for admin post edit form; (default: ``False``). Function simple example::
+
+
+    def fieldset_filter_function(fsets, request, obj=None):
+        if request.user.groups.filter(name='Editor').exists():
+            fsets[1][1]['fields'][0].append('author')  # adding 'author' field if user is Editor
+        return fsets
+
+
 * BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
 * BLOG_PERMALINK_URLS: URLConf corresponding to
   BLOG_AVAILABLE_PERMALINK_STYLES;

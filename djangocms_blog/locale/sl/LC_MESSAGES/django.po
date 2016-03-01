@@ -1,23 +1,22 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
+# Iacopo Spalletti, 2014
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-15 13:53+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2015-12-20 17:14+0100\n"
+"PO-Revision-Date: 2015-12-20 16:15+0000\n"
+"Last-Translator: yakky <i.spalletti@nephila.it>\n"
+"Language-Team: Slovenian (http://www.transifex.com/nephila/djangocms-blog/language/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
-"%100==4 ? 2 : 3);\n"
+"Language: sl\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: admin.py:169 admin.py:177 admin.py:185
 msgid "You can provide plain strings, Post model attribute or method names"
@@ -40,118 +39,128 @@ msgid "object name"
 msgstr "ime objekta"
 
 #: cms_appconfig.py:27
+#| msgid "blog categories"
+msgid "blog config"
+msgstr ""
+
+#: cms_appconfig.py:28
+#| msgid "blog categories"
+msgid "blog configs"
+msgstr ""
+
+#: cms_appconfig.py:31
 msgid "untitled"
 msgstr "nepoimenovano"
 
-#: cms_appconfig.py:32
+#: cms_appconfig.py:36
 msgid "Post published by default"
 msgstr "Objava naj bo samodejno objavljena"
 
-#: cms_appconfig.py:36
+#: cms_appconfig.py:40
 msgid "Permalink structure"
 msgstr "Struktura povezav"
 
-#: cms_appconfig.py:41
+#: cms_appconfig.py:45
 msgid "Use placeholder and plugins for article body"
 msgstr "Za objavo naj bodo uporabljeni vtičniki in označbe mest"
 
-#: cms_appconfig.py:45
+#: cms_appconfig.py:49
 msgid "Use abstract field"
 msgstr "Uporaba abstraktnih polj"
 
-#: cms_appconfig.py:49
+#: cms_appconfig.py:53
 msgid "Set author"
 msgstr "Nastavi avtorja"
 
-#: cms_appconfig.py:49
+#: cms_appconfig.py:53
 msgid "Set author by default"
 msgstr "Avtor naj bo nastavljen samodejno"
 
-#: cms_appconfig.py:53
+#: cms_appconfig.py:57
 msgid "Paginate size"
 msgstr "Število objav na stran"
 
-#: cms_appconfig.py:54
+#: cms_appconfig.py:58
 msgid "When paginating list views, how many articles per page?"
 msgstr "Koliko objav naj bo na eni strani?"
 
-#: cms_appconfig.py:57
+#: cms_appconfig.py:61
 msgid "Template prefix"
 msgstr "Predpona predlog"
 
-#: cms_appconfig.py:58
+#: cms_appconfig.py:62
 msgid "Alternative directory to load the blog templates from"
 msgstr "Alternativni direktorij za nalaganje predlog bloga"
 
-#: cms_appconfig.py:61
+#: cms_appconfig.py:65
 msgid "Menu structure"
 msgstr "Struktura menija"
 
-#: cms_appconfig.py:63
+#: cms_appconfig.py:67
 msgid "Structure of the django CMS menu"
 msgstr "Struktura django CMS menija"
 
-#: cms_appconfig.py:66
+#: cms_appconfig.py:70
 msgid "Sitemap changefreq"
 msgstr ""
 
-#: cms_appconfig.py:69
+#: cms_appconfig.py:73
 msgid "Changefreq attribute for sitemap items"
 msgstr ""
 
-#: cms_appconfig.py:72
+#: cms_appconfig.py:76
 msgid "Sitemap priority"
 msgstr "Sitemap prioriteta"
 
-#: cms_appconfig.py:74
+#: cms_appconfig.py:78
 msgid "Priority attribute for sitemap items"
 msgstr "Prioriteta atributov za elemente sitemapa"
 
-#: cms_appconfig.py:77
+#: cms_appconfig.py:81
 msgid "Object type"
 msgstr "Tip objekta"
 
-#: cms_appconfig.py:81
+#: cms_appconfig.py:85
 msgid "Facebook type"
 msgstr ""
 
-#: cms_appconfig.py:85
+#: cms_appconfig.py:89
 msgid "Facebook application ID"
 msgstr ""
 
-#: cms_appconfig.py:89
+#: cms_appconfig.py:93
 msgid "Facebook profile ID"
 msgstr ""
 
-#: cms_appconfig.py:93
+#: cms_appconfig.py:97
 msgid "Facebook page URL"
 msgstr ""
 
-#: cms_appconfig.py:97
+#: cms_appconfig.py:101
 msgid "Facebook author URL"
 msgstr ""
 
-#: cms_appconfig.py:101
+#: cms_appconfig.py:105
 msgid "Facebook author"
 msgstr "Facebook avtor"
 
-#: cms_appconfig.py:105
+#: cms_appconfig.py:109
 msgid "Twitter type"
 msgstr ""
 
-#: cms_appconfig.py:109
+#: cms_appconfig.py:113
 msgid "Twitter site handle"
 msgstr ""
 
-#: cms_appconfig.py:113
+#: cms_appconfig.py:117
 msgid "Twitter author handle"
 msgstr ""
 
-#: cms_appconfig.py:117
+#: cms_appconfig.py:121
 msgid "Google+ type"
 msgstr ""
 
-#: cms_appconfig.py:121
+#: cms_appconfig.py:125
 msgid "Google+ author name"
 msgstr ""
 
@@ -272,8 +281,8 @@ msgstr "Stran(i)"
 
 #: models.py:119
 msgid ""
-"Select sites in which to show the post. If none is set it will be visible in "
-"all the configured sites."
+"Select sites in which to show the post. If none is set it will be visible in"
+" all the configured sites."
 msgstr "Izberi strani na katerih naj bo objava prikazana. Če ni izbrano nič, bo objava prikazana na vseh nastavljenih straneh."
 
 #: models.py:127
@@ -366,7 +375,7 @@ msgstr "Datum (poln)"
 msgid "Year /  Month"
 msgstr "Leto / Mesec"
 
-#: settings.py:18 templates/djangocms_blog/post_list.html.py:14
+#: settings.py:18 templates/djangocms_blog/post_list.html:14
 msgid "Category"
 msgstr "Kategorija"
 
@@ -426,15 +435,15 @@ msgstr "Najnovejše blog objave"
 msgid "Author Blog Articles"
 msgstr "Avtorjeve blog objave"
 
-#: settings.py:117 templates/djangocms_blog/plugins/tags.html.py:3
+#: settings.py:117 templates/djangocms_blog/plugins/tags.html:3
 msgid "Tags"
 msgstr "Oznake"
 
-#: settings.py:119 templates/djangocms_blog/plugins/categories.html.py:3
+#: settings.py:119 templates/djangocms_blog/plugins/categories.html:3
 msgid "Categories"
 msgstr "Kategorije"
 
-#: settings.py:121 templates/djangocms_blog/plugins/archive.html.py:3
+#: settings.py:121 templates/djangocms_blog/plugins/archive.html:3
 #: templates/djangocms_blog/post_list.html:12
 msgid "Archive"
 msgstr "Arhiv"
@@ -454,8 +463,10 @@ msgstr ""
 #, python-format
 msgid "1 article"
 msgid_plural "%(articles)s articles"
-msgstr[0] "1 objava"
+msgstr[0] "%(articles)s objava"
 msgstr[1] "%(articles)s objave"
+msgstr[2] "%(articles)s objave"
+msgstr[3] "%(articles)s objave"
 
 #: templates/djangocms_blog/plugins/archive.html:18
 #: templates/djangocms_blog/plugins/authors.html:11
@@ -507,3 +518,18 @@ msgstr "od"
 #: templates/djangocms_blog/post_list.html:35
 msgid "next"
 msgstr "naslednji"
+
+#~ msgid "Article"
+#~ msgstr "Articles"
+
+#~ msgid "Text"
+#~ msgstr "Text"
+
+#~ msgid "blog post"
+#~ msgstr "blog post"
+
+#~ msgid "Entries by"
+#~ msgstr "Entries by"
+
+#~ msgid "No entry found."
+#~ msgstr "No entry found."

@@ -34,6 +34,8 @@ class AdminTest(BaseTest):
         admin.autodiscover()
 
     def test_admin_post_views(self):
+        self.get_pages()
+
         post_admin = admin.site._registry[Post]
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
 
@@ -49,6 +51,28 @@ class AdminTest(BaseTest):
         response = post_admin.change_view(request, str(post.pk))
         self.assertContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text" value="first-post" />')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
+
+        # Test for publish view
+        post.publish = False
+        post.save()
+        response = post_admin.publish_post(request, str(post.pk))
+        # Redirects to current post
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], post.get_absolute_url())
+        post = self.reload_model(post)
+        # post is publshed
+        self.assertTrue(post.publish)
+
+        # Non-existing post is redirected to posts list
+        response = post_admin.publish_post(request, str('1000000'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], reverse('djangocms_blog:posts-latest'))
+
+        # unless a referer is set
+        request.META['HTTP_REFERER'] = '/'
+        response = post_admin.publish_post(request, str('1000000'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], '/')
 
     def test_admin_blogconfig_views(self):
         post_admin = admin.site._registry[BlogConfig]
@@ -67,7 +91,7 @@ class AdminTest(BaseTest):
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
         self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
-        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" value="sample_app" />')
+        self.assertContains(response, 'sample_app')
 
     def test_admin_category_views(self):
         post_admin = admin.site._registry[BlogCategory]
@@ -191,6 +215,22 @@ class AdminTest(BaseTest):
                 self.assertEqual(Post.objects.count(), 3)
                 self.assertEqual(Post.objects.get(translations__slug='third-post').author.username, 'staff')
 
+    def test_admin_fieldsets_filter(self):
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user_normal, r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('author' in fsets[1][1]['fields'][0])
+
+        def filter_function(fs, request, obj=None):
+            if request.user == self.user_normal:
+                fs[1][1]['fields'][0].append('author')
+            return fs
+
+        with self.settings(BLOG_ADMIN_POST_FIELDSET_FILTER=filter_function):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue('author' in fsets[1][1]['fields'][0])
+
     def test_admin_post_text(self):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]['en'])
@@ -252,7 +292,7 @@ class ModelsTest(BaseTest):
             url_en = reverse(
                 '%s:post-detail' % self.app_config_1.namespace,
                 kwargs=kwargs,
-                current_app=self.app_config_1
+                current_app=self.app_config_1.namespace
             )
             self.assertEqual(url_en, post.get_absolute_url())
 
@@ -265,7 +305,7 @@ class ModelsTest(BaseTest):
             url_it = reverse(
                 '%s:post-detail' % self.app_config_1.namespace,
                 kwargs=kwargs,
-                current_app=self.app_config_1
+                current_app=self.app_config_1.namespace
             )
             self.assertEqual(url_it, post.get_absolute_url())
             self.assertNotEqual(url_it, url_en)

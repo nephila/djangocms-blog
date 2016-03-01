@@ -5,6 +5,7 @@ from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -24,6 +25,13 @@ from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting('CURRENT_POST_IDENTIFIER')
 BLOG_CURRENT_NAMESPACE = get_setting('CURRENT_NAMESPACE')
+
+try:
+    from filer.models import ThumbnailOption  # NOQA
+    thumbnail_model = 'filer.ThumbnailOption'
+except ImportError:
+    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
+    thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
 
 
 @python_2_unicode_compatible
@@ -99,16 +107,16 @@ class Post(ModelMeta, TranslatableModel):
                                               blank=True)
     publish = models.BooleanField(_('publish'), default=False)
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_('category'),
-                                        related_name='blog_posts',)
+                                        related_name='blog_posts', blank=True)
     main_image = FilerImageField(verbose_name=_('main image'), blank=True, null=True,
                                  on_delete=models.SET_NULL,
                                  related_name='djangocms_blog_post_image')
-    main_image_thumbnail = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
+    main_image_thumbnail = models.ForeignKey(thumbnail_model,
                                              verbose_name=_('main image thumbnail'),
                                              related_name='djangocms_blog_post_thumbnail',
                                              on_delete=models.SET_NULL,
                                              blank=True, null=True)
-    main_image_full = models.ForeignKey('cmsplugin_filer_image.ThumbnailOption',
+    main_image_full = models.ForeignKey(thumbnail_model,
                                         verbose_name=_('main image full'),
                                         related_name='djangocms_blog_post_full',
                                         on_delete=models.SET_NULL,
@@ -231,7 +239,7 @@ class Post(ModelMeta, TranslatableModel):
         return title.strip()
 
     def get_keywords(self):
-        return self.safe_translation_getter('meta_keywords').strip().split(',')
+        return self.safe_translation_getter('meta_keywords', default='').strip().split(',')
 
     def get_locale(self):
         return self.get_current_language()
@@ -253,6 +261,14 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_author(self):
         return self.author
+
+    def _set_default_author(self, current_user):
+        if not self.author_id and self.app_config.set_author:
+            if get_setting('AUTHOR_DEFAULT') is True:
+                user = current_user
+            else:
+                user = get_user_model().objects.get(username=get_setting('AUTHOR_DEFAULT'))
+            self.author = user
 
     def thumbnail_options(self):
         if self.main_image_thumbnail_id:
@@ -308,6 +324,8 @@ class LatestPostsPlugin(BasePostPlugin):
     def copy_relations(self, oldinstance):
         for tag in oldinstance.tags.all():
             self.tags.add(tag)
+        for category in oldinstance.categories.all():
+            self.categories.add(category)
 
     def get_posts(self, request):
         posts = self.post_queryset(request)
