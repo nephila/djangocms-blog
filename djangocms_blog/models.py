@@ -252,7 +252,7 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_image_full_url(self):
         if self.main_image:
-            return self.make_full_url(self.main_image.url)
+            return self.build_absolute_uri(self.main_image.url)
         return ''
 
     def get_tags(self):
@@ -283,7 +283,7 @@ class Post(ModelMeta, TranslatableModel):
             return get_setting('IMAGE_FULL_SIZE')
 
     def get_full_url(self):
-        return self.make_full_url(self.get_absolute_url())
+        return self.build_absolute_uri(self.get_absolute_url())
 
 
 class BasePostPlugin(CMSPlugin):
