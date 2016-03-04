@@ -465,9 +465,7 @@ this gist https://gist.github.com/yakky/11336204 as a base.
 Known djangocms-blog websites
 +++++++++++++++++++++++++++++
 
-* http://nephila.co.uk/blog
-* https://blog.ungleich.ch/
-* https://datafy.it/en/blog/
+See DjangoPackages for an updated list https://www.djangopackages.com/packages/p/djangocms-blog/
 
 
 .. _django-meta-mixin settings: https://github.com/nephila/django-meta-mixin#settings
