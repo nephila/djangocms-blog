@@ -47,7 +47,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         return queryset
 
     def get_template_names(self):
-        template_path = self.config.template_prefix or 'djangocms_blog'
+        template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
         return os.path.join(template_path, self.base_template_name)
 
 
@@ -63,7 +63,7 @@ class PostListView(BaseBlogView, ListView):
         return context
 
     def get_paginate_by(self, queryset):
-        return self.config.paginate_by or get_setting('PAGINATION')
+        return (self.config and self.config.paginate_by) or get_setting('PAGINATION')
 
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
