@@ -2,13 +2,14 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.utils.permissions import get_current_user
+from django import forms
+from django.conf import settings
+from django.utils.text import slugify
+from django.utils.translation import ugettext_lazy as _
 
 try:
     from cms.wizards.wizard_base import Wizard
-    from cms.wizards.wizard_pool import wizard_pool
-    from django import forms
-    from django.utils.text import slugify
-    from django.utils.translation import ugettext_lazy as _
+    from cms.wizards.wizard_pool import wizard_pool, AlreadyRegisteredException
     from parler.forms import TranslatableModelForm
 
     from .cms_appconfig import BlogConfig
@@ -56,7 +57,11 @@ try:
             model=Post,
             description=_('Create a new {0} in {1}').format(config.object_name, config.app_title),
         )
-        wizard_pool.register(post_wizard)
+        try:
+            wizard_pool.register(post_wizard)
+        except AlreadyRegisteredException:  # pragma: no cover
+            if settings.DEBUG:
+                raise
 except ImportError:
     # For django CMS version not supporting wizards just ignore this file
     pass
