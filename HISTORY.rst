@@ -16,6 +16,8 @@ History
 * Add support for moved ThumbnailOption
 * Fix Django 1.9 issues
 * Fix copy relations method in plugins
+* Mitigate issue when apphook config can't be retrieved
+* Mitigate issue when wizard double registration is triggered
 
 0.6.3 (2015-12-22)
 ++++++++++++++++++
