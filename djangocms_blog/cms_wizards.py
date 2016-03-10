@@ -59,7 +59,7 @@ try:
         )
         try:
             wizard_pool.register(post_wizard)
-        except AlreadyRegisteredException:
+        except AlreadyRegisteredException:  # pragma: no cover
             if settings.DEBUG:
                 raise
 except ImportError:
