@@ -3,7 +3,7 @@
 History
 -------
 
-0.7.0 (unreleased)
+0.7.0 (2016-03-19)
 ++++++++++++++++++
 
 * Make categories non required
