@@ -73,9 +73,7 @@ HELPER_SETTINGS = dict(
             'hide_untranslated': False,
         }
     },
-    MIGRATION_MODULES={
-        'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-    },
+    MIGRATION_MODULES={},
     CMS_TEMPLATES=(
         ('blog.html', 'Blog template'),
     ),
@@ -96,6 +94,15 @@ HELPER_SETTINGS = dict(
         "default": {}
     }
 )
+
+try:
+    import cmsplugin_filer_image.migrations_django  # pragma: no cover # NOQA
+    HELPER_SETTINGS[
+        'MIGRATION_MODULES'
+    ]['cmsplugin_filer_image'] = 'cmsplugin_filer_image.migrations_django'
+
+except ImportError:
+    pass
 
 try:
     import admin_enhancer  # pragma: no cover # NOQA
