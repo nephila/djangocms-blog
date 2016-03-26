@@ -33,6 +33,15 @@ except ImportError:
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
     thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
 
+try:
+    from knocker.mixins import KnockerModel
+except ImportError:
+    class KnockerModel(object):
+        """
+        Stub class if django-knocker is not installed
+        """
+        pass
+
 
 @python_2_unicode_compatible
 class BlogCategory(TranslatableModel):
@@ -91,7 +100,7 @@ class BlogCategory(TranslatableModel):
 
 
 @python_2_unicode_compatible
-class Post(ModelMeta, TranslatableModel):
+class Post(KnockerModel, ModelMeta, TranslatableModel):
     """
     Blog post
     """
@@ -188,6 +197,11 @@ class Post(ModelMeta, TranslatableModel):
     def __str__(self):
         return self.safe_translation_getter('title')
 
+    def save_translation(self, translation, *args, **kwargs):
+        if not translation.slug and translation.title:
+            translation.slug = slugify(translation.title)
+        super(Post, self).save_translation(translation, *args, **kwargs)
+
     def get_absolute_url(self, lang=None):
         if not lang:
             lang = get_language()
@@ -226,11 +240,6 @@ class Post(ModelMeta, TranslatableModel):
         else:
             data = value
         return data
-
-    def save_translation(self, translation, *args, **kwargs):
-        if not translation.slug and translation.title:
-            translation.slug = slugify(translation.title)
-        super(Post, self).save_translation(translation, *args, **kwargs)
 
     def get_title(self):
         title = self.safe_translation_getter('meta_title', any_language=True)
@@ -284,6 +293,16 @@ class Post(ModelMeta, TranslatableModel):
 
     def get_full_url(self):
         return self.build_absolute_uri(self.get_absolute_url())
+
+    @property
+    def is_published(self):
+        """
+        Checks wether the blog post is *really* published by checking publishing dates too
+        """
+        return (self.publish and
+                (self.date_published and self.date_published <= timezone.now()) and
+                (self.date_published_end is None or self.date_published_end > timezone.now())
+                )
 
 
 class BasePostPlugin(CMSPlugin):
