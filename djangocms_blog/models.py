@@ -33,6 +33,12 @@ except ImportError:
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
     thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
 
+try:
+    from knocker.mixins import KnockerModel
+except ImportError:
+    class KnockerModel(object):
+        pass
+
 
 @python_2_unicode_compatible
 class BlogCategory(TranslatableModel):
@@ -91,7 +97,7 @@ class BlogCategory(TranslatableModel):
 
 
 @python_2_unicode_compatible
-class Post(ModelMeta, TranslatableModel):
+class Post(KnockerModel, ModelMeta, TranslatableModel):
     """
     Blog post
     """
