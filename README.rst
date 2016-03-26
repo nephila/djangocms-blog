@@ -357,6 +357,15 @@ hae been reported; to handle these cases gracefully, the exception is swallowed
 when Django ``DEBUG == True`` avoiding breaking production websites. In these cases they
 wizard may not show up, but the rest will work as intended.
 
+django-knocker
+++++++++++++++
+
+``djangocms-blog`` is integrated with `django-knocker <https://github.com/nephila/django-knocker>`_
+to provide real time desktop notifications.
+
+See `django-knocker documentation <https://django-knocker.readthedocs.org/>`_ for how to configure
+knocker.
+
 .. _settings:
 
 Global Settings

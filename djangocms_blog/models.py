@@ -37,6 +37,9 @@ try:
     from knocker.mixins import KnockerModel
 except ImportError:
     class KnockerModel(object):
+        """
+        Stub class if django-knocker is not installed
+        """
         pass
 
 
@@ -293,6 +296,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     @property
     def is_published(self):
+        """
+        Checks wether the blog post is *really* published by checking publishing dates too
+        """
         return (self.publish and
                 (self.date_published and self.date_published <= timezone.now()) and
                 (self.date_published_end is None or self.date_published_end > timezone.now())
