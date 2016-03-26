@@ -285,6 +285,13 @@ class Post(ModelMeta, TranslatableModel):
     def get_full_url(self):
         return self.build_absolute_uri(self.get_absolute_url())
 
+    @property
+    def is_published(self):
+        return (self.publish and
+                (self.date_published and self.date_published <= timezone.now()) and
+                (self.date_published_end is None or self.date_published_end > timezone.now())
+                )
+
 
 class BasePostPlugin(CMSPlugin):
     app_config = AppHookConfigField(
