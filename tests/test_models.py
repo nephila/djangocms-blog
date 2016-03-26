@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import re
 from copy import deepcopy
+from datetime import timedelta
 
 import parler
 from cms.api import add_plugin
@@ -334,6 +335,47 @@ class ModelsTest(BaseTest):
         post.set_current_language('en')
         post.meta_title = 'meta title'
         self.assertEqual(post.get_title(), 'meta title')
+
+        # Assess is_published property
+        post.publish = False
+        post.save()
+        self.assertFalse(post.is_published)
+
+        post.publish = True
+        post.date_published = now() + timedelta(days=1)
+        post.date_published_end = None
+        post.save()
+        self.assertFalse(post.is_published)
+
+        post.publish = True
+        post.date_published = now() - timedelta(days=1)
+        post.date_published_end = now() - timedelta(minutes=1)
+        post.save()
+        self.assertFalse(post.is_published)
+
+        post.publish = True
+        post.date_published = now() - timedelta(days=1)
+        post.date_published_end = None
+        post.save()
+        self.assertTrue(post.is_published)
+
+        post.publish = True
+        post.date_published = now() - timedelta(days=1)
+        post.date_published_end = now() + timedelta(minutes=1)
+        post.save()
+        self.assertTrue(post.is_published)
+
+        post.publish = False
+        post.date_published = now() - timedelta(days=1)
+        post.date_published_end = None
+        post.save()
+        self.assertFalse(post.is_published)
+
+        post.publish = False
+        post.date_published = now() - timedelta(days=1)
+        post.date_published_end = now() + timedelta(minutes=1)
+        post.save()
+        self.assertFalse(post.is_published)
 
     def test_urls(self):
         self.get_pages()
