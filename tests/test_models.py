@@ -19,6 +19,7 @@ from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
+from parler.utils.context import smart_override
 from taggit.models import Tag
 
 from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
@@ -26,6 +27,11 @@ from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import get_setting
 
 from .base import BaseTest
+
+try:
+    from unittest import SkipTest
+except ImportError:
+    from django.utils.unittest import SkipTest
 
 
 class AdminTest(BaseTest):
@@ -615,3 +621,36 @@ class ModelsTest(BaseTest):
 
         plugin = add_plugin(post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1)
         self.assertEqual(force_text(plugin.__str__()), 'generic blog plugin')
+
+
+class KnockerTest(BaseTest):
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import knocker
+            super(KnockerTest, cls).setUpClass()
+        except ImportError:
+            raise SkipTest('django-knocker not installed, skipping tests')
+
+    def test_model_attributes(self):
+        self.get_pages()
+        posts = self.get_posts()
+
+        for language in posts[0].get_available_languages():
+            with smart_override(language):
+                posts[0].set_current_language(language)
+                knock_create = posts[0].as_knock(True)
+                self.assertEqual(knock_create['title'],
+                                 'new {0}'.format(posts[0]._meta.verbose_name))
+                self.assertEqual(knock_create['message'], posts[0].title)
+                self.assertEqual(knock_create['language'], language)
+
+            for language in posts[0].get_available_languages():
+                with smart_override(language):
+                    posts[0].set_current_language(language)
+                    knock_create = posts[0].as_knock(False)
+                    self.assertEqual(knock_create['title'],
+                                     'new {0}'.format(posts[0]._meta.verbose_name))
+                    self.assertEqual(knock_create['message'], posts[0].title)
+                    self.assertEqual(knock_create['language'], language)

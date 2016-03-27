@@ -30,6 +30,7 @@ class WizardTest(BaseTest):
         except ImportError:
             # Not in django CMS 3.2+, no cleanup needed
             pass
+        super(WizardTest, self).setUp()
 
     @skipIf(LooseVersion(cms.__version__) < LooseVersion('3.2'),
             reason='Wizards not available for django CMS < 3.2')

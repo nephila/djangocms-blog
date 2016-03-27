@@ -13,7 +13,6 @@ HELPER_SETTINGS = dict(
         'filer',
         'parler',
         'meta',
-        'meta_mixin',
         'easy_thumbnails',
         'django.contrib.sitemaps',
         'djangocms_text_ckeditor',
@@ -107,6 +106,25 @@ except ImportError:
 try:
     import admin_enhancer  # pragma: no cover # NOQA
     HELPER_SETTINGS['INSTALLED_APPS'].append('admin_enhancer')
+except ImportError:
+    pass
+
+try:
+    import meta_mixin  # pragma: no cover # NOQA
+    HELPER_SETTINGS['INSTALLED_APPS'].append('meta_mixin')
+except ImportError:
+    pass
+
+try:
+    import knocker  # pragma: no cover # NOQA
+    HELPER_SETTINGS['INSTALLED_APPS'].append('knocker')
+    HELPER_SETTINGS['CHANNEL_LAYERS'] = {
+        'default': {
+            'BACKEND': 'asgiref.inmemory.ChannelLayer',
+            'ROUTING': 'knocker.routing.channel_routing',
+        },
+    }
+
 except ImportError:
     pass
 
