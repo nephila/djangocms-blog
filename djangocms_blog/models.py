@@ -197,11 +197,17 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         return self.safe_translation_getter('title')
 
     def save(self, *args, **kwargs):
+        """
+        Handle some auto configuration during save
+        """
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):
+        """
+        Handle some auto configuration during save
+        """
         if not translation.slug and translation.title:
             translation.slug = slugify(translation.title)
         super(Post, self).save_translation(translation, *args, **kwargs)
