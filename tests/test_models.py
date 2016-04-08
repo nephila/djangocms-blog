@@ -646,11 +646,11 @@ class KnockerTest(BaseTest):
                 self.assertEqual(knock_create['message'], posts[0].title)
                 self.assertEqual(knock_create['language'], language)
 
-            for language in posts[0].get_available_languages():
-                with smart_override(language):
-                    posts[0].set_current_language(language)
-                    knock_create = posts[0].as_knock(False)
-                    self.assertEqual(knock_create['title'],
-                                     'new {0}'.format(posts[0]._meta.verbose_name))
-                    self.assertEqual(knock_create['message'], posts[0].title)
-                    self.assertEqual(knock_create['language'], language)
+        for language in posts[0].get_available_languages():
+            with smart_override(language):
+                posts[0].set_current_language(language)
+                knock_create = posts[0].as_knock(False)
+                self.assertEqual(knock_create['title'],
+                                 'new {0}'.format(posts[0]._meta.verbose_name))
+                self.assertEqual(knock_create['message'], posts[0].title)
+                self.assertEqual(knock_create['language'], language)
