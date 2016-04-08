@@ -80,6 +80,7 @@ class TaggedFilterItem(object):
 
 class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
     start_date_field = 'date_published'
+    fallback_date_field = 'date_modified'
     end_date_field = 'date_published_end'
     publish_field = 'publish'
 
@@ -158,8 +159,14 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
         if queryset is None:
             queryset = self.get_queryset()
         queryset = queryset.on_site()
-        dates = queryset.values_list(queryset.start_date_field, flat=True)
-        dates = [(x.year, x.month) for x in dates]
+        dates_qs = queryset.values_list(queryset.start_date_field, queryset.fallback_date_field)
+        dates = []
+        for blog_dates in dates_qs:
+            if blog_dates[0]:
+                current_date = blog_dates[0]
+            else:
+                current_date = blog_dates[1]
+            dates.append((current_date.year, current_date.month,))
         date_counter = Counter(dates)
         dates = set(dates)
         dates = sorted(dates, reverse=True)
