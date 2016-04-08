@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import re
+from contextlib import contextmanager
 from copy import deepcopy
 from datetime import timedelta
 
@@ -32,6 +33,13 @@ try:
     from unittest import SkipTest
 except ImportError:
     from django.utils.unittest import SkipTest
+
+try:
+    from knocker.signals import pause_knocks
+except ImportError:
+    @contextmanager
+    def pause_knocks(obj):
+        yield
 
 
 class AdminTest(BaseTest):
@@ -242,17 +250,18 @@ class AdminTest(BaseTest):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]['en'])
 
-        with self.login_user_context(self.user):
-            with self.settings(BLOG_USE_PLACEHOLDER=False):
-                data = {'post_text': 'ehi text', 'title': 'some title'}
-                request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
-                msg_mid = MessageMiddleware()
-                msg_mid.process_request(request)
-                post_admin = admin.site._registry[Post]
-                response = post_admin.edit_field(request, post.pk, 'en')
-                self.assertEqual(response.status_code, 200)
-                modified_post = Post.objects.language('en').get(pk=post.pk)
-                self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
+        with pause_knocks(post):
+            with self.login_user_context(self.user):
+                with self.settings(BLOG_USE_PLACEHOLDER=False):
+                    data = {'post_text': 'ehi text', 'title': 'some title'}
+                    request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
+                    msg_mid = MessageMiddleware()
+                    msg_mid.process_request(request)
+                    post_admin = admin.site._registry[Post]
+                    response = post_admin.edit_field(request, post.pk, 'en')
+                    self.assertEqual(response.status_code, 200)
+                    modified_post = Post.objects.language('en').get(pk=post.pk)
+                    self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
 
 
 class ModelsTest(BaseTest):
@@ -422,6 +431,7 @@ class ModelsTest(BaseTest):
         self.assertTrue(re.match(r'.*/%s/$' % post.slug, post.get_absolute_url()))
 
     def test_manager(self):
+        self.get_pages()
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
 
@@ -601,6 +611,7 @@ class ModelsTest(BaseTest):
                 self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))
 
     def test_str_repr(self):
+        self.get_pages()
         post1 = self._get_post(self._post_data[0]['en'])
         post1.meta_description = ''
         post1.main_image = None

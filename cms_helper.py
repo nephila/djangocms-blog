@@ -90,7 +90,7 @@ HELPER_SETTINGS = dict(
     FILE_UPLOAD_TEMP_DIR=mkdtemp(),
     SITE_ID=1,
     HAYSTACK_CONNECTIONS={
-        "default": {}
+        'default': {}
     }
 )
 
@@ -133,5 +133,5 @@ def run():
     from djangocms_helper import runner
     runner.cms('djangocms_blog')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run()
