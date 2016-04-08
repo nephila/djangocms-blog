@@ -42,6 +42,10 @@ Supported django CMS versions:
 
 * django CMS 3.x
 
+.. warning:: Starting from version 0.8, date_published is not set anymore
+             when creating a post but rather when publishing.
+             This does not change the overall behavior, but be warned if you
+             expect it to be not null in custom code.
 
 .. warning:: Version 0.6 changes the field of LatestPostsPlugin.tags field.
              A datamigration is in place to migrate the data, but check that

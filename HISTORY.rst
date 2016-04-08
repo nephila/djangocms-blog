@@ -3,10 +3,11 @@
 History
 -------
 
-0.7.1 (unreleased)
+0.8.0 (unreleased)
 ++++++++++++++++++
 
 * Add django-knocker integration
+* Change the default value of date_published to null
 
 0.7.0 (2016-03-19)
 ++++++++++++++++++

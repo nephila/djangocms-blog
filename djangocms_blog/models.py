@@ -111,10 +111,8 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     date_created = models.DateTimeField(_('created'), auto_now_add=True)
     date_modified = models.DateTimeField(_('last modified'), auto_now=True)
-    date_published = models.DateTimeField(_('published since'),
-                                          default=timezone.now)
-    date_published_end = models.DateTimeField(_('published until'), null=True,
-                                              blank=True)
+    date_published = models.DateTimeField(_('published since'), null=True, blank=True)
+    date_published_end = models.DateTimeField(_('published until'), null=True, blank=True)
     publish = models.BooleanField(_('publish'), default=False)
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_('category'),
                                         related_name='blog_posts', blank=True)
@@ -198,6 +196,11 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     def __str__(self):
         return self.safe_translation_getter('title')
 
+    def save(self, *args, **kwargs):
+        if self.publish and self.date_published is None:
+            self.date_published = timezone.now()
+        super(Post, self).save(*args, **kwargs)
+
     def save_translation(self, translation, *args, **kwargs):
         if not translation.slug and translation.title:
             translation.slug = slugify(translation.title)
@@ -211,13 +214,17 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         with switch_language(self, lang):
             category = self.categories.first()
             kwargs = {}
+            if self.date_published:
+                current_date = self.date_published
+            else:
+                current_date = self.date_created
             urlconf = get_setting('PERMALINK_URLS')[self.app_config.url_patterns]
             if '<year>' in urlconf:
-                kwargs['year'] = self.date_published.year
+                kwargs['year'] = current_date.year
             if '<month>' in urlconf:
-                kwargs['month'] = '%02d' % self.date_published.month
+                kwargs['month'] = '%02d' % current_date.month
             if '<day>' in urlconf:
-                kwargs['day'] = '%02d' % self.date_published.day
+                kwargs['day'] = '%02d' % current_date.day
             if '<slug>' in urlconf:
                 kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
             if '<category>' in urlconf:

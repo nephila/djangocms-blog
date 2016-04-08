@@ -63,9 +63,9 @@ class ViewTest(BaseTest):
             view_obj.paginate_by = 1
             context = view_obj.get_context_data(object_list=view_obj.object_list)
             self.assertTrue(context['is_paginated'])
-            self.assertEqual(list(context['post_list']), [posts[2]])
+            self.assertEqual(list(context['post_list']), [posts[0]])
             self.assertEqual(context['paginator'].count, 3)
-            self.assertEqual(context['post_list'][0].title, 'Third post')
+            self.assertEqual(context['post_list'][0].title, 'First post')
             response = view_obj.render_to_response(context)
             self.assertContains(response, context['post_list'][0].get_absolute_url())
             self.assertEqual(getattr(request, BLOG_CURRENT_NAMESPACE), self.app_config_1)
@@ -79,7 +79,7 @@ class ViewTest(BaseTest):
             view_obj.kwargs = {}
             view_obj.object_list = view_obj.get_queryset()
             context = view_obj.get_context_data(object_list=view_obj.object_list)
-            self.assertEqual(context['post_list'][0].title, 'Terzo post')
+            self.assertEqual(context['post_list'][0].title, 'Primo post')
             response = view_obj.render_to_response(context)
             self.assertContains(response, context['post_list'][0].get_absolute_url())
             blog_menu = request.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
@@ -244,9 +244,9 @@ class ViewTest(BaseTest):
             self.assertTrue(context['category'])
             self.assertEqual(context['category'], self.category_1)
             self.assertTrue(context['is_paginated'])
-            self.assertEqual(list(context['post_list']), [posts[2]])
+            self.assertEqual(list(context['post_list']), [posts[0]])
             self.assertEqual(context['paginator'].count, 3)
-            self.assertEqual(context['post_list'][0].title, 'Third post')
+            self.assertEqual(context['post_list'][0].title, 'First post')
 
             request = self.get_page_request(pages[1], self.user, edit=False)
             view_obj.request = request
@@ -273,9 +273,9 @@ class ViewTest(BaseTest):
             self.assertTrue(context['author'])
             self.assertEqual(context['author'], self.user)
             self.assertTrue(context['is_paginated'])
-            self.assertEqual(list(context['post_list']), [posts[2]])
+            self.assertEqual(list(context['post_list']), [posts[0]])
             self.assertEqual(context['paginator'].count, 3)
-            self.assertEqual(context['post_list'][0].title, 'Third post')
+            self.assertEqual(context['post_list'][0].title, 'First post')
 
             request = self.get_page_request(pages[1], self.user, edit=False)
             view_obj.request = request
@@ -305,9 +305,9 @@ class ViewTest(BaseTest):
             context = view_obj.get_context_data(object_list=view_obj.object_list)
             self.assertTrue(context['tagged_entries'], 'tag-2')
             self.assertTrue(context['is_paginated'])
-            self.assertEqual(list(context['post_list']), [posts[1]])
+            self.assertEqual(list(context['post_list']), [posts[0]])
             self.assertEqual(context['paginator'].count, 2)
-            self.assertEqual(context['post_list'][0].title, 'Second post')
+            self.assertEqual(context['post_list'][0].title, 'First post')
 
     def test_feed(self):
         posts = self.get_posts()
