@@ -494,6 +494,8 @@ Per-Apphook settings
 * Twitter author handle: Per-Apphook setting for BLOG_TWITTER_AUTHOR
 * Google+ type: Per-Apphook setting for BLOG_GPLUS_TYPE
 * Google+ author name: Per-Apphook setting for BLOG_GPLUS_AUTHOR
+* Send notifications on post publish: Send desktop notifications when a post is published
+* Send notifications on post update: Send desktop notifications when a post is updated
 
 
 Import from Wordpress

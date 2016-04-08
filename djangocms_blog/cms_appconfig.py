@@ -127,7 +127,7 @@ class BlogConfigForm(AppDataForm):
     )
 
     send_knock_create = forms.BooleanField(
-        label=_('Send notifications on post creation'), required=False, initial=False,
+        label=_('Send notifications on post publish'), required=False, initial=False,
         help_text=_('Emits a desktop notification -if enabled- when publishing a new post')
     )
     send_knock_update = forms.BooleanField(
