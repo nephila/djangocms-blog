@@ -8,6 +8,8 @@ from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import escape, strip_tags
@@ -259,6 +261,10 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         return title.strip()
 
     def get_keywords(self):
+        """
+        Returns the list of keywords (as python list)
+        :return: list
+        """
         return self.safe_translation_getter('meta_keywords', default='').strip().split(',')
 
     def get_locale(self):
@@ -276,10 +282,16 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         return ''
 
     def get_tags(self):
+        """
+        Returns the list of object tags as comma separated list
+        """
         taglist = [tag.name for tag in self.tags.all()]
         return ','.join(taglist)
 
     def get_author(self):
+        """
+        Return the author (user) objects
+        """
         return self.author
 
     def _set_default_author(self, current_user):
@@ -303,6 +315,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
             return get_setting('IMAGE_FULL_SIZE')
 
     def get_full_url(self):
+        """
+        Return the url with protocol and domain url
+        """
         return self.build_absolute_uri(self.get_absolute_url())
 
     @property
@@ -314,6 +329,15 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                 (self.date_published and self.date_published <= timezone.now()) and
                 (self.date_published_end is None or self.date_published_end > timezone.now())
                 )
+
+    def should_knock(self, created=False):
+        """
+        Returns whether to emit knocks according to the post state
+        """
+        new = (self.app_config.send_knock_create and self.is_published and
+               self.date_published == self.date_modified)
+        updated = self.app_config.send_knock_update and self.is_published
+        return new or updated
 
 
 class BasePostPlugin(CMSPlugin):

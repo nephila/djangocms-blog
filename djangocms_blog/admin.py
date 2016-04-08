@@ -191,6 +191,12 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 ),
                 'classes': ('collapse',)
             }),
+            ('Notifications', {
+                'fields': (
+                    'config.send_knock_create', 'config.send_knock_update'
+                ),
+                'classes': ('collapse',)
+            }),
             ('Sitemap', {
                 'fields': (
                     'config.sitemap_changefreq', 'config.sitemap_priority',
