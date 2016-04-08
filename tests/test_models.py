@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import re
+from contextlib import contextmanager
 from copy import deepcopy
 from datetime import timedelta
 
@@ -19,6 +20,7 @@ from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
+from parler.utils.context import smart_override
 from taggit.models import Tag
 
 from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
@@ -26,6 +28,18 @@ from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import get_setting
 
 from .base import BaseTest
+
+try:
+    from unittest import SkipTest
+except ImportError:
+    from django.utils.unittest import SkipTest
+
+try:
+    from knocker.signals import pause_knocks
+except ImportError:
+    @contextmanager
+    def pause_knocks(obj):
+        yield
 
 
 class AdminTest(BaseTest):
@@ -236,17 +250,18 @@ class AdminTest(BaseTest):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]['en'])
 
-        with self.login_user_context(self.user):
-            with self.settings(BLOG_USE_PLACEHOLDER=False):
-                data = {'post_text': 'ehi text', 'title': 'some title'}
-                request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
-                msg_mid = MessageMiddleware()
-                msg_mid.process_request(request)
-                post_admin = admin.site._registry[Post]
-                response = post_admin.edit_field(request, post.pk, 'en')
-                self.assertEqual(response.status_code, 200)
-                modified_post = Post.objects.language('en').get(pk=post.pk)
-                self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
+        with pause_knocks(post):
+            with self.login_user_context(self.user):
+                with self.settings(BLOG_USE_PLACEHOLDER=False):
+                    data = {'post_text': 'ehi text', 'title': 'some title'}
+                    request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/?edit_fields=post_text')
+                    msg_mid = MessageMiddleware()
+                    msg_mid.process_request(request)
+                    post_admin = admin.site._registry[Post]
+                    response = post_admin.edit_field(request, post.pk, 'en')
+                    self.assertEqual(response.status_code, 200)
+                    modified_post = Post.objects.language('en').get(pk=post.pk)
+                    self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
 
 
 class ModelsTest(BaseTest):
@@ -416,6 +431,7 @@ class ModelsTest(BaseTest):
         self.assertTrue(re.match(r'.*/%s/$' % post.slug, post.get_absolute_url()))
 
     def test_manager(self):
+        self.get_pages()
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
 
@@ -595,6 +611,7 @@ class ModelsTest(BaseTest):
                 self.assertEqual(set(list(Post.objects.all().on_site())), set([post2, post3]))
 
     def test_str_repr(self):
+        self.get_pages()
         post1 = self._get_post(self._post_data[0]['en'])
         post1.meta_description = ''
         post1.main_image = None
@@ -615,3 +632,36 @@ class ModelsTest(BaseTest):
 
         plugin = add_plugin(post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1)
         self.assertEqual(force_text(plugin.__str__()), 'generic blog plugin')
+
+
+class KnockerTest(BaseTest):
+
+    @classmethod
+    def setUpClass(cls):
+        try:
+            import knocker
+            super(KnockerTest, cls).setUpClass()
+        except ImportError:
+            raise SkipTest('django-knocker not installed, skipping tests')
+
+    def test_model_attributes(self):
+        self.get_pages()
+        posts = self.get_posts()
+
+        for language in posts[0].get_available_languages():
+            with smart_override(language):
+                posts[0].set_current_language(language)
+                knock_create = posts[0].as_knock(True)
+                self.assertEqual(knock_create['title'],
+                                 'new {0}'.format(posts[0]._meta.verbose_name))
+                self.assertEqual(knock_create['message'], posts[0].title)
+                self.assertEqual(knock_create['language'], language)
+
+        for language in posts[0].get_available_languages():
+            with smart_override(language):
+                posts[0].set_current_language(language)
+                knock_create = posts[0].as_knock(False)
+                self.assertEqual(knock_create['title'],
+                                 'new {0}'.format(posts[0]._meta.verbose_name))
+                self.assertEqual(knock_create['message'], posts[0].title)
+                self.assertEqual(knock_create['language'], language)

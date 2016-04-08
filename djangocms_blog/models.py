@@ -17,6 +17,7 @@ from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta_mixin.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
+from parler.utils.context import switch_language
 from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
@@ -203,22 +204,25 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         super(Post, self).save_translation(translation, *args, **kwargs)
 
     def get_absolute_url(self, lang=None):
-        if not lang:
+        if not lang or lang not in self.get_available_languages():
+            lang = self.get_current_language()
+        if not lang or lang not in self.get_available_languages():
             lang = get_language()
-        category = self.categories.first()
-        kwargs = {}
-        urlconf = get_setting('PERMALINK_URLS')[self.app_config.url_patterns]
-        if '<year>' in urlconf:
-            kwargs['year'] = self.date_published.year
-        if '<month>' in urlconf:
-            kwargs['month'] = '%02d' % self.date_published.month
-        if '<day>' in urlconf:
-            kwargs['day'] = '%02d' % self.date_published.day
-        if '<slug>' in urlconf:
-            kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
-        if '<category>' in urlconf:
-            kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
-        return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
+        with switch_language(self, lang):
+            category = self.categories.first()
+            kwargs = {}
+            urlconf = get_setting('PERMALINK_URLS')[self.app_config.url_patterns]
+            if '<year>' in urlconf:
+                kwargs['year'] = self.date_published.year
+            if '<month>' in urlconf:
+                kwargs['month'] = '%02d' % self.date_published.month
+            if '<day>' in urlconf:
+                kwargs['day'] = '%02d' % self.date_published.day
+            if '<slug>' in urlconf:
+                kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
+            if '<category>' in urlconf:
+                kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
+            return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
 
     def get_meta_attribute(self, param):
         """

@@ -40,8 +40,8 @@ class MenuTest(BaseTest):
         """
         Tests if all categories are present in the menu
         """
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
         self.reload_urlconf()
 
         for lang in ('en', 'it'):
@@ -66,8 +66,8 @@ class MenuTest(BaseTest):
         """
         Tests menu structure based on menu_structure configuration
         """
-        posts = self.get_posts()
         self.get_pages()
+        posts = self.get_posts()
 
         cats_url = {}
         posts_url = {}
@@ -77,7 +77,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             with smart_override(lang):
                 cats_url[lang] = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
-                posts_url[lang] = set([post.get_absolute_url() for post in posts if post.has_translation(lang) and post.app_config == self.app_config_1])
+                posts_url[lang] = set([post.get_absolute_url(lang) for post in posts if post.has_translation(lang) and post.app_config == self.app_config_1])
 
         # No item in the menu
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_NONE
@@ -132,8 +132,8 @@ class MenuTest(BaseTest):
         Tests if correct category is selected in the menu
         according to context (view object)
         """
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
 
         tests = (
             # view class, view kwarg, view object, category

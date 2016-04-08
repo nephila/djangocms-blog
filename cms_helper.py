@@ -13,7 +13,6 @@ HELPER_SETTINGS = dict(
         'filer',
         'parler',
         'meta',
-        'meta_mixin',
         'easy_thumbnails',
         'django.contrib.sitemaps',
         'djangocms_text_ckeditor',
@@ -91,7 +90,7 @@ HELPER_SETTINGS = dict(
     FILE_UPLOAD_TEMP_DIR=mkdtemp(),
     SITE_ID=1,
     HAYSTACK_CONNECTIONS={
-        "default": {}
+        'default': {}
     }
 )
 
@@ -110,10 +109,29 @@ try:
 except ImportError:
     pass
 
+try:
+    import meta_mixin  # pragma: no cover # NOQA
+    HELPER_SETTINGS['INSTALLED_APPS'].append('meta_mixin')
+except ImportError:
+    pass
+
+try:
+    import knocker  # pragma: no cover # NOQA
+    HELPER_SETTINGS['INSTALLED_APPS'].append('knocker')
+    HELPER_SETTINGS['CHANNEL_LAYERS'] = {
+        'default': {
+            'BACKEND': 'asgiref.inmemory.ChannelLayer',
+            'ROUTING': 'knocker.routing.channel_routing',
+        },
+    }
+
+except ImportError:
+    pass
+
 
 def run():
     from djangocms_helper import runner
     runner.cms('djangocms_blog')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     run()
