@@ -666,3 +666,51 @@ class KnockerTest(BaseTest):
                                  'new {0}'.format(posts[0]._meta.verbose_name))
                 self.assertEqual(knock_create['message'], posts[0].title)
                 self.assertEqual(knock_create['language'], language)
+
+    def test_should_knock(self):
+        self.get_pages()
+
+        post_data = {
+            'author': self.user,
+            'title': 'post 1',
+            'abstract': 'post 1',
+            'meta_description': 'post 1',
+            'meta_keywords': 'post 1',
+            'app_config': self.app_config_1
+        }
+        post = Post.objects.create(**post_data)
+        # Object is not published, no knock
+        self.assertFalse(post.should_knock())
+        post.publish = True
+        post.save()
+        # Object is published, send knock
+        self.assertTrue(post.should_knock())
+
+        # Knock disabled for updates
+        self.app_config_1.app_data.config.send_knock_update = False
+        self.app_config_1.save()
+        post.abstract = 'what'
+        post.save()
+        self.assertFalse(post.should_knock())
+
+        # Knock disabled for publishing
+        self.app_config_1.app_data.config.send_knock_create = False
+        self.app_config_1.save()
+        post_data = {
+            'author': self.user,
+            'title': 'post 2',
+            'abstract': 'post 2',
+            'meta_description': 'post 2',
+            'meta_keywords': 'post 2',
+            'app_config': self.app_config_1
+        }
+        post = Post.objects.create(**post_data)
+        self.assertFalse(post.should_knock())
+        post.publish = True
+        post.save()
+        self.assertFalse(post.should_knock())
+
+        # Restore default values
+        self.app_config_1.app_data.config.send_knock_create = True
+        self.app_config_1.app_data.config.send_knock_update = True
+        self.app_config_1.save()

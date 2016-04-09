@@ -125,4 +125,13 @@ class BlogConfigForm(AppDataForm):
         max_length=200, label=_('Google+ author name'), required=False,
         initial=get_setting('GPLUS_AUTHOR')
     )
+
+    send_knock_create = forms.BooleanField(
+        label=_('Send notifications on post publish'), required=False, initial=False,
+        help_text=_('Emits a desktop notification -if enabled- when publishing a new post')
+    )
+    send_knock_update = forms.BooleanField(
+        label=_('Send notifications on post update'), required=False, initial=False,
+        help_text=_('Emits a desktop notification -if enabled- when editing a published post')
+    )
 setup_config(BlogConfigForm, BlogConfig)

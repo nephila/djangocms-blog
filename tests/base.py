@@ -117,8 +117,12 @@ class BaseTest(BaseTestCase):
             namespace='sample_app2', app_title='app2', object_name='Article'
         )
         cls.app_config_1.app_data.config.paginate_by = 1
+        cls.app_config_1.app_data.config.send_knock_create = True
+        cls.app_config_1.app_data.config.send_knock_update = True
         cls.app_config_1.save()
         cls.app_config_2.app_data.config.paginate_by = 2
+        cls.app_config_2.app_data.config.send_knock_create = True
+        cls.app_config_2.app_data.config.send_knock_update = True
         cls.app_config_2.save()
         cls.app_configs = {
             'sample_app': cls.app_config_1,
