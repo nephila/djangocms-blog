@@ -242,21 +242,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         Retrieves django-meta attributes from apphook config instance
         :param param: django-meta attribute passed as key
         """
-        attr = None
-        value = getattr(self.app_config, param)
-        if value:
-            attr = getattr(self, value, None)
-        if attr is not None:
-            if callable(attr):
-                try:
-                    data = attr(param)
-                except TypeError:
-                    data = attr()
-            else:
-                data = attr
-        else:
-            data = value
-        return data
+        return self._get_meta_value(param, getattr(self.app_config, param)) or ''
 
     def get_title(self):
         title = self.safe_translation_getter('meta_title', any_language=True)

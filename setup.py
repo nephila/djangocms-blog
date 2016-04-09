@@ -36,7 +36,7 @@ setup(
         'django-taggit-autosuggest',
         'djangocms-text-ckeditor',
         'cmsplugin-filer',
-        'django-meta>=1.1',
+        'django-meta>=1.2',
         'aldryn-apphooks-config>=0.2.6',
         'djangocms-apphook-setup',
         'aldryn-search'
