@@ -16,6 +16,7 @@ env:
   - TOXENV='pep8'
   - TOXENV='isort'
   - DJANGO='django19' CMS='cms32'
+  - DJANGO='django19' CMS='knocker'
   - DJANGO='django18' CMS='cms32'
   - DJANGO='django18' CMS='cms31'
   - DJANGO='django17' CMS='cms32'
@@ -74,8 +75,12 @@ matrix:
     env: DJANGO='django18' CMS='cms32'
   - python: 2.6
     env: DJANGO='django19' CMS='cms32'
+  - python: 2.6
+    env: DJANGO='django19' CMS='knocker'
   - python: 3.3
     env: DJANGO='django19' CMS='cms32'
+  - python: 3.3
+    env: DJANGO='django19' CMS='knocker'
   - python: 3.5
     env: DJANGO='django16' CMS='cms30'
   - python: 3.5
