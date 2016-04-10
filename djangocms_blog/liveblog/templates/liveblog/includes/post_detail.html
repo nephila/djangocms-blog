@@ -1,0 +1,11 @@
+{% load cms_tags sekizai_tags %}
+{% add_data "js-script" "liveblog/js/reconnecting-websocket.min.js" %}
+{% add_data "js-script" "liveblog/js/liveblog.js" %}
+<script>
+    var liveblog_apphook = '{{ post.app_config.namespace }}';
+    var liveblog_language = '{{ post.get_current_language }}';
+    var liveblog_post = '{{ post.slug }}';
+</script>
+<div class="blog-content--live" id="liveblog-posts">
+    {% render_placeholder post.liveblog %}
+</div>

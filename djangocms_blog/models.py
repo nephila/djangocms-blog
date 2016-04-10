@@ -163,6 +163,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         meta={'unique_together': (('language_code', 'slug'),)}
     )
     content = PlaceholderField('post_content', related_name='post_content')
+    liveblog = PlaceholderField('live_blog', related_name='live_blog')
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
@@ -349,6 +350,14 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     def get_cache_key(self, language, prefix):
         return 'djangocms-blog:{2}:{0}:{1}'.format(language, self.guid, prefix)
+
+    @property
+    def liveblog_group(self):
+        return 'liveblog/{apphook}/{lang}/{post}'.format(
+            lang=self.get_current_language(),
+            apphook=self.app_config.namespace,
+            post=self.safe_translation_getter('slug', any_language=True)
+        )
 
 
 class BasePostPlugin(CMSPlugin):

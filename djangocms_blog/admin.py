@@ -89,6 +89,11 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         urls.extend(super(PostAdmin, self).get_urls())
         return urls
 
+    def post_add_plugin(self, request, placeholder, plugin):
+        if plugin.plugin_type in get_setting('LIVEBLOG_PLUGINS'):
+            plugin = plugin.move(plugin.get_siblings().first(), 'first-sibling')
+        return super(PostAdmin, self).post_add_plugin(request, placeholder, plugin)
+
     def publish_post(self, request, pk):
         """
         Admin view to publish a single post

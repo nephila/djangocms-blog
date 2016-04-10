@@ -129,6 +129,8 @@ def get_setting(name):
             settings, 'BLOG_FEED_LATEST_ITEMS', 10),
         'BLOG_FEED_TAGS_ITEMS': getattr(
             settings, 'BLOG_FEED_TAGS_ITEMS', 10),
+        'BLOG_LIVEBLOG_PLUGINS': getattr(
+            settings, 'BLOG_LIVEBLOG_PLUGINS', ('LiveblogPlugin',)),
 
     }
     return default['BLOG_%s' % name]
