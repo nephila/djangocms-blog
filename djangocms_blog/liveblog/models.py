@@ -49,7 +49,6 @@ class Liveblog(AbstractText):
         return post.liveblog_group
 
     def render(self):
-        print(self.position, self.path)
         return self.render_plugin()
 
     def send(self):

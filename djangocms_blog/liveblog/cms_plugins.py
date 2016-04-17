@@ -14,6 +14,7 @@ class LiveblogPlugin(TextPlugin):
     module = get_setting('PLUGIN_MODULE_NAME')
     name = _('Liveblog item')
     model = Liveblog
+    fields = ('title', 'body', 'publish')
 
     def _get_render_template(self, context, instance, placeholder):
         if instance.publish:

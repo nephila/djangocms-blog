@@ -1,4 +1,5 @@
 <div class="post" data-post-id="{{ instance.id }}">
-    <h2>{{ instance.title }}{{ instance.creation_date|date:"D d M Y H:i" }}</h2>
+    <h3>{{ instance.title }}</h3>
+    <h4>{{ instance.creation_date|date:"D d M Y H:i" }}</h4>
     {{ instance.content|safe }}
 </div>
