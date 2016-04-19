@@ -20,12 +20,13 @@ from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from djangocms_helper.utils import CMS_30
+from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override
 from taggit.models import Tag
 
 from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
 from djangocms_blog.models import BlogCategory, Post
-from djangocms_blog.settings import get_setting
+from djangocms_blog.settings import MENU_TYPE_NONE, get_setting
 
 from .base import BaseTest
 
@@ -262,6 +263,30 @@ class AdminTest(BaseTest):
                     self.assertEqual(response.status_code, 200)
                     modified_post = Post.objects.language('en').get(pk=post.pk)
                     self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
+
+    def test_admin_clear_menu(self):
+        """
+        Tests that after changing apphook config menu structure the menu content is different: new
+        value is taken immediately into account
+        """
+        pages = self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+
+        request = self.get_page_request(None, self.user, r'/en/page-two/')
+        first_nodes = menu_pool.get_nodes(request)
+        with pause_knocks(post):
+            with self.login_user_context(self.user):
+                data = dict(namespace='sample_app', app_title='app1', object_name='Blog')
+                data['config-menu_structure'] = MENU_TYPE_NONE
+                data['config-sitemap_changefreq'] = 'weekly'
+                data['config-sitemap_priority'] = '0.5'
+                request = self.post_request(pages[0], 'en', user=self.user, data=data)
+                msg_mid = MessageMiddleware()
+                msg_mid.process_request(request)
+                config_admin = admin.site._registry[BlogConfig]
+                response = config_admin.change_view(request, str(self.app_config_1.pk))
+                second_nodes = menu_pool.get_nodes(request)
+                self.assertNotEqual(len(first_nodes), len(second_nodes))
 
 
 class ModelsTest(BaseTest):
