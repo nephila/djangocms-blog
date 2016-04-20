@@ -235,6 +235,15 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             }),
         ]
 
+    def save_model(self, request, obj, form, change):
+        """
+        Clear menu cache when changing menu structure
+        """
+        if 'config.menu_structure' in form.changed_data:
+            from menus.menu_pool import menu_pool
+            menu_pool.clear(all=True)
+        return super(BlogConfigAdmin, self).save_model(request, obj, form, change)
+
 admin.site.register(BlogCategory, BlogCategoryAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(BlogConfig, BlogConfigAdmin)
