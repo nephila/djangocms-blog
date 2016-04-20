@@ -8,6 +8,7 @@ History
 
 * Add django-knocker integration
 * Change the default value of date_published to null
+* Clear menu cache when changing menu layout in apphook config
 
 0.7.0 (2016-03-19)
 ++++++++++++++++++
