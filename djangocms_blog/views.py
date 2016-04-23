@@ -72,6 +72,14 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     base_template_name = 'post_detail.html'
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
+    instant_article = False
+
+    def get_template_names(self):
+        if self.instant_article:
+            template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
+            return os.path.join(template_path, 'post_instant_article.html')
+        else:
+            return super(PostDetailView, self).get_template_names()
 
     def get_queryset(self):
         queryset = self.model._default_manager.all()
@@ -88,6 +96,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     def get_context_data(self, **kwargs):
         context = super(PostDetailView, self).get_context_data(**kwargs)
         context['meta'] = self.get_object().as_meta()
+        context['instant_article'] = self.instant_article
         context['use_placeholder'] = get_setting('USE_PLACEHOLDER')
         setattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), self.get_object())
         return context
