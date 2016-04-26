@@ -70,6 +70,10 @@ class ViewTest(BaseTest):
             self.assertContains(response, context['post_list'][0].get_absolute_url())
             self.assertEqual(getattr(request, BLOG_CURRENT_NAMESPACE), self.app_config_1)
 
+            posts[1].sites.add(self.site_2)
+            self.assertTrue(view_obj.get_queryset().count(), 2)
+            self.assertFalse(posts[1] in view_obj.get_queryset())
+
         with smart_override('it'):
             request = self.get_page_request(pages[1], self.user, lang='it', edit=True)
             view_obj = PostListView()
