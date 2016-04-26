@@ -44,7 +44,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
         setattr(self.request, get_setting('CURRENT_NAMESPACE'), self.config)
-        return queryset
+        return queryset.on_site()
 
     def get_template_names(self):
         template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
