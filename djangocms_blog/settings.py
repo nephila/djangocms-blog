@@ -10,7 +10,7 @@ MENU_TYPE_NONE = 'none'
 def get_setting(name):
     from django.conf import settings
     from django.utils.translation import ugettext_lazy as _
-    from meta_mixin import settings as meta_settings
+    from meta import settings as meta_settings
 
     PERMALINKS = (
         ('full_date', _('Full date')),

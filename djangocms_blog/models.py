@@ -15,7 +15,7 @@ from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
-from meta_mixin.models import ModelMeta
+from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.utils.context import switch_language
 from taggit_autosuggest.managers import TaggableManager

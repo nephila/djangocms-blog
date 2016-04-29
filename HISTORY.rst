@@ -6,9 +6,13 @@ History
 0.8.0 (unreleased)
 ++++++++++++++++++
 
-* Add django-knocker integration
-* Change the default value of date_published to null
-* Clear menu cache when changing menu layout in apphook config
+* Added django-knocker integration
+* Changed the default value of date_published to null
+* Cleared menu cache when changing menu layout in apphook config
+* Fixed error with wizard multiple registration
+* Made django CMS 3.2 the default version
+* Fixed error with on_site filter
+* Removed meta-mixin compatibility code
 
 0.7.0 (2016-03-19)
 ++++++++++++++++++
