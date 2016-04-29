@@ -14,7 +14,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.encoding import force_text, python_2_unicode_compatible, force_bytes
+from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
 from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _

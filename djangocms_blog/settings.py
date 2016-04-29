@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
-from django.utils.safestring import mark_safe
-
 MENU_TYPE_COMPLETE = 'complete'
 MENU_TYPE_CATEGORIES = 'categories'
 MENU_TYPE_POSTS = 'posts'

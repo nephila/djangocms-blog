@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
-from django.core.cache import cache
-from django.utils.encoding import force_text
-from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
-
 from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.utils.encoding import force_text
+from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _, get_language_from_request
+from django.utils.translation import get_language_from_request, ugettext as _
 
 from djangocms_blog.settings import get_setting
 from djangocms_blog.views import PostDetailView
+
 from .models import Post
 
 
