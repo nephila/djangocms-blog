@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import warnings
+
 from cms.utils.permissions import get_current_user
 from django import forms
 from django.conf import settings
@@ -46,8 +48,9 @@ try:
         pass
 
     for config in BlogConfig.objects.all().order_by('namespace'):
-        new_wizard = type(str(slugify(config.app_title)), (PostWizard,), {})
-        new_form = type(str('{0}Form').format(slugify(config.app_title)), (PostWizardForm,), {
+        seed = slugify('{0}.{1}'.format(config.app_title, config.namespace))
+        new_wizard = type(str(seed), (PostWizard,), {})
+        new_form = type(str('{0}Form').format(seed), (PostWizardForm,), {
             'default_appconfig': config.pk
         })
         post_wizard = new_wizard(
@@ -62,6 +65,10 @@ try:
         except AlreadyRegisteredException:  # pragma: no cover
             if settings.DEBUG:
                 raise
+            else:
+                warnings.warn('Wizard {0} cannot be registered. Please make sure that '
+                              'BlogConfig.namespace {1} and BlogConfig.app_title {2} are'
+                              'unique together'.format(seed, config.namespace, config.app_title))
 except ImportError:
     # For django CMS version not supporting wizards just ignore this file
     pass
