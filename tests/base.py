@@ -3,7 +3,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from copy import deepcopy
 
-from cmsplugin_filer_image.models import ThumbnailOption
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
@@ -14,6 +13,13 @@ from parler.utils.context import smart_override
 
 from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.models import BlogCategory, Post
+
+
+try:
+    from filer.models import ThumbnailOption  # NOQA
+except ImportError:
+    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
+
 
 User = get_user_model()
 
