@@ -14,7 +14,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_text, python_2_unicode_compatible, force_bytes
 from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
@@ -205,7 +205,11 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     def guid(self, language=None):
         if not language:
             language = self.get_current_language()
-        return hashlib.sha256(self.get_absolute_url(language)).hexdigest()
+        base_string = '{0}-{1}-{2}'.format(
+            language, self.app_config.namespace,
+            self.safe_translation_getter('slug', language_code=language, any_language=True)
+        )
+        return hashlib.sha256(force_bytes(base_string)).hexdigest()
 
     def save(self, *args, **kwargs):
         """
@@ -439,14 +443,14 @@ class GenericBlogPlugin(BasePostPlugin):
 
 
 @receiver(pre_delete, sender=Post)
-def cleanup_post(sender, instance, **kwargs):
+def pre_delete_post(sender, instance, **kwargs):
     for language in instance.get_available_languages():
         key = instance.get_cache_key(language, 'feed')
         cache.delete(key)
 
 
 @receiver(post_save, sender=Post)
-def cleanup_pagemeta(sender, instance, **kwargs):
+def post_save_post(sender, instance, **kwargs):
     for language in instance.get_available_languages():
         key = instance.get_cache_key(language, 'feed')
         cache.delete(key)
