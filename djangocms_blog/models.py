@@ -205,7 +205,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     def guid(self, language=None):
         if not language:
             language = self.get_current_language()
-        base_string = '{0}-{1}-{2}'.format(
+        base_string = '{0}{2}{1}'.format(
             language, self.app_config.namespace,
             self.safe_translation_getter('slug', language_code=language, any_language=True)
         )
