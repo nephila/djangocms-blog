@@ -5,7 +5,7 @@ import cms.models.fields
 import django.utils.timezone
 import djangocms_text_ckeditor.fields
 import filer.fields.image
-import meta_mixin.models
+import meta.models
 import taggit_autosuggest.managers
 from django.conf import settings
 from django.db import migrations, models
@@ -106,7 +106,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'blog article',
                 'verbose_name_plural': 'blog articles',
             },
-            bases=(meta_mixin.models.ModelMeta, models.Model),
+            bases=(meta.models.ModelMeta, models.Model),
         ),
         migrations.CreateModel(
             name='PostTranslation',
