@@ -123,6 +123,12 @@ def get_setting(name):
             settings, 'BLOG_ARCHIVE_PLUGIN_NAME', _('Archive')),
         'BLOG_FEED_CACHE_TIMEOUT': getattr(
             settings, 'BLOG_FEED_CACHE_TIMEOUT', 3600),
+        'BLOG_FEED_INSTANT_ITEMS': getattr(
+            settings, 'BLOG_FEED_INSTANT_ITEMS', 50),
+        'BLOG_FEED_LATEST_ITEMS': getattr(
+            settings, 'BLOG_FEED_LATEST_ITEMS', 10),
+        'BLOG_FEED_TAGS_ITEMS': getattr(
+            settings, 'BLOG_FEED_TAGS_ITEMS', 10),
 
     }
     return default['BLOG_%s' % name]

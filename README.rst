@@ -455,6 +455,10 @@ Global Settings
 * BLOG_TAGS_PLUGIN_NAME: Blog tags plugin name (default: ``Tags``)
 * BLOG_CATEGORY_PLUGIN_NAME: Blog categories plugin name (default: ``Categories``)
 * BLOG_ARCHIVE_PLUGIN_NAME: Blog archive plugin name (default: ``Archive``)
+* BLOG_FEED_CACHE_TIMEOUT: Cache timeout for RSS feeds
+* BLOG_FEED_INSTANT_ITEMS: Number of items in Instant Article feed
+* BLOG_FEED_LATEST_ITEMS: Number of items in latest items feed
+* BLOG_FEED_TAGS_ITEMS: Number of items in per tags feed
 
 Read-only settings
 ++++++++++++++++++
