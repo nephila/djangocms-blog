@@ -2,7 +2,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os.path
-from django.utils.encoding import force_text
 
 from aldryn_apphooks_config.utils import get_app_instance
 from cms.toolbar.items import ModalItem
@@ -10,13 +9,14 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
-from djangocms_blog.feeds import LatestEntriesFeed, TagFeed, FBInstantArticles
+from djangocms_blog.feeds import FBInstantArticles, LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.settings import get_setting
 from djangocms_blog.sitemaps import BlogSitemap

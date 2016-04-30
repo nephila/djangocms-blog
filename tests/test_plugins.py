@@ -77,50 +77,6 @@ class PluginTest(BaseTest):
         self.assertEqual(casted_categories.tags.count(), 0)
         self.assertEqual(casted_categories.categories.count(), 1)
 
-    def test_plugin_authors(self):
-        pages = self.get_pages()
-        posts = self.get_posts()
-        posts[0].publish = True
-        posts[0].save()
-        posts[1].publish = True
-        posts[1].save()
-        ph = pages[0].placeholders.get(slot='content')
-        plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
-
-        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
-        rendered = plugin.render_plugin(context, ph)
-        self.assertTrue(rendered.find('No article found') > -1)
-
-        plugin.authors.add(self.user)
-        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
-        rendered = plugin.render_plugin(context, ph)
-        self.assertTrue(rendered.find('/en/blog/author/admin/') > -1)
-        self.assertTrue(rendered.find('2 articles') > -1)
-
-        plugin.authors.add(self.user_staff)
-        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
-        rendered = plugin.render_plugin(context, ph)
-        self.assertTrue(rendered.find('/en/blog/author/staff/') > -1)
-        self.assertTrue(rendered.find('0 articles') > -1)
-
-        plugin.authors.add(self.user_normal)
-        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
-        rendered = plugin.render_plugin(context, ph)
-        self.assertTrue(rendered.find('/en/blog/author/normal/') > -1)
-        self.assertTrue(rendered.find('0 articles') > -1)
-
-        # Checking copy relations
-        ph = pages[0].placeholders.get(slot='content')
-        original = ph.get_plugins('en')
-        pages[0].publish('en')
-        published = pages[0].get_public_object()
-        ph = published.placeholders.get(slot='content')
-        new = ph.get_plugins('en')
-        self.assertNotEqual(original, new)
-
-        casted_authors, __ = new[0].get_plugin_instance()
-        self.assertEqual(casted_authors.authors.count(), 3)
-
     def test_plugin_tags(self):
         pages = self.get_pages()
         posts = self.get_posts()
@@ -196,3 +152,50 @@ class PluginTest(BaseTest):
         self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('whatever', plugin_class.base_render_template))
         self.app_config_1.app_data.config.template_prefix = ''
         self.app_config_1.save()
+
+
+class PluginTest2(BaseTest):
+
+    def test_plugin_authors(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[0].publish = True
+        posts[0].save()
+        posts[1].publish = True
+        posts[1].save()
+        ph = pages[0].placeholders.get(slot='content')
+        plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        self.assertTrue(rendered.find('No article found') > -1)
+
+        plugin.authors.add(self.user)
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        self.assertTrue(rendered.find('/en/blog/author/admin/') > -1)
+        self.assertTrue(rendered.find('2 articles') > -1)
+
+        plugin.authors.add(self.user_staff)
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        self.assertTrue(rendered.find('/en/blog/author/staff/') > -1)
+        self.assertTrue(rendered.find('0 articles') > -1)
+
+        plugin.authors.add(self.user_normal)
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        self.assertTrue(rendered.find('/en/blog/author/normal/') > -1)
+        self.assertTrue(rendered.find('0 articles') > -1)
+
+        # Checking copy relations
+        ph = pages[0].placeholders.get(slot='content')
+        original = ph.get_plugins('en')
+        pages[0].publish('en')
+        published = pages[0].get_public_object()
+        ph = published.placeholders.get(slot='content')
+        new = ph.get_plugins('en')
+        self.assertNotEqual(original, new)
+
+        casted_authors, __ = new[0].get_plugin_instance()
+        self.assertEqual(casted_authors.authors.count(), 3)
