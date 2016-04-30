@@ -121,6 +121,8 @@ def get_setting(name):
             settings, 'BLOG_CATEGORY_PLUGIN_NAME', _('Categories')),
         'BLOG_ARCHIVE_PLUGIN_NAME': getattr(
             settings, 'BLOG_ARCHIVE_PLUGIN_NAME', _('Archive')),
+        'BLOG_FEED_CACHE_TIMEOUT': getattr(
+            settings, 'BLOG_FEED_CACHE_TIMEOUT', 3600),
 
     }
     return default['BLOG_%s' % name]

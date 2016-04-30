@@ -9,13 +9,14 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
-from djangocms_blog.feeds import LatestEntriesFeed, TagFeed
+from djangocms_blog.feeds import FBInstantArticles, LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.settings import get_setting
 from djangocms_blog.sitemaps import BlogSitemap
@@ -349,6 +350,29 @@ class ViewTest(BaseTest):
                 feed.namespace = self.app_config_1.namespace
                 feed.config = self.app_config_1
                 self.assertEqual(list(feed.items('tag-2')), [posts[0]])
+
+    def test_instant_articles(self):
+        posts = self.get_posts()
+        pages = self.get_pages()
+
+        with smart_override('en'):
+            with switch_language(posts[0], 'en'):
+                request = self.get_page_request(
+                    pages[1], self.user, path=posts[0].get_absolute_url()
+                )
+
+                feed = FBInstantArticles()
+                feed.namespace, feed.config = get_app_instance(request)
+                self.assertEqual(list(feed.items()), [posts[0]])
+                xml = feed(request)
+                self.assertContains(xml, '<guid>{0}</guid>'.format(posts[0].guid))
+                self.assertContains(xml, 'content:encoded')
+                self.assertContains(xml, 'class="op-published" datetime="{0}"'.format(
+                    posts[0].date_published.isoformat()
+                ))
+                self.assertContains(xml, '<link rel="canonical" href="{0}"/>'.format(
+                    posts[0].get_full_url()
+                ))
 
     def test_sitemap(self):
         posts = self.get_posts()

@@ -3,7 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from django.conf.urls import url
 
-from .feeds import LatestEntriesFeed, TagFeed
+from .feeds import FBInstantArticles, LatestEntriesFeed, TagFeed
 from .settings import get_setting
 from .views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
@@ -27,6 +27,8 @@ urlpatterns = [
         PostListView.as_view(), name='posts-latest'),
     url(r'^feed/$',
         LatestEntriesFeed(), name='posts-latest-feed'),
+    url(r'^feed/fb/$',
+        FBInstantArticles(), name='posts-latest-feed-fb'),
     url(r'^(?P<year>\d{4})/$',
         PostArchiveView.as_view(), name='posts-archive'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$',

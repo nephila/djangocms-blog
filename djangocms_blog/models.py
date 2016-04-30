@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import hashlib
+
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
 from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
@@ -196,6 +201,16 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     def __str__(self):
         return self.safe_translation_getter('title')
 
+    @property
+    def guid(self, language=None):
+        if not language:
+            language = self.get_current_language()
+        base_string = '{0}-{1}-{2}'.format(
+            language, self.app_config.namespace,
+            self.safe_translation_getter('slug', language_code=language, any_language=True)
+        )
+        return hashlib.sha256(force_bytes(base_string)).hexdigest()
+
     def save(self, *args, **kwargs):
         """
         Handle some auto configuration during save
@@ -329,6 +344,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         updated = self.app_config.send_knock_update and self.is_published
         return new or updated
 
+    def get_cache_key(self, language, prefix):
+        return 'djangocms-blog:{2}:{0}:{1}'.format(language, self.guid, prefix)
+
 
 class BasePostPlugin(CMSPlugin):
     app_config = AppHookConfigField(
@@ -422,3 +440,17 @@ class GenericBlogPlugin(BasePostPlugin):
 
     def __str__(self):
         return force_text(_('generic blog plugin'))
+
+
+@receiver(pre_delete, sender=Post)
+def pre_delete_post(sender, instance, **kwargs):
+    for language in instance.get_available_languages():
+        key = instance.get_cache_key(language, 'feed')
+        cache.delete(key)
+
+
+@receiver(post_save, sender=Post)
+def post_save_post(sender, instance, **kwargs):
+    for language in instance.get_available_languages():
+        key = instance.get_cache_key(language, 'feed')
+        cache.delete(key)
