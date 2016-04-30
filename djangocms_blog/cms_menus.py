@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.apphook_pool import apphook_pool
 from cms.menu_bases import CMSAttachMenu
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import resolve
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
@@ -32,6 +33,10 @@ class BlogCategoryMenu(CMSAttachMenu):
         nodes = []
 
         language = get_language_from_request(request, check_path=True)
+        current_site = get_current_site(request)
+
+        if self.instance.site != current_site:
+            return []
 
         categories_menu = False
         posts_menu = False
