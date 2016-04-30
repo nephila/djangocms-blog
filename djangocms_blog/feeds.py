@@ -81,6 +81,7 @@ class FBInstantFeed(Rss201rev2Feed):
         handler._write(force_text(item['content']))
         handler._write(']]>')
         handler.endElement('content:encoded')
+        handler.addQuickElement('guid', item['guid'])
 
 
 class FBInstantArticles(LatestEntriesFeed):
@@ -101,4 +102,5 @@ class FBInstantArticles(LatestEntriesFeed):
         return {
             'content': content,
             'slug': item.safe_translation_getter('slug'),
+            'guid': item.guid,
         }
