@@ -10,10 +10,15 @@ Development Lead
 Contributors
 ------------
 
+* alex
+* Carlo Ascani
 * Christoph Reimers
+* cluster-master
+* danra
 * Davide Truffo
 * furiousdave
 * Georgiy Kutsurua
+* German Ilyin
 * Jens Diemer
 * Kamil Gałuszka
 * Leonardo Cavallucci
@@ -21,8 +26,9 @@ Contributors
 * Max Vyaznikov
 * MotleyTech
 * Nico Schottelius
+* Olivier Tabone
 * Sami Kalliomäki
 * Stefan Wehrmeyer
 * Sylvain Fankhauser
 * Tadas Dailyda
-* Olivier Tabone
+* Zan Anderle
