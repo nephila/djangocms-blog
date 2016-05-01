@@ -3,7 +3,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.apphook_pool import apphook_pool
 from cms.menu_bases import CMSAttachMenu
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import resolve
 from django.db.models.signals import post_delete, post_save
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
@@ -13,6 +12,11 @@ from menus.menu_pool import menu_pool
 from .cms_appconfig import BlogConfig
 from .models import BlogCategory, Post
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_POSTS, get_setting
+
+try:
+    from django.contrib.sites.shortcuts import get_current_site
+except ImportError:
+    from django.contrib.sites.models import get_current_site
 
 
 class BlogCategoryMenu(CMSAttachMenu):

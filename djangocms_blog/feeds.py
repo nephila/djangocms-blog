@@ -19,15 +19,14 @@ from djangocms_blog.views import PostDetailView
 
 from .models import Post
 
-
 try:
     import HTMLParser
 
     h = HTMLParser.HTMLParser()
 except ImportError:
-    import html.parser
+    from html.parser import HTMLParser
 
-    h = html.parser()
+    h = HTMLParser()
 
 
 class LatestEntriesFeed(Feed):
@@ -46,7 +45,7 @@ class LatestEntriesFeed(Feed):
         return Site.objects.get_current().name
 
     def description(self):
-        return _('Blog articles on {site_name}').format(site_name=Site.objects.get_current().name)
+        return _('Blog articles on %(site_name)s') % {'site_name': Site.objects.get_current().name}
 
     def items(self, obj=None):
         return Post.objects.namespace(
@@ -100,7 +99,7 @@ class FBInstantFeed(Rss201rev2Feed):
         handler.addQuickElement('link', self.feed['link'])
         handler.addQuickElement('description', self.feed['description'])
         if self.feed['language'] is not None:
-            handler.addQuickElement('language', 'it-it')#self.feed['language'])
+            handler.addQuickElement('language', 'it-it')
         for cat in self.feed['categories']:
             handler.addQuickElement('category', cat)
         if self.feed['feed_copyright'] is not None:
