@@ -63,7 +63,7 @@ class BlogCategory(TranslatableModel):
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
-        slug=models.SlugField(_('slug'), blank=True, db_index=True),
+        slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
 
@@ -146,7 +146,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
-        slug=models.SlugField(_('slug'), blank=True, db_index=True),
+        slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
         abstract=HTMLField(_('abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_('post meta description'),
                                           blank=True, default=''),
