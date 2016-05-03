@@ -60,12 +60,12 @@ class AdminTest(BaseTest):
 
         # Add view only contains the apphook selection widget
         response = post_admin.add_view(request)
-        self.assertNotContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text"')
+        self.assertNotContains(response, '<input id="id_slug" maxlength="255" name="slug" type="text"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal'
         response = post_admin.change_view(request, str(post.pk))
-        self.assertContains(response, '<input id="id_slug" maxlength="50" name="slug" type="text" value="first-post" />')
+        self.assertContains(response, '<input id="id_slug" maxlength="255" name="slug" type="text" value="first-post" />')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Test for publish view
