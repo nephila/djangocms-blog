@@ -97,7 +97,6 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         'taggit',
         'taggit_autosuggest',
         'meta',
-        'meta_mixin',
         'djangocms_blog',
         ...
     ]
