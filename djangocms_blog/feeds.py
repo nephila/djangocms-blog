@@ -99,7 +99,7 @@ class FBInstantFeed(Rss201rev2Feed):
         handler.addQuickElement('link', self.feed['link'])
         handler.addQuickElement('description', self.feed['description'])
         if self.feed['language'] is not None:
-            handler.addQuickElement('language', 'it-it')
+            handler.addQuickElement('language', self.feed['language'])
         for cat in self.feed['categories']:
             handler.addQuickElement('category', cat)
         if self.feed['feed_copyright'] is not None:
@@ -112,10 +112,10 @@ class FBInstantFeed(Rss201rev2Feed):
         super(FBInstantFeed, self).add_item_elements(handler, item)
         if item['author']:
             handler.addQuickElement('author', item['author'])
-        if item['date_pub'] is not None:
-            handler.addQuickElement("modDate", item['date'].isoformat())
         if item['date_mod'] is not None:
-            handler.addQuickElement("pubDate", item['date'].isoformat())
+            handler.addQuickElement('pubDate', item['date'].isoformat())
+        if item['date_pub'] is not None:
+            handler.addQuickElement('modDate', item['date'].isoformat())
         handler.startElement('description', {})
         handler._write('<![CDATA[{0}]]>'.format(h.unescape(force_text(item['abstract']))))
         handler.endElement('description')
@@ -165,6 +165,9 @@ class FBInstantArticles(LatestEntriesFeed):
             'date_mod': item.date_modified,
             'abstract': abstract
         }
+
+    def item_categories(self, item):
+        return [category.safe_translation_getter('name') for category in item.categories.all()]
 
     def item_author_name(self, item):
         return ''
