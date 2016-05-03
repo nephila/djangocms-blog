@@ -37,6 +37,7 @@ Supported Django versions:
 * Django 1.6
 * Django 1.7
 * Django 1.8
+* Django 1.9
 
 Supported django CMS versions:
 
@@ -53,13 +54,6 @@ Supported django CMS versions:
              some relevant data.
              Some plugins have a broken tag management prior to 0.6, in case
              you have issues with tags, upgrade to latest version to have it fixed.
-
-.. warning:: When upgrading to version 0.6, check that every post has an attached
-             category, or select a menu without categories.
-
-.. warning:: Starting from version 0.5, this package does not declare dependency
-             on South anymore; please install it separately if using this
-             application on Django 1.6.
 
 Features
 --------
