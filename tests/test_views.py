@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 
 from aldryn_apphooks_config.utils import get_app_instance
+from cms.api import add_plugin
 from cms.toolbar.items import ModalItem
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
@@ -315,9 +316,13 @@ class ViewTest(BaseTest):
             self.assertEqual(context['post_list'][0].title, 'First post')
 
     def test_feed(self):
+        self.user.first_name = 'Admin'
+        self.user.last_name = 'User'
+        self.user.save()
         posts = self.get_posts()
         pages = self.get_pages()
         posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        posts[0].author = self.user
         posts[0].save()
         posts[1].tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
         posts[1].save()
@@ -335,6 +340,7 @@ class ViewTest(BaseTest):
                 xml = feed(request)
                 self.assertContains(xml, posts[0].get_absolute_url())
                 self.assertContains(xml, 'Blog articles on example.com')
+                self.assertContains(xml, 'Admin User</dc:creator>')
 
         with smart_override('it'):
             with switch_language(posts[0], 'it'):
@@ -352,8 +358,18 @@ class ViewTest(BaseTest):
                 self.assertEqual(list(feed.items('tag-2')), [posts[0]])
 
     def test_instant_articles(self):
+        self.user.first_name = 'Admin'
+        self.user.last_name = 'User'
+        self.user.save()
         posts = self.get_posts()
         pages = self.get_pages()
+        posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        posts[0].categories.add(self.category_1)
+        posts[0].author = self.user
+        posts[0].save()
+        add_plugin(
+            posts[0].content, 'TextPlugin', language='en', body='<h3>Ciao</h3><p></p><p>Ciao</p>'
+        )
 
         with smart_override('en'):
             with switch_language(posts[0], 'en'):
@@ -373,6 +389,9 @@ class ViewTest(BaseTest):
                 self.assertContains(xml, '<link rel="canonical" href="{0}"/>'.format(
                     posts[0].get_full_url()
                 ))
+                # Assert text transformation
+                self.assertContains(xml, '<h2>Ciao</h2><p>Ciao</p>')
+                self.assertContains(xml, '<a>Admin User</a>')
 
     def test_sitemap(self):
         posts = self.get_posts()
