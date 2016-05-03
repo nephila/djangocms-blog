@@ -13,6 +13,7 @@ History
 * Made django CMS 3.2 the default version
 * Fixed error with on_site filter
 * Removed meta-mixin compatibility code
+* Changed slug size to 255 chars
 
 0.7.0 (2016-03-19)
 ++++++++++++++++++
