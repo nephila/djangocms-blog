@@ -54,7 +54,6 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
 
 class BaseBlogListView(BaseBlogView):
     context_object_name = 'post_list'
-    paginate_by = get_setting('PAGINATION')
     base_template_name = 'post_list.html'
 
     def get_context_data(self, **kwargs):
