@@ -19,6 +19,7 @@ User = get_user_model()
 
 
 class BaseBlogView(AppConfigMixin, ViewUrlMixin):
+    model = Post
 
     def get_view_url(self):
         if not self.view_url_name:
@@ -52,7 +53,6 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
 
 
 class PostListView(BaseBlogView, ListView):
-    model = Post
     context_object_name = 'post_list'
     base_template_name = 'post_list.html'
     view_url_name = 'djangocms_blog:posts-latest'
@@ -67,7 +67,6 @@ class PostListView(BaseBlogView, ListView):
 
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
-    model = Post
     context_object_name = 'post'
     base_template_name = 'post_detail.html'
     slug_field = 'slug'
@@ -103,7 +102,6 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
 
 
 class PostArchiveView(BaseBlogView, ListView):
-    model = Post
     context_object_name = 'post_list'
     base_template_name = 'post_list.html'
     date_field = 'date_published'
@@ -131,7 +129,6 @@ class PostArchiveView(BaseBlogView, ListView):
 
 
 class TaggedListView(BaseBlogView, ListView):
-    model = Post
     context_object_name = 'post_list'
     base_template_name = 'post_list.html'
     paginate_by = get_setting('PAGINATION')
@@ -150,7 +147,6 @@ class TaggedListView(BaseBlogView, ListView):
 
 
 class AuthorEntriesView(BaseBlogView, ListView):
-    model = Post
     context_object_name = 'post_list'
     base_template_name = 'post_list.html'
     paginate_by = get_setting('PAGINATION')
@@ -170,7 +166,6 @@ class AuthorEntriesView(BaseBlogView, ListView):
 
 
 class CategoryEntriesView(BaseBlogView, ListView):
-    model = Post
     context_object_name = 'post_list'
     base_template_name = 'post_list.html'
     _category = None
