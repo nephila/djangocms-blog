@@ -52,15 +52,19 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         return os.path.join(template_path, self.base_template_name)
 
 
-class PostListView(BaseBlogView, ListView):
+class BaseBlogListView(BaseBlogView):
     context_object_name = 'post_list'
+    paginate_by = get_setting('PAGINATION')
     base_template_name = 'post_list.html'
-    view_url_name = 'djangocms_blog:posts-latest'
 
     def get_context_data(self, **kwargs):
-        context = super(PostListView, self).get_context_data(**kwargs)
+        context = super(BaseBlogListView, self).get_context_data(**kwargs)
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
+
+
+class PostListView(BaseBlogListView, ListView):
+    view_url_name = 'djangocms_blog:posts-latest'
 
     def get_paginate_by(self, queryset):
         return (self.config and self.config.paginate_by) or get_setting('PAGINATION')
@@ -101,13 +105,10 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
         return context
 
 
-class PostArchiveView(BaseBlogView, ListView):
-    context_object_name = 'post_list'
-    base_template_name = 'post_list.html'
+class PostArchiveView(BaseBlogListView, ListView):
     date_field = 'date_published'
     allow_empty = True
     allow_future = True
-    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-archive'
 
     def get_queryset(self):
@@ -124,14 +125,10 @@ class PostArchiveView(BaseBlogView, ListView):
         if kwargs['year']:
             kwargs['archive_date'] = now().replace(kwargs['year'], kwargs['month'] or 1, 1)
         context = super(PostArchiveView, self).get_context_data(**kwargs)
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
 
-class TaggedListView(BaseBlogView, ListView):
-    context_object_name = 'post_list'
-    base_template_name = 'post_list.html'
-    paginate_by = get_setting('PAGINATION')
+class TaggedListView(BaseBlogListView, ListView):
     view_url_name = 'djangocms_blog:posts-tagged'
 
     def get_queryset(self):
@@ -142,14 +139,10 @@ class TaggedListView(BaseBlogView, ListView):
         kwargs['tagged_entries'] = (self.kwargs.get('tag')
                                     if 'tag' in self.kwargs else None)
         context = super(TaggedListView, self).get_context_data(**kwargs)
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
 
-class AuthorEntriesView(BaseBlogView, ListView):
-    context_object_name = 'post_list'
-    base_template_name = 'post_list.html'
-    paginate_by = get_setting('PAGINATION')
+class AuthorEntriesView(BaseBlogListView, ListView):
     view_url_name = 'djangocms_blog:posts-authors'
 
     def get_queryset(self):
@@ -161,15 +154,11 @@ class AuthorEntriesView(BaseBlogView, ListView):
     def get_context_data(self, **kwargs):
         kwargs['author'] = User.objects.get(**{User.USERNAME_FIELD: self.kwargs.get('username')})
         context = super(AuthorEntriesView, self).get_context_data(**kwargs)
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
 
-class CategoryEntriesView(BaseBlogView, ListView):
-    context_object_name = 'post_list'
-    base_template_name = 'post_list.html'
+class CategoryEntriesView(BaseBlogListView, ListView):
     _category = None
-    paginate_by = get_setting('PAGINATION')
     view_url_name = 'djangocms_blog:posts-category'
 
     @property
@@ -195,5 +184,4 @@ class CategoryEntriesView(BaseBlogView, ListView):
     def get_context_data(self, **kwargs):
         kwargs['category'] = self.category
         context = super(CategoryEntriesView, self).get_context_data(**kwargs)
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
