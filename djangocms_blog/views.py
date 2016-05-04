@@ -63,13 +63,6 @@ class BaseBlogListView(BaseBlogView):
         return context
 
 
-class PostListView(BaseBlogListView, ListView):
-    view_url_name = 'djangocms_blog:posts-latest'
-
-    def get_paginate_by(self, queryset):
-        return (self.config and self.config.paginate_by) or get_setting('PAGINATION')
-
-
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     context_object_name = 'post'
     base_template_name = 'post_detail.html'
@@ -103,6 +96,13 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
         context['use_placeholder'] = get_setting('USE_PLACEHOLDER')
         setattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), self.get_object())
         return context
+
+
+class PostListView(BaseBlogListView, ListView):
+    view_url_name = 'djangocms_blog:posts-latest'
+
+    def get_paginate_by(self, queryset):
+        return (self.config and self.config.paginate_by) or get_setting('PAGINATION')
 
 
 class PostArchiveView(BaseBlogListView, ListView):
