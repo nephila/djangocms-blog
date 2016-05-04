@@ -62,6 +62,9 @@ class BaseBlogListView(BaseBlogView):
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
+    def get_paginate_by(self, queryset):
+        return (self.config and self.config.paginate_by) or get_setting('PAGINATION')
+
 
 class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     context_object_name = 'post'
@@ -100,9 +103,6 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
 
 class PostListView(BaseBlogListView, ListView):
     view_url_name = 'djangocms_blog:posts-latest'
-
-    def get_paginate_by(self, queryset):
-        return (self.config and self.config.paginate_by) or get_setting('PAGINATION')
 
 
 class PostArchiveView(BaseBlogListView, ListView):
