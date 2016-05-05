@@ -14,6 +14,7 @@ History
 * Fixed error with on_site filter
 * Removed meta-mixin compatibility code
 * Changed slug size to 255 chars
+* Fixed pagination setting in list views
 
 0.7.0 (2016-03-19)
 ++++++++++++++++++
