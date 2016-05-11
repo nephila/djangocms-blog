@@ -340,6 +340,28 @@ To add the blog Sitemap, add the following code to the project ``urls.py``::
         }),
     )
 
+Multisite
++++++++++
+
+django CMS blog provides full support for multisite setups.
+
+Each blog post can be assigned to none, one or more sites: if no site is selected, then
+it's visible on all sites.
+
+This is matched with and API that allows to restrict users to only be able to edit
+blog posts only for some sites.
+
+To implement this API, you must add a ``get_sites`` method on the user model which
+returns a queryset of sites the user is allowed to add posts to.
+
+Example::
+
+    class CustomUser(AbstractUser):
+        sites = models.ManyToManyField('sites.Site')
+
+        def get_sites(self):
+            return self.sites
+
 
 django CMS 3.2+ Wizard
 ++++++++++++++++++++++
