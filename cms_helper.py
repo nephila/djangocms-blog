@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import os
+
 from tempfile import mkdtemp
 
 
@@ -20,7 +22,6 @@ HELPER_SETTINGS = dict(
         'taggit',
         'taggit_autosuggest',
         'aldryn_apphooks_config',
-        'tests.test_utils',
         'aldryn_search',
     ],
     LANGUAGE_CODE='en',
@@ -91,7 +92,7 @@ HELPER_SETTINGS = dict(
     SITE_ID=1,
     HAYSTACK_CONNECTIONS={
         'default': {}
-    }
+    },
 )
 
 try:
@@ -124,9 +125,9 @@ try:
             'ROUTING': 'knocker.routing.channel_routing',
         },
     }
-
 except ImportError:
     pass
+os.environ['AUTH_USER_MODEL'] = 'tests.test_utils.CustomUser'
 
 
 def run():

@@ -75,6 +75,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     app_config_values = {
         'default_published': 'publish'
     }
+    _sites = None
 
     def get_urls(self):
         """
@@ -90,6 +91,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     def publish_post(self, request, pk):
         """
         Admin view to publish a single post
+
         :param request: request
         :param pk: primary key of the post to publish
         :return: Redirect to the post itself (if found) or fallback urls
@@ -116,9 +118,47 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             field.max_length = 70
         return field
 
+    def has_restricted_sites(self, request):
+        """
+        Whether the current user has permission on one site only
+
+        :param request: current request
+        :return: boolean: user has permission on only one site
+        """
+        sites = self.get_restricted_sites(request)
+        return sites and sites.count() == 1
+
+    def get_restricted_sites(self, request):
+        """
+        The sites on which the user has permission on.
+
+        To return the permissions, the method check for the ``get_sites``
+        method on the user instance (e.g.: ``return request.user.get_sites()``)
+        which must return the queryset of enabled sites.
+        If the attribute does not exists, the user is considered enabled
+        for all the websites.
+
+        :param request: current request
+        :return: boolean or a queryset of available sites
+        """
+        if self._sites is None:
+            try:
+                self._sites = request.user.get_sites()
+            except AttributeError:  # pragma: no cover
+                self._sites = False
+        return self._sites
+
+    def _set_config_defaults(self, request, form, obj=None):
+        form = super(PostAdmin, self)._set_config_defaults(request, form, obj)
+        sites = self.get_restricted_sites(request)
+        if 'sites' in form.base_fields and sites.exists():
+            form.base_fields['sites'].queryset = self.get_restricted_sites(request).all()
+        return form
+
     def get_fieldsets(self, request, obj=None):
         """
         Customize the fieldsets according to the app settings
+
         :param request: request
         :param obj: post
         :return: fieldsets configuration
@@ -142,7 +182,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 fsets[0][1]['fields'].append('abstract')
             if not get_setting('USE_PLACEHOLDER'):
                 fsets[0][1]['fields'].append('post_text')
-        if get_setting('MULTISITE'):
+        if get_setting('MULTISITE') and not self.has_restricted_sites(request):
             fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
@@ -157,6 +197,19 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     def save_model(self, request, obj, form, change):
         obj._set_default_author(request.user)
         super(PostAdmin, self).save_model(request, obj, form, change)
+
+    def get_queryset(self, request):
+        qs = super(PostAdmin, self).get_queryset(request)
+        sites = self.get_restricted_sites(request)
+        if sites.exists():
+            qs = qs.filter(sites__in=sites.all())
+        return qs
+
+    def save_related(self, request, form, formsets, change):
+        super(PostAdmin, self).save_related(request, form, formsets, change)
+        obj = form.instance
+        sites = self.get_restricted_sites(request)
+        obj.sites = sites.all()
 
     class Media:
         css = {

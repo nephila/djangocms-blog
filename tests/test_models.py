@@ -164,12 +164,16 @@ class AdminTest(BaseTest):
             fsets = post_admin.get_fieldsets(request)
             self.assertFalse('sites' in fsets[1][1]['fields'][0])
 
-        request = self.get_page_request('/', self.user, r'/en/blog/?app_config=%s' % self.app_config_1.pk, edit=False)
+        request = self.get_page_request(
+            '/', self.user, r'/en/blog/?app_config=%s' % self.app_config_1.pk, edit=False
+        )
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue('author' in fsets[1][1]['fields'][0])
 
         with self.login_user_context(self.user):
-            request = self.get_request('/', 'en', user=self.user, path=r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+            request = self.get_request(
+                '/', 'en', user=self.user, path=r'/en/blog/?app_config=%s' % self.app_config_1.pk
+            )
             msg_mid = MessageMiddleware()
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
@@ -177,6 +181,43 @@ class AdminTest(BaseTest):
             self.assertContains(response, '<option value="%s">%s</option>' % (
                 self.category_1.pk, self.category_1.safe_translation_getter('name', language_code='en')
             ))
+            self.assertContains(response, 'id="id_sites" name="sites"')
+
+        self.user.sites.add(self.site_1)
+        with self.login_user_context(self.user):
+            request = self.get_request('/', 'en', user=self.user,
+                                       path=r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin._sites = None
+            response = post_admin.add_view(request)
+            response.render()
+            self.assertNotContains(response, 'id="id_sites" name="sites"')
+            post_admin._sites = None
+        self.user.sites.clear()
+
+    def test_admin_queryset(self):
+        posts = self.get_posts()
+        posts[0].sites.add(self.site_1)
+        posts[1].sites.add(self.site_2)
+
+        request = self.get_request('/', 'en', user=self.user,
+                                   path=r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+        post_admin = admin.site._registry[Post]
+        post_admin._sites = None
+        qs = post_admin.get_queryset(request)
+        self.assertEqual(qs.count(), 4)
+
+        self.user.sites.add(self.site_2)
+        request = self.get_request('/', 'en', user=self.user,
+                                   path=r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+        post_admin = admin.site._registry[Post]
+        post_admin._sites = None
+        qs = post_admin.get_queryset(request)
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs[0], posts[1])
+        self.user.sites.clear()
 
     def test_admin_auto_author(self):
         pages = self.get_pages()
@@ -235,17 +276,26 @@ class AdminTest(BaseTest):
         post_admin = admin.site._registry[Post]
         request = self.get_page_request('/', self.user_normal, r'/en/blog/?app_config=%s' % self.app_config_1.pk)
 
+        post_admin._sites = None
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse('author' in fsets[1][1]['fields'][0])
+        self.assertTrue('sites' in fsets[1][1]['fields'][0])
+        post_admin._sites = None
 
         def filter_function(fs, request, obj=None):
             if request.user == self.user_normal:
                 fs[1][1]['fields'][0].append('author')
             return fs
 
+        self.user_normal.sites.add(self.site_1)
+        request = self.get_page_request('/', self.user_normal, r'/en/blog/?app_config=%s' % self.app_config_1.pk)
+        post_admin._sites = None
         with self.settings(BLOG_ADMIN_POST_FIELDSET_FILTER=filter_function):
             fsets = post_admin.get_fieldsets(request)
             self.assertTrue('author' in fsets[1][1]['fields'][0])
+            self.assertFalse('sites' in fsets[1][1]['fields'][0])
+        post_admin._sites = None
+        self.user_normal.sites.clear()
 
     def test_admin_post_text(self):
         pages = self.get_pages()
