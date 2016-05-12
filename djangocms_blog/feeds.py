@@ -11,6 +11,7 @@ from django.utils.feedgenerator import Rss201rev2Feed
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
 from django.utils.six import BytesIO
+from django.utils.text import normalize_newlines
 from django.utils.translation import get_language_from_request, ugettext as _
 from lxml import etree
 
@@ -87,6 +88,7 @@ class TagFeed(LatestEntriesFeed):
 
 
 class FBInstantFeed(Rss201rev2Feed):
+    date_format = '%Y-%m-%dT%H:%M:%S%z'
 
     def rss_attributes(self):
         return {
@@ -104,7 +106,9 @@ class FBInstantFeed(Rss201rev2Feed):
             handler.addQuickElement('category', cat)
         if self.feed['feed_copyright'] is not None:
             handler.addQuickElement('copyright', self.feed['feed_copyright'])
-        handler.addQuickElement('lastBuildDate', self.latest_post_date().isoformat())
+        handler.addQuickElement(
+            'lastBuildDate', self.latest_post_date().strftime(self.date_format)
+        )
         if self.feed['ttl'] is not None:
             handler.addQuickElement('ttl', self.feed['ttl'])
 
@@ -112,12 +116,15 @@ class FBInstantFeed(Rss201rev2Feed):
         super(FBInstantFeed, self).add_item_elements(handler, item)
         if item['author']:
             handler.addQuickElement('author', item['author'])
-        if item['date_mod'] is not None:
-            handler.addQuickElement('pubDate', item['date'].isoformat())
         if item['date_pub'] is not None:
-            handler.addQuickElement('modDate', item['date'].isoformat())
+            handler.addQuickElement('pubDate', item['date_pub'].strftime(self.date_format))
+        if item['date_mod'] is not None:
+            handler.addQuickElement('modDate', item['date_mod'].strftime(self.date_format))
+
         handler.startElement('description', {})
-        handler._write('<![CDATA[{0}]]>'.format(h.unescape(force_text(item['abstract']))))
+        handler._write('<![CDATA[{0}]]>'.format(
+            h.unescape(normalize_newlines(force_text(item['abstract'])).replace('\n', ' ')))
+        )
         handler.endElement('description')
         handler.startElement('content:encoded', {})
         handler._write('<![CDATA[')
@@ -130,6 +137,11 @@ class FBInstantFeed(Rss201rev2Feed):
 class FBInstantArticles(LatestEntriesFeed):
     feed_type = FBInstantFeed
     feed_items_number = get_setting('FEED_INSTANT_ITEMS')
+
+    def items(self, obj=None):
+        return Post.objects.namespace(
+            self.namespace
+        ).published().order_by('-date_modified')[:self.feed_items_number]
 
     def _clean_html(self, content):
         body = BytesIO(content)
