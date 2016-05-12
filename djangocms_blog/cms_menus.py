@@ -125,7 +125,11 @@ class BlogNavModifier(Modifier):
         if app and app.app_config:
             namespace = resolve(request.path).namespace
             config = app.get_config(namespace)
-        if config and config.menu_structure != MENU_TYPE_CATEGORIES:
+        try:
+            if config and config.menu_structure != MENU_TYPE_CATEGORIES:
+                return nodes
+        except AttributeError:
+            # in case `menu_structure` is not present in config
             return nodes
         if post_cut:
             return nodes
