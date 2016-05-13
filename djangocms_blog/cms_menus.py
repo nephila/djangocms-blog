@@ -126,9 +126,12 @@ class BlogNavModifier(Modifier):
             namespace = resolve(request.path).namespace
             config = app.get_config(namespace)
         try:
-            if config and config.menu_structure != MENU_TYPE_CATEGORIES:
+            if config and (
+                    not isinstance(config, BlogConfig) or
+                    config.menu_structure != MENU_TYPE_CATEGORIES
+            ):
                 return nodes
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             # in case `menu_structure` is not present in config
             return nodes
         if post_cut:
