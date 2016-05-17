@@ -201,8 +201,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     def get_queryset(self, request):
         qs = super(PostAdmin, self).get_queryset(request)
         sites = self.get_restricted_sites(request)
+        pks = list(sites.all().values_list('pk', flat=True))
         if sites.exists():
-            qs = qs.filter(sites__in=sites.all())
+            qs = qs.filter(sites__in=pks)
         return qs.distinct()
 
     def save_related(self, request, form, formsets, change):

@@ -320,7 +320,10 @@ class AdminTest(BaseTest):
 
         # no restrictions, sites are assigned
         with self.login_user_context(self.user):
-            data = {'sites': [1, 2], 'title': 'some title', 'app_config': 1}
+            data = {
+                'sites': [self.site_1.pk, self.site_2.pk], 'title': 'some title',
+                'app_config': self.app_config_1.pk
+            }
             request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
             self.assertEquals(post.sites.count(), 0)
             msg_mid = MessageMiddleware()
@@ -330,13 +333,20 @@ class AdminTest(BaseTest):
             self.assertEqual(response.status_code, 302)
             post = self.reload_model(post)
             self.assertEquals(post.sites.count(), 2)
+        post.sites.clear()
+        post = self.reload_model(post)
 
         # user only allowed on 2 sites, can add both
         self.user.sites.add(self.site_2)
         self.user.sites.add(self.site_3)
-        post = self.reload_model(post)
+        post.sites.add(self.site_1)
+        post.sites.add(self.site_2)
+        self.user = self.reload_model(self.user)
         with self.login_user_context(self.user):
-            data = {'sites': [2, 3], 'title': 'some title', 'app_config': 1}
+            data = {
+                'sites': [self.site_2.pk, self.site_3.pk], 'title': 'some title',
+                'app_config': self.app_config_1.pk
+            }
             request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
             self.assertEquals(post.sites.count(), 2)
             msg_mid = MessageMiddleware()
@@ -348,12 +358,20 @@ class AdminTest(BaseTest):
             post = self.reload_model(post)
             self.assertEquals(post.sites.count(), 3)
         self.user.sites.clear()
+        post.sites.clear()
 
         # user only allowed on 2 sites, can remove one of his sites
+        post = self.reload_model(post)
+        post.sites.add(self.site_1)
+        post.sites.add(self.site_2)
+        post.sites.add(self.site_3)
         self.user.sites.add(self.site_2)
         self.user.sites.add(self.site_3)
         with self.login_user_context(self.user):
-            data = {'sites': [3], 'title': 'some title', 'app_config': 1}
+            data = {
+                'sites': [self.site_3.pk], 'title': 'some title',
+                'app_config': self.app_config_1.pk
+            }
             request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
             self.assertEquals(post.sites.count(), 3)
             msg_mid = MessageMiddleware()
@@ -365,13 +383,20 @@ class AdminTest(BaseTest):
             post = self.reload_model(post)
             self.assertEquals(post.sites.count(), 2)
         self.user.sites.clear()
+        post.sites.clear()
 
         # user only allowed on 2 sites, if given sites is empty, the site with no permission on
         # is kept
+        post = self.reload_model(post)
+        post.sites.add(self.site_1)
+        post.sites.add(self.site_3)
         self.user.sites.add(self.site_2)
         self.user.sites.add(self.site_3)
         with self.login_user_context(self.user):
-            data = {'sites': [], 'title': 'some title', 'app_config': 1}
+            data = {
+                'sites': [], 'title': 'some title',
+                'app_config': self.app_config_1.pk
+            }
             request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
             self.assertEquals(post.sites.count(), 2)
             msg_mid = MessageMiddleware()
@@ -383,6 +408,8 @@ class AdminTest(BaseTest):
             post = self.reload_model(post)
             self.assertEquals(post.sites.count(), 1)
         self.user.sites.clear()
+        post.sites.clear()
+        post = self.reload_model(post)
 
     def test_admin_clear_menu(self):
         """
