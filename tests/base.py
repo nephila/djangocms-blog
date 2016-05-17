@@ -139,6 +139,7 @@ class BaseTest(BaseTestCase):
         cls.category_1.name = 'categoria 1'
         cls.category_1.save()
         cls.site_2 = Site.objects.create(domain='http://example2.com', name='example 2')
+        cls.site_3 = Site.objects.create(domain='http://example3.com', name='example 3')
         cache.clear()
 
     @classmethod

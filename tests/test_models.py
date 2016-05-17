@@ -314,6 +314,76 @@ class AdminTest(BaseTest):
                     modified_post = Post.objects.language('en').get(pk=post.pk)
                     self.assertEqual(modified_post.safe_translation_getter('post_text'), data['post_text'])
 
+    def test_admin_site(self):
+        pages = self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+
+        # no restrictions, sites are assigned
+        with self.login_user_context(self.user):
+            data = {'sites': [1, 2], 'title': 'some title', 'app_config': 1}
+            request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
+            self.assertEquals(post.sites.count(), 0)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            response = post_admin.change_view(request, str(post.pk))
+            self.assertEqual(response.status_code, 302)
+            post = self.reload_model(post)
+            self.assertEquals(post.sites.count(), 2)
+
+        # user only allowed on 2 sites, can add both
+        self.user.sites.add(self.site_2)
+        self.user.sites.add(self.site_3)
+        post = self.reload_model(post)
+        with self.login_user_context(self.user):
+            data = {'sites': [2, 3], 'title': 'some title', 'app_config': 1}
+            request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
+            self.assertEquals(post.sites.count(), 2)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin._sites = None
+            response = post_admin.change_view(request, str(post.pk))
+            self.assertEqual(response.status_code, 302)
+            post = self.reload_model(post)
+            self.assertEquals(post.sites.count(), 3)
+        self.user.sites.clear()
+
+        # user only allowed on 2 sites, can remove one of his sites
+        self.user.sites.add(self.site_2)
+        self.user.sites.add(self.site_3)
+        with self.login_user_context(self.user):
+            data = {'sites': [3], 'title': 'some title', 'app_config': 1}
+            request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
+            self.assertEquals(post.sites.count(), 3)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin._sites = None
+            response = post_admin.change_view(request, str(post.pk))
+            self.assertEqual(response.status_code, 302)
+            post = self.reload_model(post)
+            self.assertEquals(post.sites.count(), 2)
+        self.user.sites.clear()
+
+        # user only allowed on 2 sites, if given sites is empty, the site with no permission on
+        # is kept
+        self.user.sites.add(self.site_2)
+        self.user.sites.add(self.site_3)
+        with self.login_user_context(self.user):
+            data = {'sites': [], 'title': 'some title', 'app_config': 1}
+            request = self.post_request(pages[0], 'en', user=self.user, data=data, path='/en/')
+            self.assertEquals(post.sites.count(), 2)
+            msg_mid = MessageMiddleware()
+            msg_mid.process_request(request)
+            post_admin = admin.site._registry[Post]
+            post_admin._sites = None
+            response = post_admin.change_view(request, str(post.pk))
+            self.assertEqual(response.status_code, 302)
+            post = self.reload_model(post)
+            self.assertEquals(post.sites.count(), 1)
+        self.user.sites.clear()
+
     def test_admin_clear_menu(self):
         """
         Tests that after changing apphook config menu structure the menu content is different: new
