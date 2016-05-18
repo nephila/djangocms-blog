@@ -201,15 +201,25 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     def get_queryset(self, request):
         qs = super(PostAdmin, self).get_queryset(request)
         sites = self.get_restricted_sites(request)
+        pks = list(sites.all().values_list('pk', flat=True))
         if sites.exists():
-            qs = qs.filter(sites__in=sites.all())
-        return qs
+            qs = qs.filter(sites__in=pks)
+        return qs.distinct()
 
     def save_related(self, request, form, formsets, change):
+        if self.get_restricted_sites(request).exists():
+            if 'sites' in form.cleaned_data:
+                form_sites = form.cleaned_data.get('sites', [])
+                removed = set(
+                    self.get_restricted_sites(request).all()
+                ).difference(form_sites)
+                diff_original = set(
+                    form.instance.sites.all()
+                ).difference(removed).union(form_sites)
+                form.cleaned_data['sites'] = diff_original
+            else:
+                form.cleaned_data['sites'] = self.get_restricted_sites(request).all()
         super(PostAdmin, self).save_related(request, form, formsets, change)
-        obj = form.instance
-        sites = self.get_restricted_sites(request)
-        obj.sites = sites.all()
 
     class Media:
         css = {
