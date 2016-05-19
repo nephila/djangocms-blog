@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Matas Dailyda <matas@dailyda.com>, 2015
+# Matas Dailyda <matas@dailyda.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-20 17:14+0100\n"
-"PO-Revision-Date: 2015-12-20 16:15+0000\n"
-"Last-Translator: yakky <i.spalletti@nephila.it>\n"
+"POT-Creation-Date: 2016-05-05 08:48+0200\n"
+"PO-Revision-Date: 2016-05-05 08:37+0000\n"
+"Last-Translator: Matas Dailyda <matas@dailyda.com>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/nephila/djangocms-blog/language/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: admin.py:169 admin.py:177 admin.py:185
+#: admin.py:217 admin.py:225 admin.py:233
 msgid "You can provide plain strings, Post model attribute or method names"
 msgstr "Galite pateikti paprasto teksto eilutes, įrašo modelio atributą arba metodo pavadinimus "
 
@@ -26,7 +26,7 @@ msgstr "Galite pateikti paprasto teksto eilutes, įrašo modelio atributą arba 
 msgid "django CMS Blog"
 msgstr "django CMS Tinklaraštis"
 
-#: cms_app.py:15 cms_toolbar.py:19 settings.py:111
+#: cms_app.py:15 cms_toolbar.py:20 settings.py:113
 msgid "Blog"
 msgstr "Tinklaraštis"
 
@@ -41,12 +41,12 @@ msgstr "objekto pavadinimas"
 #: cms_appconfig.py:27
 #| msgid "blog categories"
 msgid "blog config"
-msgstr ""
+msgstr "tinklaraščio konfiguracija"
 
 #: cms_appconfig.py:28
 #| msgid "blog categories"
 msgid "blog configs"
-msgstr ""
+msgstr "tinklaraščio konfiguracijos"
 
 #: cms_appconfig.py:31
 msgid "untitled"
@@ -164,206 +164,228 @@ msgstr "Google+ tipas"
 msgid "Google+ author name"
 msgstr "Goggle+ autoriaus vardas"
 
-#: cms_toolbar.py:22
+#: cms_appconfig.py:130
+msgid "Send notifications on post publish"
+msgstr "Publikavus straipsnį siųsti pranešimus"
+
+#: cms_appconfig.py:131
+msgid "Emits a desktop notification -if enabled- when publishing a new post"
+msgstr "Išsiunčia darbalaukio pranešima -jei įgalinta- kai publikuojamas naujas straipsnis"
+
+#: cms_appconfig.py:134
+msgid "Send notifications on post update"
+msgstr "Atnaujinus straipsnį siųsti pranešimus"
+
+#: cms_appconfig.py:135
+msgid ""
+"Emits a desktop notification -if enabled- when editing a published post"
+msgstr "Išsiunčia darbalaukio pranešima -jei įgalinta- kai redaguojamas publikuotas straipsnis"
+
+#: cms_menus.py:28
+msgid "Blog menu"
+msgstr "Tinklaraščio meniu"
+
+#: cms_toolbar.py:23
 msgid "Post list"
 msgstr "Straipsnių sąrašas"
 
-#: cms_toolbar.py:24
+#: cms_toolbar.py:25
 msgid "Add post"
 msgstr "Pridėti straipsnį"
 
-#: cms_toolbar.py:28
+#: cms_toolbar.py:29
 msgid "Edit configuration"
 msgstr "Redaguoti nustatymus"
 
-#: cms_toolbar.py:32
+#: cms_toolbar.py:33
 msgid "Edit Post"
 msgstr "Redaguoti straipsnį"
 
-#: cms_wizards.py:47
+#: cms_toolbar.py:47
+#, python-brace-format
+msgid "Publish {0} now"
+msgstr "Publikuoti {0} dabar"
+
+#: cms_wizards.py:57
 #, python-brace-format
 msgid "New {0}"
 msgstr "Naujas {0}"
 
-#: cms_wizards.py:51
+#: cms_wizards.py:61
 #, python-brace-format
 msgid "Create a new {0} in {1}"
 msgstr "Kurti naują {0} viduje {1}"
 
-#: feeds.py:24
+#: feeds.py:48
 #, python-format
 msgid "Blog articles on %(site_name)s"
 msgstr "Tinklaraščio straipsniai %(site_name)s"
 
-#: menu.py:16
-msgid "Blog menu"
-msgstr "Tinklaraščio meniu"
-
-#: models.py:34
+#: models.py:57
 msgid "parent"
 msgstr "pirminis elementas"
 
-#: models.py:35
+#: models.py:58
 msgid "created at"
 msgstr "sukurta"
 
-#: models.py:36
+#: models.py:59
 msgid "modified at"
 msgstr "redaguota"
 
-#: models.py:38 models.py:123 models.py:275
+#: models.py:61 models.py:144 models.py:353
 msgid "app. config"
 msgstr "aplikacijos nustatymai"
 
-#: models.py:42
+#: models.py:65
 msgid "name"
 msgstr "pavadinimas"
 
-#: models.py:43 models.py:128
+#: models.py:66 models.py:149
 msgid "slug"
 msgstr "nuoroda"
 
-#: models.py:50
+#: models.py:73
 msgid "blog category"
 msgstr "tinklaraščio kategorija"
 
-#: models.py:51
+#: models.py:74
 msgid "blog categories"
 msgstr "tinklaraščio kategorijos"
 
-#: models.py:91
+#: models.py:114
 msgid "author"
 msgstr "autorius"
 
-#: models.py:94
+#: models.py:117
 msgid "created"
 msgstr "sukurta"
 
-#: models.py:95
+#: models.py:118
 msgid "last modified"
 msgstr "paskutinį kartą redaguota"
 
-#: models.py:96
+#: models.py:119
 msgid "published since"
 msgstr "publikuota nuo"
 
-#: models.py:98
+#: models.py:120
 msgid "published until"
 msgstr "publikuota iki"
 
-#: models.py:100
+#: models.py:121
 msgid "publish"
 msgstr "publikuoti"
 
-#: models.py:101
+#: models.py:122
 msgid "category"
 msgstr "kategorija"
 
-#: models.py:103
+#: models.py:124
 msgid "main image"
 msgstr "pagrindinis paveikslėlis"
 
-#: models.py:107
+#: models.py:128
 msgid "main image thumbnail"
 msgstr "pagrindinio paveikslėlio miniatiūra"
 
-#: models.py:112
+#: models.py:133
 msgid "main image full"
 msgstr "pagrindinis paveikslėlis pilnas"
 
-#: models.py:116
+#: models.py:137
 msgid "enable comments on post"
 msgstr "įgalinti straipsniui komentarus"
 
-#: models.py:118
+#: models.py:139
 msgid "Site(s)"
 msgstr "Tinklalapis(iai)"
 
-#: models.py:119
+#: models.py:140
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
 msgstr "Pasirinkite puslapius kuriuose bus rodomas straipsnis. Jei nepasirinktas nei vienas puslapis, straipsnis bus rodomas visuose puslapiuose."
 
-#: models.py:127
+#: models.py:148
 msgid "title"
 msgstr "pavadinimas"
 
-#: models.py:129
+#: models.py:150
 msgid "abstract"
 msgstr "santrauka"
 
-#: models.py:130
+#: models.py:151
 msgid "post meta description"
 msgstr "straipsnio meta apibūdinimas"
 
-#: models.py:132
+#: models.py:153
 msgid "post meta keywords"
 msgstr "straipsnio meta raktažodžiai"
 
-#: models.py:134
+#: models.py:155
 msgid "post meta title"
 msgstr "straipsnio meta pavadinimas"
 
-#: models.py:135
+#: models.py:156
 msgid "used in title tag and social sharing"
 msgstr "naudojama pavadinimo žymenoje ir socialiniuose tinkluose"
 
-#: models.py:138
+#: models.py:159
 msgid "text"
 msgstr "tekstas"
 
-#: models.py:175
+#: models.py:196
 msgid "blog article"
 msgstr "tinklaraščio straipsnis"
 
-#: models.py:176
+#: models.py:197
 msgid "blog articles"
 msgstr "tinklaraščio straipsniai"
 
-#: models.py:294 models.py:328
+#: models.py:372 models.py:408
 msgid "articles"
 msgstr "straipsniai"
 
-#: models.py:295
+#: models.py:373
 msgid "The number of latests articles to be displayed."
 msgstr "Atvaizduojamas naujausių straipsnių kiekis."
 
-#: models.py:297
+#: models.py:375
 msgid "filter by tag"
 msgstr "filtruoti pagal žymeną"
 
-#: models.py:298
+#: models.py:376
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Atvaizduoti straipsnius su pasirinktomis žymenomis."
 
-#: models.py:301
+#: models.py:379
 msgid "filter by category"
 msgstr "filtruoti pagal kategoriją"
 
-#: models.py:302
+#: models.py:380
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Atvaizduoti straipsnius su pasirinktomis kategorijomis."
 
-#: models.py:306
+#: models.py:384
 #, python-format
 msgid "%s latest articles by tag"
 msgstr "%s paskutiniai straipsniai pagal žymeną"
 
-#: models.py:324
+#: models.py:404
 msgid "authors"
 msgstr "autoriai"
 
-#: models.py:329
+#: models.py:409
 msgid "The number of author articles to be displayed."
 msgstr "Atvaizduojamas autoriaus straipsnių kiekis."
 
-#: models.py:333
+#: models.py:413
 #, python-format
 msgid "%s latest articles by author"
 msgstr "%s paskutiniai straipsniai pagal autorių"
 
-#: models.py:362
+#: models.py:442
 msgid "generic blog plugin"
 msgstr "bendras tinklaraščio įskiepis"
 
@@ -427,23 +449,23 @@ msgstr "kas metus"
 msgid "never"
 msgstr "niekada"
 
-#: settings.py:113
+#: settings.py:115
 msgid "Latest Blog Articles"
 msgstr "Naujausi tinklaraščio straipsniai"
 
-#: settings.py:115
+#: settings.py:117
 msgid "Author Blog Articles"
 msgstr "Tinklaraščio straipsnių autorius"
 
-#: settings.py:117 templates/djangocms_blog/plugins/tags.html:3
+#: settings.py:119 templates/djangocms_blog/plugins/tags.html:3
 msgid "Tags"
 msgstr "Žymenos"
 
-#: settings.py:119 templates/djangocms_blog/plugins/categories.html:3
+#: settings.py:121 templates/djangocms_blog/plugins/categories.html:3
 msgid "Categories"
 msgstr "Kategorijos"
 
-#: settings.py:121 templates/djangocms_blog/plugins/archive.html:3
+#: settings.py:123 templates/djangocms_blog/plugins/archive.html:3
 #: templates/djangocms_blog/post_list.html:12
 msgid "Archive"
 msgstr "Archyvas"
