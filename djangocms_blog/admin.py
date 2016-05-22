@@ -9,6 +9,7 @@ from django import forms
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.six import callable
@@ -145,7 +146,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             try:
                 self._sites = request.user.get_sites()
             except AttributeError:  # pragma: no cover
-                self._sites = False
+                self._sites = Site.objects.none()
         return self._sites
 
     def _set_config_defaults(self, request, form, obj=None):
@@ -201,8 +202,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     def get_queryset(self, request):
         qs = super(PostAdmin, self).get_queryset(request)
         sites = self.get_restricted_sites(request)
-        pks = list(sites.all().values_list('pk', flat=True))
         if sites.exists():
+            pks = list(sites.all().values_list('pk', flat=True))
             qs = qs.filter(sites__in=pks)
         return qs.distinct()
 
