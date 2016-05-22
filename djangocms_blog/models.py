@@ -33,11 +33,18 @@ BLOG_CURRENT_POST_IDENTIFIER = get_setting('CURRENT_POST_IDENTIFIER')
 BLOG_CURRENT_NAMESPACE = get_setting('CURRENT_NAMESPACE')
 
 try:
-    from filer.models import ThumbnailOption  # NOQA
-    thumbnail_model = 'filer.ThumbnailOption'
-except ImportError:
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
-    thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
+except ImportError:
+    from filer.models import ThumbnailOption  # NOQA
+try:
+    thumbnail_model = '%s.%s' % (
+        ThumbnailOption._meta.app_label, ThumbnailOption._meta.model_name
+    )
+except AttributeError:
+    thumbnail_model = '%s.%s' % (
+        ThumbnailOption._meta.app_label, ThumbnailOption._meta.module_name
+    )
+
 
 try:
     from knocker.mixins import KnockerModel
