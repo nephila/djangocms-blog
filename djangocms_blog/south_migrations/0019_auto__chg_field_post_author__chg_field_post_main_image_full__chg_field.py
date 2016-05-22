@@ -3,9 +3,20 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from djangocms_blog.models import thumbnail_model
 
 
 class Migration(SchemaMigration):
+
+    if 'cmsplugin_filer' not in thumbnail_model:
+        dependencies = [
+            ('djangocms_blog', '0018_auto__chg_field_post_main_image_full__chg_field_post_main_image_thumbn'),
+            ('cmsplugin_filer_image', '0014_auto__del_thumbnailoption__chg_field_filerimage_thumbnail_option')
+        ]
+    else:
+        dependencies = [
+            ('djangocms_blog', '0018_auto__chg_field_post_main_image_full__chg_field_post_main_image_thumbn'),
+        ]
 
     def forwards(self, orm):
 
@@ -13,10 +24,10 @@ class Migration(SchemaMigration):
         db.alter_column('djangocms_blog_post', 'author_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['test_utils.CustomUser']))
 
         # Changing field 'Post.main_image_full'
-        db.alter_column('djangocms_blog_post', 'main_image_full_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm['filer.ThumbnailOption']))
+        db.alter_column('djangocms_blog_post', 'main_image_full_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm[thumbnail_model]))
 
         # Changing field 'Post.main_image_thumbnail'
-        db.alter_column('djangocms_blog_post', 'main_image_thumbnail_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm['filer.ThumbnailOption']))
+        db.alter_column('djangocms_blog_post', 'main_image_thumbnail_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm[thumbnail_model]))
 
     def backwards(self, orm):
 
@@ -24,10 +35,10 @@ class Migration(SchemaMigration):
         db.alter_column('djangocms_blog_post', 'author_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
 
         # Changing field 'Post.main_image_full'
-        db.alter_column('djangocms_blog_post', 'main_image_full_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm['cmsplugin_filer_image.ThumbnailOption']))
+        db.alter_column('djangocms_blog_post', 'main_image_full_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm[thumbnail_model]))
 
         # Changing field 'Post.main_image_thumbnail'
-        db.alter_column('djangocms_blog_post', 'main_image_thumbnail_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm['cmsplugin_filer_image.ThumbnailOption']))
+        db.alter_column('djangocms_blog_post', 'main_image_thumbnail_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm[thumbnail_model]))
 
     models = {
         'auth.group': {
