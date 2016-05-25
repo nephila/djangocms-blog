@@ -17,7 +17,7 @@ from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
-from djangocms_blog.feeds import FBInstantArticles, LatestEntriesFeed, TagFeed, FBInstantFeed
+from djangocms_blog.feeds import FBInstantArticles, FBInstantFeed, LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.settings import get_setting
 from djangocms_blog.sitemaps import BlogSitemap
