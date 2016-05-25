@@ -88,6 +88,8 @@ HELPER_SETTINGS = dict(
         'filer.thumbnail_processors.scale_and_crop_with_subject_location',
         'easy_thumbnails.processors.filters',
     ),
+    USE_TZ=True,
+    TIME_ZONE='UTC',
     FILE_UPLOAD_TEMP_DIR=mkdtemp(),
     SITE_ID=1,
     HAYSTACK_CONNECTIONS={
