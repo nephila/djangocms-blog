@@ -142,7 +142,7 @@ class TaggedListView(BaseBlogListView, ListView):
 
 
 class AuthorEntriesView(BaseBlogListView, ListView):
-    view_url_name = 'djangocms_blog:posts-authors'
+    view_url_name = 'djangocms_blog:posts-author'
 
     def get_queryset(self):
         qs = super(AuthorEntriesView, self).get_queryset()
