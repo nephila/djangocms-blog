@@ -32,18 +32,12 @@ from .settings import get_setting
 BLOG_CURRENT_POST_IDENTIFIER = get_setting('CURRENT_POST_IDENTIFIER')
 BLOG_CURRENT_NAMESPACE = get_setting('CURRENT_NAMESPACE')
 
-try:
-    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
-except ImportError:
+try:  # pragma: no cover
     from filer.models import ThumbnailOption  # NOQA
-try:
-    thumbnail_model = '%s.%s' % (
-        ThumbnailOption._meta.app_label, ThumbnailOption._meta.model_name
-    )
-except AttributeError:
-    thumbnail_model = '%s.%s' % (
-        ThumbnailOption._meta.app_label, ThumbnailOption._meta.module_name
-    )
+    thumbnail_model = 'filer.ThumbnailOption'
+except ImportError:  # pragma: no cover
+    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
+    thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
 
 
 try:

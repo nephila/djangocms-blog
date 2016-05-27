@@ -10,7 +10,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms', '__latest__'),
+        ('cms', '__first__'),
         ('djangocms_blog', '0009_latestpostsplugin_tags_new'),
     ]
 
