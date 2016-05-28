@@ -31,7 +31,7 @@ def migrate_tags_reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('taggit', '__latest__'),
+        ('taggit', '__first__'),
         ('djangocms_blog', '0008_auto_20150814_0831'),
     ]
 
