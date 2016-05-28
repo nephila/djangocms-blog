@@ -33,11 +33,13 @@ BLOG_CURRENT_POST_IDENTIFIER = get_setting('CURRENT_POST_IDENTIFIER')
 BLOG_CURRENT_NAMESPACE = get_setting('CURRENT_NAMESPACE')
 
 try:  # pragma: no cover
-    from filer.models import ThumbnailOption  # NOQA
-    thumbnail_model = 'filer.ThumbnailOption'
-except ImportError:  # pragma: no cover
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
-    thumbnail_model = 'cmsplugin_filer_image.ThumbnailOption'
+except ImportError:  # pragma: no cover
+    from filer.models import ThumbnailOption  # NOQA
+
+thumbnail_model = '%s.%s' % (
+    ThumbnailOption._meta.app_label, ThumbnailOption.__name__
+)
 
 
 try:

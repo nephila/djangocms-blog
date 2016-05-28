@@ -9,14 +9,18 @@ from djangocms_blog.models import thumbnail_model
 class Migration(SchemaMigration):
 
     if 'cmsplugin_filer' not in thumbnail_model:
-        dependencies = [
+        depends_on = [
             ('djangocms_blog', '0018_auto__chg_field_post_main_image_full__chg_field_post_main_image_thumbn'),
-            ('cmsplugin_filer_image', '0014_auto__del_thumbnailoption__chg_field_filerimage_thumbnail_option')
+            ('cmsplugin_filer_image', '0013_mv_thumbnailoption_to_filer'),
+        ]
+        needed_by = [
+            ('cmsplugin_filer_image', '0014_auto__del_thumbnailoption__chg_field_filerimage_thumbnail_option'),
         ]
     else:
-        dependencies = [
+        depends_on = [
             ('djangocms_blog', '0018_auto__chg_field_post_main_image_full__chg_field_post_main_image_thumbn'),
         ]
+
 
     def forwards(self, orm):
 
