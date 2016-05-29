@@ -44,7 +44,7 @@ Supported django CMS versions:
 * django CMS 3.x
 
 .. warning:: Version 0.8 will be the last one supporting Python 2.6, Python 3.3,
-             Django<=1.7 and django CMS<=3.1.
+             Django<=1.8 and django CMS<=3.2.
 
 .. warning:: Starting from version 0.8, date_published is not set anymore
              when creating a post but rather when publishing.
