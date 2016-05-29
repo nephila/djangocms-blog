@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 from djangocms_blog.models import thumbnail_model
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 user_orm_label = '%s.%s' % (User._meta.app_label, User._meta.object_name)
@@ -13,6 +12,10 @@ user_model_label = '%s.%s' % (User._meta.app_label, User._meta.module_name)
 
 
 class Migration(SchemaMigration):
+
+    depends_on = [
+        (User._meta.app_label, '0001_initial'),
+    ]
 
     def forwards(self, orm):
         # Adding model 'BlogCategoryTranslation'
@@ -119,9 +122,9 @@ class Migration(SchemaMigration):
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('authorentriesplugin', models.ForeignKey(orm[u'djangocms_blog.authorentriesplugin'], null=False)),
-            ('user', models.ForeignKey(orm[user_orm_label], null=False))
+            (User._meta.module_name, models.ForeignKey(orm[user_orm_label], null=False))
         ))
-        db.create_unique(m2m_table_name, ['authorentriesplugin_id', 'user_id'])
+        db.create_unique(m2m_table_name, ['authorentriesplugin_id', '%s_id' % User._meta.module_name])
 
 
     def backwards(self, orm):
