@@ -10,8 +10,8 @@ import django.contrib.auth.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0006_require_contenttypes_0002'),
-        ('sites', '0001_initial'),
+        ('auth', '__first__'),
+        ('sites', '__first__'),
     ]
 
     operations = [
@@ -38,8 +38,6 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'verbose_name_plural': 'users',
             },
-            managers=[
-                ('objects', django.contrib.auth.models.UserManager()),
-            ],
+            bases=(models.Model,),
         ),
     ]

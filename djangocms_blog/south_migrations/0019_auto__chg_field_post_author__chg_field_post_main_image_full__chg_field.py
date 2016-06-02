@@ -4,19 +4,29 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 from djangocms_blog.models import thumbnail_model
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+user_orm_label = '%s.%s' % (User._meta.app_label, User._meta.object_name)
+user_model_label = '%s.%s' % (User._meta.app_label, User._meta.module_name)
 
 
 class Migration(SchemaMigration):
 
     if 'cmsplugin_filer' not in thumbnail_model:
-        dependencies = [
+        depends_on = [
             ('djangocms_blog', '0018_auto__chg_field_post_main_image_full__chg_field_post_main_image_thumbn'),
-            ('cmsplugin_filer_image', '0014_auto__del_thumbnailoption__chg_field_filerimage_thumbnail_option')
+            ('cmsplugin_filer_image', '0013_mv_thumbnailoption_to_filer'),
+            ('filer', '0015_auto__add_thumbnailoption'),
+        ]
+        needed_by = [
+            ('cmsplugin_filer_image', '0014_auto__del_thumbnailoption__chg_field_filerimage_thumbnail_option'),
         ]
     else:
-        dependencies = [
+        depends_on = [
             ('djangocms_blog', '0018_auto__chg_field_post_main_image_full__chg_field_post_main_image_thumbn'),
         ]
+
 
     def forwards(self, orm):
 
@@ -32,7 +42,7 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
 
         # Changing field 'Post.author'
-        db.alter_column('djangocms_blog_post', 'author_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
+        db.alter_column('djangocms_blog_post', 'author_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm[user_orm_label]))
 
         # Changing field 'Post.main_image_full'
         db.alter_column('djangocms_blog_post', 'main_image_full_id', self.gf('django.db.models.fields.related.ForeignKey')(on_delete=models.SET_NULL, null=True, to=orm[thumbnail_model]))
@@ -53,6 +63,32 @@ class Migration(SchemaMigration):
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        user_model_label: {
+            'Meta': {'object_name': User.__name__, 'db_table': "'%s'" % User._meta.db_table},
+            'date_joined': (
+            'django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'email': (
+            'django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
+            'first_name': (
+            'django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [],
+                       {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True',
+                        'to': u"orm['auth.Group']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'last_login': (
+            'django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_name': (
+            'django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [],
+                                 {'symmetrical': 'False', 'related_name': "u'user_set'",
+                                  'blank': 'True', 'to': u"orm['auth.Permission']"}),
+            'username': (
+            'django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         'cms.cmsplugin': {
             'Meta': {'object_name': 'CMSPlugin'},
@@ -80,6 +116,15 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        thumbnail_model: {
+            'Meta': {'ordering': "('width', 'height')", 'object_name': 'ThumbnailOption'},
+            'crop': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'height': ('django.db.models.fields.IntegerField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'upscale': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'width': ('django.db.models.fields.IntegerField', [], {})
         },
         'djangocms_blog.authorentriesplugin': {
             'Meta': {'object_name': 'AuthorEntriesPlugin'},
@@ -144,8 +189,8 @@ class Migration(SchemaMigration):
             'enable_comments': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'main_image': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'null': 'True', 'to': "orm['filer.Image']", 'related_name': "'djangocms_blog_post_image'"}),
-            'main_image_full': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'null': 'True', 'to': "orm['filer.ThumbnailOption']", 'related_name': "'djangocms_blog_post_full'"}),
-            'main_image_thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'null': 'True', 'to': "orm['filer.ThumbnailOption']", 'related_name': "'djangocms_blog_post_thumbnail'"}),
+            'main_image_full': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'null': 'True', 'to': u"orm['%s']" % thumbnail_model, 'related_name': "'djangocms_blog_post_full'"}),
+            'main_image_thumbnail': ('django.db.models.fields.related.ForeignKey', [], {'on_delete': 'models.SET_NULL', 'blank': 'True', 'null': 'True', 'to': u"orm['%s']" % thumbnail_model, 'related_name': "'djangocms_blog_post_thumbnail'"}),
             'publish': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'sites': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'blank': 'True', 'to': "orm['sites.Site']"})
         },
@@ -205,15 +250,6 @@ class Migration(SchemaMigration):
             'must_always_publish_author_credit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'must_always_publish_copyright': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'subject_location': ('django.db.models.fields.CharField', [], {'default': "''", 'blank': 'True', 'max_length': '64'})
-        },
-        'filer.thumbnailoption': {
-            'Meta': {'object_name': 'ThumbnailOption', 'ordering': "('width', 'height')"},
-            'crop': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'height': ('django.db.models.fields.IntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'upscale': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'width': ('django.db.models.fields.IntegerField', [], {})
         },
         'sites.site': {
             'Meta': {'object_name': 'Site', 'db_table': "'django_site'", 'ordering': "('domain',)"},

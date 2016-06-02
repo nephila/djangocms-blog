@@ -10,10 +10,16 @@ class Migration(migrations.Migration):
     if 'cmsplugin_filer' not in thumbnail_model:
         dependencies = [
             ('djangocms_blog', '0016_auto_20160502_1741'),
-            ('cmsplugin_filer_image', '0006_auto_20160427_1438')
+            ('filer', '0003_thumbnailoption'),
+            ('cmsplugin_filer_image', '0003_mv_thumbnail_option_to_filer_20160119_1720'),
+        ]
+        run_before = [
+            ('cmsplugin_filer_image', '0004_auto_20160120_0950'),
         ]
     else:
         dependencies = [
+            ('filer', '__first__'),
+            ('cmsplugin_filer_image', '__first__'),
             ('djangocms_blog', '0016_auto_20160502_1741'),
         ]
 

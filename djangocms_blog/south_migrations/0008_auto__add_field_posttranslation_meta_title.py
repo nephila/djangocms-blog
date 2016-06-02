@@ -4,6 +4,11 @@ from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+user_orm_label = '%s.%s' % (User._meta.app_label, User._meta.object_name)
+user_model_label = '%s.%s' % (User._meta.app_label, User._meta.module_name)
 
 
 class Migration(SchemaMigration):
@@ -34,8 +39,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        u'auth.user': {
-            'Meta': {'object_name': 'User'},
+        user_model_label: {
+            'Meta': {'object_name': User.__name__, 'db_table': "'%s'" % User._meta.db_table},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -89,7 +94,7 @@ class Migration(SchemaMigration):
         },
         u'djangocms_blog.authorentriesplugin': {
             'Meta': {'object_name': 'AuthorEntriesPlugin', '_ormbases': ['cms.CMSPlugin']},
-            'authors': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.User']", 'symmetrical': 'False'}),
+            'authors': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['%s']" % user_orm_label, 'symmetrical': 'False'}),
             u'cmsplugin_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['cms.CMSPlugin']", 'unique': 'True', 'primary_key': 'True'}),
             'latest_posts': ('django.db.models.fields.IntegerField', [], {'default': '5'})
         },
@@ -117,7 +122,7 @@ class Migration(SchemaMigration):
         },
         u'djangocms_blog.post': {
             'Meta': {'ordering': "('-date_published', '-date_created')", 'object_name': 'Post'},
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'djangocms_blog_post_author'", 'null': 'True', 'to': u"orm['auth.User']"}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'djangocms_blog_post_author'", 'null': 'True', 'to': u"orm['%s']" % user_orm_label}),
             'categories': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'blog_posts'", 'symmetrical': 'False', 'to': u"orm['djangocms_blog.BlogCategory']"}),
             'content': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['cms.Placeholder']", 'null': 'True'}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -156,7 +161,7 @@ class Migration(SchemaMigration):
             'modified_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '255', 'blank': 'True'}),
             'original_filename': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "u'owned_files'", 'null': 'True', 'to': u"orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "u'owned_files'", 'null': 'True', 'to': u"orm['%s']" % user_orm_label}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "u'polymorphic_filer.file_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'sha1': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '40', 'blank': 'True'}),
             'uploaded_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
@@ -169,7 +174,7 @@ class Migration(SchemaMigration):
             u'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modified_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "u'filer_owned_folders'", 'null': 'True', 'to': u"orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "u'filer_owned_folders'", 'null': 'True', 'to': u"orm['%s']" % user_orm_label}),
             'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "u'children'", 'null': 'True', 'to': u"orm['filer.Folder']"}),
             u'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             u'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),

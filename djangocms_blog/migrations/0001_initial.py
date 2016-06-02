@@ -17,14 +17,23 @@ ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or 'filer.Image'
 
 class Migration(migrations.Migration):
 
+    if 'cmsplugin_filer' not in thumbnail_model:
+        filer_dependencies = [
+            ('filer', '0003_thumbnailoption'),
+            ('cmsplugin_filer_image', '0006_auto_20160427_1438')
+        ]
+    else:
+        filer_dependencies = [
+            ('filer', '__first__'),
+            ('cmsplugin_filer_image', '__first__'),
+        ]
+
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         migrations.swappable_dependency(ACTUAL_FILER_IMAGE_MODEL),
-        ('cms', '__latest__'),
-        ('taggit', '__latest__'),
-        ('filer', '__latest__'),
-        ('cmsplugin_filer_image', '__latest__'),
-    ]
+        ('cms', '__first__'),
+        ('taggit', '__first__'),
+    ] + filer_dependencies
 
     operations = [
         migrations.CreateModel(

@@ -17,7 +17,7 @@ from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
-from djangocms_blog.feeds import FBInstantArticles, LatestEntriesFeed, TagFeed
+from djangocms_blog.feeds import FBInstantArticles, FBInstantFeed, LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.settings import get_setting
 from djangocms_blog.sitemaps import BlogSitemap
@@ -383,8 +383,8 @@ class ViewTest(BaseTest):
                 xml = feed(request)
                 self.assertContains(xml, '<guid>{0}</guid>'.format(posts[0].guid))
                 self.assertContains(xml, 'content:encoded')
-                self.assertContains(xml, 'class="op-published" datetime="{0}"'.format(
-                    posts[0].date_published.isoformat()
+                self.assertContains(xml, 'class="op-modified" datetime="{0}"'.format(
+                    posts[0].date_modified.strftime(FBInstantFeed.date_format)
                 ))
                 self.assertContains(xml, '<link rel="canonical" href="{0}"/>'.format(
                     posts[0].get_full_url()

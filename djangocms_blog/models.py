@@ -32,18 +32,14 @@ from .settings import get_setting
 BLOG_CURRENT_POST_IDENTIFIER = get_setting('CURRENT_POST_IDENTIFIER')
 BLOG_CURRENT_NAMESPACE = get_setting('CURRENT_NAMESPACE')
 
-try:
+try:  # pragma: no cover
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
-except ImportError:
+except ImportError:  # pragma: no cover
     from filer.models import ThumbnailOption  # NOQA
-try:
-    thumbnail_model = '%s.%s' % (
-        ThumbnailOption._meta.app_label, ThumbnailOption._meta.model_name
-    )
-except AttributeError:
-    thumbnail_model = '%s.%s' % (
-        ThumbnailOption._meta.app_label, ThumbnailOption._meta.module_name
-    )
+
+thumbnail_model = '%s.%s' % (
+    ThumbnailOption._meta.app_label, ThumbnailOption.__name__
+)
 
 
 try:
@@ -212,7 +208,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     def guid(self, language=None):
         if not language:
             language = self.get_current_language()
-        base_string = '{0}{2}{1}'.format(
+        base_string = '-{0}-{2}-{1}-'.format(
             language, self.app_config.namespace,
             self.safe_translation_getter('slug', language_code=language, any_language=True)
         )
