@@ -1,0 +1,14 @@
+{
+    "package-name": "djangocms_blog",
+    "installed-apps": [
+        "filer",
+        "easy_thumbnails",
+        "aldryn_apphooks_config",
+        "cmsplugin_filer_image",
+        "parler",
+        "taggit",
+        "taggit_autosuggest",
+        "meta",
+        "djangocms_blog"
+    ]
+}
