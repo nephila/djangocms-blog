@@ -219,7 +219,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 ).difference(removed).union(form_sites)
                 form.cleaned_data['sites'] = diff_original
             else:
-                form.cleaned_data['sites'] = self.get_restricted_sites(request).all()
+                form.instance.sites.add(
+                    *self.get_restricted_sites(request).all().values_list('pk', flat=True)
+                )
         super(PostAdmin, self).save_related(request, form, formsets, change)
 
     class Media:
