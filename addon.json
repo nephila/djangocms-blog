@@ -1,5 +1,5 @@
 {
-    "package-name": "djangocms_blog",
+    "package-name": "djangocms-blog",
     "installed-apps": [
         "filer",
         "easy_thumbnails",
