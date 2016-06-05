@@ -6,6 +6,7 @@ from copy import deepcopy
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
@@ -60,7 +61,12 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         }),
         ('Info', {
             'fields': (['slug', 'tags'],
-                       ('date_published', 'date_published_end', 'enable_comments')),
+                       ('date_published', 'date_published_end',),
+                       (
+                           'enable_comments',
+                           'enable_liveblog' if apps.is_installed('djangocms_blog.liveblog')
+                               else None
+                       )),
             'classes': ('collapse',)
         }),
         ('Images', {

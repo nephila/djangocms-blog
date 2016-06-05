@@ -164,6 +164,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     )
     content = PlaceholderField('post_content', related_name='post_content')
     liveblog = PlaceholderField('live_blog', related_name='live_blog')
+    enable_liveblog = models.BooleanField(verbose_name=_('enable liveblog on post'), default=False)
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
