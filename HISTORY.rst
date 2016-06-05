@@ -3,7 +3,7 @@
 History
 -------
 
-0.8.0 (unreleased)
+0.8.0 (2016-06-05)
 ++++++++++++++++++
 
 * Added django-knocker integration
