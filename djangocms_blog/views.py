@@ -58,6 +58,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         except ImportError:
             return False
 
+
 class BaseBlogListView(BaseBlogView):
     context_object_name = 'post_list'
     base_template_name = 'post_list.html'

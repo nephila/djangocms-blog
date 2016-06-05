@@ -34,19 +34,18 @@ class Liveblog(AbstractText):
         verbose_name_plural = _('liveblog entries')
 
     def save(self, no_signals=False, *args, **kwargs):
-        if not self.pk:
-            self.position = 0
         saved = super(Liveblog, self).save(*args, **kwargs)
         if self.publish:
             self.send()
-        order = CMSPlugin.objects.filter(placeholder=self.placeholder).order_by('placeholder', 'path').values_list('pk', flat=True)
+        order = CMSPlugin.objects.filter(placeholder=self.placeholder).order_by('placeholder', '-path').values_list('pk', flat=True)
         reorder_plugins(self.placeholder, None, self.language, order)
         return saved
 
     @property
     def liveblog_group(self):
         post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
-        return post.liveblog_group
+        if post:
+            return post.liveblog_group
 
     def render(self):
         return self.render_plugin()
@@ -61,6 +60,7 @@ class Liveblog(AbstractText):
             'creation_date': self.creation_date.strftime(DATE_FORMAT),
             'changed_date': self.changed_date.strftime(DATE_FORMAT),
         }
-        Group(self.liveblog_group).send({
-            'text': json.dumps(notification),
-        })
+        if self.liveblog_group:
+            Group(self.liveblog_group).send({
+                'text': json.dumps(notification),
+            })
