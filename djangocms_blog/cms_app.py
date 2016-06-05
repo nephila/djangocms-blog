@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from djangocms_apphook_setup.base import AutoCMSAppMixin
 
 from .cms_appconfig import BlogConfig
-from .menu import BlogCategoryMenu
+from .cms_menus import BlogCategoryMenu
 from .settings import get_setting
 
 
