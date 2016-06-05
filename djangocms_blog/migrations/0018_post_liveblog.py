@@ -8,8 +8,8 @@ import cms.models.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms', '0013_urlconfrevision'),
-        ('djangocms_blog', '0015_auto_20160408_1849'),
+        ('cms', '__first__'),
+        ('djangocms_blog', '0017_thumbnail_move'),
     ]
 
     operations = [
