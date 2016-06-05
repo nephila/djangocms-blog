@@ -16,6 +16,7 @@ History
 * Changed slug size to 255 chars
 * Fixed pagination setting in list views
 * Added API to set default sites if user has permission only for a subset of sites
+* Added Aldryn integration
 
 0.7.0 (2016-03-19)
 ++++++++++++++++++
