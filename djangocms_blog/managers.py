@@ -1,18 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
-import django
+from collections import Counter
+
 from aldryn_apphooks_config.managers.parler import (
     AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset,
 )
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.timezone import now
-
-try:
-    from collections import Counter
-except ImportError:
-    from .compat import Counter
 
 
 class TaggedFilterItem(object):
@@ -129,12 +125,7 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
     queryset_class = GenericDateQuerySet
 
     def get_queryset(self, *args, **kwargs):
-        try:
-            return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
-        except AttributeError:  # pragma: no cover
-            return super(GenericDateTaggedManager, self).get_query_set(*args, **kwargs)
-    if django.VERSION < (1, 8):
-        get_query_set = get_queryset
+        return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
 
     def published(self):
         return self.get_queryset().published()

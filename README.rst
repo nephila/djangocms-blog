@@ -34,14 +34,12 @@ django CMS blog application - Support for multilingual posts, placeholders, soci
 
 Supported Django versions:
 
-* Django 1.6
-* Django 1.7
 * Django 1.8
 * Django 1.9
 
 Supported django CMS versions:
 
-* django CMS 3.x
+* django CMS 3.2+
 
 .. warning:: Version 0.8 will be the last one supporting Python 2.6, Python 3.3,
              Django<1.8 and django CMS<3.2.
@@ -84,10 +82,6 @@ Install djangocms-blog::
 
     pip install djangocms-blog
 
-or -when installing in Django 1.6/1.7::
-
-    pip install djangocms-blog[admin-enhancer]
-
 Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
 
     INSTALLED_APPS = [
@@ -104,18 +98,9 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
         ...
     ]
 
-If you installed the **admin-enhancer** variant, add ``admin_enhancer`` to ``INSTALLED_APPS``::
 
-    INSTALLED_APPS = [
-        ...
-        'admin_enhancer',
-        ...
-    ]
+Then migrate::
 
-
-Then sync and migrate::
-
-    $ python manage.py syncdb
     $ python manage.py migrate
 
 External applications configuration
@@ -139,10 +124,6 @@ suited for your deployment.
 
 * Add the following settings to your project::
 
-    SOUTH_MIGRATION_MODULES = {
-        'easy_thumbnails': 'easy_thumbnails.south_migrations',
-        'taggit': 'taggit.south_migrations',
-    }
     THUMBNAIL_PROCESSORS = (
         'easy_thumbnails.processors.colorspace',
         'easy_thumbnails.processors.autocrop',
@@ -151,22 +132,6 @@ suited for your deployment.
     )
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
-
-* If you are using Django 1.7+, be aware that ``filer`` < 0.9.10,
-  ``cmsplugin_filer`` and ``django-cms`` < 3.1 currently requires you to
-  setup ``MIGRATION_MODULES`` in settings::
-
-    MIGRATION_MODULES = {
-       'cms': 'cms.migrations_django', # only for django CMS 3.0
-       'menus': 'menus.migrations_django',  # only for django CMS 3.0
-       'filer': 'filer.migrations_django',  # only for django filer up to 0.9.9
-       'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-    }
-
-  Please check
-  `django CMS installation <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/integrate.html#installing-and-configuring-django-cms-in-your-django-project>`_,
-  `cmsplugin-filer README <https://github.com/stefanfoulis/cmsplugin-filer#installation>`_
-  for detailed information.
 
 * Configure parler according to your languages::
 

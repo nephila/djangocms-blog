@@ -77,6 +77,7 @@ HELPER_SETTINGS = dict(
     CMS_TEMPLATES=(
         ('blog.html', 'Blog template'),
     ),
+    META_USE_SITES=True,
     META_SITE_PROTOCOL='http',
     META_SITE_DOMAIN='example.com',
     META_USE_OG_PROPERTIES=True,
@@ -103,18 +104,6 @@ try:
         'MIGRATION_MODULES'
     ]['cmsplugin_filer_image'] = 'cmsplugin_filer_image.migrations_django'
 
-except ImportError:
-    pass
-
-try:
-    import admin_enhancer  # pragma: no cover # NOQA
-    HELPER_SETTINGS['INSTALLED_APPS'].append('admin_enhancer')
-except ImportError:
-    pass
-
-try:
-    import meta_mixin  # pragma: no cover # NOQA
-    HELPER_SETTINGS['INSTALLED_APPS'].append('meta_mixin')
 except ImportError:
     pass
 

@@ -28,7 +28,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'django-parler>=1.5',
-        'django-cms>3.0.11',
+        'django-cms>3.2',
         'django-taggit>=0.12.2',
         'django-filer',
         'pytz',
@@ -46,10 +46,6 @@ setup(
     zip_safe=False,
     keywords='djangocms-blog, blog, django, wordpress, multilingual',
     test_suite='cms_helper.run',
-    extras_require={
-        'admin-enhancer': ['django-admin-enhancer'],
-    },
-
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Framework :: Django',
@@ -57,14 +53,11 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Framework :: Django',
-        'Framework :: Django :: 1.6',
-        'Framework :: Django :: 1.7',
         'Framework :: Django :: 1.8',
+        'Framework :: Django :: 1.9',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
