@@ -1,0 +1,172 @@
+.. _features:
+
+Features
+--------
+
+.. _blog-home-page:
+
+Attaching blog to the home page
++++++++++++++++++++++++++++++++
+
+If you want to attach the blog to the home page you have to adapt settings a bit otherwise the
+"Just slug" permalink will swallow any CMS page you create.
+
+To avoit this add the following settings to you project::
+
+    BLOG_PERMALINKS = (
+        ('full_date', _('Full date')),
+        ('short_date', _('Year /  Month')),
+        ('category', _('Category')),
+    )
+    BLOG_PERMALINKS_URLS = {
+        'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'category': r'^(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
+    }
+
+Notice that the last permalink type is no longer present.
+
+Then, pick any of the three remaining permalink types in the layout section of the apphooks config
+linked ot the home page (see http://yoursite.com/admin/djangocms_blog/blogconfig/).'
+
+
+.. _multisite:
+
+Multisite
++++++++++
+
+django CMS blog provides full support for multisite setups.
+
+Each blog post can be assigned to none, one or more sites: if no site is selected, then
+it's visible on all sites.
+
+This is matched with and API that allows to restrict users to only be able to edit
+blog posts only for some sites.
+
+To implement this API, you must add a ``get_sites`` method on the user model which
+returns a queryset of sites the user is allowed to add posts to.
+
+Example::
+
+    class CustomUser(AbstractUser):
+        sites = models.ManyToManyField('sites.Site')
+
+        def get_sites(self):
+            return self.sites
+
+.. _cms-wizard:
+
+django CMS 3.2+ Wizard
+++++++++++++++++++++++
+
+django CMS 3.2+ provides a content creation wizard that allows to quickly created supported
+content types, such as blog posts.
+
+For each configured Apphook, a content type is added to the wizard.
+
+Some issues with multiple registrations raising django CMS ``AlreadyRegisteredException``
+hae been reported; to handle these cases gracefully, the exception is swallowed
+when Django ``DEBUG == True`` avoiding breaking production websites. In these cases they
+wizard may not show up, but the rest will work as intended.
+
+.. _permalinks:
+
+Configurable permalinks
++++++++++++++++++++++++
+
+Blog comes with four different styles of permalinks styles:
+
+* Full date: ``YYYY/MM/DD/SLUG``
+* Year /  Month: ``YYYY/MM/SLUG``
+* Category: ``CATEGORY/SLUG``
+* Just slug: ``SLUG``
+
+As all the styles are loaded in the urlconf, the latter two does not allow
+to have CMS pages beneath the page the blog is attached to. If you want to
+do this, you have to override the default urlconfs by setting something
+like the following in the project settings::
+
+    BLOG_PERMALINK_URLS = {
+        'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
+        'category': r'^post/(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
+        'slug': r'^post/(?P<slug>\w[-\w]*)/$',
+    }
+
+And change ``post/`` with the desired prefix.
+
+.. _menu:
+
+Menu
+++++
+
+``djangocms_blog`` provides support for django CMS menu framework.
+
+By default all the categories and posts are added to the menu, in a hierarchical structure.
+
+It is possibile to configure per Apphook, whether the menu includes post and categories
+(the default), only categories, only posts or no item.
+
+If "post and categories" or "only categories" are set, all the posts not associated with a
+category are not added to the menu.
+
+.. _templates:
+
+Templates
++++++++++
+
+To ease the template customisations a ``djangocms_blog/base.html`` template is
+used by all the blog templates; the templates itself extends a ``base.html``
+template; content is pulled in the ``content`` block.
+If you need to define a different base template, or if your base template does
+not defines a ``content`` block, copy in your template directory
+``djangocms_blog/base.html`` and customise it according to your needs; the
+other application templates will use the newly created base template and
+will ignore the bundled one.
+
+Templates set
++++++++++++++
+
+By using **Apphook configuration** you can define a different templates set.
+To use this feature provide a directory name in **Template prefix** field in
+the **Apphook configuration** admin (in *Layout* section): it will be the
+root of your custom templates set.
+
+.. _sitemap:
+
+Sitemap
++++++++
+
+``djangocms_blog`` provides a sitemap for improved SEO indexing.
+Sitemap returns all the published posts in all the languages each post is available.
+
+The changefreq and priority is configurable per-apphook (see ``BLOG_SITEMAP_*`` in
+`Global settings <settings>`_).
+
+To add the blog Sitemap, add the following code to the project ``urls.py``::
+
+
+    from cms.sitemaps import CMSSitemap
+    from djangocms_blog.sitemaps import BlogSitemap
+
+
+    urlpatterns = patterns(
+        '',
+        ...
+        url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
+            {'sitemaps': {
+                'cmspages': CMSSitemap, 'blog': BlogSitemap,
+            }
+        }),
+    )
+
+.. _knocker:
+
+django-knocker
+++++++++++++++
+
+``djangocms-blog`` is integrated with `django-knocker <https://github.com/nephila/django-knocker>`_
+to provide real time desktop notifications.
+
+See `django-knocker documentation <https://django-knocker.readthedocs.org/>`_ for how to configure
+knocker.

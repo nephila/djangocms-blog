@@ -13,6 +13,7 @@ env:
   matrix:
   - TOXENV='pep8'
   - TOXENV='isort'
+  - TOXENV='docs'
   - DJANGO='django19' CMS='cms33'
   - DJANGO='django19' CMS='cms32'
   - DJANGO='django19' CMS='knocker'
@@ -39,9 +40,13 @@ after_success:
 matrix:
   exclude:
   - python: 2.7
+    env: TOXENV='docs'
+  - python: 2.7
     env: TOXENV='pep8'
   - python: 2.7
     env: TOXENV='isort'
+  - python: 3.4
+    env: TOXENV='docs'
   - python: 3.4
     env: TOXENV='pep8'
   - python: 3.4

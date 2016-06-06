@@ -125,5 +125,11 @@ def run():
     from djangocms_helper import runner
     runner.cms('djangocms_blog')
 
+
+def setup():
+    import sys
+    from djangocms_helper import runner
+    runner.setup('djangocms_blog', sys.modules[__name__], use_cms=True)
+
 if __name__ == '__main__':
     run()

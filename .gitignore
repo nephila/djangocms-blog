@@ -42,7 +42,7 @@ docs/build
 lokalize*
 
 .idea
-docs
+docs/_build
 
 *~
 *.db
