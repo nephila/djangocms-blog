@@ -16,6 +16,7 @@ Contributors
 * cluster-master
 * danra
 * Davide Truffo
+* frnhr
 * furiousdave
 * Georgiy Kutsurua
 * German Ilyin
@@ -27,6 +28,7 @@ Contributors
 * MotleyTech
 * Nico Schottelius
 * Olivier Tabone
+* Petr Klus
 * Sami Kalliomäki
 * Stefan Wehrmeyer
 * Sylvain Fankhauser
