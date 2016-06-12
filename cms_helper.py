@@ -78,6 +78,7 @@ HELPER_SETTINGS = dict(
         ('blog.html', 'Blog template'),
     ),
     META_SITE_PROTOCOL='http',
+    META_USE_SITES=True,
     META_SITE_DOMAIN='example.com',
     META_USE_OG_PROPERTIES=True,
     META_USE_TWITTER_PROPERTIES=True,
