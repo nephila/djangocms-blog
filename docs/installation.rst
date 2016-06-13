@@ -62,7 +62,7 @@ suited for your deployment.
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 
-* To start your blog you need to use `AppHooks from django CMS <http://django-cms.readthedocs.org/en/support-3.0.x/how_to/apphooks.html>`_
+* To start your blog you need to use `AppHooks from django CMS <http://docs.django-cms.org/en/latest/how_to/apphooks.html>`_
   to add the blog to a django CMS page; this step is not required when using
   `Auto setup <auto_setup>`_:
 
@@ -79,7 +79,7 @@ suited for your deployment.
              new **Application configuration**
 
 * Add and edit blog by creating them in the admin or using the toolbar,
-  and the use the `django CMS frontend editor <http://django-cms.readthedocs.org/en/support-3.0.x/user/reference/page_admin.html#the-interface>`_
+  and the use the `django CMS frontend editor <http://docs.django-cms.org/en/latest/user/reference/page_admin.html>`_
   to edit the blog content:
 
   * Create a new blog entry in django admin backend or from the toolbar
@@ -97,10 +97,10 @@ Dependency applications may need configuration to work properly.
 
 Please, refer to each application documentation on details.
 
-* django-filer: http://django-filer.readthedocs.org
+* django-filer: https://django-filer.readthedocs.io
 * django-meta: https://github.com/nephila/django-meta#installation
 * django-meta-mixin: https://github.com/nephila/django-meta-mixin#installation
-* django-parler: http://django-parler.readthedocs.org/en/latest/quickstart.html#configuration
+* django-parler: https://django-parler.readthedocs.io/en/latest/quickstart.html#configuration
 * django-taggit-autosuggest: https://bitbucket.org/fabian/django-taggit-autosuggest
 
 
