@@ -78,7 +78,7 @@ Features
 Documentation
 -------------
 
-Check documentation at http://djangocms-blog.readthedocs.io/en/latest/
+Check documentation at https://djangocms-blog.readthedocs.io/en/latest/
 
 Known djangocms-blog websites
 +++++++++++++++++++++++++++++

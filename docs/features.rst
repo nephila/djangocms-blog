@@ -168,5 +168,5 @@ django-knocker
 ``djangocms-blog`` is integrated with `django-knocker <https://github.com/nephila/django-knocker>`_
 to provide real time desktop notifications.
 
-See `django-knocker documentation <https://django-knocker.readthedocs.org/>`_ for how to configure
+See `django-knocker documentation <https://django-knocker.readthedocs.io/>`_ for how to configure
 knocker.
