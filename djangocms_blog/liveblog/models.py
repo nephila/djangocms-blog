@@ -37,7 +37,9 @@ class Liveblog(AbstractText):
         saved = super(Liveblog, self).save(*args, **kwargs)
         if self.publish:
             self.send()
-        order = CMSPlugin.objects.filter(placeholder=self.placeholder).order_by('placeholder', '-path').values_list('pk', flat=True)
+        order = CMSPlugin.objects.filter(
+            placeholder=self.placeholder
+        ).order_by('placeholder', 'path').values_list('pk', flat=True)
         reorder_plugins(self.placeholder, None, self.language, order)
         return saved
 
