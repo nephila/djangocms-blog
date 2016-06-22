@@ -354,7 +354,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     @property
     def liveblog_group(self):
-        return 'liveblog/{apphook}/{lang}/{post}'.format(
+        return 'liveblog-{apphook}-{lang}-{post}'.format(
             lang=self.get_current_language(),
             apphook=self.app_config.namespace,
             post=self.safe_translation_getter('slug', any_language=True)
