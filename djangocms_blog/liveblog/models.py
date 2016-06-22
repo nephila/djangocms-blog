@@ -7,11 +7,11 @@ from channels import Group
 from cms.models import CMSPlugin
 from cms.utils.plugins import reorder_plugins
 from django.db import models
-from djangocms_text_ckeditor.models import AbstractText
 from django.utils.translation import ugettext_lazy as _
+from djangocms_text_ckeditor.models import AbstractText
 from filer.fields.image import FilerImageField
 
-from djangocms_blog.models import thumbnail_model, Post
+from djangocms_blog.models import Post, thumbnail_model
 
 DATE_FORMAT = "%a %d %b %Y %H:%M"
 

@@ -65,7 +65,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                        (
                            'enable_comments',
                            'enable_liveblog' if apps.is_installed('djangocms_blog.liveblog')
-                               else None
+                           else None
                        )),
             'classes': ('collapse',)
         }),
