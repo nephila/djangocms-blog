@@ -18,14 +18,4 @@ class Migration(migrations.Migration):
             name='enable_liveblog',
             field=models.BooleanField(default=False, verbose_name='enable liveblog on post'),
         ),
-        migrations.AlterField(
-            model_name='post',
-            name='main_image_full',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='djangocms_blog_post_full', to='cmsplugin_filer_image.ThumbnailOption', verbose_name='main image full'),
-        ),
-        migrations.AlterField(
-            model_name='post',
-            name='main_image_thumbnail',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='djangocms_blog_post_thumbnail', to='cmsplugin_filer_image.ThumbnailOption', verbose_name='main image thumbnail'),
-        ),
     ]
