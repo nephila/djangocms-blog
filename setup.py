@@ -30,7 +30,7 @@ setup(
         'django-parler>=1.5',
         'django-cms>3.0.11',
         'django-taggit>=0.12.2',
-        'django-filer>=1.2',
+        'django-filer>=1.1',
         'pytz',
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
