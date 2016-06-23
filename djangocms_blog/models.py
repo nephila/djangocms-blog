@@ -400,6 +400,10 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(categories__in=list(self.categories.all()))
         return posts.distinct()[:self.latest_posts]
 
+    def get_plugin_name(self):
+        from cms.plugin_pool import plugin_pool
+        return plugin_pool.get_plugin(self.plugin_type).name.format(self.app_config.namespace)
+
 
 @python_2_unicode_compatible
 class AuthorEntriesPlugin(BasePostPlugin):
