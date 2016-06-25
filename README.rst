@@ -56,6 +56,36 @@ Supported django CMS versions:
              Some plugins have a broken tag management prior to 0.6, in case
              you have issues with tags, upgrade to latest version to have it fixed.
 
+Upgrading cmsplugin-filer from 1.0 to 1.1
+-----------------------------------------
+
+Due to changes in cmsplugin-filer/filer which moved ``ThumbnailOption`` model from the
+former to the latter, ``djangocms-blog`` must be migrated as well.
+
+Migrating cmsplugin-filer to 1.1 and djangocms-blog up to 0.8.4
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If you have djangocms-blog up to 0.8.4 (included) installed or you are upgrading from a previous
+djangocms-blog version together with cmsplugin-filer upgrade, you can just apply the migrations::
+
+    pip install cmsplugin-filer==1.1.1 django-filer==1.2.2 djangocms-blog==0.8.4
+    python manage.py migrate
+
+Migrating cmsplugin-filer to 1.1 and djangocms-blog 0.8.5+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+If you already a djangocms-blog 0.8.5+ or above, you have to de-apply some blog migrations when
+doing the upgrade::
+
+    python manage.py migrate djangocms_blog 0017 ## reverse for these migration is a noop
+    pip install cmsplugin-filer==1.1.1 django-filer==1.2.2
+    python manage.py migrate
+
+.. note:: de-apply migration **before** upgrading cmsplugin-filer. If running before upgrade, the
+          backward migration won't alter anything on the database, and it will just allow the code
+          to migrate ``ThumbnailOption`` from cmsplugin-filer to filer
+
+
 Features
 --------
 
