@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import json
 
 from channels import Group
-from cms.models import CMSPlugin
+from cms.models import CMSPlugin, python_2_unicode_compatible
 from cms.utils.plugins import reorder_plugins
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -16,6 +16,7 @@ from djangocms_blog.models import Post, thumbnail_model
 DATE_FORMAT = "%a %d %b %Y %H:%M"
 
 
+@python_2_unicode_compatible
 class LiveblogInterface(models.Model):
     """
     Abstract Liveblog plugin model, reusable to customize the liveblogging plugins.
@@ -30,6 +31,9 @@ class LiveblogInterface(models.Model):
         verbose_name = _('liveblog entry')
         verbose_name_plural = _('liveblog entries')
         abstract = True
+
+    def __str__(self):
+        return str(self.pk)
 
     def _post_save(self):
         if self.publish:
@@ -85,3 +89,6 @@ class Liveblog(LiveblogInterface, AbstractText):
     def save(self, *args, **kwargs):
         super(Liveblog, self).save(*args, **kwargs)
         self._post_save()
+
+    def __str__(self):
+        return AbstractText.__str__(self)

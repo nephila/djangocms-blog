@@ -165,7 +165,7 @@ try:
             )
             context = self.get_plugin_context(pages[0], 'en', plugin, edit=False)
             rendered = plugin.render_plugin(context, post.liveblog)
-            self.assertFalse(rendered)
+            self.assertFalse(rendered.strip())
 
             plugin.publish = True
             plugin.save()

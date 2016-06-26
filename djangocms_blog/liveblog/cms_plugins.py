@@ -15,12 +15,7 @@ class LiveblogPlugin(TextPlugin):
     name = _('Liveblog item')
     model = Liveblog
     fields = ('title', 'body', 'publish')
-
-    def _get_render_template(self, context, instance, placeholder):
-        if instance.publish:
-            return 'liveblog/plugins/liveblog.html'
-        else:
-            return 'liveblog/plugins/unpublished.html'
+    render_template = 'liveblog/plugins/liveblog.html'
 
     def render(self, context, instance, placeholder):
         context = super(LiveblogPlugin, self).render(context, instance, placeholder)
