@@ -3,6 +3,11 @@
 History
 -------
 
+0.8.5 (2016-06-26)
+++++++++++++++++++
+
+* Fixed issues with ThumbnailOption migration under mysql.
+
 0.8.4 (2016-06-22)
 ++++++++++++++++++
 
