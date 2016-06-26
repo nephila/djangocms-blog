@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('cms', '__first__'),
-        ('djangocms_blog', '0017_thumbnail_move'),
+        ('djangocms_blog', '0020_thumbnail_move4'),
     ]
 
     operations = [

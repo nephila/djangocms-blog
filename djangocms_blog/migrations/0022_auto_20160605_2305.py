@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('djangocms_blog', '0018_post_liveblog'),
+        ('djangocms_blog', '0021_post_liveblog'),
     ]
 
     operations = [
