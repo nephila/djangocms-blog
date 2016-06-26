@@ -1,7 +1,9 @@
 .. _settings:
 
+###############
 Global Settings
----------------
+###############
+
 * BLOG_IMAGE_THUMBNAIL_SIZE: Size of the main image when shown on the post
   lists; it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
   (default: ``{'size': '120x120', 'crop': True,'upscale': False}``)
@@ -88,8 +90,9 @@ Global Settings
 * BLOG_FEED_LATEST_ITEMS: Number of items in latest items feed
 * BLOG_FEED_TAGS_ITEMS: Number of items in per tags feed
 
+******************
 Read-only settings
-++++++++++++++++++
+******************
 
 * BLOG_MENU_TYPES: Available structures of the Blog menu; (default list **Posts and Categories**,
   **Categories only**, **Posts only**, **None**)
@@ -97,8 +100,9 @@ Read-only settings
   (default: ``Posts and Categories``)
 
 
+********************
 Per-Apphook settings
-++++++++++++++++++++
+********************
 
 The following settings can be configured for each ``Apphook config``: the settings above will
 be used as defaults.

@@ -56,14 +56,15 @@ Supported django CMS versions:
              Some plugins have a broken tag management prior to 0.6, in case
              you have issues with tags, upgrade to latest version to have it fixed.
 
+*****************************************
 Upgrading cmsplugin-filer from 1.0 to 1.1
------------------------------------------
+*****************************************
 
 Due to changes in cmsplugin-filer/filer which moved ``ThumbnailOption`` model from the
 former to the latter, ``djangocms-blog`` must be migrated as well.
 
 Migrating cmsplugin-filer to 1.1 and djangocms-blog up to 0.8.4
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================================================
 
 If you have djangocms-blog up to 0.8.4 (included) installed or you are upgrading from a previous
 djangocms-blog version together with cmsplugin-filer upgrade, you can just apply the migrations::
@@ -72,7 +73,7 @@ djangocms-blog version together with cmsplugin-filer upgrade, you can just apply
     python manage.py migrate
 
 Migrating cmsplugin-filer to 1.1 and djangocms-blog 0.8.5+
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+==========================================================
 
 If you already a djangocms-blog 0.8.5+ or above, you have to de-apply some blog migrations when
 doing the upgrade::
@@ -86,31 +87,35 @@ doing the upgrade::
           to migrate ``ThumbnailOption`` from cmsplugin-filer to filer
 
 
+********
 Features
---------
+********
 
 * Placeholder content editing
 * Frontend editing using django CMS 3.x frontend editor
 * Multilingual support using django-parler
-* Support for Twitter cards, Open Graph and Google+ snippets meta tags
-* Optional support for simpler TextField-based content editing
-* Multisite support (posts can be visible in one or more Django sites on the
-  same project)
+* Twitter cards, Open Graph and Google+ snippets meta tags
+* Optional simpler TextField-based content editing
+* Multisite (posts can be visible in one or more Django sites on the same project)
 * Per-Apphook configuration
 * Configurable permalinks
-* Configurable django CMS menu support
+* Configurable django CMS menu
 * Per-Apphook templates set
 * Auto Apphook setup
-* Django sitemap framework support
-* Support for django CMS 3.2+ Wizard
-* Haystack index support
+* Django sitemap framework
+* django CMS 3.2+ Wizard
+* Haystack index
+* Desktop notifications
+* Liveblog
 
+*************
 Documentation
--------------
+*************
 
 Check documentation at https://djangocms-blog.readthedocs.io/en/latest/
 
+*****************************
 Known djangocms-blog websites
-+++++++++++++++++++++++++++++
+*****************************
 
 See DjangoPackages for an updated list https://www.djangopackages.com/packages/p/djangocms-blog/

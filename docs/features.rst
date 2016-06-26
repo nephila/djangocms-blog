@@ -1,12 +1,14 @@
 .. _features:
 
+========
 Features
---------
+========
 
 .. _blog-home-page:
 
+*******************************
 Attaching blog to the home page
-+++++++++++++++++++++++++++++++
+*******************************
 
 If you want to attach the blog to the home page you have to adapt settings a bit otherwise the
 "Just slug" permalink will swallow any CMS page you create.
@@ -32,13 +34,14 @@ linked ot the home page (see http://yoursite.com/admin/djangocms_blog/blogconfig
 
 .. _multisite:
 
+*********
 Multisite
-+++++++++
+*********
 
 django CMS blog provides full support for multisite setups.
 
 Basic multisite
-^^^^^^^^^^^^^^^
+===============
 
 To enabled basic multisite add ``BLOG_MULTISITE = True`` to the project settings.
 
@@ -47,7 +50,7 @@ it's visible on all sites. All users with permission on the blog can manage all 
 posts, whichever the sites are.
 
 Multisite permissions
-^^^^^^^^^^^^^^^^^^^^^
+=====================
 
 Multisite permissions allow to restrict users to only manage the blog posts for the
 sites they are enabled to
@@ -65,8 +68,9 @@ Example::
 
 .. _cms-wizard:
 
+**********************
 django CMS 3.2+ Wizard
-++++++++++++++++++++++
+**********************
 
 django CMS 3.2+ provides a content creation wizard that allows to quickly created supported
 content types, such as blog posts.
@@ -80,8 +84,9 @@ wizard may not show up, but the rest will work as intended.
 
 .. _permalinks:
 
+***********************
 Configurable permalinks
-+++++++++++++++++++++++
+***********************
 
 Blog comes with four different styles of permalinks styles:
 
@@ -106,8 +111,9 @@ And change ``post/`` with the desired prefix.
 
 .. _menu:
 
+****
 Menu
-++++
+****
 
 ``djangocms_blog`` provides support for django CMS menu framework.
 
@@ -121,8 +127,9 @@ category are not added to the menu.
 
 .. _templates:
 
+*********
 Templates
-+++++++++
+*********
 
 To ease the template customisations a ``djangocms_blog/base.html`` template is
 used by all the blog templates; the templates itself extends a ``base.html``
@@ -133,8 +140,9 @@ not defines a ``content`` block, copy in your template directory
 other application templates will use the newly created base template and
 will ignore the bundled one.
 
+*************
 Templates set
-+++++++++++++
+*************
 
 By using **Apphook configuration** you can define a different templates set.
 To use this feature provide a directory name in **Template prefix** field in
@@ -143,8 +151,9 @@ root of your custom templates set.
 
 .. _sitemap:
 
+*******
 Sitemap
-+++++++
+*******
 
 ``djangocms_blog`` provides a sitemap for improved SEO indexing.
 Sitemap returns all the published posts in all the languages each post is available.
@@ -168,14 +177,3 @@ To add the blog Sitemap, add the following code to the project ``urls.py``::
             }
         }),
     )
-
-.. _knocker:
-
-django-knocker
-++++++++++++++
-
-``djangocms-blog`` is integrated with `django-knocker <https://github.com/nephila/django-knocker>`_
-to provide real time desktop notifications.
-
-See `django-knocker documentation <https://django-knocker.readthedocs.io/>`_ for how to configure
-knocker.

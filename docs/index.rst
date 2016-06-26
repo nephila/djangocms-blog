@@ -3,14 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+==========================================
 Welcome to djangocms-blog's documentation!
 ==========================================
 
 .. include:: ../README.rst
 
 
+********
 Contents
---------
+********
 
 .. toctree::
    :maxdepth: 2
@@ -18,13 +20,15 @@ Contents
    installation
    settings
    features
+   channels
    development
    contributing
    history
 
 
+******************
 Indices and tables
-==================
+******************
 
 * :ref:`genindex`
 * :ref:`search`
