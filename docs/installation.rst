@@ -1,7 +1,8 @@
 .. _installation:
 
+############
 Installation
-------------
+############
 
 Install djangocms-blog::
 
@@ -28,8 +29,9 @@ Then migrate::
 
     $ python manage.py migrate
 
+*********************
 Minimal configuration
-+++++++++++++++++++++
+*********************
 
 The following are minimal defaults to get the blog running; they may not be
 suited for your deployment.
@@ -90,8 +92,9 @@ suited for your deployment.
 
 .. _external_applications:
 
+***********************************
 External applications configuration
-+++++++++++++++++++++++++++++++++++
+***********************************
 
 Dependency applications may need configuration to work properly.
 
@@ -106,8 +109,9 @@ Please, refer to each application documentation on details.
 
 .. _auto_setup:
 
+**********
 Auto setup
-++++++++++
+**********
 
 ``djangocms_blog`` can install and configue itself if it does not find any
 attached instance of itself.
