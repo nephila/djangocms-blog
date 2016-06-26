@@ -88,16 +88,19 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         return self.filter(models.Q(sites__isnull=True) |
                            models.Q(sites=site.pk))
 
-    def published(self):
-        queryset = self.published_future()
+    def published(self, current_site=True):
+        queryset = self.published_future(current_site)
         if self.start_date_field:
             return queryset.filter(
                 **{'%s__lte' % self.start_date_field: now()})
         else:
             return queryset
 
-    def published_future(self):
-        queryset = self.on_site()
+    def published_future(self, current_site=True):
+        if current_site:
+            queryset = self.on_site()
+        else:
+            queryset = self
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__gte' % self.end_date_field: now()}) |
@@ -106,8 +109,11 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
-    def archived(self):
-        queryset = self.on_site()
+    def archived(self, current_site=True):
+        if current_site:
+            queryset = self.on_site()
+        else:
+            queryset = self
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__lte' % self.end_date_field: now()}) |
@@ -116,11 +122,17 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
-    def available(self):
-        return self.on_site().filter(**{self.publish_field: True})
+    def available(self, current_site=True):
+        if current_site:
+            return self.on_site().filter(**{self.publish_field: True})
+        else:
+            return self.filter(**{self.publish_field: True})
 
-    def filter_by_language(self, language):
-        return self.active_translations(language_code=language).on_site()
+    def filter_by_language(self, language, current_site=True):
+        if current_site:
+            return self.active_translations(language_code=language).on_site()
+        else:
+            return self.active_translations(language_code=language)
 
 
 class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):

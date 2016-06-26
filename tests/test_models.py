@@ -438,6 +438,33 @@ class AdminTest(BaseTest):
 
 class ModelsTest(BaseTest):
 
+    def test_category_attributes(self):
+        posts = self.get_posts()
+        posts[0].publish = True
+        posts[0].save()
+        posts[1].publish = True
+        posts[1].save()
+        posts[1].sites.add(self.site_2)
+        new_category = BlogCategory.objects.create(
+            name='category 2', app_config=self.app_config_1
+        )
+        posts[1].categories.add(new_category)
+
+        with self.settings(SITE_ID=2):
+            self.assertEqual(new_category.count, 1)
+            self.assertEqual(self.category_1.count, 2)
+            self.assertEqual(new_category.count_all_sites, 1)
+            self.assertEqual(self.category_1.count_all_sites, 2)
+
+        # needed to clear cached properties
+        new_category = self.reload_model(new_category)
+        self.category_1 = self.reload_model(self.category_1)
+        with self.settings(SITE_ID=1):
+            self.assertEqual(new_category.count, 0)
+            self.assertEqual(self.category_1.count, 1)
+            self.assertEqual(new_category.count_all_sites, 1)
+            self.assertEqual(self.category_1.count_all_sites, 2)
+
     def test_model_attributes(self):
         self.get_pages()
 

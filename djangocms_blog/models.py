@@ -80,15 +80,15 @@ class BlogCategory(TranslatableModel):
 
     @cached_property
     def linked_posts(self):
-        return self.blog_posts.namespace(self.app_config.namespace).published()
+        return self.blog_posts.namespace(self.app_config.namespace)
 
     @cached_property
     def count(self):
-        return self.linked_posts.on_site().count()
+        return self.linked_posts.published().count()
 
     @cached_property
     def count_all_sites(self):
-        return self.linked_posts.count()
+        return self.linked_posts.published(current_site=False).count()
 
     def get_absolute_url(self, lang=None):
         if not lang:
@@ -392,7 +392,7 @@ class BasePostPlugin(CMSPlugin):
         posts = posts.active_translations(language_code=language)
         if (published_only or not request or not getattr(request, 'toolbar', False) or
                 not request.toolbar.edit_mode):
-            posts = posts.published()
+            posts = posts.published(current_site=self.current_site)
         return posts.all()
 
 
@@ -456,8 +456,10 @@ class AuthorEntriesPlugin(BasePostPlugin):
             if self.app_config:
                 qs = qs.namespace(self.app_config.namespace)
             if self.current_site:
-                qs = qs.on_site()
-            count = qs.filter(publish=True).count()
+                qs = qs.published()
+            else:
+                qs = qs.published(current_site=False)
+            count = qs.count()
             if count:
                 author.count = count
         return authors
