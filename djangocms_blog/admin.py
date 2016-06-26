@@ -6,6 +6,7 @@ from copy import deepcopy
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from django import forms
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
@@ -56,19 +57,20 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [('title', 'categories', 'publish', 'app_config')]
+            'fields': [['title', 'categories', 'publish', 'app_config']]
         }),
         ('Info', {
-            'fields': (['slug', 'tags'],
-                       ('date_published', 'date_published_end', 'enable_comments')),
+            'fields': [['slug', 'tags'],
+                       ['date_published', 'date_published_end'],
+                       ['enable_comments']],
             'classes': ('collapse',)
         }),
         ('Images', {
-            'fields': (('main_image', 'main_image_thumbnail', 'main_image_full'),),
+            'fields': [['main_image', 'main_image_thumbnail', 'main_image_full']],
             'classes': ('collapse',)
         }),
         ('SEO', {
-            'fields': [('meta_description', 'meta_title', 'meta_keywords')],
+            'fields': [['meta_description', 'meta_title', 'meta_keywords']],
             'classes': ('collapse',)
         }),
     ]
@@ -88,6 +90,11 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         ]
         urls.extend(super(PostAdmin, self).get_urls())
         return urls
+
+    def post_add_plugin(self, request, placeholder, plugin):
+        if plugin.plugin_type in get_setting('LIVEBLOG_PLUGINS'):
+            plugin = plugin.move(plugin.get_siblings().first(), 'first-sibling')
+        return super(PostAdmin, self).post_add_plugin(request, placeholder, plugin)
 
     def publish_post(self, request, pk):
         """
@@ -187,6 +194,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
+        if apps.is_installed('djangocms_blog.liveblog'):
+            fsets[1][1]['fields'][2].append('enable_liveblog')
         filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)

@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 
 from aldryn_apphooks_config.mixins import AppConfigMixin
+from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
@@ -71,6 +72,9 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
     slug_field = 'slug'
     view_url_name = 'djangocms_blog:post-detail'
     instant_article = False
+
+    def liveblog_enabled(self):
+        return self.object.enable_liveblog and apps.is_installed('djangocms_blog.liveblog')
 
     def get_template_names(self):
         if self.instant_article:

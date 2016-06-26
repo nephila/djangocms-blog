@@ -21,6 +21,9 @@
     </div>
     {% endif %}
     {% endspaceless %}
+    {% if view.liveblog_enabled %}
+        {% include "liveblog/includes/post_detail.html" %}
+    {% endif %}
     {% if post.app_config.use_placeholder %}
         <div class="blog-content">{% render_placeholder post.content %}</div>
     {% else %}

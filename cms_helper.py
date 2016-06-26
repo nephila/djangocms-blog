@@ -110,10 +110,12 @@ except ImportError:
 try:
     import knocker  # pragma: no cover # NOQA
     HELPER_SETTINGS['INSTALLED_APPS'].append('knocker')
+    HELPER_SETTINGS['INSTALLED_APPS'].append('channels')
+    HELPER_SETTINGS['INSTALLED_APPS'].append('djangocms_blog.liveblog',)
     HELPER_SETTINGS['CHANNEL_LAYERS'] = {
         'default': {
             'BACKEND': 'asgiref.inmemory.ChannelLayer',
-            'ROUTING': 'knocker.routing.channel_routing',
+            'ROUTING': 'tests.test_utils.routing.channel_routing',
         },
     }
 except ImportError:
