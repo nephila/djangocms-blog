@@ -5,6 +5,14 @@ History
 =======
 
 ******************
+0.9.0 (unreleased)
+******************
+
+* Dropped support for Django<1.8, django CMS<3.2.
+* Added liveblog application.
+* Added standalone documentation at https://djangocms-blog.readthedocs.io.
+
+******************
 0.8.5 (2016-06-26)
 ******************
 
