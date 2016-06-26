@@ -8,6 +8,7 @@ from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableMana
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -15,6 +16,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
@@ -76,9 +78,17 @@ class BlogCategory(TranslatableModel):
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
 
-    @property
+    @cached_property
+    def linked_posts(self):
+        return self.blog_posts.namespace(self.app_config.namespace).published()
+
+    @cached_property
     def count(self):
-        return self.blog_posts.namespace(self.app_config.namespace).published().count()
+        return self.linked_posts.on_site().count()
+
+    @cached_property
+    def count_all_sites(self):
+        return self.linked_posts.count()
 
     def get_absolute_url(self, lang=None):
         if not lang:
@@ -365,17 +375,23 @@ class BasePostPlugin(CMSPlugin):
     app_config = AppHookConfigField(
         BlogConfig, null=True, verbose_name=_('app. config'), blank=True
     )
+    current_site = models.BooleanField(
+        _('current site'), default=True, help_text=_('Select items from the current site only')
+    )
 
     class Meta:
         abstract = True
 
-    def post_queryset(self, request=None):
+    def post_queryset(self, request=None, published_only=True):
         language = get_language()
-        posts = Post._default_manager
+        posts = Post.objects
         if self.app_config:
             posts = posts.namespace(self.app_config.namespace)
+        if self.current_site:
+            posts = posts.on_site(get_current_site(request))
         posts = posts.active_translations(language_code=language)
-        if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
+        if (published_only or not request or not getattr(request, 'toolbar', False) or
+                not request.toolbar.edit_mode):
             posts = posts.published()
         return posts.all()
 
@@ -384,14 +400,14 @@ class BasePostPlugin(CMSPlugin):
 class LatestPostsPlugin(BasePostPlugin):
     latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests '
-                                                   u'articles to be displayed.'))
+                                                   'articles to be displayed.'))
     tags = TaggableManager(_('filter by tag'), blank=True,
                            help_text=_('Show only the blog articles tagged with chosen tags.'),
                            related_name='djangocms_blog_latest_post')
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', blank=True,
                                         verbose_name=_('filter by category'),
                                         help_text=_('Show only the blog articles tagged '
-                                                    u'with chosen categories.'))
+                                                    'with chosen categories.'))
 
     def __str__(self):
         return force_text(_('%s latest articles by tag') % self.latest_posts)
@@ -402,8 +418,8 @@ class LatestPostsPlugin(BasePostPlugin):
         for category in oldinstance.categories.all():
             self.categories.add(category)
 
-    def get_posts(self, request):
-        posts = self.post_queryset(request)
+    def get_posts(self, request, published_only=True):
+        posts = self.post_queryset(request, published_only)
         if self.tags.exists():
             posts = posts.filter(tags__in=list(self.tags.all()))
         if self.categories.exists():
@@ -428,8 +444,8 @@ class AuthorEntriesPlugin(BasePostPlugin):
     def copy_relations(self, oldinstance):
         self.authors = oldinstance.authors.all()
 
-    def get_posts(self, request):
-        posts = self.post_queryset(request)
+    def get_posts(self, request, published_only=True):
+        posts = self.post_queryset(request, published_only)
         return posts[:self.latest_posts]
 
     def get_authors(self):
@@ -439,6 +455,8 @@ class AuthorEntriesPlugin(BasePostPlugin):
             qs = author.djangocms_blog_post_author
             if self.app_config:
                 qs = qs.namespace(self.app_config.namespace)
+            if self.current_site:
+                qs = qs.on_site()
             count = qs.filter(publish=True).count()
             if count:
                 author.count = count

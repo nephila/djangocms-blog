@@ -154,6 +154,8 @@ class BaseTest(BaseTestCase):
         for post in Post.objects.all():
             post.sites.clear()
             post.tags.clear()
+            post.categories.clear()
+        cache.clear()
         super(BaseTest, self).tearDown()
 
     def _get_category(self, data, category=None, lang='en'):

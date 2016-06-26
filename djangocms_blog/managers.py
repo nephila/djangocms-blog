@@ -56,8 +56,10 @@ class TaggedFilterItem(object):
         queryset = self.tag_list(other_model, queryset)
         return queryset.values('slug')
 
-    def tag_cloud(self, other_model=None, queryset=None, published=True):
+    def tag_cloud(self, other_model=None, queryset=None, published=True, on_site=False):
         from taggit.models import TaggedItem
+        if on_site:
+            queryset = queryset.on_site()
         tag_ids = self._taglist(other_model, queryset)
         kwargs = {}
         if published:
@@ -80,9 +82,11 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
     end_date_field = 'date_published_end'
     publish_field = 'publish'
 
-    def on_site(self):
+    def on_site(self, site=None):
+        if not site:
+            site = Site.objects.get_current()
         return self.filter(models.Q(sites__isnull=True) |
-                           models.Q(sites=Site.objects.get_current().pk))
+                           models.Q(sites=site.pk))
 
     def published(self):
         queryset = self.published_future()

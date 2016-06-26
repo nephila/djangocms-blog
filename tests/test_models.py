@@ -611,7 +611,10 @@ class ModelsTest(BaseTest):
         # default queryset, published and unpublished posts
         months = Post.objects.get_months()
         for data in months:
-            self.assertEqual(data['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
             self.assertEqual(data['count'], 2)
 
         # custom queryset, only published
@@ -619,7 +622,10 @@ class ModelsTest(BaseTest):
         post1.save()
         months = Post.objects.get_months(Post.objects.published())
         for data in months:
-            self.assertEqual(data['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
             self.assertEqual(data['count'], 1)
 
         self.assertEqual(len(Post.objects.available()), 1)
@@ -706,7 +712,9 @@ class ModelsTest(BaseTest):
         request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
         request_auth = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
         request_edit = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=True)
-        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
         # unauthenticated users get no post
@@ -714,24 +722,33 @@ class ModelsTest(BaseTest):
         # staff users not in edit mode get no post
         self.assertEqual(len(plugin.get_posts(request_auth)), 0)
         # staff users in edit mode get the post
-        self.assertEqual(len(plugin.get_posts(request_edit)), 1)
+        self.assertEqual(len(plugin.get_posts(request_edit, published_only=False)), 1)
 
         post1.publish = True
         post1.save()
         self.assertEqual(len(plugin.get_posts(request)), 1)
+
+
+class ModelsTest2(BaseTest):
 
     def test_copy_plugin_latest(self):
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
         tag1 = Tag.objects.create(name='tag 1')
         tag2 = Tag.objects.create(name='tag 2')
-        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.tags.add(tag1)
         plugin.tags.add(tag2)
         if CMS_30:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'tree_id', 'level', 'position'
+            ))
         else:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'path', 'depth', 'position'
+            ))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].tags.all()), set([tag1, tag2]))
@@ -741,7 +758,9 @@ class ModelsTest(BaseTest):
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
         request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
-        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.authors.add(self.user)
         self.assertEqual(len(plugin.get_posts(request)), 0)
         self.assertEqual(plugin.get_authors()[0].count, 0)
@@ -759,12 +778,18 @@ class ModelsTest(BaseTest):
     def test_copy_plugin_author(self):
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
-        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.authors.add(self.user)
         if CMS_30:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'tree_id', 'level', 'position'
+            ))
         else:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'path', 'depth', 'position'
+            ))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
@@ -797,13 +822,19 @@ class ModelsTest(BaseTest):
 
         self.assertEqual(force_text(post1.categories.first()), 'category 1')
 
-        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
+        )
         self.assertEqual(force_text(plugin.__str__()), '5 latest articles by author')
 
-        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         self.assertEqual(force_text(plugin.__str__()), '5 latest articles by tag')
 
-        plugin = add_plugin(post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1
+        )
         self.assertEqual(force_text(plugin.__str__()), 'generic blog plugin')
 
 
