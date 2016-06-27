@@ -48,33 +48,16 @@ class BlogCategoryMenu(CMSAttachMenu):
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
             posts_menu = True
 
-        if categories_menu:
-            categories = BlogCategory.objects
-            if config:
-                categories = categories.namespace(self.instance.application_namespace)
-            categories = categories.active_translations(language).distinct()
-            categories = categories.order_by('parent__id', 'translations__name')
-            for category in categories:
-                node = NavigationNode(
-                    category.name,
-                    category.get_absolute_url(),
-                    '{0}-{1}'.format(category.__class__.__name__, category.pk),
-                    (
-                        '{0}-{1}'.format(
-                            category.__class__.__name__, category.parent.id
-                        ) if category.parent else None
-                    )
-                )
-                nodes.append(node)
-
+        used_categories = []
         if posts_menu:
             posts = Post.objects
             if hasattr(self, 'instance') and self.instance:
-                posts = posts.namespace(self.instance.application_namespace)
+                posts = posts.namespace(self.instance.application_namespace).on_site()
             posts = posts.active_translations(language).distinct()
             for post in posts:
                 post_id = None
                 parent = None
+                used_categories.extend(post.categories.values_list('pk', flat=True))
                 if categories_menu:
                     category = post.categories.first()
                     if category:
@@ -90,6 +73,28 @@ class BlogCategoryMenu(CMSAttachMenu):
                         parent
                     )
                     nodes.append(node)
+
+        if categories_menu:
+            categories = BlogCategory.objects
+            if config:
+                categories = categories.namespace(self.instance.application_namespace)
+            if config and not config.menu_empty_categories:
+                categories = categories.filter(pk__in=used_categories)
+            else:
+                categories = categories.active_translations(language).distinct()
+            categories = categories.order_by('parent__id', 'translations__name')
+            for category in categories:
+                node = NavigationNode(
+                    category.name,
+                    category.get_absolute_url(),
+                    '{0}-{1}'.format(category.__class__.__name__, category.pk),
+                    (
+                        '{0}-{1}'.format(
+                            category.__class__.__name__, category.parent.id
+                        ) if category.parent else None
+                    )
+                )
+                nodes.append(node)
 
         return nodes
 
