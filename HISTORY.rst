@@ -10,7 +10,9 @@ History
 
 * Dropped support for Django<1.8, django CMS<3.2.
 * Added liveblog application.
-* Refactored plugin filters: by default only current site are now shown.
+* Refactored plugin filters: by default only data for current site are now shown.
+* Added global and per site posts count to BlogCategory.
+* Added option to hide empty categories from menu.
 * Added standalone documentation at https://djangocms-blog.readthedocs.io.
 
 ******************

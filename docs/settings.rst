@@ -11,6 +11,8 @@ Global Settings
   detail; it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
   (default: ``{'size': '640x120', 'crop': True,'upscale': False}``)
 * BLOG_PAGINATION: Number of post per page; (default: ``10``)
+* BLOG_MENU_EMPTY_CATEGORIES: Flag to show / hide categories without posts
+  attached from the menu; (default: ``True``)
 * BLOG_LATEST_POSTS: Default number of post in the **Latest post** plugin;
   (default: ``5``)
 * BLOG_POSTS_LIST_TRUNCWORDS_COUNT: Default number of words shown for
@@ -119,6 +121,7 @@ be used as defaults.
 * Paginate sizePer-Apphook setting for BLOG_PAGINATION;
 * Template prefix: Alternative directory to load the blog templates from;
 * Menu structure: Per-Apphook setting for BLOG_MENU_TYPE
+* Show empty categories in menu: Per-Apphook setting for BLOG_MENU_EMPTY_CATEGORIES
 * Sitemap changefreq: Per-Apphook setting for BLOG_SITEMAP_CHANGEFREQ_DEFAULT
 * Sitemap priority: Per-Apphook setting for BLOG_SITEMAP_PRIORITY_DEFAULT
 * Object type: Per-Apphook setting for BLOG_TYPE

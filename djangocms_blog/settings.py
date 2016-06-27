@@ -58,6 +58,7 @@ def get_setting(name):
             settings, 'BLOG_POSTS_LIST_TRUNCWORDS_COUNT', 100
         ),
         'BLOG_MENU_TYPES': MENU_TYPES,
+        'BLOG_MENU_EMPTY_CATEGORIES': getattr(settings, 'MENU_EMPTY_CATEGORIES', True),
         'BLOG_TYPE': getattr(settings, 'BLOG_TYPE', 'Article'),
         'BLOG_TYPES': meta_settings.OBJECT_TYPES,
         'BLOG_FB_TYPE': getattr(settings, 'BLOG_FB_TYPE', 'Article'),
