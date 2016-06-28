@@ -56,8 +56,10 @@ class TaggedFilterItem(object):
         queryset = self.tag_list(other_model, queryset)
         return queryset.values('slug')
 
-    def tag_cloud(self, other_model=None, queryset=None, published=True):
+    def tag_cloud(self, other_model=None, queryset=None, published=True, on_site=False):
         from taggit.models import TaggedItem
+        if on_site:
+            queryset = queryset.on_site()
         tag_ids = self._taglist(other_model, queryset)
         kwargs = {}
         if published:
@@ -80,20 +82,25 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
     end_date_field = 'date_published_end'
     publish_field = 'publish'
 
-    def on_site(self):
+    def on_site(self, site=None):
+        if not site:
+            site = Site.objects.get_current()
         return self.filter(models.Q(sites__isnull=True) |
-                           models.Q(sites=Site.objects.get_current().pk))
+                           models.Q(sites=site.pk))
 
-    def published(self):
-        queryset = self.published_future()
+    def published(self, current_site=True):
+        queryset = self.published_future(current_site)
         if self.start_date_field:
             return queryset.filter(
                 **{'%s__lte' % self.start_date_field: now()})
         else:
             return queryset
 
-    def published_future(self):
-        queryset = self.on_site()
+    def published_future(self, current_site=True):
+        if current_site:
+            queryset = self.on_site()
+        else:
+            queryset = self
         if self.end_date_field:
             qfilter = (
                 models.Q(**{'%s__gte' % self.end_date_field: now()}) |
@@ -102,21 +109,29 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
-    def archived(self):
-        queryset = self.on_site()
+    def archived(self, current_site=True):
+        if current_site:
+            queryset = self.on_site()
+        else:
+            queryset = self
         if self.end_date_field:
             qfilter = (
-                models.Q(**{'%s__lte' % self.end_date_field: now()}) |
-                models.Q(**{'%s__isnull' % self.end_date_field: False})
+                models.Q(**{'%s__lte' % self.end_date_field: now()})
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
-    def available(self):
-        return self.on_site().filter(**{self.publish_field: True})
+    def available(self, current_site=True):
+        if current_site:
+            return self.on_site().filter(**{self.publish_field: True})
+        else:
+            return self.filter(**{self.publish_field: True})
 
-    def filter_by_language(self, language):
-        return self.active_translations(language_code=language).on_site()
+    def filter_by_language(self, language, current_site=True):
+        if current_site:
+            return self.active_translations(language_code=language).on_site()
+        else:
+            return self.active_translations(language_code=language)
 
 
 class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):
@@ -127,29 +142,30 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
     def get_queryset(self, *args, **kwargs):
         return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
 
-    def published(self):
-        return self.get_queryset().published()
+    def published(self, current_site=True):
+        return self.get_queryset().published(current_site)
 
-    def available(self):
-        return self.get_queryset().available()
+    def available(self, current_site=True):
+        return self.get_queryset().available(current_site)
 
-    def archived(self):
-        return self.get_queryset().archived()
+    def archived(self, current_site=True):
+        return self.get_queryset().archived(current_site)
 
-    def published_future(self):
-        return self.get_queryset().published_future()
+    def published_future(self, current_site=True):
+        return self.get_queryset().published_future(current_site)
 
-    def filter_by_language(self, language):
-        return self.get_queryset().filter_by_language(language)
+    def filter_by_language(self, language, current_site=True):
+        return self.get_queryset().filter_by_language(language, current_site)
 
-    def get_months(self, queryset=None):
+    def get_months(self, queryset=None, current_site=True):
         """
         Get months with aggregate count (how much posts is in the month).
         Results are ordered by date.
         """
         if queryset is None:
             queryset = self.get_queryset()
-        queryset = queryset.on_site()
+        if current_site:
+            queryset = queryset.on_site()
         dates_qs = queryset.values_list(queryset.start_date_field, queryset.fallback_date_field)
         dates = []
         for blog_dates in dates_qs:

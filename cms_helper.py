@@ -96,6 +96,11 @@ HELPER_SETTINGS = dict(
     HAYSTACK_CONNECTIONS={
         'default': {}
     },
+    CACHES={
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        }
+    }
 )
 
 try:

@@ -5,6 +5,8 @@ import os.path
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from django.contrib.sites.shortcuts import get_current_site
+from django.db import models
 
 from .forms import LatestEntriesForm
 from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
@@ -36,7 +38,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts(context['request'])
+        context['posts_list'] = instance.get_posts(context['request'], published_only=False)
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
@@ -45,7 +47,7 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     """
     Cached plugin which returns the latest published posts
     """
-    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME')
+    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME_CACHED')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
@@ -54,7 +56,7 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts()
+        context['posts_list'] = instance.get_posts(context['request'])
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
         return context
 
@@ -80,11 +82,8 @@ class BlogTagsPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
-        qs = Post._default_manager
-        qs_post = qs
-        if instance.app_config:
-            qs_post = qs_post.namespace(instance.app_config.namespace)
-        context['tags'] = qs.tag_cloud(queryset=qs_post.published())
+        qs = instance.post_queryset(context['request'])
+        context['tags'] = Post.objects.tag_cloud(queryset=qs.published())
         return context
 
 
@@ -96,10 +95,15 @@ class BlogCategoryPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
-        qs = BlogCategory._default_manager
+        qs = BlogCategory.objects.language().active_translations()
         if instance.app_config:
             qs = qs.namespace(instance.app_config.namespace)
-        context['categories'] = qs
+        if instance.current_site:
+            site = get_current_site(context['request'])
+            qs = qs.filter(
+                models.Q(blog_posts__sites__isnull=True) | models.Q(blog_posts__sites=site.pk)
+            )
+        context['categories'] = qs.distinct()
         return context
 
 
@@ -111,15 +115,13 @@ class BlogArchivePlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)
-        qs = Post._default_manager
-        qs_post = qs
-        if instance.app_config:
-            qs_post = qs.namespace(instance.app_config.namespace)
-        context['dates'] = qs.get_months(queryset=qs_post.published())
+        qs = instance.post_queryset(context['request'])
+        context['dates'] = Post.objects.get_months(queryset=qs.published())
         return context
 
 
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
+plugin_pool.register_plugin(BlogLatestEntriesPluginCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)

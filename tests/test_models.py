@@ -438,6 +438,33 @@ class AdminTest(BaseTest):
 
 class ModelsTest(BaseTest):
 
+    def test_category_attributes(self):
+        posts = self.get_posts()
+        posts[0].publish = True
+        posts[0].save()
+        posts[1].publish = True
+        posts[1].save()
+        posts[1].sites.add(self.site_2)
+        new_category = BlogCategory.objects.create(
+            name='category 2', app_config=self.app_config_1
+        )
+        posts[1].categories.add(new_category)
+
+        with self.settings(SITE_ID=2):
+            self.assertEqual(new_category.count, 1)
+            self.assertEqual(self.category_1.count, 2)
+            self.assertEqual(new_category.count_all_sites, 1)
+            self.assertEqual(self.category_1.count_all_sites, 2)
+
+        # needed to clear cached properties
+        new_category = self.reload_model(new_category)
+        self.category_1 = self.reload_model(self.category_1)
+        with self.settings(SITE_ID=1):
+            self.assertEqual(new_category.count, 0)
+            self.assertEqual(self.category_1.count, 1)
+            self.assertEqual(new_category.count_all_sites, 1)
+            self.assertEqual(self.category_1.count_all_sites, 2)
+
     def test_model_attributes(self):
         self.get_pages()
 
@@ -611,7 +638,10 @@ class ModelsTest(BaseTest):
         # default queryset, published and unpublished posts
         months = Post.objects.get_months()
         for data in months:
-            self.assertEqual(data['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
             self.assertEqual(data['count'], 2)
 
         # custom queryset, only published
@@ -619,8 +649,29 @@ class ModelsTest(BaseTest):
         post1.save()
         months = Post.objects.get_months(Post.objects.published())
         for data in months:
-            self.assertEqual(data['date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
             self.assertEqual(data['count'], 1)
+
+        # Move post to different site to filter it out
+        post2.sites.add(self.site_2)
+        months = Post.objects.get_months()
+        for data in months:
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
+            self.assertEqual(data['count'], 1)
+        months = Post.objects.get_months(current_site=False)
+        for data in months:
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
+            self.assertEqual(data['count'], 2)
+        post2.sites.clear()
 
         self.assertEqual(len(Post.objects.available()), 1)
 
@@ -632,6 +683,7 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.published()), 1)
         self.assertEqual(len(Post.objects.published_future()), 2)
         self.assertEqual(len(Post.objects.archived()), 0)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 0)
 
         # If post is published but end publishing date is in the past
         post2.date_published = now().replace(year=now().year - 2, month=now().month, day=1)
@@ -640,10 +692,32 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.available()), 2)
         self.assertEqual(len(Post.objects.published()), 1)
         self.assertEqual(len(Post.objects.archived()), 1)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 1)
+
+        # Move post to different site to filter it out
+        post2.sites.add(self.site_2)
+        self.assertEqual(len(Post.objects.archived()), 0)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 1)
+        self.assertEqual(len(Post.objects.available()), 1)
+        self.assertEqual(len(Post.objects.available(current_site=False)), 2)
+        self.assertEqual(len(Post.objects.published()), 1)
+
+        # publish post
+        post2.date_published = now() - timedelta(days=1)
+        post2.date_published_end = now() + timedelta(days=10)
+        post2.save()
+        self.assertEqual(len(Post.objects.archived()), 0)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 0)
+        self.assertEqual(len(Post.objects.available()), 1)
+        self.assertEqual(len(Post.objects.available(current_site=False)), 2)
+        self.assertEqual(len(Post.objects.published()), 1)
+        self.assertEqual(len(Post.objects.published(current_site=False)), 2)
 
         # counting with language fallback enabled
         self._get_post(self._post_data[0]['it'], post1, 'it')
-        self.assertEqual(len(Post.objects.filter_by_language('it')), 2)
+        self.assertEqual(len(Post.objects.filter_by_language('it')), 1)
+        self.assertEqual(len(Post.objects.filter_by_language('it', current_site=False)), 2)
+        post2.sites.clear()
 
         # No fallback
         parler.appsettings.PARLER_LANGUAGES['default']['hide_untranslated'] = True
@@ -706,7 +780,9 @@ class ModelsTest(BaseTest):
         request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
         request_auth = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=False)
         request_edit = self.get_page_request('/', self.user_staff, r'/en/blog/', edit=True)
-        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
         # unauthenticated users get no post
@@ -714,24 +790,33 @@ class ModelsTest(BaseTest):
         # staff users not in edit mode get no post
         self.assertEqual(len(plugin.get_posts(request_auth)), 0)
         # staff users in edit mode get the post
-        self.assertEqual(len(plugin.get_posts(request_edit)), 1)
+        self.assertEqual(len(plugin.get_posts(request_edit, published_only=False)), 1)
 
         post1.publish = True
         post1.save()
         self.assertEqual(len(plugin.get_posts(request)), 1)
+
+
+class ModelsTest2(BaseTest):
 
     def test_copy_plugin_latest(self):
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
         tag1 = Tag.objects.create(name='tag 1')
         tag2 = Tag.objects.create(name='tag 2')
-        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.tags.add(tag1)
         plugin.tags.add(tag2)
         if CMS_30:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'tree_id', 'level', 'position'
+            ))
         else:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'path', 'depth', 'position'
+            ))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].tags.all()), set([tag1, tag2]))
@@ -741,7 +826,9 @@ class ModelsTest(BaseTest):
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
         request = self.get_page_request('/', AnonymousUser(), r'/en/blog/', edit=False)
-        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.authors.add(self.user)
         self.assertEqual(len(plugin.get_posts(request)), 0)
         self.assertEqual(plugin.get_authors()[0].count, 0)
@@ -759,12 +846,18 @@ class ModelsTest(BaseTest):
     def test_copy_plugin_author(self):
         post1 = self._get_post(self._post_data[0]['en'])
         post2 = self._get_post(self._post_data[1]['en'])
-        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.authors.add(self.user)
         if CMS_30:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('tree_id', 'level', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'tree_id', 'level', 'position'
+            ))
         else:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by('path', 'depth', 'position'))
+            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+                'path', 'depth', 'position'
+            ))
         copy_plugins_to(plugins, post2.content)
         new = downcast_plugins(post2.content.cmsplugin_set.all())
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
@@ -797,13 +890,19 @@ class ModelsTest(BaseTest):
 
         self.assertEqual(force_text(post1.categories.first()), 'category 1')
 
-        plugin = add_plugin(post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
+        )
         self.assertEqual(force_text(plugin.__str__()), '5 latest articles by author')
 
-        plugin = add_plugin(post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         self.assertEqual(force_text(plugin.__str__()), '5 latest articles by tag')
 
-        plugin = add_plugin(post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            post1.content, 'BlogArchivePlugin', language='en', app_config=self.app_config_1
+        )
         self.assertEqual(force_text(plugin.__str__()), 'generic blog plugin')
 
 

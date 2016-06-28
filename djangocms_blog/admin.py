@@ -262,7 +262,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             ('Layout', {
                 'fields': (
                     'config.paginate_by', 'config.url_patterns', 'config.template_prefix',
-                    'config.menu_structure',
+                    'config.menu_structure', 'config.menu_empty_categories',
                 ),
                 'classes': ('collapse',)
             }),

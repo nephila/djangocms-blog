@@ -5,6 +5,7 @@ import os.path
 import re
 
 from cms.api import add_plugin
+from django.contrib.sites.models import SITE_CACHE
 from django.core.urlresolvers import reverse
 from django.utils.timezone import now
 from taggit.models import Tag
@@ -16,6 +17,43 @@ from .base import BaseTest
 
 class PluginTest(BaseTest):
 
+    def test_plugin_latest_cached(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[0].tags.add('tag 1')
+        posts[0].publish = True
+        posts[0].save()
+        ph = pages[0].placeholders.get(slot='content')
+
+        plugin = add_plugin(
+            ph, 'BlogLatestEntriesPluginCached', language='en', app_config=self.app_config_1
+        )
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        try:
+            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+        except AssertionError:
+            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+        self.assertTrue(rendered.find('<p>first line</p>') > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+
+        plugin_nocache = add_plugin(
+            ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
+        with self.assertNumQueries(53):
+            plugin_nocache.render_plugin(context, ph)
+
+        with self.assertNumQueries(17):
+            rendered = plugin.render_plugin(context, ph)
+        try:
+            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+        except AssertionError:
+            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+        self.assertTrue(rendered.find('<p>first line</p>') > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+
     def test_plugin_latest(self):
         pages = self.get_pages()
         posts = self.get_posts()
@@ -24,7 +62,9 @@ class PluginTest(BaseTest):
         posts[0].save()
         ph = pages[0].placeholders.get(slot='content')
 
-        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         tag = Tag.objects.get(slug='tag-1')
         plugin.tags.add(tag)
 
@@ -34,7 +74,9 @@ class PluginTest(BaseTest):
             self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
         except AssertionError:
             self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
-        self.assertTrue(rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1)
+        self.assertTrue(
+            rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1
+        )
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
@@ -45,7 +87,9 @@ class PluginTest(BaseTest):
         category_2.save()
         category_2.set_current_language('en')
         posts[1].categories.add(category_2)
-        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
         plugin.categories.add(category_2)
 
         context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
@@ -54,7 +98,10 @@ class PluginTest(BaseTest):
             self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-2') > -1)
         except AssertionError:
             self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-2') > -1)
-        self.assertTrue(rendered.find(reverse('djangocms_blog:posts-category', kwargs={'category': category_2.slug})) > -1)
+        self.assertTrue(
+            rendered.find(reverse('djangocms_blog:posts-category',
+                                  kwargs={'category': category_2.slug})) > -1
+        )
         self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-second-post"') > -1)
         self.assertTrue(rendered.find(posts[1].get_absolute_url()) > -1)
@@ -77,6 +124,16 @@ class PluginTest(BaseTest):
         self.assertEqual(casted_categories.tags.count(), 0)
         self.assertEqual(casted_categories.categories.count(), 1)
 
+        posts[1].sites.add(self.site_2)
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        self.assertFalse(rendered.find('<p>second post first line</p>') > -1)
+
+        posts[1].sites.remove(self.site_2)
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
+
     def test_plugin_tags(self):
         pages = self.get_pages()
         posts = self.get_posts()
@@ -91,28 +148,15 @@ class PluginTest(BaseTest):
         context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
         rendered = plugin.render_plugin(context, ph)
         for tag in Tag.objects.all():
-            self.assertTrue(rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1)
+            self.assertTrue(rendered.find(
+                reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})
+            ) > -1)
             if tag.slug == 'test-tag':
                 rf = '\s+%s\s+<span>\(\s+%s articles' % (tag.name, 2)
             else:
                 rf = '\s+%s\s+<span>\(\s+%s article' % (tag.name, 1)
             rx = re.compile(rf)
             self.assertEqual(len(rx.findall(rendered)), 1)
-
-    def test_blog_category_plugin(self):
-        pages = self.get_pages()
-        posts = self.get_posts()
-        posts[0].publish = True
-        posts[0].save()
-        posts[1].publish = True
-        posts[1].save()
-        ph = pages[0].placeholders.get(slot='content')
-        plugin = add_plugin(ph, 'BlogCategoryPlugin', language='en', app_config=self.app_config_1)
-        plugin_class = plugin.get_plugin_class_instance()
-        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
-        context = plugin_class.render(context, plugin, ph)
-        self.assertTrue(context['categories'])
-        self.assertEqual(list(context['categories']), [self.category_1])
 
     def test_blog_archive_plugin(self):
         pages = self.get_pages()
@@ -199,3 +243,44 @@ class PluginTest2(BaseTest):
 
         casted_authors, __ = new[0].get_plugin_instance()
         self.assertEqual(casted_authors.authors.count(), 3)
+
+    def test_blog_category_plugin(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        self.category_1.set_current_language('en')
+        posts[0].publish = True
+        posts[0].save()
+        posts[1].publish = True
+        posts[1].save()
+        posts[1].sites.add(self.site_2)
+        new_category = BlogCategory.objects.create(
+            name='category 2', app_config=self.app_config_1
+        )
+        posts[1].categories.add(new_category)
+
+        ph = pages[0].placeholders.get(slot='content')
+        plugin = add_plugin(
+            ph, 'BlogCategoryPlugin', language='en', app_config=self.app_config_1
+        )
+        plugin_class = plugin.get_plugin_class_instance()
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        context = plugin_class.render(context, plugin, ph)
+        self.assertTrue(context['categories'])
+        self.assertEqual(list(context['categories']), [self.category_1])
+
+        plugin.current_site = False
+        plugin.save()
+        context = plugin_class.render(context, plugin, ph)
+        self.assertEqual(list(context['categories']), [self.category_1, new_category])
+
+        plugin.current_site = True
+        plugin.save()
+        with self.settings(SITE_ID=2):
+            context = plugin_class.render(context, plugin, ph)
+            self.assertEqual(list(context['categories']), [self.category_1, new_category])
+
+        plugin.current_site = False
+        plugin.save()
+        with self.settings(SITE_ID=2):
+            context = plugin_class.render(context, plugin, ph)
+            self.assertEqual(list(context['categories']), [self.category_1, new_category])

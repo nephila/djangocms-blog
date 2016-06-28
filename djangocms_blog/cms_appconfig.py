@@ -66,6 +66,11 @@ class BlogConfigForm(AppDataForm):
         choices=get_setting('MENU_TYPES'), initial=MENU_TYPE_COMPLETE,
         help_text=_('Structure of the django CMS menu')
     )
+    menu_empty_categories = forms.BooleanField(
+        label=_('Show empty categories in menu'), initial=get_setting('MENU_EMPTY_CATEGORIES'),
+        required=False,
+        help_text=_('Show categories with no post attached in the menu')
+    )
     sitemap_changefreq = forms.ChoiceField(
         label=_('Sitemap changefreq'), required=True,
         choices=get_setting('SITEMAP_CHANGEFREQ'),
