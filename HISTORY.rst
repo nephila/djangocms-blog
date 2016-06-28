@@ -14,6 +14,7 @@ History
 * Added global and per site posts count to BlogCategory.
 * Added option to hide empty categories from menu.
 * Added standalone documentation at https://djangocms-blog.readthedocs.io.
+* Enabled cached version of BlogLatestEntriesPlugin.
 
 ******************
 0.8.5 (2016-06-26)

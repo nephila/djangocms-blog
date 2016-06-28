@@ -17,6 +17,43 @@ from .base import BaseTest
 
 class PluginTest(BaseTest):
 
+    def test_plugin_latest_cached(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[0].tags.add('tag 1')
+        posts[0].publish = True
+        posts[0].save()
+        ph = pages[0].placeholders.get(slot='content')
+
+        plugin = add_plugin(
+            ph, 'BlogLatestEntriesPluginCached', language='en', app_config=self.app_config_1
+        )
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=True)
+        rendered = plugin.render_plugin(context, ph)
+        try:
+            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+        except AssertionError:
+            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+        self.assertTrue(rendered.find('<p>first line</p>') > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+
+        plugin_nocache = add_plugin(
+            ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
+        with self.assertNumQueries(53):
+            plugin_nocache.render_plugin(context, ph)
+
+        with self.assertNumQueries(17):
+            rendered = plugin.render_plugin(context, ph)
+        try:
+            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+        except AssertionError:
+            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+        self.assertTrue(rendered.find('<p>first line</p>') > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+
     def test_plugin_latest(self):
         pages = self.get_pages()
         posts = self.get_posts()

@@ -47,7 +47,7 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     """
     Cached plugin which returns the latest published posts
     """
-    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME')
+    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME_CACHED')
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
@@ -121,6 +121,7 @@ class BlogArchivePlugin(BlogPlugin):
 
 
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
+plugin_pool.register_plugin(BlogLatestEntriesPluginCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
