@@ -116,8 +116,7 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
             queryset = self
         if self.end_date_field:
             qfilter = (
-                models.Q(**{'%s__lte' % self.end_date_field: now()}) |
-                models.Q(**{'%s__isnull' % self.end_date_field: False})
+                models.Q(**{'%s__lte' % self.end_date_field: now()})
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
@@ -143,29 +142,30 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
     def get_queryset(self, *args, **kwargs):
         return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
 
-    def published(self):
-        return self.get_queryset().published()
+    def published(self, current_site=True):
+        return self.get_queryset().published(current_site)
 
-    def available(self):
-        return self.get_queryset().available()
+    def available(self, current_site=True):
+        return self.get_queryset().available(current_site)
 
-    def archived(self):
-        return self.get_queryset().archived()
+    def archived(self, current_site=True):
+        return self.get_queryset().archived(current_site)
 
-    def published_future(self):
-        return self.get_queryset().published_future()
+    def published_future(self, current_site=True):
+        return self.get_queryset().published_future(current_site)
 
-    def filter_by_language(self, language):
-        return self.get_queryset().filter_by_language(language)
+    def filter_by_language(self, language, current_site=True):
+        return self.get_queryset().filter_by_language(language, current_site)
 
-    def get_months(self, queryset=None):
+    def get_months(self, queryset=None, current_site=True):
         """
         Get months with aggregate count (how much posts is in the month).
         Results are ordered by date.
         """
         if queryset is None:
             queryset = self.get_queryset()
-        queryset = queryset.on_site()
+        if current_site:
+            queryset = queryset.on_site()
         dates_qs = queryset.values_list(queryset.start_date_field, queryset.fallback_date_field)
         dates = []
         for blog_dates in dates_qs:

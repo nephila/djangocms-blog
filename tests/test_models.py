@@ -655,6 +655,24 @@ class ModelsTest(BaseTest):
             )
             self.assertEqual(data['count'], 1)
 
+        # Move post to different site to filter it out
+        post2.sites.add(self.site_2)
+        months = Post.objects.get_months()
+        for data in months:
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
+            self.assertEqual(data['count'], 1)
+        months = Post.objects.get_months(current_site=False)
+        for data in months:
+            self.assertEqual(
+                data['date'].date(),
+                now().replace(year=now().year, month=now().month, day=1).date()
+            )
+            self.assertEqual(data['count'], 2)
+        post2.sites.clear()
+
         self.assertEqual(len(Post.objects.available()), 1)
 
         # If post is published but publishing date is in the future
@@ -665,6 +683,7 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.published()), 1)
         self.assertEqual(len(Post.objects.published_future()), 2)
         self.assertEqual(len(Post.objects.archived()), 0)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 0)
 
         # If post is published but end publishing date is in the past
         post2.date_published = now().replace(year=now().year - 2, month=now().month, day=1)
@@ -673,10 +692,32 @@ class ModelsTest(BaseTest):
         self.assertEqual(len(Post.objects.available()), 2)
         self.assertEqual(len(Post.objects.published()), 1)
         self.assertEqual(len(Post.objects.archived()), 1)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 1)
+
+        # Move post to different site to filter it out
+        post2.sites.add(self.site_2)
+        self.assertEqual(len(Post.objects.archived()), 0)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 1)
+        self.assertEqual(len(Post.objects.available()), 1)
+        self.assertEqual(len(Post.objects.available(current_site=False)), 2)
+        self.assertEqual(len(Post.objects.published()), 1)
+
+        # publish post
+        post2.date_published = now() - timedelta(days=1)
+        post2.date_published_end = now() + timedelta(days=10)
+        post2.save()
+        self.assertEqual(len(Post.objects.archived()), 0)
+        self.assertEqual(len(Post.objects.archived(current_site=False)), 0)
+        self.assertEqual(len(Post.objects.available()), 1)
+        self.assertEqual(len(Post.objects.available(current_site=False)), 2)
+        self.assertEqual(len(Post.objects.published()), 1)
+        self.assertEqual(len(Post.objects.published(current_site=False)), 2)
 
         # counting with language fallback enabled
         self._get_post(self._post_data[0]['it'], post1, 'it')
-        self.assertEqual(len(Post.objects.filter_by_language('it')), 2)
+        self.assertEqual(len(Post.objects.filter_by_language('it')), 1)
+        self.assertEqual(len(Post.objects.filter_by_language('it', current_site=False)), 2)
+        post2.sites.clear()
 
         # No fallback
         parler.appsettings.PARLER_LANGUAGES['default']['hide_untranslated'] = True
