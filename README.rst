@@ -273,12 +273,12 @@ If you want to attach the blog to the home page you have to adapt settings a bit
 
 To avoit this add the following settings to you project::
 
-    BLOG_PERMALINKS = (
+    BLOG_AVAILABLE_PERMALINK_STYLES = (
         ('full_date', _('Full date')),
         ('short_date', _('Year /  Month')),
         ('category', _('Category')),
     )
-    BLOG_PERMALINKS_URLS = {
+    BLOG_PERMALINK_URLS = {
         'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
         'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
         'category': r'^(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
