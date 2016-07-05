@@ -5,7 +5,7 @@ from copy import deepcopy
 
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
-from cms.models import CMSPlugin
+from cms.models import CMSPlugin, ValidationError
 from django import forms
 from django.apps import apps
 from django.conf import settings
@@ -14,7 +14,7 @@ from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.utils.six import callable
+from django.utils.six import callable, text_type
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
@@ -28,6 +28,26 @@ try:
 except ImportError:
     class EnhancedModelAdminMixin(object):
         pass
+
+
+class SiteListFilter(admin.SimpleListFilter):
+    title = _('site')
+    parameter_name = 'sites'
+
+    def lookups(self, request, model_admin):
+        restricted_sites = model_admin.get_restricted_sites(request).values_list('id', flat=True)
+
+        qs = Site.objects.all()
+        if restricted_sites:
+            qs = qs.filter(id__in=restricted_sites)
+
+        return [(site.id, text_type(site.name)) for site in qs]
+
+    def queryset(self, request, queryset):
+        try:
+            return queryset.filter(**self.used_parameters)
+        except ValidationError as e:
+            raise admin.options.IncorrectLookupParameters(e)
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
@@ -55,15 +75,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'title', 'author', 'date_published', 'app_config', 'all_languages_column',
         'date_published_end'
     ]
-    try:
-        from taggit_helpers.admin import TaggitListFilter
-        list_filter = ('app_config', TaggitListFilter)
-    except ImportError:
-        try:
-            from taggit_helpers import TaggitListFilter
-            list_filter = ('app_config', TaggitListFilter)
-        except ImportError:
-            list_filter = ('app_config',)
     search_fields = ('translations__title',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
@@ -93,6 +104,21 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'default_published': 'publish'
     }
     _sites = None
+
+    def get_list_filter(self, request):
+        filters = ['app_config', 'publish', 'date_published']
+        if get_setting('MULTISITE'):
+            filters.append(SiteListFilter)
+        try:
+            from taggit_helpers.admin import TaggitListFilter
+            filters.append(TaggitListFilter)
+        except ImportError:
+            try:
+                from taggit_helpers import TaggitListFilter
+                filters.append(TaggitListFilter)
+            except ImportError:
+                pass
+        return filters
 
     def get_urls(self):
         """
