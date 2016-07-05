@@ -15,6 +15,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils import six
 from django.utils.six import callable
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
@@ -42,7 +43,7 @@ class SiteListFilter(admin.SimpleListFilter):
         if restricted_sites:
             qs = qs.filter(id__in=restricted_sites)
 
-        return [(site.id, unicode(site.name)) for site in qs]
+        return [(site.id, six.text_type(site.name)) for site in qs]
 
     def queryset(self, request, queryset):
         try:
