@@ -10,7 +10,9 @@ from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.admin.options import IncorrectLookupParameters
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.six import callable
@@ -27,6 +29,26 @@ try:
 except ImportError:
     class EnhancedModelAdminMixin(object):
         pass
+
+
+class SiteListFilter(admin.SimpleListFilter):
+    title = _('site')
+    parameter_name = 'sites'
+
+    def lookups(self, request, model_admin):
+        restricted_sites = model_admin.get_restricted_sites(request).values_list('id', flat=True)
+
+        qs = Site.objects.all()
+        if restricted_sites:
+            qs = qs.filter(id__in=restricted_sites)
+
+        return [(site.id, unicode(site.name)) for site in qs]
+
+    def queryset(self, request, queryset):
+        try:
+            return queryset.filter(**self.used_parameters)
+        except ValidationError as e:
+            raise IncorrectLookupParameters(e)
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
@@ -50,7 +72,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'title', 'author', 'date_published', 'app_config', 'all_languages_column',
         'date_published_end'
     ]
-    list_filter = ('app_config',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
@@ -203,6 +224,12 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
 
     def get_prepopulated_fields(self, request, obj=None):
         return {'slug': ('title',)}
+
+    def get_list_filter(self, request):
+        if get_setting('MULTISITE'):
+            return 'app_config', SiteListFilter, 'publish', 'date_published'
+        else:
+            return 'app_config', 'publish', 'date_published'
 
     def save_model(self, request, obj, form, change):
         obj._set_default_author(request.user)
