@@ -91,6 +91,9 @@ Global Settings
 * BLOG_FEED_INSTANT_ITEMS: Number of items in Instant Article feed
 * BLOG_FEED_LATEST_ITEMS: Number of items in latest items feed
 * BLOG_FEED_TAGS_ITEMS: Number of items in per tags feed
+* BLOG_PLUGIN_TEMPLATE_FOLDERS: (Sub-)folder from which the plugin templates are loaded.
+The default folder is `plugins`. It goes into the `djangocms_blog` template folder (or, if set, the folder named in the app hook). This allows, e.g., different templates for showing a post list as tables, columns, ... . New templates have the same names as the standard templates in the `plugins` folder (`latest_entries.html`, `authors.html`, `tags.html`, `categories.html`, `archive.html`). Default behavior corresponds to this setting being `( ("plugins", _("Default template") )`. To add new templates add to this setting, e.g., `('timeline', _('Vertical timeline') )`.
+
 
 ******************
 Read-only settings
