@@ -136,7 +136,7 @@ def get_setting(name):
             settings, 'BLOG_LIVEBLOG_PLUGINS', ('LiveblogPlugin',)),
 
         'BLOG_PLUGIN_TEMPLATE_FOLDERS': getattr(
-            settings, 'BLOG_PLUGIN_TEMPLATE_FOLDERS', (('plugins', _('Default template')),)  ),
+            settings, 'BLOG_PLUGIN_TEMPLATE_FOLDERS', (('plugins', _('Default template')),)),
 
     }
     return default['BLOG_%s' % name]
