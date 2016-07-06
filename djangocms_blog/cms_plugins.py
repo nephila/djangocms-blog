@@ -36,7 +36,8 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
-    fields = ('app_config', 'latest_posts', 'tags', 'categories')
+    fields = ['app_config', 'latest_posts', 'tags', 'categories'] + \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>1 else []
     cache = False
     base_render_template = 'latest_entries.html'
 
@@ -55,7 +56,8 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
-    fields = ('app_config', 'latest_posts', 'tags', 'categories')
+    fields = ['app_config', 'latest_posts', 'tags', 'categories']+ \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>1 else []
     base_render_template = 'latest_entries.html'
 
     def render(self, context, instance, placeholder):
@@ -71,6 +73,7 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     model = AuthorEntriesPlugin
     base_render_template = 'authors.html'
     filter_horizontal = ['authors']
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogAuthorPostsPlugin, self).render(context, instance, placeholder)
@@ -83,6 +86,7 @@ class BlogTagsPlugin(BlogPlugin):
     name = get_setting('TAGS_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'tags.html'
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
@@ -96,6 +100,7 @@ class BlogCategoryPlugin(BlogPlugin):
     name = get_setting('CATEGORY_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'categories.html'
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
@@ -116,6 +121,7 @@ class BlogArchivePlugin(BlogPlugin):
     name = get_setting('ARCHIVE_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'archive.html'
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)
