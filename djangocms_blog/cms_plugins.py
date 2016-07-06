@@ -37,7 +37,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
     fields = ['app_config', 'latest_posts', 'tags', 'categories'] + \
-        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>1 else []
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
     cache = False
     base_render_template = 'latest_entries.html'
 
@@ -56,8 +56,8 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     model = LatestPostsPlugin
     form = LatestEntriesForm
     filter_horizontal = ('categories',)
-    fields = ['app_config', 'latest_posts', 'tags', 'categories']+ \
-        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>1 else []
+    fields = ['app_config', 'latest_posts', 'tags', 'categories'] + \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
     base_render_template = 'latest_entries.html'
 
     def render(self, context, instance, placeholder):
@@ -73,7 +73,7 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     model = AuthorEntriesPlugin
     base_render_template = 'authors.html'
     filter_horizontal = ['authors']
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogAuthorPostsPlugin, self).render(context, instance, placeholder)
@@ -121,7 +121,7 @@ class BlogArchivePlugin(BlogPlugin):
     name = get_setting('ARCHIVE_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'archive.html'
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogArchivePlugin, self).render(context, instance, placeholder)

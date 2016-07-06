@@ -380,11 +380,11 @@ class BasePostPlugin(CMSPlugin):
         _('current site'), default=True, help_text=_('Select items from the current site only')
     )
     template_folder = models.CharField(
-        max_length = 40,
-        verbose_name = _('Plugin template'),
-        help_text = _('Select plugin template to load for this instance'),
-        default = BLOG_PLUGIN_TEMPLATE_FOLDERS[0][1],
-        choices = BLOG_PLUGIN_TEMPLATE_FOLDERS
+        max_length=40,
+        verbose_name=_('Plugin template'),
+        help_text=_('Select plugin template to load for this instance'),
+        default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][1],
+        choices=BLOG_PLUGIN_TEMPLATE_FOLDERS
     )
 
     class Meta:
