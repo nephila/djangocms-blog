@@ -86,7 +86,7 @@ class BlogTagsPlugin(BlogPlugin):
     name = get_setting('TAGS_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'tags.html'
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
@@ -100,7 +100,7 @@ class BlogCategoryPlugin(BlogPlugin):
     name = get_setting('CATEGORY_PLUGIN_NAME')
     model = GenericBlogPlugin
     base_render_template = 'categories.html'
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS'))>=1 else []
+    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
