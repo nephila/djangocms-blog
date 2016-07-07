@@ -189,11 +189,18 @@ class PluginTest(BaseTest):
 
         context = self.get_plugin_context(pages[0], 'en', plugin)
         plugin_class = plugin.get_plugin_class_instance()
-        self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('djangocms_blog', plugin_class.base_render_template))
+        self.assertEqual(plugin_class.get_render_template(context, plugin, ph),
+            os.path.join('djangocms_blog', plugin.template_folder, plugin_class.base_render_template))
 
         self.app_config_1.app_data.config.template_prefix = 'whatever'
         self.app_config_1.save()
-        self.assertEqual(plugin_class.get_render_template(context, plugin, ph), os.path.join('whatever', plugin_class.base_render_template))
+        tmp = plugin.template_folder
+        plugin.template_folder = 'whereever'
+        plugin.save()
+        self.assertEqual(plugin_class.get_render_template(context, plugin, ph),
+            os.path.join('whatever', 'whereever', plugin_class.base_render_template))
+        plugin.template_folder = tmp
+        plugin.save()
         self.app_config_1.app_data.config.template_prefix = ''
         self.app_config_1.save()
 
