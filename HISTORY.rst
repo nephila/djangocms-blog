@@ -15,6 +15,7 @@ History
 * Added option to hide empty categories from menu.
 * Added standalone documentation at https://djangocms-blog.readthedocs.io.
 * Enabled cached version of BlogLatestEntriesPlugin.
+* Added plugins templateset
 
 ******************
 0.8.5 (2016-06-26)
