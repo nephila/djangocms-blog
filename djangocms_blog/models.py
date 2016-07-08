@@ -33,6 +33,7 @@ from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting('CURRENT_POST_IDENTIFIER')
 BLOG_CURRENT_NAMESPACE = get_setting('CURRENT_NAMESPACE')
+BLOG_PLUGIN_TEMPLATE_FOLDERS = get_setting('PLUGIN_TEMPLATE_FOLDERS')
 
 try:  # pragma: no cover
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
@@ -377,6 +378,13 @@ class BasePostPlugin(CMSPlugin):
     )
     current_site = models.BooleanField(
         _('current site'), default=True, help_text=_('Select items from the current site only')
+    )
+    template_folder = models.CharField(
+        max_length=200,
+        verbose_name=_('Plugin template'),
+        help_text=_('Select plugin template to load for this instance'),
+        default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
+        choices=BLOG_PLUGIN_TEMPLATE_FOLDERS
     )
 
     class Meta:
