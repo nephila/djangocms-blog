@@ -5,6 +5,7 @@ from copy import deepcopy
 
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
+from cms.models import CMSPlugin
 from django import forms
 from django.apps import apps
 from django.conf import settings
@@ -91,10 +92,17 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         urls.extend(super(PostAdmin, self).get_urls())
         return urls
 
-    def post_add_plugin(self, request, placeholder, plugin):
+    def post_add_plugin(self, request, obj1, obj2=None):
+        if isinstance(obj1, CMSPlugin):
+            plugin = obj1
+        elif isinstance(obj2, CMSPlugin):
+            plugin = obj2
         if plugin.plugin_type in get_setting('LIVEBLOG_PLUGINS'):
             plugin = plugin.move(plugin.get_siblings().first(), 'first-sibling')
-        return super(PostAdmin, self).post_add_plugin(request, placeholder, plugin)
+        if isinstance(obj1, CMSPlugin):
+            return super(PostAdmin, self).post_add_plugin(request, plugin)
+        elif isinstance(obj2, CMSPlugin):
+            return super(PostAdmin, self).post_add_plugin(request, obj1, plugin)
 
     def publish_post(self, request, pk):
         """
