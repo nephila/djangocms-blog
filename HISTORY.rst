@@ -18,6 +18,12 @@ History
 * Added plugins templateset
 
 ******************
+0.8.6 (unreleased)
+******************
+
+* Set the correct language during indexing
+
+******************
 0.8.5 (2016-06-26)
 ******************
 
