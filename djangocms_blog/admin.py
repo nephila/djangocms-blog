@@ -55,7 +55,16 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'title', 'author', 'date_published', 'app_config', 'all_languages_column',
         'date_published_end'
     ]
-    list_filter = ('app_config',)
+    try:
+        from taggit_helpers.admin import TaggitListFilter
+        list_filter = ('app_config', TaggitListFilter)
+    except ImportError:
+        try:
+            from taggit_helpers import TaggitListFilter
+            list_filter = ('app_config', TaggitListFilter)
+        except ImportError:
+            list_filter = ('app_config',)
+    search_fields = ('translations__title',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
