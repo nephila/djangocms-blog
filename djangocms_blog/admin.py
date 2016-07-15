@@ -17,7 +17,11 @@ from django.http import HttpResponseRedirect
 from django.utils.six import callable
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
-from taggit_helpers import TaggitListFilter
+
+try:
+    from taggit_helpers import TaggitListFilter
+except ImportError: # For Django 1.9+
+    from taggit_helpers.admin import TaggitCounter
 
 from .cms_appconfig import BlogConfig
 from .forms import PostAdminForm
