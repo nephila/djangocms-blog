@@ -21,7 +21,7 @@ from parler.admin import TranslatableAdmin
 try:
     from taggit_helpers import TaggitListFilter
 except ImportError: # For Django 1.9+
-    from taggit_helpers.admin import TaggitCounter
+    from taggit_helpers.admin import TaggitListFilter
 
 from .cms_appconfig import BlogConfig
 from .forms import PostAdminForm
