@@ -9,7 +9,7 @@ djangocms-blog implements some channels related features:
 * desktop notifications
 * liveblog
 
-For how to setup channels in your project, please refer to `channels documentation`_.
+For detailed information on channels setup, please refer to `channels documentation`_.
 
 .. _knocker:
 
@@ -17,11 +17,57 @@ For how to setup channels in your project, please refer to `channels documentati
 Notifications
 *************
 
-``djangocms-blog`` is integrated with `django-knocker`_
-to provide real time desktop notifications.
+``djangocms-blog`` is integrated with `django-knocker`_ to provide real time desktop notifications.
 
-See `django-knocker documentation`_ for how to configure
-knocker.
+To enable notifications:
+
+* Add ``knocker`` application to ``INSTALLED_APPS`` together with channels::
+
+      INSTALLED_APPS = [
+          ...
+          'channels',
+          'knocker',
+          ...
+      ]
+
+* Load the ``knocker`` routing into channels configuration::
+
+    CHANNEL_LAYERS={
+        'default': {
+            'BACKEND': 'asgi_redis.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            },
+            'ROUTING': 'myproject.routing.channel_routing',
+        },
+    }
+
+* Add to ``myproject.routing.channel_routing.py`` the knocker routes::
+
+    # -*- coding: utf-8 -*-
+
+    from channels import include
+    from knocker.routing import channel_routing as knocker_routing
+
+    channel_routing = [
+        include(knocker_routing, path=r'^/notifications'),
+    ]
+
+* Load ``{% static "js/knocker.js" %}`` and ``{% static "js/reconnecting-websocket.min.js" %}`` into
+  the templates
+
+* Add the following code::
+
+    <script type="text/javascript">
+      var knocker_language = '{{ LANGUAGE_CODE }}';
+      var knocker_url = '/notifications';  // Set this to the actual URL
+    </script>
+
+  The value of ``knocker_url`` must match the path configured in ``myproject.routing.channel_routing.py``.
+
+* Enable notifications for each Apphook config level by checking the
+  **Send notifications on post publish** and **Send notifications on post update**
+  flags in blog configuration model.
 
 
 .. _liveblog:
@@ -42,28 +88,16 @@ customize the liveblog plugin).
 Enabling liveblog
 =================
 
-To enabled liveblog features:
+To enable liveblog features:
 
-* Setup django channels according to `channels documentation`_
-
-* Add ``djangocms_blog.liveblog`` application to ``INSTALLED_APPS``::
+* Add ``djangocms_blog.liveblog`` application to ``INSTALLED_APPS`` together with channels::
 
       INSTALLED_APPS = [
           ...
+          'channels',
           'djangocms_blog.liveblog',
           ...
       ]
-
-* If you overwrite the post detail template, setup the following javascript code in the custom
-  template::
-
-      {% add_data "js-script" "liveblog/js/reconnecting-websocket.min.js" %}
-      {% add_data "js-script" "liveblog/js/liveblog.js" %}
-      <script>
-          var liveblog_apphook = '{{ post.app_config.namespace }}';
-          var liveblog_language = '{{ post.get_current_language }}';
-          var liveblog_post = '{{ post.slug }}';
-      </script>
 
 * It's advised to configure ``CMS_PLACEHOLDER_CONF`` to only allow ``Liveblog`` plugins in
   ``Liveblog`` placeholder, and remove them from other placeholders::
@@ -78,6 +112,41 @@ To enabled liveblog features:
         }
         ...
       }
+
+* Add channels routing configuration::
+
+    CHANNEL_LAYERS={
+        'default': {
+            'BACKEND': 'asgi_redis.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            },
+            'ROUTING': 'myproject.routing.channel_routing',
+        },
+    }
+
+  Check `channels documentation`_ for more detailed information on ``CHANNEL_LAYERS`` setup.
+
+* Add to ``myproject.routing.channel_routing.py`` the knocker routes::
+
+    # -*- coding: utf-8 -*-
+
+    from channels import include
+    from djangocms_blog.liveblog.routing import channel_routing as djangocms_blog_routing
+
+    channel_routing = [
+        include(djangocms_blog_routing, path=r'^/liveblog'),
+    ]
+
+* If you overwrite the post detail template, add the following code where you want to show
+  the liveblog content::
+
+
+      {% if view.liveblog_enabled %}
+          {% include "liveblog/includes/post_detail.html" %}
+      {% endif %}
+
+Liveblob and notifications can obviously activated at the same time, you just need to configure both.
 
 
 Using liveblog
