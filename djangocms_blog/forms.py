@@ -13,10 +13,20 @@ class CategoryAdminForm(TranslatableModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CategoryAdminForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
-                pk__in=[self.instance.pk] + [child.pk for child in self.instance.descendants()]
-            )
+
+        if 'parent' in self.fields:
+            qs = self.fields['parent'].queryset
+            if self.instance.pk:
+                qs = qs.exclude(
+                    pk__in=[self.instance.pk] + [child.pk for child in self.instance.descendants()]
+                )
+
+            if getattr(self.instance, 'app_config_id', None):
+                qs = qs.namespace(self.instance.app_config.namespace)
+            elif 'initial' in kwargs and 'app_config' in kwargs['initial']:
+                config = BlogConfig.objects.get(pk=kwargs['initial']['app_config'])
+                qs = qs.namespace(config.namespace)
+            self.fields['parent'].queryset = qs
 
     class Meta:
         model = BlogCategory

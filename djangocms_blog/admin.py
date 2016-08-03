@@ -33,7 +33,7 @@ except ImportError:
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
     list_display = [
-        'name', 'parent', 'all_languages_column',
+        'name', 'parent', 'app_config', 'all_languages_column',
     ]
 
     def get_prepopulated_fields(self, request, obj=None):
