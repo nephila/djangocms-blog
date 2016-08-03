@@ -60,7 +60,9 @@ class BlogCategory(TranslatableModel):
     """
     Blog category
     """
-    parent = models.ForeignKey('self', verbose_name=_('parent'), null=True, blank=True)
+    parent = models.ForeignKey(
+        'self', verbose_name=_('parent'), null=True, blank=True, related_name='children'
+    )
     date_created = models.DateTimeField(_('created at'), auto_now_add=True)
     date_modified = models.DateTimeField(_('modified at'), auto_now=True)
     app_config = AppHookConfigField(
@@ -78,6 +80,14 @@ class BlogCategory(TranslatableModel):
     class Meta:
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
+
+    def descendants(self):
+        children = []
+        if self.children.exists():
+            children.extend(self.children.all())
+            for child in self.children.all():
+                children.extend(child.descendants())
+        return children
 
     @cached_property
     def linked_posts(self):

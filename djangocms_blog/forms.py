@@ -9,6 +9,20 @@ from taggit_autosuggest.widgets import TagAutoSuggest
 from .models import BlogCategory, BlogConfig, Post
 
 
+class CategoryAdminForm(TranslatableModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['parent'].queryset = self.fields['parent'].queryset.exclude(
+                pk__in=[self.instance.pk] + [child.pk for child in self.instance.descendants()]
+            )
+
+    class Meta:
+        model = BlogCategory
+        fields = '__all__'
+
+
 class LatestEntriesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LatestEntriesForm, self).__init__(*args, **kwargs)
