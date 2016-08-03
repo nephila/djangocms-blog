@@ -47,19 +47,6 @@ suited for your deployment.
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
 
-* Configure parler according to your languages::
-
-    PARLER_LANGUAGES = {
-        1: (
-            {'code': 'en',},
-            {'code': 'it',},
-            {'code': 'fr',},
-        ),
-        'default': {
-            'fallbacks': ['en', 'it', 'fr'],
-        }
-    }
-
 * Add the following to your ``urls.py``::
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
