@@ -19,7 +19,7 @@ from django.utils.translation import get_language_from_request, ugettext_lazy as
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
-from .forms import PostAdminForm
+from .forms import CategoryAdminForm, PostAdminForm
 from .models import BlogCategory, Post
 from .settings import get_setting
 
@@ -31,6 +31,10 @@ except ImportError:
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
+    form = CategoryAdminForm
+    list_display = [
+        'name', 'parent', 'app_config', 'all_languages_column',
+    ]
 
     def get_prepopulated_fields(self, request, obj=None):
         app_config_default = self._app_config_select(request, obj)
