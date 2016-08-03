@@ -60,6 +60,8 @@ suited for your deployment.
         }
     }
 
+    Since parler 1.6 this can be skipped if the language configuration is the same as ``CMS_LANGUAGES``.
+
 * Add the following to your ``urls.py``::
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
