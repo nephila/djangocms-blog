@@ -115,12 +115,12 @@ class AdminTest(BaseTest):
 
         # Add view only has an empty form - no type
         response = post_admin.add_view(request)
-        self.assertNotContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertNotContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.category_1.pk))
-        self.assertContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
     def test_admin_category_parents(self):
