@@ -120,10 +120,46 @@ class AdminTest(BaseTest):
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.category_1.pk))
-        # response.render()
-        # print(response.content.decode('utf-8'))
         self.assertContains(response, '<input class="vTextField" id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
+
+    def test_admin_category_parents(self):
+        category1 = BlogCategory.objects.create(name='tree category 1', app_config=self.app_config_1)
+        category2 = BlogCategory.objects.create(name='tree category 2', parent=category1, app_config=self.app_config_1)
+        category3 = BlogCategory.objects.create(name='tree category 3', parent=category2, app_config=self.app_config_1)
+        BlogCategory.objects.create(name='tree category 4', parent=category3, app_config=self.app_config_1)
+        BlogCategory.objects.create(name='category different branch', app_config=self.app_config_2)
+
+        post_admin = admin.site._registry[BlogCategory]
+        request = self.get_page_request('/', self.user, r'/en/blog/?app_config=%s' % self.app_config_1.pk, edit=False)
+
+        # Add view shows all the exising categories
+        response = post_admin.add_view(request)
+        self.assertContains(response, '<option value="1">category 1</option>')
+        self.assertContains(response, '<option value="2">tree category 1</option>')
+        self.assertContains(response, '<option value="3">tree category 2</option>')
+        self.assertContains(response, '<option value="4">tree category 3</option>')
+        self.assertContains(response, '<option value="5">tree category 4</option>')
+        self.assertNotContains(response, 'category different branch</option>')
+
+        # Changeview hides the children of the current category
+        response = post_admin.change_view(request, str(category2.pk))
+        self.assertContains(response, '<option value="1">category 1</option>')
+        self.assertContains(response, '<option value="2" selected="selected">tree category 1</option>')
+        self.assertNotContains(response, '<option value="3">tree category 2</option>')
+        self.assertNotContains(response, '<option value="4">tree category 3</option>')
+        self.assertNotContains(response, '<option value="5">tree category 4</option>')
+        self.assertNotContains(response, 'category different branch</option>')
+
+        # Test second apphook categories
+        request = self.get_page_request('/', self.user, r'/en/blog/?app_config=%s' % self.app_config_2.pk, edit=False)
+        response = post_admin.add_view(request)
+        self.assertNotContains(response, '<option value="1">category 1</option>')
+        self.assertNotContains(response, '<option value="2">tree category 1</option>')
+        self.assertNotContains(response, '<option value="3">tree category 2</option>')
+        self.assertNotContains(response, '<option value="4">tree category 3</option>')
+        self.assertNotContains(response, '<option value="5">tree category 4</option>')
+        self.assertContains(response, 'category different branch</option>')
 
     def test_admin_fieldsets(self):
         post_admin = admin.site._registry[Post]
