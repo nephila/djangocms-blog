@@ -5,7 +5,7 @@ History
 =======
 
 ******************
-0.8.6 (unreleased)
+0.8.6 (2016-08-03)
 ******************
 
 * Set the correct language during indexing
