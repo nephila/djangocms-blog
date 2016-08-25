@@ -8,6 +8,7 @@ History
 0.9.0 (unreleased)
 ******************
 
+* Added support for django CMS 3.4
 * Dropped support for Django<1.8, django CMS<3.2.
 * Added liveblog application.
 * Refactored plugin filters: by default only data for current site are now shown.
@@ -19,7 +20,14 @@ History
 * Improved category admin to avoid circular relationships.
 
 ******************
-0.8.6 (unreleased)
+0.8.7 (2016-08-25)
+******************
+
+* Added support for django CMS 3.4
+* Fixed issue with multisite support
+
+******************
+0.8.6 (2016-08-03)
 ******************
 
 * Set the correct language during indexing

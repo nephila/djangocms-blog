@@ -854,7 +854,7 @@ class ModelsTest2(BaseTest):
                 'path', 'depth', 'position'
             ))
         copy_plugins_to(plugins, post2.content)
-        new = downcast_plugins(post2.content.cmsplugin_set.all())
+        new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].tags.all()), set([tag1, tag2]))
         self.assertEqual(set(new[0].tags.all()), set(plugin.tags.all()))
 
@@ -895,7 +895,7 @@ class ModelsTest2(BaseTest):
                 'path', 'depth', 'position'
             ))
         copy_plugins_to(plugins, post2.content)
-        new = downcast_plugins(post2.content.cmsplugin_set.all())
+        new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
 
     def test_multisite(self):

@@ -14,9 +14,11 @@ env:
   - TOXENV='pep8'
   - TOXENV='isort'
   - TOXENV='docs'
+  - DJANGO='django19' CMS='cms34'
   - DJANGO='django19' CMS='cms33'
   - DJANGO='django19' CMS='cms32'
   - DJANGO='django19' CMS='knocker'
+  - DJANGO='django18' CMS='cms34'
   - DJANGO='django18' CMS='cms33'
   - DJANGO='django18' CMS='cms32'
 
