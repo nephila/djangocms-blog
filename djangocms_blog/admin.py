@@ -142,12 +142,10 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         :param request: current request
         :return: boolean or a queryset of available sites
         """
-        if self._sites is None:
-            try:
-                self._sites = request.user.get_sites()
-            except AttributeError:  # pragma: no cover
-                self._sites = Site.objects.none()
-        return self._sites
+        try:
+            return request.user.get_sites()
+        except AttributeError:  # pragma: no cover
+            return Site.objects.none()
 
     def _set_config_defaults(self, request, form, obj=None):
         form = super(PostAdmin, self)._set_config_defaults(request, form, obj)
