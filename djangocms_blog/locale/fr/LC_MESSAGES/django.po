@@ -3,12 +3,13 @@
 # 
 # Translators:
 # Iacopo Spalletti, 2014
+# yakky <i.spalletti@nephila.it>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-05 08:48+0200\n"
-"PO-Revision-Date: 2016-05-05 06:48+0000\n"
+"PO-Revision-Date: 2016-08-25 13:38+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: French (http://www.transifex.com/nephila/djangocms-blog/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -41,12 +42,12 @@ msgstr "Nom de l’objet"
 #: cms_appconfig.py:27
 #| msgid "blog categories"
 msgid "blog config"
-msgstr "Catégorie du blog"
+msgstr "Configuration du blog"
 
 #: cms_appconfig.py:28
 #| msgid "blog categories"
 msgid "blog configs"
-msgstr "Catégories du blog"
+msgstr "Configurations du blog"
 
 #: cms_appconfig.py:31
 msgid "untitled"
@@ -183,7 +184,7 @@ msgstr ""
 
 #: cms_menus.py:28
 msgid "Blog menu"
-msgstr "Catégorie du blog"
+msgstr "Menu du blog"
 
 #: cms_toolbar.py:23
 msgid "Post list"
