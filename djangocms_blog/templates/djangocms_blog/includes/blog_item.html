@@ -15,9 +15,9 @@
     {% endif %}
     <div class="blog-lead">
         {% if not TRUNCWORDS_COUNT %}
-            {% render_model post "abstract" %}
+            {% render_model post "abstract" "" "" "safe" %}
         {% else %}
-            {% render_model post "abstract" "" "" 'truncatewords_html:TRUNCWORDS_COUNT'  %}
+            {% render_model post "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
         {% endif %}
     </div>
     <footer class="read-more">
