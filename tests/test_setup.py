@@ -42,7 +42,7 @@ class SetupTest(BaseTest):
         self.assertFalse(BlogConfig.objects.exists())
 
         # importing cms_app triggers the auto setup
-        from djangocms_blog import cms_app  # NOQA
+        from djangocms_blog import cms_apps  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
@@ -70,7 +70,7 @@ class SetupTest(BaseTest):
                     home.publish(lang)
 
         # importing cms_app triggers the auto setup
-        from djangocms_blog import cms_app  # NOQA
+        from djangocms_blog import cms_apps  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
