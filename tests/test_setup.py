@@ -12,7 +12,13 @@ from djangocms_blog.cms_appconfig import BlogConfig
 
 from .base import BaseTest
 
+try:
+    from django.test import override_settings
+except ImportError:
+    from django.test.utils import override_settings
 
+
+@override_settings(BLOG_AUTO_SETUP=True)
 class SetupTest(BaseTest):
 
     @classmethod
