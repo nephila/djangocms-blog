@@ -5,6 +5,13 @@ History
 =======
 
 ******************
+0.8.8 (2016-09-04)
+******************
+
+* Fixed issue with one migration
+* Improved support for django CMS 3.4
+
+******************
 0.8.7 (2016-08-25)
 ******************
 
