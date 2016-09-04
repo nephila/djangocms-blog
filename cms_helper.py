@@ -100,7 +100,8 @@ HELPER_SETTINGS = dict(
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         }
-    }
+    },
+    BLOG_AUTO_SETUP=False,
 )
 
 try:

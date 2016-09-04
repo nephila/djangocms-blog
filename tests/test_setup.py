@@ -12,7 +12,13 @@ from djangocms_blog.cms_appconfig import BlogConfig
 
 from .base import BaseTest
 
+try:
+    from django.test import override_settings
+except ImportError:
+    from django.test.utils import override_settings
 
+
+@override_settings(BLOG_AUTO_SETUP=True)
 class SetupTest(BaseTest):
 
     @classmethod
@@ -42,7 +48,7 @@ class SetupTest(BaseTest):
         self.assertFalse(BlogConfig.objects.exists())
 
         # importing cms_app triggers the auto setup
-        from djangocms_blog import cms_app  # NOQA
+        from djangocms_blog import cms_apps  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
@@ -70,7 +76,7 @@ class SetupTest(BaseTest):
                     home.publish(lang)
 
         # importing cms_app triggers the auto setup
-        from djangocms_blog import cms_app  # NOQA
+        from djangocms_blog import cms_apps  # NOQA
 
         # Home and blog, published and draft
         self.assertEqual(Page.objects.count(), 4)
