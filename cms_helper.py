@@ -96,6 +96,7 @@ HELPER_SETTINGS = dict(
     HAYSTACK_CONNECTIONS={
         'default': {}
     },
+    BLOG_AUTO_SETUP=False,
 )
 
 try:
