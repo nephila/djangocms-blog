@@ -157,6 +157,9 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
     def filter_by_language(self, language, current_site=True):
         return self.get_queryset().filter_by_language(language, current_site)
 
+    def on_site(self, site=None):
+        return self.get_queryset().on_site(site)
+
     def get_months(self, queryset=None, current_site=True):
         """
         Get months with aggregate count (how much posts is in the month).
