@@ -40,8 +40,10 @@ setup(
         'django-meta-mixin>=0.3',
         'aldryn-apphooks-config>=0.2.6',
         'djangocms-apphook-setup',
-        'aldryn-search'
     ],
+    extras_require={
+        'search': ['aldryn-search']
+    },
     license='BSD',
     zip_safe=False,
     keywords='djangocms-blog, blog, django, wordpress, multilingual',

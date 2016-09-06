@@ -29,6 +29,16 @@ Then migrate::
 
     $ python manage.py migrate
 
+If you want to enable haystack support, in addition to the above:
+
+* install djangocms-blog with::
+
+    pip install djangocms-blog[search]
+
+* add ``aldryn_search`` to ``INSTALLED_APPS``
+* configure haystack according to `aldryn-search docs <https://github.com/aldryn/aldryn-search#usage>`_
+  and `haystack docs <http://django-haystack.readthedocs.io/en/stable/>`_.
+
 *********************
 Minimal configuration
 *********************
@@ -77,7 +87,7 @@ suited for your deployment.
   * Publish the page
   * Restart the project instance to properly load blog urls.
 
-.. warning:: After adding the apphook to the page you **cannot** change the **Instance Namspace**
+.. warning:: After adding the apphook to the page you **cannot** change the **Instance Namespace**
              field for the defined **AppHokConfig**; if you want to change it, create a new one
              with the correct namespace, go in the CMS page **Advanced settings** and switch to the
              new **Application configuration**
@@ -107,7 +117,8 @@ Please, refer to each application documentation on details.
 * django-meta-mixin: https://github.com/nephila/django-meta-mixin#installation
 * django-parler: https://django-parler.readthedocs.io/en/latest/quickstart.html#configuration
 * django-taggit-autosuggest: https://bitbucket.org/fabian/django-taggit-autosuggest
-
+* aldryn-search: https://github.com/aldryn/aldryn-search#usage>
+* haystack: http://django-haystack.readthedocs.io/en/stable/
 
 .. _auto_setup:
 

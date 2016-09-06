@@ -18,6 +18,7 @@ History
 * Enabled cached version of BlogLatestEntriesPlugin.
 * Added plugins templateset.
 * Improved category admin to avoid circular relationships.
+* Dropped strict dependency on aldyn-search, haystack. Install separately for search support.
 
 ******************
 0.8.8 (2016-09-04)
