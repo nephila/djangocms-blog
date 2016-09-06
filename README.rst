@@ -41,6 +41,10 @@ Supported django CMS versions:
 
 * django CMS 3.2+
 
+.. warning:: Strict dependency on aldryn-search, haystack has been dropped. Install
+             them separately to enable full text search support. See `installation docs`_
+             for details.
+
 .. warning:: Version 0.8 will be the last one supporting Python 2.6, Python 3.3,
              Django<1.8 and django CMS<3.2.
 
@@ -48,13 +52,6 @@ Supported django CMS versions:
              when creating a post but rather when publishing.
              This does not change the overall behavior, but be warned if you
              expect it to be not null in custom code.
-
-.. warning:: Version 0.6 changes the field of LatestPostsPlugin.tags field.
-             A datamigration is in place to migrate the data, but check that
-             works ok for your project before upgrading, as this might delete
-             some relevant data.
-             Some plugins have a broken tag management prior to 0.6, in case
-             you have issues with tags, upgrade to latest version to have it fixed.
 
 *****************************************
 Upgrading cmsplugin-filer from 1.0 to 1.1
@@ -119,3 +116,6 @@ Known djangocms-blog websites
 *****************************
 
 See DjangoPackages for an updated list https://www.djangopackages.com/packages/p/djangocms-blog/
+
+
+.. _installation docs: http://djangocms-blog.readthedocs.io/en/latest/installation.html
