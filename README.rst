@@ -58,8 +58,9 @@ Supported django CMS versions:
              Some plugins have a broken tag management prior to 0.6, in case
              you have issues with tags, upgrade to latest version to have it fixed.
 
+*****************************************
 Upgrading cmsplugin-filer from 1.0 to 1.1
------------------------------------------
+*****************************************
 
 Due to changes in cmsplugin-filer/filer which moved ``ThumbnailOption`` model from the
 former to the latter, ``djangocms-blog`` must be migrated as well.
@@ -88,8 +89,9 @@ doing the upgrade::
           to migrate ``ThumbnailOption`` from cmsplugin-filer to filer
 
 
+********
 Features
---------
+********
 
 * Placeholder content editing
 * Frontend editing using django CMS 3.x frontend editor
@@ -107,8 +109,9 @@ Features
 * Support for django CMS 3.2+ Wizard
 * Haystack index support
 
+**********
 Quickstart
-----------
+**********
 
 Install djangocms-blog::
 
@@ -420,8 +423,9 @@ knocker.
 
 .. _settings:
 
+***************
 Global Settings
----------------
+***************
 * BLOG_IMAGE_THUMBNAIL_SIZE: Size of the main image when shown on the post
   lists; it's a dictionary with ``size``, ``crop`` and ``upscale`` keys;
   (default: ``{'size': '120x120', 'crop': True,'upscale': False}``)
@@ -517,8 +521,9 @@ Read-only settings
   (default: ``Posts and Categories``)
 
 
+********************
 Per-Apphook settings
---------------------
+********************
 
 * application title: Free text title that can be used as title in templates;
 * object name: Free text label for Blog items in django CMS Wizard;
