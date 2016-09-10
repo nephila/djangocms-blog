@@ -105,12 +105,6 @@ Features
 * Desktop notifications
 * Liveblog
 
-*************
-Documentation
-*************
-
-Check documentation at https://djangocms-blog.readthedocs.io/en/latest/
-
 *****************************
 Known djangocms-blog websites
 *****************************
