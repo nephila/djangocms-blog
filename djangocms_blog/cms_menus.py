@@ -26,6 +26,7 @@ class BlogCategoryMenu(CMSAttachMenu):
     Handles all types of blog menu
     """
     name = _('Blog menu')
+    _config = {}
 
     def get_nodes(self, request):
         """
@@ -46,7 +47,11 @@ class BlogCategoryMenu(CMSAttachMenu):
         posts_menu = False
         config = False
         if hasattr(self, 'instance') and self.instance:
-            config = BlogConfig.objects.get(namespace=self.instance.application_namespace)
+            if not self._config.get(self.instance.application_namespace, False):
+                self._config[self.instance.application_namespace] = BlogConfig.objects.get(
+                    namespace=self.instance.application_namespace
+                )
+            config = self._config[self.instance.application_namespace]
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
             categories_menu = True
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
@@ -57,7 +62,8 @@ class BlogCategoryMenu(CMSAttachMenu):
             if config:
                 categories = categories.namespace(self.instance.application_namespace)
             categories = categories.active_translations(language).distinct()
-            categories = categories.order_by('parent__id', 'translations__name')
+            categories = categories.order_by('parent__id', 'translations__name').\
+                select_related('app_config').prefetch_related('translations')
             for category in categories:
                 node = NavigationNode(
                     category.name,
@@ -65,8 +71,8 @@ class BlogCategoryMenu(CMSAttachMenu):
                     '{0}-{1}'.format(category.__class__.__name__, category.pk),
                     (
                         '{0}-{1}'.format(
-                            category.__class__.__name__, category.parent.id
-                        ) if category.parent else None
+                            category.__class__.__name__, category.parent_id
+                        ) if category.parent_id else None
                     )
                 )
                 nodes.append(node)
@@ -75,7 +81,8 @@ class BlogCategoryMenu(CMSAttachMenu):
             posts = Post.objects
             if hasattr(self, 'instance') and self.instance:
                 posts = posts.namespace(self.instance.application_namespace)
-            posts = posts.active_translations(language).distinct()
+            posts = posts.active_translations(language).distinct().\
+                select_related('app_config').prefetch_related('translations', 'categories')
             for post in posts:
                 post_id = None
                 parent = None
@@ -106,6 +113,8 @@ class BlogNavModifier(Modifier):
     a particular blog post is viewed,
     a corresponding category is selected in menu
     """
+    _config = {}
+
     def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
         """
         Actual modifier function
@@ -124,7 +133,9 @@ class BlogNavModifier(Modifier):
 
         if app and app.app_config:
             namespace = resolve(request.path).namespace
-            config = app.get_config(namespace)
+            if not self._config.get(namespace, False):
+                self._config[namespace] = app.get_config(namespace)
+            config = self._config[namespace]
         try:
             if config and (
                     not isinstance(config, BlogConfig) or

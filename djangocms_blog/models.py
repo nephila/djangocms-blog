@@ -15,6 +15,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
+from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
 from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
@@ -76,7 +77,7 @@ class BlogCategory(TranslatableModel):
         verbose_name = _('blog category')
         verbose_name_plural = _('blog categories')
 
-    @property
+    @cached_property
     def count(self):
         return self.blog_posts.namespace(self.app_config.namespace).published().count()
 
@@ -359,6 +360,16 @@ class BasePostPlugin(CMSPlugin):
     class Meta:
         abstract = True
 
+    def optimize(self, qs):
+        """
+        Apply select_related / prefetch_related to optimize the view queries
+        :param qs: queryset to optimize
+        :return: optimized queryset
+        """
+        return qs.select_related('app_config').prefetch_related(
+            'translations', 'categories', 'categories__translations', 'categories__app_config'
+        )
+
     def post_queryset(self, request=None):
         language = get_language()
         posts = Post._default_manager
@@ -367,7 +378,7 @@ class BasePostPlugin(CMSPlugin):
         posts = posts.active_translations(language_code=language)
         if not request or not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
             posts = posts.published()
-        return posts.all()
+        return self.optimize(posts.all())
 
 
 @python_2_unicode_compatible
@@ -398,7 +409,7 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(tags__in=list(self.tags.all()))
         if self.categories.exists():
             posts = posts.filter(categories__in=list(self.categories.all()))
-        return posts.distinct()[:self.latest_posts]
+        return self.optimize(posts.distinct())[:self.latest_posts]
 
 
 @python_2_unicode_compatible

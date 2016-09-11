@@ -409,7 +409,7 @@ class AdminTest(BaseTest):
             self.assertEquals(post.sites.count(), 1)
         self.user.sites.clear()
         post.sites.clear()
-        post = self.reload_model(post)
+        self.reload_model(post)
 
     def test_admin_clear_menu(self):
         """
@@ -421,6 +421,7 @@ class AdminTest(BaseTest):
 
         request = self.get_page_request(None, self.user, r'/en/page-two/')
         first_nodes = menu_pool.get_nodes(request)
+        self._reset_menus()
         with pause_knocks(post):
             with self.login_user_context(self.user):
                 data = dict(namespace='sample_app', app_title='app1', object_name='Blog')
@@ -431,7 +432,7 @@ class AdminTest(BaseTest):
                 msg_mid = MessageMiddleware()
                 msg_mid.process_request(request)
                 config_admin = admin.site._registry[BlogConfig]
-                response = config_admin.change_view(request, str(self.app_config_1.pk))
+                config_admin.change_view(request, str(self.app_config_1.pk))
                 second_nodes = menu_pool.get_nodes(request)
                 self.assertNotEqual(len(first_nodes), len(second_nodes))
 

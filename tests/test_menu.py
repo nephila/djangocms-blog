@@ -2,8 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 from aldryn_apphooks_config.utils import get_app_instance
-from django.core.cache import cache
-from django.utils.translation import activate, override
+from django.utils.translation import activate
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
 
@@ -21,7 +20,7 @@ class MenuTest(BaseTest):
     def setUp(self):
         super(MenuTest, self).setUp()
         self.cats = [self.category_1]
-        cache.clear()
+        self._reset_menus()
         for i, lang_data in enumerate(self._categories_data):
             cat = self._get_category(lang_data['en'])
             if 'it' in lang_data:
@@ -34,7 +33,7 @@ class MenuTest(BaseTest):
         # All cms menu modifiers should be removed from menu_pool.modifiers
         # so that they do not interfere with our menu nodes
         menu_pool.modifiers = [m for m in menu_pool.modifiers if m.__module__.startswith('djangocms_blog')]
-        cache.clear()
+        self._reset_menus()
 
     def test_menu_nodes(self):
         """
@@ -52,7 +51,7 @@ class MenuTest(BaseTest):
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
                 self.assertTrue(cats_url.issubset(nodes_url))
 
-        cache.clear()
+        self._reset_menus()
         posts[0].categories.clear()
         for lang in ('en', 'it'):
             with smart_override(lang):
@@ -82,7 +81,7 @@ class MenuTest(BaseTest):
         # No item in the menu
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_NONE
         self.app_config_1.save()
-        cache.clear()
+        self._reset_menus()
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
@@ -94,7 +93,7 @@ class MenuTest(BaseTest):
         # Only posts in the menu
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_POSTS
         self.app_config_1.save()
-        cache.clear()
+        self._reset_menus()
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
@@ -106,7 +105,7 @@ class MenuTest(BaseTest):
         # Only categories in the menu
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_CATEGORIES
         self.app_config_1.save()
-        cache.clear()
+        self._reset_menus()
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
@@ -118,7 +117,7 @@ class MenuTest(BaseTest):
         # Both types in the menu
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
         self.app_config_1.save()
-        cache.clear()
+        self._reset_menus()
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
@@ -148,7 +147,7 @@ class MenuTest(BaseTest):
                     request = self.get_page_request(
                         pages[1], self.user, path=obj.get_absolute_url()
                     )
-                    cache.clear()
+                    self._reset_menus()
                     menu_pool.clear(all=True)
                     view_obj = view_cls()
                     view_obj.request = request
@@ -173,7 +172,7 @@ class MenuTest(BaseTest):
                     request = self.get_page_request(
                         pages[1], self.user, path=obj.get_absolute_url()
                     )
-                    cache.clear()
+                    self._reset_menus()
                     menu_pool.clear(all=True)
                     view_obj = view_cls()
                     view_obj.request = request

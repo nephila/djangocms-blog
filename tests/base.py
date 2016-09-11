@@ -12,6 +12,7 @@ from haystack.constants import DEFAULT_ALIAS
 from parler.utils.context import smart_override
 
 from djangocms_blog.cms_appconfig import BlogConfig
+from djangocms_blog.cms_menus import BlogCategoryMenu, BlogNavModifier
 from djangocms_blog.models import BlogCategory, Post, ThumbnailOption
 
 User = get_user_model()
@@ -214,3 +215,8 @@ class BaseTest(BaseTestCase):
         unified_index = search_conn.get_unified_index()
         index = unified_index.get_index(Post)
         return index
+
+    def _reset_menus(self):
+        cache.clear()
+        BlogCategoryMenu._config = {}
+        BlogNavModifier._config = {}
