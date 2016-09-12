@@ -21,6 +21,16 @@ User = get_user_model()
 class BaseBlogView(AppConfigMixin, ViewUrlMixin):
     model = Post
 
+    def optimize(self, qs):
+        """
+        Apply select_related / prefetch_related to optimize the view queries
+        :param qs: queryset to optimize
+        :return: optimized queryset
+        """
+        return qs.select_related('app_config').prefetch_related(
+            'translations', 'categories', 'categories__translations', 'categories__app_config'
+        )
+
     def get_view_url(self):
         if not self.view_url_name:
             raise ImproperlyConfigured(
@@ -45,7 +55,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
         setattr(self.request, get_setting('CURRENT_NAMESPACE'), self.config)
-        return queryset.on_site()
+        return self.optimize(queryset.on_site())
 
     def get_template_names(self):
         template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
@@ -83,7 +93,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
         queryset = self.model._default_manager.all()
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
             queryset = queryset.published()
-        return queryset
+        return self.optimize(queryset)
 
     def get(self, *args, **kwargs):
         # submit object to cms to get corrent language switcher and selected category behavior
@@ -116,7 +126,7 @@ class PostArchiveView(BaseBlogListView, ListView):
             qs = qs.filter(**{'%s__month' % self.date_field: self.kwargs['month']})
         if 'year' in self.kwargs:
             qs = qs.filter(**{'%s__year' % self.date_field: self.kwargs['year']})
-        return qs
+        return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
         kwargs['month'] = int(self.kwargs.get('month')) if 'month' in self.kwargs else None
@@ -132,7 +142,7 @@ class TaggedListView(BaseBlogListView, ListView):
 
     def get_queryset(self):
         qs = super(TaggedListView, self).get_queryset()
-        return qs.filter(tags__slug=self.kwargs['tag'])
+        return self.optimize(qs.filter(tags__slug=self.kwargs['tag']))
 
     def get_context_data(self, **kwargs):
         kwargs['tagged_entries'] = (self.kwargs.get('tag')
@@ -148,7 +158,7 @@ class AuthorEntriesView(BaseBlogListView, ListView):
         qs = super(AuthorEntriesView, self).get_queryset()
         if 'username' in self.kwargs:
             qs = qs.filter(**{'author__%s' % User.USERNAME_FIELD: self.kwargs['username']})
-        return qs
+        return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
         kwargs['author'] = User.objects.get(**{User.USERNAME_FIELD: self.kwargs.get('username')})
@@ -178,7 +188,7 @@ class CategoryEntriesView(BaseBlogListView, ListView):
         qs = super(CategoryEntriesView, self).get_queryset()
         if 'category' in self.kwargs:
             qs = qs.filter(categories=self.category.pk)
-        return qs
+        return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
         kwargs['category'] = self.category
