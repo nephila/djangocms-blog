@@ -135,7 +135,7 @@ class MenuTest(BaseTest):
         self.app_config_1.save()
         self.app_config_2.app_data.config.menu_empty_categories = False
         self.app_config_2.save()
-        cache.clear()
+        self._reset_menus()
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
@@ -149,7 +149,7 @@ class MenuTest(BaseTest):
         self.app_config_1.save()
         self.app_config_2.app_data.config.menu_empty_categories = True
         self.app_config_2.save()
-        cache.clear()
+        self._reset_menus()
 
     def test_modifier(self):
         """

@@ -41,10 +41,10 @@ class PluginTest(BaseTest):
         plugin_nocache = add_plugin(
             ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
         )
-        with self.assertNumQueries(53):
+        with self.assertNumQueries(39):
             plugin_nocache.render_plugin(context, ph)
 
-        with self.assertNumQueries(17):
+        with self.assertNumQueries(15):
             rendered = plugin.render_plugin(context, ph)
         try:
             self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
