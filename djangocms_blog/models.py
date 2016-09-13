@@ -400,6 +400,16 @@ class BasePostPlugin(CMSPlugin):
     class Meta:
         abstract = True
 
+    def optimize(self, qs):
+        """
+        Apply select_related / prefetch_related to optimize the view queries
+        :param qs: queryset to optimize
+        :return: optimized queryset
+        """
+        return qs.select_related('app_config').prefetch_related(
+            'translations', 'categories', 'categories__translations', 'categories__app_config'
+        )
+
     def post_queryset(self, request=None, published_only=True):
         language = get_language()
         posts = Post.objects
@@ -411,7 +421,7 @@ class BasePostPlugin(CMSPlugin):
         if (published_only or not request or not getattr(request, 'toolbar', False) or
                 not request.toolbar.edit_mode):
             posts = posts.published(current_site=self.current_site)
-        return posts.all()
+        return self.optimize(posts.all())
 
 
 @python_2_unicode_compatible
@@ -442,7 +452,7 @@ class LatestPostsPlugin(BasePostPlugin):
             posts = posts.filter(tags__in=list(self.tags.all()))
         if self.categories.exists():
             posts = posts.filter(categories__in=list(self.categories.all()))
-        return posts.distinct()[:self.latest_posts]
+        return self.optimize(posts.distinct())[:self.latest_posts]
 
 
 @python_2_unicode_compatible
