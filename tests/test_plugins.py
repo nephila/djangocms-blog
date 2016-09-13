@@ -134,6 +134,13 @@ class PluginTest(BaseTest):
         rendered = plugin.render_plugin(context, ph)
         self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
 
+        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en')
+        context = self.get_plugin_context(pages[0], 'en', plugin, edit=False)
+        rendered = plugin.render_plugin(context, ph)
+        # data is picked from both apphook configs
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find('<article id="post-different-appconfig"') > -1)
+
     def test_plugin_tags(self):
         pages = self.get_pages()
         posts = self.get_posts()
