@@ -14,8 +14,13 @@ class LiveblogPlugin(TextPlugin):
     module = get_setting('PLUGIN_MODULE_NAME')
     name = _('Liveblog item')
     model = Liveblog
-    fields = ('title', 'body', 'publish')
+    fields = ('title', 'publish', 'body', 'post_date')
     render_template = 'liveblog/plugins/liveblog.html'
+
+    def save_model(self, request, obj, form, change):
+        super(LiveblogPlugin, self).save_model(request, obj, form, change)
+        if obj.publish:
+            obj.send(request)
 
     def render(self, context, instance, placeholder):
         context = super(LiveblogPlugin, self).render(context, instance, placeholder)
