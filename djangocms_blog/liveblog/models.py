@@ -4,28 +4,29 @@ from __future__ import absolute_import, print_function, unicode_literals
 import json
 
 from channels import Group
-from cms.models import CMSPlugin, python_2_unicode_compatible
+from cms.models import itemgetter, now, python_2_unicode_compatible
 from cms.utils.plugins import reorder_plugins
 from django.db import models
+from django.template import Context
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.models import AbstractText
 from filer.fields.image import FilerImageField
 
 from djangocms_blog.models import Post, thumbnail_model
-
-DATE_FORMAT = "%a %d %b %Y %H:%M"
+from djangocms_blog.settings import DATE_FORMAT
 
 
 @python_2_unicode_compatible
 class LiveblogInterface(models.Model):
     """
-    Abstract Liveblog plugin model, reusable to customize the liveblogging plugins.
+    Abstract Liveblog plugin model, reusable to customize the liveblogging
+    plugins.
 
-    When implementing this, you **must** call ``self._post_save()`` in the concrete
-    plugin model ``save`` method.
+    When implementing this, you **must** call ``self._post_save()`` in the
+    concrete plugin model ``save`` method.
     """
     publish = models.BooleanField(_('publish liveblog entry'), default=False)
-    node_order_by = '-changed_date'
+    post_date = models.DateTimeField(_('post date'), blank=True, default=now)
 
     class Meta:
         verbose_name = _('liveblog entry')
@@ -36,11 +37,17 @@ class LiveblogInterface(models.Model):
         return str(self.pk)
 
     def _post_save(self):
-        if self.publish:
-            self.send()
-        order = CMSPlugin.objects.filter(
-            placeholder=self.placeholder
-        ).order_by('placeholder', 'path').values_list('pk', flat=True)
+        """
+        Reorder plugins according to the post_date value. All (and only)
+        subclasses of LiveblogInterface are taken into consideration and
+        reordered together
+        """
+        items = []
+        for model in LiveblogInterface.__subclasses__():
+            items.extend(
+                model.objects.filter(placeholder=self.placeholder).values('pk', 'post_date')
+            )
+        order = [item['pk'] for item in sorted(items, key=itemgetter('post_date'))]
         reorder_plugins(self.placeholder, None, self.language, order)
 
     @property
@@ -49,18 +56,26 @@ class LiveblogInterface(models.Model):
         if post:
             return post.liveblog_group
 
-    def render(self):
-        return self.render_plugin()
+    def render(self, request):
+        context = Context({
+            'request': request
+        })
+        try:
+            from cms.plugin_rendering import ContentRenderer
+            context['cms_content_renderer'] = ContentRenderer(request)
+        except ImportError:
+            pass
+        return self.render_plugin(context)
 
-    def send(self):
+    def send(self, request):
         """
         Render the content and send to the related group
         """
         if self.liveblog_group:
             notification = {
                 'id': self.pk,
-                'content': self.render(),
-                'creation_date': self.creation_date.strftime(DATE_FORMAT),
+                'content': self.render(request),
+                'creation_date': self.post_date.strftime(DATE_FORMAT),
                 'changed_date': self.changed_date.strftime(DATE_FORMAT),
             }
             Group(self.liveblog_group).send({

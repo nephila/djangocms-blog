@@ -5,6 +5,7 @@ MENU_TYPE_COMPLETE = 'complete'
 MENU_TYPE_CATEGORIES = 'categories'
 MENU_TYPE_POSTS = 'posts'
 MENU_TYPE_NONE = 'none'
+DATE_FORMAT = "%a %d %b %Y %H:%M"
 
 
 def get_setting(name):
