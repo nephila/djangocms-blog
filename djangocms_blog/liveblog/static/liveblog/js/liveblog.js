@@ -9,11 +9,11 @@ document.addEventListener("DOMContentLoaded", function() {
     var data = JSON.parse(message.data);
     // See if there's a div to replace it in, or if we should add a new one
     var existing = document.querySelectorAll("div[data-post-id*='" + data.id + "']");
-    if (existing.length) {
-      existing.parentNode.replaceChild(data.content, existing);
+    var item = document.createElement('div');
+    item.innerHTML = data.content;
+    if (existing.length > 0) {
+      existing[0].parentNode.replaceChild(item.children[0], existing[0]);
     } else {
-      var item = document.createElement('div');
-      item.innerHTML = data.content;
       document.getElementById("liveblog-posts").insertBefore(
         item.children[0], document.getElementById("liveblog-posts").children[0]
       );
