@@ -7,6 +7,7 @@
 {% block title %}{{ post.get_title }}{% endblock %}
 
 {% block content_blog %}{% spaceless %}
+{% render_placeholder view.config.placeholder_detail_header %}
 <article id="post-{{ post.slug }}" class="post-item post-detail">
     <header>
         <h2>{% render_model post "title" %}</h2>
@@ -21,13 +22,21 @@
     </div>
     {% endif %}
     {% endspaceless %}
+    {% render_placeholder view.config.placeholder_detail_top %}
     {% if post.app_config.use_placeholder %}
         <div class="blog-content">{% render_placeholder post.content %}</div>
     {% else %}
         <div class="blog-content">{% render_model post "post_text" "post_text" "" "safe" %}</div>
     {% endif %}
+    {% render_placeholder view.config.placeholder_detail_bottom %}
     {% if view.liveblog_enabled %}
         {% include "liveblog/includes/post_detail.html" %}
     {% endif %}
+    {% render_placeholder view.config.placeholder_detail_footer %}
 </article>
 {% endblock content_blog %}
+
+{% block sidebar_blog %}
+{% render_placeholder view.config.placeholder_detail_sidebar %}
+{% endblock %}
+
