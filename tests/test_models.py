@@ -90,6 +90,52 @@ class AdminTest(BaseTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], '/')
 
+    def test_admin_changelist_view(self):
+        posts = self.get_posts()
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        # Normal changelist, all existing posts
+        response = post_admin.changelist_view(request)
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts))
+        self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
+
+        # Site 2 is added to first post, but no changelist filter, no changes
+        posts[0].sites.add(self.site_2)
+        response = post_admin.changelist_view(request)
+        self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
+
+        # Filtering on site, first post not shown
+        request = self.get_page_request('/', self.user, r'/en/blog/?sites=1', edit=False)
+        response = post_admin.changelist_view(request)
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts) - 1)
+        self.assertTrue(posts[0] not in response.context_data['cl'].queryset.all())
+
+        # Removing site filtering, first post appears again
+        request = self.get_page_request('/', self.user, r'/en/blog/?', edit=False)
+        response = post_admin.changelist_view(request)
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts))
+        self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
+
+        # Filtering on the apphook config and site
+        request = self.get_page_request('/', self.user, r'/en/blog/?app_config__id__exact=1&sites=1', edit=False)
+        response = post_admin.changelist_view(request)
+        # First and last post in the list are now in the queryset
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts) - 2)
+        self.assertTrue(posts[0] not in response.context_data['cl'].queryset.all())
+        self.assertTrue(posts[-1] not in response.context_data['cl'].queryset.all())
+
+        # Publishing one post, two published in total
+        posts[1].publish = True
+        posts[1].save()
+        published = Post.objects.published(current_site=False)
+        request = self.get_page_request('/', self.user, r'/en/blog/?publish__exact=1', edit=False)
+        response = post_admin.changelist_view(request)
+        # The admin queryset and the model queryset are the same
+        self.assertEqual(response.context_data['cl'].queryset.count(), published.count())
+        # Published post is in the changelist queryset
+        self.assertTrue(posts[1] in response.context_data['cl'].queryset.all())
+
     def test_admin_blogconfig_views(self):
         post_admin = admin.site._registry[BlogConfig]
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
