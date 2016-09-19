@@ -34,6 +34,7 @@ setup(
         'pytz',
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
+        'django-taggit-helpers',
         'djangocms-text-ckeditor',
         'cmsplugin-filer>=1.0',
         'django-meta>=1.2',

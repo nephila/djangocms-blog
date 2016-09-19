@@ -18,6 +18,11 @@ from django.utils.six import callable
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
+try:
+    from taggit_helpers import TaggitListFilter
+except ImportError:  # For Django 1.9+
+    from taggit_helpers.admin import TaggitListFilter
+
 from .cms_appconfig import BlogConfig
 from .forms import CategoryAdminForm, PostAdminForm
 from .models import BlogCategory, Post
@@ -55,7 +60,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'title', 'author', 'date_published', 'app_config', 'all_languages_column',
         'date_published_end'
     ]
-    list_filter = ('app_config',)
+    list_filter = ('app_config', TaggitListFilter)
+    search_fields = ('translations__title',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
