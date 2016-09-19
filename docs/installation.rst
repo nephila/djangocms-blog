@@ -39,6 +39,10 @@ If you want to enable haystack support, in addition to the above:
 * configure haystack according to `aldryn-search docs <https://github.com/aldryn/aldryn-search#usage>`_
   and `haystack docs <http://django-haystack.readthedocs.io/en/stable/>`_.
 
+To enable taggit filtering support in the admin install djangocms-blog with::
+
+    pip install djangocms-blog[taggit]
+
 *********************
 Minimal configuration
 *********************
