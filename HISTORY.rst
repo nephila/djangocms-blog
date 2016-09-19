@@ -19,6 +19,7 @@ History
 * Added plugins templateset.
 * Improved category admin to avoid circular relationships.
 * Dropped strict dependency on aldryn-search, haystack. Install separately for search support.
+* Improved admin filtering.
 
 ******************
 0.8.9 (unreleased)
