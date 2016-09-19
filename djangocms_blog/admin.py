@@ -45,8 +45,12 @@ class SiteListFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         try:
-            return queryset.filter(**self.used_parameters)
-        except ValidationError as e:
+            if 'sites' in self.used_parameters:
+                return queryset.on_site(Site.objects.get(pk=self.used_parameters['sites']))
+            return queryset
+        except Site.DoesNotExist as e:  # pragma: no cover
+            raise admin.options.IncorrectLookupParameters(e)
+        except ValidationError as e:  # pragma: no cover
             raise admin.options.IncorrectLookupParameters(e)
 
 
@@ -112,7 +116,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         try:
             from taggit_helpers.admin import TaggitListFilter
             filters.append(TaggitListFilter)
-        except ImportError:
+        except ImportError:  # pragma: no cover
             try:
                 from taggit_helpers import TaggitListFilter
                 filters.append(TaggitListFilter)

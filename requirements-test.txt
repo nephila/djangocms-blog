@@ -11,3 +11,4 @@ wheel
 pysolr
 django-parler>=1.6
 aldryn-search
+django-taggit-helpers
