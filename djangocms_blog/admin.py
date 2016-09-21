@@ -88,17 +88,17 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         (None, {
             'fields': [['title', 'categories', 'publish', 'app_config']]
         }),
-        ('Info', {
+        (_('Info'), {
             'fields': [['slug', 'tags'],
                        ['date_published', 'date_published_end'],
                        ['enable_comments']],
             'classes': ('collapse',)
         }),
-        ('Images', {
+        (_('Images'), {
             'fields': [['main_image', 'main_image_thumbnail', 'main_image_full']],
             'classes': ('collapse',)
         }),
-        ('SEO', {
+        (_('SEO'), {
             'fields': [['meta_description', 'meta_title', 'meta_keywords']],
             'classes': ('collapse',)
         }),
@@ -302,32 +302,32 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             (None, {
                 'fields': ('type', 'namespace', 'app_title', 'object_name')
             }),
-            ('Generic', {
+            (_('Generic'), {
                 'fields': (
                     'config.default_published', 'config.use_placeholder', 'config.use_abstract',
                     'config.set_author',
                 )
             }),
-            ('Layout', {
+            (_('Layout'), {
                 'fields': (
                     'config.paginate_by', 'config.url_patterns', 'config.template_prefix',
                     'config.menu_structure', 'config.menu_empty_categories',
                 ),
                 'classes': ('collapse',)
             }),
-            ('Notifications', {
+            (_('Notifications'), {
                 'fields': (
                     'config.send_knock_create', 'config.send_knock_update'
                 ),
                 'classes': ('collapse',)
             }),
-            ('Sitemap', {
+            (_('Sitemap'), {
                 'fields': (
                     'config.sitemap_changefreq', 'config.sitemap_priority',
                 ),
                 'classes': ('collapse',)
             }),
-            ('Meta', {
+            (_('Meta'), {
                 'fields': (
                     'config.object_type',
                 )
