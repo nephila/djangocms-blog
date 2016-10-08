@@ -47,7 +47,7 @@ class LiveblogInterface(models.Model):
             items.extend(
                 model.objects.filter(placeholder=self.placeholder).values('pk', 'post_date')
             )
-        order = [item['pk'] for item in sorted(items, key=itemgetter('post_date'))]
+        order = reversed([item['pk'] for item in sorted(items, key=itemgetter('post_date'))])
         reorder_plugins(self.placeholder, None, self.language, order)
 
     @property
