@@ -221,6 +221,8 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         """
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
+        if not self.slug and self.title:
+            self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):

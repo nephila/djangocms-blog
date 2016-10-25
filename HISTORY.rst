@@ -9,6 +9,7 @@ History
 ******************
 
 * Optimized querysets
+* Fixed slug generation in wizard
 
 ******************
 0.8.8 (2016-09-04)

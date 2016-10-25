@@ -439,6 +439,10 @@ class AdminTest(BaseTest):
 
 class ModelsTest(BaseTest):
 
+    def test_slug(self):
+        post = Post.objects.language('en').create(title='I am a title')
+        self.assertEqual(post.slug, 'i-am-a-title')
+
     def test_model_attributes(self):
         self.get_pages()
 
