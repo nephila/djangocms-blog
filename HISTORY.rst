@@ -22,10 +22,11 @@ History
 * Improved admin filtering.
 
 ******************
-0.8.9 (unreleased)
+0.8.9 (2016-10-25)
 ******************
 
 * Optimized querysets
+* Fixed slug generation in wizard
 
 ******************
 0.8.8 (2016-09-04)

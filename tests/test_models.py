@@ -548,6 +548,10 @@ class ModelsTest(BaseTest):
             self.assertEqual(new_category.count_all_sites, 1)
             self.assertEqual(self.category_1.count_all_sites, 2)
 
+    def test_slug(self):
+        post = Post.objects.language('en').create(title='I am a title')
+        self.assertEqual(post.slug, 'i-am-a-title')
+
     def test_model_attributes(self):
         self.get_pages()
 
