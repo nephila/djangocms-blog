@@ -7,7 +7,9 @@ import os
 from tempfile import mkdtemp
 
 
-def gettext(s): return s
+def gettext(s):
+    return s
+
 
 HELPER_SETTINGS = dict(
     ROOT_URLCONF='tests.test_utils.urls',
@@ -137,6 +139,7 @@ os.environ['AUTH_USER_MODEL'] = 'tests.test_utils.CustomUser'
 def run():
     from djangocms_helper import runner
     runner.cms('djangocms_blog')
+
 
 if __name__ == '__main__':
     run()

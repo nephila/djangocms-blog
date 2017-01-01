@@ -104,8 +104,6 @@ class BlogCategoryMenu(CMSAttachMenu):
 
         return nodes
 
-menu_pool.register_menu(BlogCategoryMenu)
-
 
 class BlogNavModifier(Modifier):
     """
@@ -159,7 +157,9 @@ class BlogNavModifier(Modifier):
                 node.selected = True
         return nodes
 
+
 menu_pool.register_modifier(BlogNavModifier)
+menu_pool.register_menu(BlogCategoryMenu)
 
 
 def clear_menu_cache(**kwargs):
@@ -167,6 +167,7 @@ def clear_menu_cache(**kwargs):
     Empty menu cache when saving categories
     """
     menu_pool.clear(all=True)
+
 
 post_save.connect(clear_menu_cache, sender=BlogCategory)
 post_delete.connect(clear_menu_cache, sender=BlogCategory)
