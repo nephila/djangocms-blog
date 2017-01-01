@@ -235,9 +235,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     def get_absolute_url(self, lang=None):
         if not lang or lang not in self.get_available_languages():
-            lang = self.get_current_language()
-        if not lang or lang not in self.get_available_languages():
             lang = get_language()
+        if not lang or lang not in self.get_available_languages():
+            lang = self.get_current_language()
         with switch_language(self, lang):
             category = self.categories.first()
             kwargs = {}
