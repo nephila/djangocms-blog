@@ -20,6 +20,7 @@ def get_urls():
         )
     return details
 
+
 detail_urls = get_urls()
 
 urlpatterns = [

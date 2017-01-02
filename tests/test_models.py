@@ -608,6 +608,20 @@ class ModelsTest(BaseTest):
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r'.*/%s/$' % post.slug, post.get_absolute_url()))
 
+    def test_url_language(self):
+        self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        with override('it'):
+            self.assertEqual(post.get_current_language(), 'en')
+            self.assertEqual(post.get_absolute_url(), post.get_absolute_url('it'))
+
+        post.set_current_language('it')
+        with override('en'):
+            self.assertEqual(post.get_current_language(), 'it')
+            self.assertEqual(post.get_absolute_url(), post.get_absolute_url('en'))
+
     def test_manager(self):
         self.get_pages()
         post1 = self._get_post(self._post_data[0]['en'])
