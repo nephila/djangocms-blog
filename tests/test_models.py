@@ -143,7 +143,7 @@ class AdminTest(BaseTest):
         # Add view only has an empty form - no type
         response = post_admin.add_view(request)
         self.assertNotContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
-        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" />')
+        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text"')
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.app_config_1.pk))
@@ -152,7 +152,7 @@ class AdminTest(BaseTest):
         # check that all the form fields are visible in the admin
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
-        self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
+        self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text"')
         self.assertContains(response, 'sample_app')
 
     def test_admin_category_views(self):
@@ -161,12 +161,12 @@ class AdminTest(BaseTest):
 
         # Add view only has an empty form - no type
         response = post_admin.add_view(request)
-        self.assertNotContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertNotContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.category_1.pk))
-        self.assertContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
     def test_admin_category_parents(self):
