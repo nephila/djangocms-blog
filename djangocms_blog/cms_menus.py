@@ -107,9 +107,6 @@ class BlogCategoryMenu(CMSAttachMenu):
         return nodes
 
 
-menu_pool.register_menu(BlogCategoryMenu)
-
-
 class BlogNavModifier(Modifier):
     """
     This navigation modifier makes sure that when
@@ -164,6 +161,7 @@ class BlogNavModifier(Modifier):
 
 
 menu_pool.register_modifier(BlogNavModifier)
+menu_pool.register_menu(BlogCategoryMenu)
 
 
 def clear_menu_cache(**kwargs):

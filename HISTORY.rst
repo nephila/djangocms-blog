@@ -21,6 +21,12 @@ History
 * Dropped strict dependency on aldryn-search, haystack. Install separately for search support.
 * Improved admin filtering.
 
+*******************
+0.8.10 (2017-01-02)
+*******************
+
+* Fix error in get_absolute_url
+
 ******************
 0.8.9 (2016-10-25)
 ******************
