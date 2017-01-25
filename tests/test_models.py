@@ -558,12 +558,20 @@ class ModelsTest(BaseTest):
         self.app_config_1.app_data.config.gplus_author = 'RandomJoe'
         self.app_config_1.save()
 
+        featured_date = now() + timedelta(days=40)
+
         post = self._get_post(self._post_data[0]['en'])
         post = self._get_post(self._post_data[0]['it'], post, 'it')
         post.main_image = self.create_filer_image_object()
         post.publish = True
         post.save()
         post.set_current_language('en')
+        self.assertEqual(post.date, post.date_published)
+
+        post.date_featured = featured_date
+        post.save()
+        self.assertEqual(post.date, featured_date)
+
         meta_en = post.as_meta()
         self.assertEqual(meta_en.og_type, get_setting('FB_TYPE'))
         self.assertEqual(meta_en.title, post.title)
