@@ -20,6 +20,7 @@ History
 * Improved category admin to avoid circular relationships.
 * Dropped strict dependency on aldryn-search, haystack. Install separately for search support.
 * Improved admin filtering.
+* Added featured date to post.
 
 *******************
 0.8.10 (2017-01-02)

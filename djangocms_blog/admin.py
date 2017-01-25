@@ -90,7 +90,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         }),
         (_('Info'), {
             'fields': [['slug', 'tags'],
-                       ['date_published', 'date_published_end'],
+                       ['date_published', 'date_published_end', 'date_featured'],
                        ['enable_comments']],
             'classes': ('collapse',)
         }),
