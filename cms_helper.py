@@ -80,6 +80,10 @@ HELPER_SETTINGS = {
         'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
         'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations_django',
     },
+    'SOUTH_MIGRATIONS_MODULES': {
+        'taggit': 'taggit.south_migrations',
+        'djangocms_blog': 'djangocms_blog.south_migrations',
+    },
     'META_SITE_PROTOCOL': 'http',
     'META_SITE_DOMAIN': 'example.com',
     'META_USE_OG_PROPERTIES': True,
