@@ -38,7 +38,7 @@ setup(
         'cmsplugin-filer>=1.0',
         'django-meta>=1.2',
         'django-meta-mixin>=0.3',
-        'aldryn-apphooks-config>=0.2.6',
+        'aldryn-apphooks-config>=0.3.0',
         'djangocms-apphook-setup',
     ],
     extras_require={
