@@ -23,6 +23,12 @@ History
 * Added featured date to post.
 
 *******************
+0.8.11 (2017-03-04)
+*******************
+
+* Fixed support for aldryn-apphooks-config 0.3.1
+
+*******************
 0.8.10 (2017-01-02)
 *******************
 
