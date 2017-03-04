@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-05 08:48+0200\n"
-"PO-Revision-Date: 2016-05-05 06:48+0000\n"
+"POT-Creation-Date: 2017-03-04 16:27+0100\n"
+"PO-Revision-Date: 2017-03-04 15:27+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Slovenian (http://www.transifex.com/nephila/djangocms-blog/language/sl/)\n"
 "MIME-Version: 1.0\n"
@@ -18,17 +18,13 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: admin.py:217 admin.py:225 admin.py:233
+#: admin.py:281 admin.py:289 admin.py:297
 msgid "You can provide plain strings, Post model attribute or method names"
 msgstr ""
 
 #: apps.py:15
 msgid "django CMS Blog"
 msgstr "django CMS Blog"
-
-#: cms_app.py:15 cms_toolbar.py:20 settings.py:113
-msgid "Blog"
-msgstr "Blog"
 
 #: cms_appconfig.py:20
 msgid "application title"
@@ -181,27 +177,31 @@ msgid ""
 "Emits a desktop notification -if enabled- when editing a published post"
 msgstr ""
 
+#: cms_apps.py:16 cms_toolbars.py:20 settings.py:113
+msgid "Blog"
+msgstr "Blog"
+
 #: cms_menus.py:28
 msgid "Blog menu"
 msgstr "Blog meni"
 
-#: cms_toolbar.py:23
+#: cms_toolbars.py:23
 msgid "Post list"
 msgstr "Seznam objav"
 
-#: cms_toolbar.py:25
+#: cms_toolbars.py:25
 msgid "Add post"
 msgstr "Nova objava"
 
-#: cms_toolbar.py:29
+#: cms_toolbars.py:29
 msgid "Edit configuration"
 msgstr "Uredi nastavitve"
 
-#: cms_toolbar.py:33
+#: cms_toolbars.py:33
 msgid "Edit Post"
 msgstr "Uredi objavo"
 
-#: cms_toolbar.py:47
+#: cms_toolbars.py:47
 #, python-brace-format
 msgid "Publish {0} now"
 msgstr ""
@@ -216,176 +216,176 @@ msgstr "Nov {0}"
 msgid "Create a new {0} in {1}"
 msgstr "Ustvari nov {0} v {1}"
 
-#: feeds.py:48
+#: feeds.py:49
 #, python-format
 msgid "Blog articles on %(site_name)s"
 msgstr "Blog objave na %(site_name)s"
 
-#: models.py:57
+#: models.py:61
 msgid "parent"
 msgstr "starš"
 
-#: models.py:58
+#: models.py:62
 msgid "created at"
 msgstr "ustvarjeno na"
 
-#: models.py:59
+#: models.py:63
 msgid "modified at"
 msgstr "urejeno na"
 
-#: models.py:61 models.py:144 models.py:353
+#: models.py:65 models.py:148 models.py:359
 msgid "app. config"
 msgstr ""
 
-#: models.py:65
+#: models.py:69
 msgid "name"
 msgstr "ime"
 
-#: models.py:66 models.py:149
+#: models.py:70 models.py:153
 msgid "slug"
 msgstr ""
 
-#: models.py:73
+#: models.py:77
 msgid "blog category"
 msgstr "blog kategorija"
 
-#: models.py:74
+#: models.py:78
 msgid "blog categories"
 msgstr "blog kategorije"
 
-#: models.py:114
+#: models.py:118
 msgid "author"
 msgstr "avtor"
 
-#: models.py:117
+#: models.py:121
 msgid "created"
 msgstr "ustvarjeno"
 
-#: models.py:118
+#: models.py:122
 msgid "last modified"
 msgstr "nazadnje urejeno"
 
-#: models.py:119
+#: models.py:123
 msgid "published since"
 msgstr "objavljeno od"
 
-#: models.py:120
+#: models.py:124
 msgid "published until"
 msgstr "objavljeno do"
 
-#: models.py:121
+#: models.py:125
 msgid "publish"
 msgstr "objavljeno"
 
-#: models.py:122
+#: models.py:126
 msgid "category"
 msgstr "kategorija"
 
-#: models.py:124
+#: models.py:128
 msgid "main image"
 msgstr "glavna slika"
 
-#: models.py:128
+#: models.py:132
 msgid "main image thumbnail"
 msgstr "glavna slika - predogled"
 
-#: models.py:133
+#: models.py:137
 msgid "main image full"
 msgstr "glavna slika - polna"
 
-#: models.py:137
+#: models.py:141
 msgid "enable comments on post"
 msgstr "Omogoči komentarje na objavi"
 
-#: models.py:139
+#: models.py:143
 msgid "Site(s)"
 msgstr "Stran(i)"
 
-#: models.py:140
+#: models.py:144
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
 msgstr "Izberi strani na katerih naj bo objava prikazana. Če ni izbrano nič, bo objava prikazana na vseh nastavljenih straneh."
 
-#: models.py:148
+#: models.py:152
 msgid "title"
 msgstr "naziv"
 
-#: models.py:150
+#: models.py:154
 msgid "abstract"
 msgstr "osnutek"
 
-#: models.py:151
+#: models.py:155
 msgid "post meta description"
 msgstr "meta opis objave"
 
-#: models.py:153
+#: models.py:157
 msgid "post meta keywords"
 msgstr "meta ključne besede objave"
 
-#: models.py:155
+#: models.py:159
 msgid "post meta title"
 msgstr "meta naziv objave"
 
-#: models.py:156
+#: models.py:160
 msgid "used in title tag and social sharing"
 msgstr "za uporabo v označbi naslova in deljenju na socialnih omrežjih"
 
-#: models.py:159
+#: models.py:163
 msgid "text"
 msgstr "tekst"
 
-#: models.py:196
+#: models.py:200
 msgid "blog article"
 msgstr "blog objava"
 
-#: models.py:197
+#: models.py:201
 msgid "blog articles"
 msgstr "blog objave"
 
-#: models.py:372 models.py:408
+#: models.py:388 models.py:424
 msgid "articles"
 msgstr "objave"
 
-#: models.py:373
+#: models.py:389
 msgid "The number of latests articles to be displayed."
 msgstr "Število najnovejših objav, ki naj bodo prikazane"
 
-#: models.py:375
+#: models.py:391
 msgid "filter by tag"
 msgstr "filtriraj po oznakah"
 
-#: models.py:376
+#: models.py:392
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Prikaži le blog objave označene z izbranimi oznakami"
 
-#: models.py:379
+#: models.py:395
 msgid "filter by category"
 msgstr "filtriraj po kategoriji"
 
-#: models.py:380
+#: models.py:396
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Prikaži le blog objave označene z izbranimi kategorijami"
 
-#: models.py:384
+#: models.py:400
 #, python-format
 msgid "%s latest articles by tag"
 msgstr "%s najnovejših objav glede na oznako"
 
-#: models.py:404
+#: models.py:420
 msgid "authors"
 msgstr "avtorji"
 
-#: models.py:409
+#: models.py:425
 msgid "The number of author articles to be displayed."
 msgstr "Število avtorjevih objav, ki naj bodo prikazane"
 
-#: models.py:413
+#: models.py:429
 #, python-format
 msgid "%s latest articles by author"
 msgstr "%s najnovejših objav glede na avtorja"
 
-#: models.py:442
+#: models.py:458
 msgid "generic blog plugin"
 msgstr "generični blog vtičnik"
 
