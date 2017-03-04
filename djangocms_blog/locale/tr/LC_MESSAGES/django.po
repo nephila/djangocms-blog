@@ -1,14 +1,16 @@
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Rustam Mirzaev <mirus@2x2.pw>, 2016
 # Rustam Mirzaev <mirus@2x2.pw>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-21 21:17+0200\n"
-"PO-Revision-Date: 2016-09-21 19:17+0000\n"
+"POT-Creation-Date: 2017-03-04 16:35+0100\n"
+"PO-Revision-Date: 2017-03-04 15:35+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Turkish (http://www.transifex.com/nephila/djangocms-blog/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -56,61 +58,59 @@ msgstr ""
 
 #: admin.py:341 admin.py:349 admin.py:357
 msgid "You can provide plain strings, Post model attribute or method names"
-msgstr ""
+msgstr "Düz dizgiler, makale modeli özniteliği veya metod adları sağlayabilirsiniz."
 
 #: apps.py:15
 msgid "django CMS Blog"
-msgstr ""
+msgstr "django CMS Blogu"
 
 #: cms_appconfig.py:20
 msgid "application title"
-msgstr ""
+msgstr "uygulama başlığı"
 
 #: cms_appconfig.py:22
 msgid "object name"
-msgstr ""
+msgstr "nesne adı"
 
 #: cms_appconfig.py:27
-#| msgid "blog categories"
 msgid "blog config"
-msgstr ""
+msgstr "blog ayarı"
 
 #: cms_appconfig.py:28
-#| msgid "blog categories"
 msgid "blog configs"
-msgstr ""
+msgstr "blog ayarları"
 
 #: cms_appconfig.py:31
 msgid "untitled"
-msgstr ""
+msgstr "isimsiz"
 
 #: cms_appconfig.py:36
 msgid "Post published by default"
-msgstr ""
+msgstr "Varsayılan olarak yayınlanan makale"
 
 #: cms_appconfig.py:40
 msgid "Permalink structure"
-msgstr ""
+msgstr "Kalıcı bağlantı yapısı"
 
 #: cms_appconfig.py:45
 msgid "Use placeholder and plugins for article body"
-msgstr ""
+msgstr "Makale gövdesi olarak yer tututcu veya eklenti kullan"
 
 #: cms_appconfig.py:49
 msgid "Use abstract field"
-msgstr ""
+msgstr "Soyut alanı kullan"
 
 #: cms_appconfig.py:53
 msgid "Set author"
-msgstr ""
+msgstr "Yazarı ekle"
 
 #: cms_appconfig.py:53
 msgid "Set author by default"
-msgstr ""
+msgstr "Varsayılan yazarı ekle"
 
 #: cms_appconfig.py:57
 msgid "Paginate size"
-msgstr ""
+msgstr "Boyutu sayfala"
 
 #: cms_appconfig.py:58
 msgid "When paginating list views, how many articles per page?"
@@ -221,7 +221,7 @@ msgid ""
 "Emits a desktop notification -if enabled- when editing a published post"
 msgstr ""
 
-#: cms_apps.py:15 cms_toolbars.py:20 settings.py:115
+#: cms_apps.py:16 cms_toolbars.py:20 settings.py:115
 msgid "Blog"
 msgstr "Blog"
 
@@ -273,32 +273,31 @@ msgstr ""
 msgid "Liveblog item"
 msgstr ""
 
-#: liveblog/models.py:28
+#: liveblog/models.py:29
 msgid "publish liveblog entry"
 msgstr ""
 
-#: liveblog/models.py:29
+#: liveblog/models.py:30
 msgid "post date"
 msgstr ""
 
-#: liveblog/models.py:32 liveblog/models.py:101
+#: liveblog/models.py:33 liveblog/models.py:108
 msgid "liveblog entry"
 msgstr ""
 
-#: liveblog/models.py:33 liveblog/models.py:102
-#| msgid "blog categories"
+#: liveblog/models.py:34 liveblog/models.py:109
 msgid "liveblog entries"
 msgstr ""
 
-#: liveblog/models.py:90 models.py:172
+#: liveblog/models.py:97 models.py:173
 msgid "title"
 msgstr ""
 
-#: liveblog/models.py:92
+#: liveblog/models.py:99
 msgid "image"
 msgstr ""
 
-#: liveblog/models.py:96
+#: liveblog/models.py:103
 msgid "thumbnail size"
 msgstr ""
 
@@ -314,7 +313,7 @@ msgstr "oluşturma tarihi"
 msgid "modified at"
 msgstr "düzenleme tarihi"
 
-#: models.py:69 models.py:168 models.py:387
+#: models.py:69 models.py:169 models.py:396
 msgid "app. config"
 msgstr ""
 
@@ -322,7 +321,7 @@ msgstr ""
 msgid "name"
 msgstr "isim"
 
-#: models.py:74 models.py:173
+#: models.py:74 models.py:174
 msgid "slug"
 msgstr "okunaklı URL"
 
@@ -355,134 +354,138 @@ msgid "published until"
 msgstr ""
 
 #: models.py:145
-msgid "publish"
+msgid "featured date"
 msgstr ""
 
 #: models.py:146
+msgid "publish"
+msgstr ""
+
+#: models.py:147
 msgid "category"
 msgstr "kategori"
 
-#: models.py:148
+#: models.py:149
 msgid "main image"
 msgstr ""
 
-#: models.py:152
+#: models.py:153
 msgid "main image thumbnail"
 msgstr ""
 
-#: models.py:157
+#: models.py:158
 msgid "main image full"
 msgstr ""
 
-#: models.py:161
+#: models.py:162
 msgid "enable comments on post"
 msgstr ""
 
-#: models.py:163
+#: models.py:164
 msgid "Site(s)"
 msgstr "Web site(ler)"
 
-#: models.py:164
+#: models.py:165
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
 msgstr "Yayınlamak istediğiniz web siteleri seçiniz. Eğer herhangi seçim yapılmaz ise, yayında olan tüm web sitelerde görünecektir."
 
-#: models.py:174
+#: models.py:175
 msgid "abstract"
 msgstr ""
 
-#: models.py:175
+#: models.py:176
 msgid "post meta description"
 msgstr ""
 
-#: models.py:177
+#: models.py:178
 msgid "post meta keywords"
 msgstr ""
 
-#: models.py:179
+#: models.py:180
 msgid "post meta title"
 msgstr ""
 
-#: models.py:180
+#: models.py:181
 msgid "used in title tag and social sharing"
 msgstr "başlık etiketinde veya sosyal paylaşımda kullanılır"
 
-#: models.py:183
+#: models.py:184
 msgid "text"
 msgstr ""
 
-#: models.py:188
+#: models.py:189
 msgid "enable liveblog on post"
 msgstr ""
 
-#: models.py:222
+#: models.py:223
 msgid "blog article"
 msgstr "blog makalesi"
 
-#: models.py:223
+#: models.py:224
 msgid "blog articles"
 msgstr "blog makaleleri"
 
-#: models.py:390
+#: models.py:399
 msgid "current site"
 msgstr ""
 
-#: models.py:390
+#: models.py:399
 msgid "Select items from the current site only"
 msgstr ""
 
-#: models.py:394
+#: models.py:403
 msgid "Plugin template"
 msgstr ""
 
-#: models.py:395
+#: models.py:404
 msgid "Select plugin template to load for this instance"
 msgstr ""
 
-#: models.py:429 models.py:465
+#: models.py:438 models.py:474
 msgid "articles"
 msgstr ""
 
-#: models.py:430
+#: models.py:439
 msgid "The number of latests articles to be displayed."
 msgstr "Ğörütülenecek olan makale sayısı"
 
-#: models.py:432
+#: models.py:441
 msgid "filter by tag"
 msgstr ""
 
-#: models.py:433
+#: models.py:442
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Sadece seçili etiketlerle işaretlenmiş makaleleri göster."
 
-#: models.py:436
+#: models.py:445
 msgid "filter by category"
 msgstr ""
 
-#: models.py:437
+#: models.py:446
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Sadece seçili kategorilerde bulunan makaleleri ğöster"
 
-#: models.py:441
+#: models.py:450
 #, python-format
 msgid "%s latest articles by tag"
 msgstr ""
 
-#: models.py:461
+#: models.py:470
 msgid "authors"
 msgstr ""
 
-#: models.py:466
+#: models.py:475
 msgid "The number of author articles to be displayed."
 msgstr "İlgili yazarın gösterilecek olan makale sayısı."
 
-#: models.py:470
+#: models.py:479
 #, python-format
 msgid "%s latest articles by author"
 msgstr ""
 
-#: models.py:503
+#: models.py:512
 msgid "generic blog plugin"
 msgstr ""
 
@@ -551,7 +554,6 @@ msgid "Latest Blog Articles"
 msgstr "Blog'un son makaleleri"
 
 #: settings.py:119
-#| msgid "Latest Blog Articles"
 msgid "Latest Blog Articles - Cache"
 msgstr ""
 
@@ -644,18 +646,3 @@ msgstr "biri"
 #: templates/djangocms_blog/post_list.html:35
 msgid "next"
 msgstr "sonraki"
-
-#~ msgid "Article"
-#~ msgstr "Articles"
-
-#~ msgid "Text"
-#~ msgstr "Text"
-
-#~ msgid "blog post"
-#~ msgstr "blog post"
-
-#~ msgid "Entries by"
-#~ msgstr "Entries by"
-
-#~ msgid "No entry found."
-#~ msgstr "No entry found."

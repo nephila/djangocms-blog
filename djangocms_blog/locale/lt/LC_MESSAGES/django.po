@@ -1,14 +1,15 @@
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Matas Dailyda <matas@dailyda.com>, 2015-2016
+# Matas Dailyda <matas@dailyda.com>, 2015-2017
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-21 21:17+0200\n"
-"PO-Revision-Date: 2016-09-21 19:17+0000\n"
+"POT-Creation-Date: 2017-03-04 16:35+0100\n"
+"PO-Revision-Date: 2017-03-04 15:35+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/nephila/djangocms-blog/language/lt/)\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +21,7 @@ msgstr ""
 
 #: admin.py:34
 msgid "site"
-msgstr "tinklalapis"
+msgstr ""
 
 #: admin.py:91
 msgid "Info"
@@ -71,12 +72,10 @@ msgid "object name"
 msgstr "objekto pavadinimas"
 
 #: cms_appconfig.py:27
-#| msgid "blog categories"
 msgid "blog config"
 msgstr "tinklaraščio konfiguracija"
 
 #: cms_appconfig.py:28
-#| msgid "blog categories"
 msgid "blog configs"
 msgstr "tinklaraščio konfiguracijos"
 
@@ -134,11 +133,11 @@ msgstr "Django CMS meniu struktūra"
 
 #: cms_appconfig.py:70
 msgid "Show empty categories in menu"
-msgstr "Rodyti tuščias kategorijas meniu"
+msgstr ""
 
 #: cms_appconfig.py:72
 msgid "Show categories with no post attached in the menu"
-msgstr "Rodyti kategorijas be susietų straipsnių meniu"
+msgstr ""
 
 #: cms_appconfig.py:75
 msgid "Sitemap changefreq"
@@ -221,7 +220,7 @@ msgid ""
 "Emits a desktop notification -if enabled- when editing a published post"
 msgstr "Išsiunčia darbalaukio pranešima -jei įgalinta- kai redaguojamas publikuotas straipsnis"
 
-#: cms_apps.py:15 cms_toolbars.py:20 settings.py:115
+#: cms_apps.py:16 cms_toolbars.py:20 settings.py:115
 msgid "Blog"
 msgstr "Tinklaraštis"
 
@@ -267,40 +266,39 @@ msgstr "Tinklaraščio straipsniai %(site_name)s"
 
 #: liveblog/apps.py:10
 msgid "Liveblog"
-msgstr "Gyvas tinklaraštis"
+msgstr ""
 
 #: liveblog/cms_plugins.py:15
 msgid "Liveblog item"
-msgstr "Gyvo tinklaraščio objektas"
-
-#: liveblog/models.py:28
-msgid "publish liveblog entry"
-msgstr "publikuoti gyvo tinklaraščio įrašą"
+msgstr ""
 
 #: liveblog/models.py:29
+msgid "publish liveblog entry"
+msgstr ""
+
+#: liveblog/models.py:30
 msgid "post date"
-msgstr "straipsnio data"
+msgstr ""
 
-#: liveblog/models.py:32 liveblog/models.py:101
+#: liveblog/models.py:33 liveblog/models.py:108
 msgid "liveblog entry"
-msgstr "gyvo tinklaraščio įrašas"
+msgstr ""
 
-#: liveblog/models.py:33 liveblog/models.py:102
-#| msgid "blog categories"
+#: liveblog/models.py:34 liveblog/models.py:109
 msgid "liveblog entries"
-msgstr "gyvo tinklaraščio įrašai"
+msgstr ""
 
-#: liveblog/models.py:90 models.py:172
+#: liveblog/models.py:97 models.py:173
 msgid "title"
 msgstr "pavadinimas"
 
-#: liveblog/models.py:92
+#: liveblog/models.py:99
 msgid "image"
-msgstr "paveikslėlis"
+msgstr ""
 
-#: liveblog/models.py:96
+#: liveblog/models.py:103
 msgid "thumbnail size"
-msgstr "piktogramos dydis"
+msgstr ""
 
 #: models.py:64
 msgid "parent"
@@ -314,7 +312,7 @@ msgstr "sukurta"
 msgid "modified at"
 msgstr "redaguota"
 
-#: models.py:69 models.py:168 models.py:387
+#: models.py:69 models.py:169 models.py:396
 msgid "app. config"
 msgstr "aplikacijos nustatymai"
 
@@ -322,7 +320,7 @@ msgstr "aplikacijos nustatymai"
 msgid "name"
 msgstr "pavadinimas"
 
-#: models.py:74 models.py:173
+#: models.py:74 models.py:174
 msgid "slug"
 msgstr "nuoroda"
 
@@ -355,134 +353,138 @@ msgid "published until"
 msgstr "publikuota iki"
 
 #: models.py:145
+msgid "featured date"
+msgstr ""
+
+#: models.py:146
 msgid "publish"
 msgstr "publikuoti"
 
-#: models.py:146
+#: models.py:147
 msgid "category"
 msgstr "kategorija"
 
-#: models.py:148
+#: models.py:149
 msgid "main image"
 msgstr "pagrindinis paveikslėlis"
 
-#: models.py:152
+#: models.py:153
 msgid "main image thumbnail"
 msgstr "pagrindinio paveikslėlio miniatiūra"
 
-#: models.py:157
+#: models.py:158
 msgid "main image full"
 msgstr "pagrindinis paveikslėlis pilnas"
 
-#: models.py:161
+#: models.py:162
 msgid "enable comments on post"
 msgstr "įgalinti straipsniui komentarus"
 
-#: models.py:163
+#: models.py:164
 msgid "Site(s)"
 msgstr "Tinklalapis(iai)"
 
-#: models.py:164
+#: models.py:165
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
 msgstr "Pasirinkite puslapius kuriuose bus rodomas straipsnis. Jei nepasirinktas nei vienas puslapis, straipsnis bus rodomas visuose puslapiuose."
 
-#: models.py:174
+#: models.py:175
 msgid "abstract"
 msgstr "santrauka"
 
-#: models.py:175
+#: models.py:176
 msgid "post meta description"
 msgstr "straipsnio meta apibūdinimas"
 
-#: models.py:177
+#: models.py:178
 msgid "post meta keywords"
 msgstr "straipsnio meta raktažodžiai"
 
-#: models.py:179
+#: models.py:180
 msgid "post meta title"
 msgstr "straipsnio meta pavadinimas"
 
-#: models.py:180
+#: models.py:181
 msgid "used in title tag and social sharing"
 msgstr "naudojama pavadinimo žymenoje ir socialiniuose tinkluose"
 
-#: models.py:183
+#: models.py:184
 msgid "text"
 msgstr "tekstas"
 
-#: models.py:188
+#: models.py:189
 msgid "enable liveblog on post"
-msgstr "įgalinti gyvą tinklaraštį šiame straipsnyje"
+msgstr ""
 
-#: models.py:222
+#: models.py:223
 msgid "blog article"
 msgstr "tinklaraščio straipsnis"
 
-#: models.py:223
+#: models.py:224
 msgid "blog articles"
 msgstr "tinklaraščio straipsniai"
 
-#: models.py:390
+#: models.py:399
 msgid "current site"
-msgstr "dabartinis tinklalapis"
+msgstr ""
 
-#: models.py:390
+#: models.py:399
 msgid "Select items from the current site only"
-msgstr "Pasirinkti objektus tik iš dabartinio tinklalapio"
+msgstr ""
 
-#: models.py:394
+#: models.py:403
 msgid "Plugin template"
-msgstr "Įskiepio šablonas"
+msgstr ""
 
-#: models.py:395
+#: models.py:404
 msgid "Select plugin template to load for this instance"
-msgstr "Pasirinkite įskiepio šabloną kuris bus kraunamas šiam atvejui"
+msgstr ""
 
-#: models.py:429 models.py:465
+#: models.py:438 models.py:474
 msgid "articles"
 msgstr "straipsniai"
 
-#: models.py:430
+#: models.py:439
 msgid "The number of latests articles to be displayed."
 msgstr "Atvaizduojamas naujausių straipsnių kiekis."
 
-#: models.py:432
+#: models.py:441
 msgid "filter by tag"
 msgstr "filtruoti pagal žymeną"
 
-#: models.py:433
+#: models.py:442
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Atvaizduoti straipsnius su pasirinktomis žymenomis."
 
-#: models.py:436
+#: models.py:445
 msgid "filter by category"
 msgstr "filtruoti pagal kategoriją"
 
-#: models.py:437
+#: models.py:446
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Atvaizduoti straipsnius su pasirinktomis kategorijomis."
 
-#: models.py:441
+#: models.py:450
 #, python-format
 msgid "%s latest articles by tag"
 msgstr "%s paskutiniai straipsniai pagal žymeną"
 
-#: models.py:461
+#: models.py:470
 msgid "authors"
 msgstr "autoriai"
 
-#: models.py:466
+#: models.py:475
 msgid "The number of author articles to be displayed."
 msgstr "Atvaizduojamas autoriaus straipsnių kiekis."
 
-#: models.py:470
+#: models.py:479
 #, python-format
 msgid "%s latest articles by author"
 msgstr "%s paskutiniai straipsniai pagal autorių"
 
-#: models.py:503
+#: models.py:512
 msgid "generic blog plugin"
 msgstr "bendras tinklaraščio įskiepis"
 
@@ -551,9 +553,8 @@ msgid "Latest Blog Articles"
 msgstr "Naujausi tinklaraščio straipsniai"
 
 #: settings.py:119
-#| msgid "Latest Blog Articles"
 msgid "Latest Blog Articles - Cache"
-msgstr "Paskutiniai tinklaraščio straipsniai - kešas"
+msgstr ""
 
 #: settings.py:121
 msgid "Author Blog Articles"
@@ -574,7 +575,7 @@ msgstr "Archyvas"
 
 #: settings.py:140
 msgid "Default template"
-msgstr "Numatytasis šablonas"
+msgstr ""
 
 #: templates/djangocms_blog/includes/blog_item.html:24
 msgid "read more"
@@ -645,18 +646,3 @@ msgstr "iš"
 #: templates/djangocms_blog/post_list.html:35
 msgid "next"
 msgstr "kitas"
-
-#~ msgid "Article"
-#~ msgstr "Articles"
-
-#~ msgid "Text"
-#~ msgstr "Text"
-
-#~ msgid "blog post"
-#~ msgstr "blog post"
-
-#~ msgid "Entries by"
-#~ msgstr "Entries by"
-
-#~ msgid "No entry found."
-#~ msgstr "No entry found."
