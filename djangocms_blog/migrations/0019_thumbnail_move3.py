@@ -28,9 +28,6 @@ class Migration(migrations.Migration):
             ('filer', '0003_thumbnailoption'),
             ('cmsplugin_filer_image', '0003_mv_thumbnail_option_to_filer_20160119_1720'),
         ]
-        run_before = [
-            ('cmsplugin_filer_image', '0004_auto_20160120_0950'),
-        ]
 
         operations = [
             migrations.RunPython(move_thumbnail_opt_to_filer, move_thumbnail_opt_to_plugin),
