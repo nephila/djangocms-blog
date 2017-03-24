@@ -133,7 +133,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'title', 'author', 'date_published', 'app_config', 'all_languages_column',
         'date_published_end'
     ]
-    list_filter = ('app_config',)
     search_fields = ('translations__title',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
