@@ -28,4 +28,5 @@ class LiveblogPlugin(TextPlugin):
         context['instance'] = instance
         return context
 
+
 plugin_pool.register_plugin(LiveblogPlugin)

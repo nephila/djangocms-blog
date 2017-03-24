@@ -14,6 +14,7 @@ from django.contrib import admin
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils import timezone
 from django.utils.six import callable
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
@@ -28,6 +29,59 @@ try:
 except ImportError:
     class EnhancedModelAdminMixin(object):
         pass
+
+
+# Bulk actions for post admin
+def make_published(modeladmin, request, queryset):
+    """ Bulk action to mark selected posts as published. If
+        the date_published field is empty the current time is
+        saved as date_published.
+    """
+    for post in queryset:
+        if not post.publish:
+            if not post.date_published:
+                post.date_published = timezone.now()
+            post.publish = True
+            post.save()
+
+
+def make_unpublished(modeladmin, request, queryset):
+    """ Bulk action to mark selected posts as UNpublished.
+    """
+    queryset.update(publish=False)
+
+
+def enable_comments(modeladmin, request, queryset):
+    """ Bulk action to enable comments for selected posts.
+    """
+    queryset.update(enable_comments=True)
+
+
+def disable_comments(modeladmin, request, queryset):
+    """ Bulk action to disable comments for selected posts.
+    """
+    queryset.update(enable_comments=False)
+
+
+def enable_liveblog(modeladmin, request, queryset):
+    """ Bulk action to enable comments for selected posts.
+    """
+    queryset.update(enable_liveblog=True)
+
+
+def disable_liveblog(modeladmin, request, queryset):
+    """ Bulk action to disable comments for selected posts.
+    """
+    queryset.update(enable_liveblog=False)
+
+
+# Make bulk action menu entries localizable
+make_published.short_description = _("Publish selection")
+make_unpublished.short_description = _("Unpublish selection")
+enable_comments.short_description = _("Enable comments for selection")
+disable_comments.short_description = _("Disable comments for selection ")
+enable_liveblog.short_description = _("Enable liveblog for selection")
+disable_liveblog.short_description = _("Disable liveblog for selection ")
 
 
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
@@ -58,6 +112,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     list_filter = ('app_config',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
+    actions = [
+        make_published,
+        make_unpublished,
+        enable_comments,
+        disable_comments,
+    ]
+    if 'djangocms_blog.liveblog' in settings.INSTALLED_APPS:
+        actions += [enable_liveblog, disable_liveblog]
     frontend_editable_fields = ('title', 'abstract', 'post_text')
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
@@ -328,6 +390,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             from menus.menu_pool import menu_pool
             menu_pool.clear(all=True)
         return super(BlogConfigAdmin, self).save_model(request, obj, form, change)
+
 
 admin.site.register(BlogCategory, BlogCategoryAdmin)
 admin.site.register(Post, PostAdmin)

@@ -139,4 +139,6 @@ class BlogConfigForm(AppDataForm):
         label=_('Send notifications on post update'), required=False, initial=False,
         help_text=_('Emits a desktop notification -if enabled- when editing a published post')
     )
+
+
 setup_config(BlogConfigForm, BlogConfig)

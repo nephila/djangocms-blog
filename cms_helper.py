@@ -9,6 +9,7 @@ from tempfile import mkdtemp
 
 def gettext(s): return s
 
+
 HELPER_SETTINGS = dict(
     ROOT_URLCONF='tests.test_utils.urls',
     INSTALLED_APPS=[
@@ -138,6 +139,7 @@ def setup():
     import sys
     from djangocms_helper import runner
     runner.setup('djangocms_blog', sys.modules[__name__], use_cms=True)
+
 
 if __name__ == '__main__':
     run()

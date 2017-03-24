@@ -28,5 +28,7 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
             'object_name': get_setting('DEFAULT_OBJECT_NAME')
         },
     }
+
+
 apphook_pool.register(BlogApp)
 BlogApp.setup()
