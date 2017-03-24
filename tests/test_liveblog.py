@@ -210,11 +210,11 @@ try:
                 post.liveblog, 'LiveblogPlugin', language='en', body='plugin 3', publish=True,
                 post_date=current_date - timedelta(seconds=10)
             )
-            self.assertTrue(Liveblog.objects.all().order_by('position').values_list('pk', flat=True), [3, 2, 1])
+            self.assertEqual(list(Liveblog.objects.all().order_by('position').values_list('pk', flat=True)), [1, 2, 3])
 
             plugin.post_date = current_date - timedelta(seconds=20)
             plugin.save()
-            self.assertTrue(Liveblog.objects.all().order_by('position').values_list('pk', flat=True), [1, 3, 2])
+            self.assertEqual(list(Liveblog.objects.all().order_by('position').values_list('pk', flat=True)), [2, 3, 1])
 
 except ImportError:  # pragma: no cover
     pass

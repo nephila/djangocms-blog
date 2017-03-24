@@ -42,7 +42,8 @@ setup(
         'djangocms-apphook-setup',
     ],
     extras_require={
-        'search': ['aldryn-search']
+        'search': ['aldryn-search'],
+        'taggit-helpers': ['django-taggit-helpers']
     },
     license='BSD',
     zip_safe=False,

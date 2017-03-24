@@ -142,6 +142,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     date_modified = models.DateTimeField(_('last modified'), auto_now=True)
     date_published = models.DateTimeField(_('published since'), null=True, blank=True)
     date_published_end = models.DateTimeField(_('published until'), null=True, blank=True)
+    date_featured = models.DateTimeField(_('featured date'), null=True, blank=True)
     publish = models.BooleanField(_('publish'), default=False)
     categories = models.ManyToManyField('djangocms_blog.BlogCategory', verbose_name=_('category'),
                                         related_name='blog_posts', blank=True)
@@ -237,12 +238,20 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         )
         return hashlib.sha256(force_bytes(base_string)).hexdigest()
 
+    @property
+    def date(self):
+        if self.date_featured:
+            return self.date_featured
+        return self.date_published
+
     def save(self, *args, **kwargs):
         """
         Handle some auto configuration during save
         """
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
+        if not self.slug and self.title:
+            self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):
@@ -255,9 +264,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     def get_absolute_url(self, lang=None):
         if not lang or lang not in self.get_available_languages():
-            lang = self.get_current_language()
-        if not lang or lang not in self.get_available_languages():
             lang = get_language()
+        if not lang or lang not in self.get_available_languages():
+            lang = self.get_current_language()
         with switch_language(self, lang):
             category = self.categories.first()
             kwargs = {}

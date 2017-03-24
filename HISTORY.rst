@@ -19,12 +19,33 @@ History
 * Added plugins templateset.
 * Improved category admin to avoid circular relationships.
 * Dropped strict dependency on aldryn-search, haystack. Install separately for search support.
+* Improved admin filtering.
+* Added featured date to post.
+
+*******************
+0.8.12 (2017-03-11)
+*******************
+
+* Fixed migrations on Django 1.10
+
+*******************
+0.8.11 (2017-03-04)
+*******************
+
+* Fixed support for aldryn-apphooks-config 0.3.1
+
+*******************
+0.8.10 (2017-01-02)
+*******************
+
+* Fix error in get_absolute_url
 
 ******************
-0.8.9 (unreleased)
+0.8.9 (2016-10-25)
 ******************
 
 * Optimized querysets
+* Fixed slug generation in wizard
 
 ******************
 0.8.8 (2016-09-04)

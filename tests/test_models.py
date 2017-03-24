@@ -90,6 +90,52 @@ class AdminTest(BaseTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], '/')
 
+    def test_admin_changelist_view(self):
+        posts = self.get_posts()
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        # Normal changelist, all existing posts
+        response = post_admin.changelist_view(request)
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts))
+        self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
+
+        # Site 2 is added to first post, but no changelist filter, no changes
+        posts[0].sites.add(self.site_2)
+        response = post_admin.changelist_view(request)
+        self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
+
+        # Filtering on site, first post not shown
+        request = self.get_page_request('/', self.user, r'/en/blog/?sites=1', edit=False)
+        response = post_admin.changelist_view(request)
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts) - 1)
+        self.assertTrue(posts[0] not in response.context_data['cl'].queryset.all())
+
+        # Removing site filtering, first post appears again
+        request = self.get_page_request('/', self.user, r'/en/blog/?', edit=False)
+        response = post_admin.changelist_view(request)
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts))
+        self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
+
+        # Filtering on the apphook config and site
+        request = self.get_page_request('/', self.user, r'/en/blog/?app_config__id__exact=1&sites=1', edit=False)
+        response = post_admin.changelist_view(request)
+        # First and last post in the list are now in the queryset
+        self.assertEqual(response.context_data['cl'].queryset.count(), len(posts) - 2)
+        self.assertTrue(posts[0] not in response.context_data['cl'].queryset.all())
+        self.assertTrue(posts[-1] not in response.context_data['cl'].queryset.all())
+
+        # Publishing one post, two published in total
+        posts[1].publish = True
+        posts[1].save()
+        published = Post.objects.published(current_site=False)
+        request = self.get_page_request('/', self.user, r'/en/blog/?publish__exact=1', edit=False)
+        response = post_admin.changelist_view(request)
+        # The admin queryset and the model queryset are the same
+        self.assertEqual(response.context_data['cl'].queryset.count(), published.count())
+        # Published post is in the changelist queryset
+        self.assertTrue(posts[1] in response.context_data['cl'].queryset.all())
+
     def test_admin_blogconfig_views(self):
         post_admin = admin.site._registry[BlogConfig]
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
@@ -97,7 +143,7 @@ class AdminTest(BaseTest):
         # Add view only has an empty form - no type
         response = post_admin.add_view(request)
         self.assertNotContains(response, 'djangocms_blog.cms_appconfig.BlogConfig')
-        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text" />')
+        self.assertContains(response, '<input class="vTextField" id="id_namespace" maxlength="100" name="namespace" type="text"')
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.app_config_1.pk))
@@ -106,7 +152,7 @@ class AdminTest(BaseTest):
         # check that all the form fields are visible in the admin
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
-        self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text" />')
+        self.assertContains(response, '<input id="id_config-og_app_id" maxlength="200" name="config-og_app_id" type="text"')
         self.assertContains(response, 'sample_app')
 
     def test_admin_category_views(self):
@@ -115,12 +161,12 @@ class AdminTest(BaseTest):
 
         # Add view only has an empty form - no type
         response = post_admin.add_view(request)
-        self.assertNotContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertNotContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.category_1.pk))
-        self.assertContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1" />')
+        self.assertContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
     def test_admin_category_parents(self):
@@ -502,11 +548,17 @@ class ModelsTest(BaseTest):
             self.assertEqual(new_category.count_all_sites, 1)
             self.assertEqual(self.category_1.count_all_sites, 2)
 
+    def test_slug(self):
+        post = Post.objects.language('en').create(title='I am a title')
+        self.assertEqual(post.slug, 'i-am-a-title')
+
     def test_model_attributes(self):
         self.get_pages()
 
         self.app_config_1.app_data.config.gplus_author = 'RandomJoe'
         self.app_config_1.save()
+
+        featured_date = now() + timedelta(days=40)
 
         post = self._get_post(self._post_data[0]['en'])
         post = self._get_post(self._post_data[0]['it'], post, 'it')
@@ -514,6 +566,12 @@ class ModelsTest(BaseTest):
         post.publish = True
         post.save()
         post.set_current_language('en')
+        self.assertEqual(post.date, post.date_published)
+
+        post.date_featured = featured_date
+        post.save()
+        self.assertEqual(post.date, featured_date)
+
         meta_en = post.as_meta()
         self.assertEqual(meta_en.og_type, get_setting('FB_TYPE'))
         self.assertEqual(meta_en.title, post.title)
@@ -666,6 +724,20 @@ class ModelsTest(BaseTest):
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r'.*/%s/$' % post.slug, post.get_absolute_url()))
+
+    def test_url_language(self):
+        self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        with override('it'):
+            self.assertEqual(post.get_current_language(), 'en')
+            self.assertEqual(post.get_absolute_url(), post.get_absolute_url('it'))
+
+        post.set_current_language('it')
+        with override('en'):
+            self.assertEqual(post.get_current_language(), 'it')
+            self.assertEqual(post.get_absolute_url(), post.get_absolute_url('en'))
 
     def test_manager(self):
         self.get_pages()

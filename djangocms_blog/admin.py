@@ -5,7 +5,7 @@ from copy import deepcopy
 
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
-from cms.models import CMSPlugin
+from cms.models import CMSPlugin, ValidationError
 from django import forms
 from django.apps import apps
 from django.conf import settings
@@ -15,7 +15,7 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
-from django.utils.six import callable
+from django.utils.six import callable, text_type
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from parler.admin import TranslatableAdmin
 
@@ -84,6 +84,30 @@ enable_liveblog.short_description = _("Enable liveblog for selection")
 disable_liveblog.short_description = _("Disable liveblog for selection ")
 
 
+class SiteListFilter(admin.SimpleListFilter):
+    title = _('site')
+    parameter_name = 'sites'
+
+    def lookups(self, request, model_admin):
+        restricted_sites = model_admin.get_restricted_sites(request).values_list('id', flat=True)
+
+        qs = Site.objects.all()
+        if restricted_sites:
+            qs = qs.filter(id__in=restricted_sites)
+
+        return [(site.id, text_type(site.name)) for site in qs]
+
+    def queryset(self, request, queryset):
+        try:
+            if 'sites' in self.used_parameters:
+                return queryset.on_site(Site.objects.get(pk=self.used_parameters['sites']))
+            return queryset
+        except Site.DoesNotExist as e:  # pragma: no cover
+            raise admin.options.IncorrectLookupParameters(e)
+        except ValidationError as e:  # pragma: no cover
+            raise admin.options.IncorrectLookupParameters(e)
+
+
 class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
     list_display = [
@@ -110,6 +134,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'date_published_end'
     ]
     list_filter = ('app_config',)
+    search_fields = ('translations__title',)
     date_hierarchy = 'date_published'
     raw_id_fields = ['author']
     actions = [
@@ -126,17 +151,17 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         (None, {
             'fields': [['title', 'categories', 'publish', 'app_config']]
         }),
-        ('Info', {
+        (_('Info'), {
             'fields': [['slug', 'tags'],
-                       ['date_published', 'date_published_end'],
+                       ['date_published', 'date_published_end', 'date_featured'],
                        ['enable_comments']],
             'classes': ('collapse',)
         }),
-        ('Images', {
+        (_('Images'), {
             'fields': [['main_image', 'main_image_thumbnail', 'main_image_full']],
             'classes': ('collapse',)
         }),
-        ('SEO', {
+        (_('SEO'), {
             'fields': [['meta_description', 'meta_title', 'meta_keywords']],
             'classes': ('collapse',)
         }),
@@ -146,6 +171,21 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'default_published': 'publish'
     }
     _sites = None
+
+    def get_list_filter(self, request):
+        filters = ['app_config', 'publish', 'date_published']
+        if get_setting('MULTISITE'):
+            filters.append(SiteListFilter)
+        try:
+            from taggit_helpers.admin import TaggitListFilter
+            filters.append(TaggitListFilter)
+        except ImportError:  # pragma: no cover
+            try:
+                from taggit_helpers import TaggitListFilter
+                filters.append(TaggitListFilter)
+            except ImportError:
+                pass
+        return filters
 
     def get_urls(self):
         """
@@ -325,32 +365,32 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             (None, {
                 'fields': ('type', 'namespace', 'app_title', 'object_name')
             }),
-            ('Generic', {
+            (_('Generic'), {
                 'fields': (
                     'config.default_published', 'config.use_placeholder', 'config.use_abstract',
                     'config.set_author',
                 )
             }),
-            ('Layout', {
+            (_('Layout'), {
                 'fields': (
                     'config.paginate_by', 'config.url_patterns', 'config.template_prefix',
                     'config.menu_structure', 'config.menu_empty_categories',
                 ),
                 'classes': ('collapse',)
             }),
-            ('Notifications', {
+            (_('Notifications'), {
                 'fields': (
                     'config.send_knock_create', 'config.send_knock_update'
                 ),
                 'classes': ('collapse',)
             }),
-            ('Sitemap', {
+            (_('Sitemap'), {
                 'fields': (
                     'config.sitemap_changefreq', 'config.sitemap_priority',
                 ),
                 'classes': ('collapse',)
             }),
-            ('Meta', {
+            (_('Meta'), {
                 'fields': (
                     'config.object_type',
                 )

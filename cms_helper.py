@@ -3,11 +3,13 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os
-
+import sys
 from tempfile import mkdtemp
 
 
-def gettext(s): return s
+def gettext(s):
+    return s
+
 
 
 HELPER_SETTINGS = dict(
@@ -107,6 +109,7 @@ HELPER_SETTINGS = dict(
 
 try:
     import cmsplugin_filer_image.migrations_django  # pragma: no cover # NOQA
+
     HELPER_SETTINGS[
         'MIGRATION_MODULES'
     ]['cmsplugin_filer_image'] = 'cmsplugin_filer_image.migrations_django'
@@ -116,9 +119,10 @@ except ImportError:
 
 try:
     import knocker  # pragma: no cover # NOQA
+
     HELPER_SETTINGS['INSTALLED_APPS'].append('knocker')
     HELPER_SETTINGS['INSTALLED_APPS'].append('channels')
-    HELPER_SETTINGS['INSTALLED_APPS'].append('djangocms_blog.liveblog',)
+    HELPER_SETTINGS['INSTALLED_APPS'].append('djangocms_blog.liveblog', )
     HELPER_SETTINGS['CHANNEL_LAYERS'] = {
         'default': {
             'BACKEND': 'asgiref.inmemory.ChannelLayer',
@@ -129,6 +133,9 @@ except ImportError:
     pass
 os.environ['AUTH_USER_MODEL'] = 'tests.test_utils.CustomUser'
 
+if 'server' in sys.argv[:3]:
+    HELPER_SETTINGS['BLOG_AUTO_SETUP'] = True
+
 
 def run():
     from djangocms_helper import runner
@@ -136,7 +143,6 @@ def run():
 
 
 def setup():
-    import sys
     from djangocms_helper import runner
     runner.setup('djangocms_blog', sys.modules[__name__], use_cms=True)
 

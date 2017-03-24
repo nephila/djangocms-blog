@@ -16,7 +16,6 @@ Contributors
 * cluster-master
 * danra
 * Davide Truffo
-* Fabian Braun
 * frnhr
 * furiousdave
 * Georgiy Kutsurua

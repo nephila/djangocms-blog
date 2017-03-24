@@ -9,6 +9,11 @@
     <li>
         {{ post.date_published|date:"DATE_FORMAT" }}
     </li>
+    {% if post.date_featured %}
+    <li>
+        {{ post.date_featured|date:"DATE_FORMAT" }}
+    </li>
+    {% endif %}
 </ul>
 <ul class="post-detail tags">
     {% if post.categories.exists %}
