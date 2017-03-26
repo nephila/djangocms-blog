@@ -10,15 +10,13 @@ from django import forms
 from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
-from django.contrib import admin
-from django.contrib import messages
+from django.contrib import admin, messages
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.six import callable, text_type
-from django.utils.translation import get_language_from_request, ugettext_lazy as _
-from django.utils.translation import ungettext as __
+from django.utils.translation import get_language_from_request, ugettext_lazy as _, ungettext as __
 
 from parler.admin import TranslatableAdmin
 
