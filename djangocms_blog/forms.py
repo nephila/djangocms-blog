@@ -69,3 +69,13 @@ class PostAdminForm(TranslatableModelForm):
             # Don't allow app_configs to be added here. The correct way to add an
             # apphook-config is to create an apphook on a cms Page.
             self.fields['app_config'].widget.can_add_related = False
+
+        if 'app_config' in self.data and self.data['app_config'] \
+                and not self.instance.id:  # Instance must not be saved (yet)
+            config = BlogConfig.objects.get(pk=int(self.data['app_config']))
+            if 'main_image_full' not in self.data or self.data['main_image_full'] == '':
+                default = config.app_data['config'].get('default_image_full')
+                self.data['main_image_full'] = str(default.id) if default else ''
+            if 'main_image_thumbnail' not in self.data or self.data['main_image_thumbnail'] == '':
+                default = config.app_data['config'].get('default_image_thumbnail')
+                self.data['main_image_thumbnail'] = str(default.id) if default else ''
