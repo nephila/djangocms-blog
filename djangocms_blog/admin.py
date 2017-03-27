@@ -86,6 +86,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     raw_id_fields = ['author']
     frontend_editable_fields = ('title', 'abstract', 'post_text')
     enhance_exclude = ('main_image', 'tags')
+    actions = [
+        'make_published',
+        'make_unpublished',
+        'enable_comments',
+        'disable_comments',
+    ]
+    if 'djangocms_blog.liveblog' in settings.INSTALLED_APPS:
+        actions += ['enable_liveblog', 'disable_liveblog']
     _fieldsets = [
         (None, {
             'fields': [['title', 'categories', 'publish', 'app_config']]
@@ -112,8 +120,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     _sites = None
 
     # Bulk actions for post admin
-    @staticmethod
-    def make_published(modeladmin, request, queryset):
+    def make_published(self, request, queryset):
         """ Bulk action to mark selected posts as published. If
             the date_published field is empty the current time is
             saved as date_published.
@@ -133,8 +140,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 '%(updates)d entries published.', cnt1+cnt2) % {
                 'updates':  cnt1+cnt2, })
 
-    @staticmethod
-    def make_unpublished(modeladmin, request, queryset):
+    def make_unpublished(self, request, queryset):
         """ Bulk action to mark selected posts as UNpublished.
             queryset must not be empty (ensured by DjangoCMS).
         """
@@ -146,8 +152,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 '%(updates)d entries unpublished.', updates) % {
                 'updates':  updates, })
 
-    @staticmethod
-    def enable_comments(modeladmin, request, queryset):
+    def enable_comments(self, request, queryset):
         """ Bulk action to enable comments for selected posts.
             queryset must not be empty (ensured by DjangoCMS).
         """
@@ -159,8 +164,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 'Comments for %(updates)d entries enabled', updates) % {
                 'updates':  updates, })
 
-    @staticmethod
-    def disable_comments(modeladmin, request, queryset):
+    def disable_comments(self, request, queryset):
         """ Bulk action to disable comments for selected posts.
             queryset must not be empty (ensured by DjangoCMS).
         """
@@ -172,8 +176,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                'Comments for %(updates)d entries disabled.', updates) % {
                 'updates':  updates, })
 
-    @staticmethod
-    def enable_liveblog(modeladmin, request, queryset):
+    def enable_liveblog(self, request, queryset):
         """ Bulk action to enable comments for selected posts.
             queryset must not be empty (ensured by DjangoCMS).
         """
@@ -185,8 +188,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 'Liveblog for %(updates)d entries enabled.', updates) % {
                 'updates':  updates, })
 
-    @staticmethod
-    def disable_liveblog(modeladmin, request, queryset):
+    def disable_liveblog(self, request, queryset):
         """ Bulk action to disable comments for selected posts.
             queryset must not be empty (ensured by DjangoCMS).
         """
@@ -199,21 +201,12 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                'updates':  updates, })
 
     # Make bulk action menu entries localizable
-    make_published.__func__.short_description = _("Publish selection")
-    make_unpublished.__func__.short_description = _("Unpublish selection")
-    enable_comments.__func__.short_description = _("Enable comments for selection")
-    disable_comments.__func__.short_description = _("Disable comments for selection ")
-    enable_liveblog.__func__.short_description = _("Enable liveblog for selection")
-    disable_liveblog.__func__.short_description = _("Disable liveblog for selection ")
-
-    actions = [
-        make_published.__func__,
-        make_unpublished.__func__,
-        enable_comments.__func__,
-        disable_comments.__func__,
-    ]
-    if 'djangocms_blog.liveblog' in settings.INSTALLED_APPS:
-        actions += [enable_liveblog.__func__, disable_liveblog.__func__]
+    make_published.short_description = _("Publish selection")
+    make_unpublished.short_description = _("Unpublish selection")
+    enable_comments.short_description = _("Enable comments for selection")
+    disable_comments.short_description = _("Disable comments for selection ")
+    enable_liveblog.short_description = _("Enable liveblog for selection")
+    disable_liveblog.short_description = _("Disable liveblog for selection ")
 
     def get_list_filter(self, request):
         filters = ['app_config', 'publish', 'date_published']
