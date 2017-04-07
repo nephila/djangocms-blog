@@ -86,7 +86,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [['title', 'categories', 'publish', 'app_config'], ['related',]]
+            'fields': [['title', 'categories', 'publish', 'app_config'], ['related', ]]
         }),
         (_('Info'), {
             'fields': [['slug', 'tags'],
@@ -289,7 +289,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
 
 
 class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
-
     @property
     def declared_fieldsets(self):
         return self.get_fieldsets(None)
