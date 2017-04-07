@@ -86,7 +86,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     enhance_exclude = ('main_image', 'tags')
     _fieldsets = [
         (None, {
-            'fields': [['title', 'categories', 'publish', 'app_config']]
+            'fields': [['title', 'categories', 'publish', 'app_config'], ['related',]]
         }),
         (_('Info'), {
             'fields': [['slug', 'tags'],

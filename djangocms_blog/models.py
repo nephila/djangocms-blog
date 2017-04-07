@@ -191,6 +191,8 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
 
+    related = models.ManyToManyField('self', verbose_name=_('Related Posts'), blank=True, symmetrical=False)
+
     _metadata = {
         'title': 'get_title',
         'description': 'get_description',
