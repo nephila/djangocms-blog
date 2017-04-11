@@ -40,6 +40,7 @@ setup(
         'django-meta-mixin>=0.3',
         'aldryn-apphooks-config>=0.2.6',
         'djangocms-apphook-setup',
+        'django-admin-sortable',
     ],
     extras_require={
         'search': ['aldryn-search'],

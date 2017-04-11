@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
 
+from adminsortable.models import SortableMixin
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
@@ -130,7 +131,7 @@ class BlogCategory(TranslatableModel):
 
 
 @python_2_unicode_compatible
-class Post(KnockerModel, ModelMeta, TranslatableModel):
+class Post(SortableMixin, KnockerModel, ModelMeta, TranslatableModel):
     """
     Blog post
     """
@@ -195,6 +196,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                                      verbose_name=_('Related Posts'),
                                      blank=True,
                                      symmetrical=False)
+    post_order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     _metadata = {
         'title': 'get_title',
@@ -227,7 +229,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     class Meta:
         verbose_name = _('blog article')
         verbose_name_plural = _('blog articles')
-        ordering = ('-date_published', '-date_created')
+        ordering = ('post_order', '-date_published', '-date_created')
         get_latest_by = 'date_published'
 
     def __str__(self):

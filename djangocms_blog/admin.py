@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from copy import deepcopy
 
+from adminsortable.admin import SortableAdmin
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from cms.models import CMSPlugin, ValidationError
@@ -73,7 +74,7 @@ class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, Translatabl
 
 
 class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
-                ModelAppHookConfig, TranslatableAdmin):
+                ModelAppHookConfig, TranslatableAdmin, SortableAdmin):
     form = PostAdminForm
     list_display = [
         'title', 'author', 'date_published', 'app_config', 'all_languages_column',
