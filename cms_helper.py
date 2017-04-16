@@ -61,20 +61,6 @@ HELPER_SETTINGS = dict(
             'hide_untranslated': False,
         },
     },
-    PARLER_LANGUAGES={
-        1: (
-            {'code': 'en'},
-            {'code': 'it'},
-            {'code': 'fr'},
-        ),
-        2: (
-            {'code': 'en'},
-        ),
-        'default': {
-            'fallbacks': ['en'],
-            'hide_untranslated': False,
-        }
-    },
     MIGRATION_MODULES={},
     CMS_TEMPLATES=(
         ('blog.html', 'Blog template'),
