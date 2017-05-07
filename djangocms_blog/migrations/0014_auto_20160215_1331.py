@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from distutils.version import LooseVersion
+
+import cms
 from cms.models import Page
 from cms.utils.i18n import get_language_list
 from django.db import migrations, models
@@ -34,9 +37,15 @@ def backwards(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('djangocms_blog', '0013_auto_20160201_2235'),
-    ]
+    if LooseVersion(cms.__version__) >= LooseVersion('3.1'):
+        dependencies = [
+            ('cms', '0004_auto_20140924_1038'),
+            ('djangocms_blog', '0013_auto_20160201_2235'),
+        ]
+    else:
+        dependencies = [
+            ('djangocms_blog', '0013_auto_20160201_2235'),
+        ]
 
     operations = [
         migrations.RunPython(forwards, backwards),
