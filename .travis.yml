@@ -15,6 +15,7 @@ env:
   - TOXENV='pep8'
   - TOXENV='isort'
   - TOXENV='docs'
+  - DJANGO='django111' CMS='cms34'
   - DJANGO='django110' CMS='cms34'
   - DJANGO='django19' CMS='cms34'
   - DJANGO='django19' CMS='cms33'

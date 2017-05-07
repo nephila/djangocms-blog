@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import warnings
+from copy import copy
 
 from cms.utils.permissions import get_current_user
 from cms.wizards.wizard_base import Wizard
@@ -24,6 +25,7 @@ class PostWizardForm(TranslatableModelForm):
             kwargs['initial'] = {}
         kwargs['initial']['app_config'] = self.default_appconfig
         if 'data' in kwargs and kwargs['data'] is not None:
+            kwargs['data'] = copy(kwargs['data'])
             kwargs['data']['1-app_config'] = self.default_appconfig
         super(PostWizardForm, self).__init__(*args, **kwargs)
         self.fields['app_config'].widget = forms.Select(
