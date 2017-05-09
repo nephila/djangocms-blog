@@ -172,7 +172,7 @@ class Post(SortableMixin, KnockerModel, ModelMeta, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
-        slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
+        slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True, allow_unicode=True),
         abstract=HTMLField(_('abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_('post meta description'),
                                           blank=True, default=''),
@@ -258,7 +258,7 @@ class Post(SortableMixin, KnockerModel, ModelMeta, TranslatableModel):
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
         if not self.slug and self.title:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.title, allow_unicode=True)
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):
