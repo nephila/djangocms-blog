@@ -45,6 +45,7 @@ class MenuTest(BaseTest):
 
         for lang in ('en', 'it'):
             with smart_override(lang):
+                self._reset_menus()
                 request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
@@ -55,6 +56,7 @@ class MenuTest(BaseTest):
         posts[0].categories.clear()
         for lang in ('en', 'it'):
             with smart_override(lang):
+                self._reset_menus()
                 request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
@@ -77,6 +79,7 @@ class MenuTest(BaseTest):
 
         for lang in languages:
             with smart_override(lang):
+                self._reset_menus()
                 cats_url[lang] = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
                 cats_with_post_url[lang] = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang) and cat.blog_posts.published().exists()])
                 cats_without_post_url[lang] = cats_url[lang].difference(cats_with_post_url[lang])
@@ -89,6 +92,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
+                self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
@@ -101,6 +105,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
+                self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
@@ -113,6 +118,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
+                self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
@@ -125,6 +131,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
+                self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
@@ -139,6 +146,7 @@ class MenuTest(BaseTest):
         for lang in languages:
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
+                self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertTrue(cats_with_post_url[lang].issubset(nodes_url))
