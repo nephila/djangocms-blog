@@ -128,6 +128,9 @@ Features
 Quickstart
 **********
 
+django CMS blog assumes a completely setup and working django CMS project.
+See `django CMS installation docs`_ for reference.
+
 Install djangocms-blog::
 
     pip install djangocms-blog
@@ -173,6 +176,7 @@ Dependency applications may need configuration to work properly.
 
 Please, refer to each application documentation on details.
 
+* django-cms: http://django-cms.readthedocs.io/en/release-3.4.x/how_to/install.html
 * django-filer: http://django-filer.readthedocs.org
 * django-meta: https://github.com/nephila/django-meta#installation
 * django-meta-mixin: https://github.com/nephila/django-meta-mixin#installation
@@ -584,3 +588,4 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
 
 
 .. _django-meta-mixin settings: https://github.com/nephila/django-meta-mixin#settings
+.. _django CMS installation docs: http://django-cms.readthedocs.io/en/release-3.4.x/how_to/install.html
