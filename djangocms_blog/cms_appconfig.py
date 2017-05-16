@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from aldryn_apphooks_config.models import AppHookConfig
 from aldryn_apphooks_config.utils import setup_config
 from app_data import AppDataForm
+from cms.models import PlaceholderField
 from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -21,6 +22,70 @@ class BlogConfig(TranslatableModel, AppHookConfig):
         object_name=models.CharField(
             _('object name'), max_length=234, default=get_setting('DEFAULT_OBJECT_NAME')
         ),
+    )
+
+    placeholder_common_header = PlaceholderField(
+        'blog_common_header',
+        related_name='djangocms_blog_common_header',
+    )
+    placeholder_common_top = PlaceholderField(
+        'blog_common_top',
+        related_name='djangocms_blog_common_top',
+    )
+    placeholder_common_sidebar = PlaceholderField(
+        'blog_common_sidebar',
+        related_name='djangocms_blog_common_sidebar',
+    )
+    placeholder_common_bottom = PlaceholderField(
+        'blog_common_bottom',
+        related_name='djangocms_blog_common_bottom',
+    )
+    placeholder_common_footer = PlaceholderField(
+        'blog_common_footer',
+        related_name='djangocms_blog_common_footer',
+    )
+
+
+    placeholder_list_header = PlaceholderField(
+        'blog_list_header',
+        related_name='djangocms_blog_list_header',
+    )
+    placeholder_list_top = PlaceholderField(
+        'blog_list_top',
+        related_name='djangocms_blog_list_top',
+    )
+    placeholder_list_sidebar = PlaceholderField(
+        'blog_list_sidebar',
+        related_name='djangocms_blog_list_sidebar',
+    )
+    placeholder_list_bottom = PlaceholderField(
+        'blog_list_bottom',
+        related_name='djangocms_blog_list_bottom',
+    )
+    placeholder_list_footer = PlaceholderField(
+        'blog_list_footer',
+        related_name='djangocms_blog_list_footer',
+    )
+
+    placeholder_detail_header = PlaceholderField(
+        'blog_detail_header',
+        related_name='djangocms_blog_detail_header',
+    )
+    placeholder_detail_top = PlaceholderField(
+        'blog_detail_top',
+        related_name='djangocms_blog_detail_top',
+    )
+    placeholder_detail_sidebar = PlaceholderField(
+        'blog_detail_sidebar',
+        related_name='djangocms_blog_detail_sidebar',
+    )
+    placeholder_detail_bottom = PlaceholderField(
+        'blog_detail_bottom',
+        related_name='djangocms_blog_detail_bottom',
+    )
+    placeholder_detail_footer = PlaceholderField(
+        'blog_detail_footer',
+        related_name='djangocms_blog_detail_footer',
     )
 
     class Meta:
