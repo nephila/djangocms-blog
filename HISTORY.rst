@@ -23,6 +23,12 @@ History
 * Added featured date to post.
 
 *******************
+0.8.13 (Unreleased)
+*******************
+
+* Fixed exceptions in __str__
+
+*******************
 0.8.12 (2017-03-11)
 *******************
 
