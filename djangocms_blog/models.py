@@ -229,7 +229,7 @@ class Post(SortableMixin, KnockerModel, ModelMeta, TranslatableModel):
     class Meta:
         verbose_name = _('blog article')
         verbose_name_plural = _('blog articles')
-        ordering = ('-post_order', '-date_published', '-date_created')
+        ordering = ('post_order', '-date_published', '-date_created')
         get_latest_by = 'date_published'
 
     def __str__(self):
