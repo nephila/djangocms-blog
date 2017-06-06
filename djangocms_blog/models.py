@@ -98,7 +98,7 @@ class BlogCategory(TranslatableModel):
         )
 
     def __str__(self):
-        return self.safe_translation_getter('name')
+        return self.safe_translation_getter('name', any_language=True)
 
     def save(self, *args, **kwargs):
         super(BlogCategory, self).save(*args, **kwargs)
@@ -203,7 +203,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         get_latest_by = 'date_published'
 
     def __str__(self):
-        return self.safe_translation_getter('title')
+        return self.safe_translation_getter('title', any_language=True)
 
     @property
     def guid(self, language=None):
