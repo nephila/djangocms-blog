@@ -171,7 +171,8 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
-        slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True, allow_unicode=True),
+        slug=models.SlugField(_('slug'), max_length=255, blank=True,
+                              db_index=True, allow_unicode=True),
         abstract=HTMLField(_('abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_('post meta description'),
                                           blank=True, default=''),
@@ -186,7 +187,8 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     )
     content = PlaceholderField('post_content', related_name='post_content')
     liveblog = PlaceholderField('live_blog', related_name='live_blog')
-    enable_liveblog = models.BooleanField(verbose_name=_('enable liveblog on post'), default=False)
+    enable_liveblog = models.BooleanField(verbose_name=_('enable liveblog on post'),
+                                          default=False)
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
