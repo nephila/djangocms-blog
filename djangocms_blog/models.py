@@ -26,6 +26,7 @@ from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.utils.context import switch_language
 from taggit_autosuggest.managers import TaggableManager
+from sortedm2m.fields import SortedManyToManyField
 
 from .cms_appconfig import BlogConfig
 from .managers import GenericDateTaggedManager
@@ -193,10 +194,10 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
 
-    related = models.ManyToManyField('self',
-                                     verbose_name=_('Related Posts'),
-                                     blank=True,
-                                     symmetrical=False)
+    related = SortedManyToManyField('self',
+                                    verbose_name=_('Related Posts'),
+                                    blank=True,
+                                    symmetrical=False)
 
     _metadata = {
         'title': 'get_title',
