@@ -25,8 +25,8 @@ from filer.fields.image import FilerImageField
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.utils.context import switch_language
-from taggit_autosuggest.managers import TaggableManager
 from sortedm2m.fields import SortedManyToManyField
+from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
 from .managers import GenericDateTaggedManager
