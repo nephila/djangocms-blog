@@ -23,6 +23,14 @@ History
 * Added featured date to post.
 
 *******************
+0.8.13 (unreleased)
+*******************
+
+* Drop python 2.6 compatibility
+* Fixed exceptions in __str__
+* Drop python 2.6 compatibility
+
+*******************
 0.8.12 (2017-03-11)
 *******************
 
