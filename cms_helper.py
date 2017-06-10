@@ -25,6 +25,7 @@ HELPER_SETTINGS = dict(
         'taggit_autosuggest',
         'aldryn_apphooks_config',
         'aldryn_search',
+        'sortedm2m',
     ],
     LANGUAGE_CODE='en',
     LANGUAGES=(
