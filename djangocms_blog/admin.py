@@ -88,6 +88,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         (None, {
             'fields': [['title', 'categories', 'publish', 'app_config'], ['related', ]]
         }),
+        (None,{
+            'fields': [['related', ]]
+        }),
         (_('Info'), {
             'fields': [['slug', 'tags'],
                        ['date_published', 'date_published_end', 'date_featured'],
