@@ -6,6 +6,7 @@ import os.path
 from aldryn_apphooks_config.utils import get_app_instance
 from cms.api import add_plugin
 from cms.toolbar.items import ModalItem
+from cms.utils.apphook_reload import reload_urlconf
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
@@ -417,6 +418,22 @@ class ViewTest(BaseTest):
                 self.assertEqual(
                     sitemap.location(item), item.get_absolute_url()
                 )
+
+    def test_sitemap_with_unpublished(self):
+        posts = self.get_posts()
+        pages = self.get_pages()
+        sitemap = BlogSitemap()
+
+        self.assertEqual(len(sitemap.items()), 4)
+
+        # unpublish all the pages
+        for page in pages:
+            page.unpublish('en')
+            page.unpublish('it')
+
+        reload_urlconf()
+
+        self.assertEqual(len(sitemap.items()), 0)
 
     def test_sitemap_config(self):
         posts = self.get_posts()
