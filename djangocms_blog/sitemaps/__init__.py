@@ -14,8 +14,6 @@ except ImportError:
     from django.core.urlresolvers import NoReverseMatch
 
 
-
-
 class BlogSitemap(Sitemap):
 
     def __init__(self, *args, **kwargs):
