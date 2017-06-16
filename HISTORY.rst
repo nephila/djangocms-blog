@@ -21,6 +21,8 @@ History
 * Dropped strict dependency on aldryn-search, haystack. Install separately for search support.
 * Improved admin filtering.
 * Added featured date to post.
+* Fixed issue with urls in sitemap if apphook is not published
+
 
 *******************
 0.8.13 (unreleased)

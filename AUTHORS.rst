@@ -25,6 +25,7 @@ Contributors
 * Leonardo Cavallucci
 * Marco Federighi
 * Max Vyaznikov
+* Mike Liu
 * MotleyTech
 * Nico Schottelius
 * Olivier Tabone
