@@ -1,5 +1,5 @@
 {% extends "djangocms_blog/base.html" %}
-{% load i18n thumbnail cms_tags %}
+{% load i18n easy_thumbnails_tags cms_tags %}
 
 {% block canonical_url %}<link rel="canonical" href="{{ meta.url }}"/>{% endblock canonical_url %}
 {% block title %}{{ post.get_title }}{% endblock %}
