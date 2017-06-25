@@ -11,6 +11,7 @@ Contributors
 ------------
 
 * alex
+* Bryan Marty
 * Carlo Ascani
 * Christoph Reimers
 * cluster-master
