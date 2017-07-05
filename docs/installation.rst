@@ -85,7 +85,7 @@ suited for your deployment.
 
 * To start your blog you need to use `AppHooks from django CMS <http://docs.django-cms.org/en/latest/how_to/apphooks.html>`_
   to add the blog to a django CMS page; this step is not required when using
-  `Auto setup <auto_setup>`_:
+  `Auto setup <https://github.com/nephila/djangocms-blog/blob/develop/docs/installation.rst#auto-setup>`_:
 
   * Create a new django CMS page
   * Go to **Advanced settings** and select Blog from the **Application** selector and
