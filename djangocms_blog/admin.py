@@ -247,7 +247,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
         if apps.is_installed('djangocms_blog.liveblog'):
-            fsets[1][1]['fields'][2].append('enable_liveblog')
+            fsets[2][1]['fields'][2].append('enable_liveblog')
         filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)
