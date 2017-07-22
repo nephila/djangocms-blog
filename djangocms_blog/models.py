@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
 
+import django
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
@@ -29,6 +30,7 @@ from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
+from .fields import AutoSlugField
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -172,7 +174,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
-        slug=models.SlugField(_('slug'), max_length=255, blank=True,
+        slug=AutoSlugField(_('slug'), max_length=255, blank=True,
                               db_index=True, allow_unicode=True),
         abstract=HTMLField(_('abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_('post meta description'),
@@ -259,7 +261,10 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
         if not self.slug and self.title:
-            self.slug = slugify(self.title, allow_unicode=True)
+            if django.VERSION >= (1, 9):
+                self.slug = slugify(self.title, allow_unicode=True)
+            else:
+                self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):
