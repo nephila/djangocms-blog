@@ -177,9 +177,7 @@ class CategoryEntriesView(BaseBlogListView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = BlogCategory.objects.active_translations(
-                get_language(), slug=self.kwargs['category']
-            ).get()
+            self._category = get_object_or_404(BlogCategory, translations__slug=self.kwargs['category'])
         return self._category
 
     def get(self, *args, **kwargs):
