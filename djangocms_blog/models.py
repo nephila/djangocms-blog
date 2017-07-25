@@ -298,7 +298,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                 kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
             if '<category>' in urlconf:
                 kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
-            return reverse('djangocms_blog%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
+            return reverse('djangocms_blog:%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
 
     def get_meta_attribute(self, param):
         """
