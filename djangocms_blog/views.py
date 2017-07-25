@@ -12,6 +12,7 @@ from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
+from django.shortcuts import get_object_or_404
 
 from .models import BlogCategory, Post
 from .settings import get_setting
