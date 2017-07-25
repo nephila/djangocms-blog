@@ -88,6 +88,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         (None, {
             'fields': [['title', 'categories', 'publish', 'app_config']]
         }),
+        (None, {
+            'fields': [['related', ]]
+        }),
         (_('Info'), {
             'fields': [['slug', 'tags'],
                        ['date_published', 'date_published_end', 'date_featured'],
@@ -244,7 +247,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         if request.user.is_superuser:
             fsets[1][1]['fields'][0].append('author')
         if apps.is_installed('djangocms_blog.liveblog'):
-            fsets[1][1]['fields'][2].append('enable_liveblog')
+            fsets[2][1]['fields'][2].append('enable_liveblog')
         filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)
@@ -289,7 +292,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
 
 
 class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
-
     @property
     def declared_fieldsets(self):
         return self.get_fieldsets(None)
