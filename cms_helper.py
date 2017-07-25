@@ -105,6 +105,7 @@ HELPER_SETTINGS = dict(
         }
     },
     BLOG_AUTO_SETUP=False,
+    ALLOWED_HOSTS=['*'],
 )
 
 try:

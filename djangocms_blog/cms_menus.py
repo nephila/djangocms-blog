@@ -48,6 +48,13 @@ class BlogCategoryMenu(CMSAttachMenu):
                     namespace=self.instance.application_namespace
                 )
             config = self._config[self.instance.application_namespace]
+        if hasattr(self, 'instance') and self.instance:
+            if not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
+                if self.instance == self.instance.get_draft_object():
+                    return []
+            else:
+                if self.instance == self.instance.get_public_object():
+                    return []
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
             categories_menu = True
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
@@ -86,23 +93,28 @@ class BlogCategoryMenu(CMSAttachMenu):
             if config:
                 categories = categories.namespace(self.instance.application_namespace)
             if config and not config.menu_empty_categories:
-                categories = categories.filter(pk__in=used_categories)
+                categories = categories.active_translations(language).filter(
+                    pk__in=used_categories
+                ).distinct()
             else:
                 categories = categories.active_translations(language).distinct()
             categories = categories.order_by('parent__id', 'translations__name').\
                 select_related('app_config').prefetch_related('translations')
+            added_categories = []
             for category in categories:
-                node = NavigationNode(
-                    category.name,
-                    category.get_absolute_url(),
-                    '{0}-{1}'.format(category.__class__.__name__, category.pk),
-                    (
-                        '{0}-{1}'.format(
-                            category.__class__.__name__, category.parent.id
-                        ) if category.parent else None
+                if category.pk not in added_categories:
+                    node = NavigationNode(
+                        category.name,
+                        category.get_absolute_url(),
+                        '{0}-{1}'.format(category.__class__.__name__, category.pk),
+                        (
+                            '{0}-{1}'.format(
+                                category.__class__.__name__, category.parent.id
+                            ) if category.parent else None
+                        )
                     )
-                )
-                nodes.append(node)
+                    nodes.append(node)
+                    added_categories.append(category.pk)
 
         return nodes
 
