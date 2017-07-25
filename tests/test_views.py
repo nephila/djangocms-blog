@@ -33,8 +33,8 @@ from .base import BaseTest
 class ViewTest(BaseTest):
 
     def test_post_list_view(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
 
         request = self.get_request(pages[1], 'en', AnonymousUser())
 
@@ -105,8 +105,8 @@ class ViewTest(BaseTest):
             )), 1)
 
     def test_get_view_url(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        self.get_posts()
 
         # Test the custom version of get_view_url against the different namespaces
         request = self.get_request(pages[1], 'en', AnonymousUser())
@@ -136,8 +136,8 @@ class ViewTest(BaseTest):
             view_obj_2.get_view_url()
 
     def test_post_list_view_fallback(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        self.get_posts()
 
         PARLER_FALLBACK = {
             1: (
@@ -174,8 +174,8 @@ class ViewTest(BaseTest):
                 self.assertEqual(view_obj.get_queryset().count(), 0)
 
     def test_post_detail_view(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
 
         with smart_override('en'):
             with switch_language(posts[0], 'en'):
@@ -212,8 +212,8 @@ class ViewTest(BaseTest):
                 self.assertTrue(context['meta'])
 
     def test_post_archive_view(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
 
         with smart_override('en'):
             request = self.get_page_request(pages[1], AnonymousUser(), lang='en', edit=False)
@@ -232,8 +232,8 @@ class ViewTest(BaseTest):
             self.assertEqual(context['archive_date'].date(), now().replace(year=now().year, month=now().month, day=1).date())
 
     def test_category_entries_view(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
 
         with smart_override('en'):
             request = self.get_page_request(pages[1], self.user, lang='en', edit=True)
@@ -261,8 +261,8 @@ class ViewTest(BaseTest):
             self.assertEqual(qs.count(), 1)
 
     def test_author_entries_view(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
 
         with smart_override('en'):
             request = self.get_page_request(pages[1], self.user, lang='en', edit=True)
@@ -320,8 +320,8 @@ class ViewTest(BaseTest):
         self.user.first_name = 'Admin'
         self.user.last_name = 'User'
         self.user.save()
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
         posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
         posts[0].author = self.user
         posts[0].save()
@@ -362,8 +362,8 @@ class ViewTest(BaseTest):
         self.user.first_name = 'Admin'
         self.user.last_name = 'User'
         self.user.save()
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
         posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
         posts[0].categories.add(self.category_1)
         posts[0].author = self.user
@@ -395,8 +395,8 @@ class ViewTest(BaseTest):
                 self.assertContains(xml, '<a>Admin User</a>')
 
     def test_sitemap(self):
-        posts = self.get_posts()
         self.get_pages()
+        posts = self.get_posts()
         posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
         posts[0].save()
         posts[1].tags.add('tag 6', 'tag 2', 'tag 5', 'tag 8')
@@ -420,8 +420,8 @@ class ViewTest(BaseTest):
                 )
 
     def test_sitemap_with_unpublished(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        self.get_posts()
         sitemap = BlogSitemap()
 
         self.assertEqual(len(sitemap.items()), 4)
@@ -436,7 +436,8 @@ class ViewTest(BaseTest):
         self.assertEqual(len(sitemap.items()), 0)
 
     def test_sitemap_config(self):
-        posts = self.get_posts()
+        self.get_pages()
+        self.get_posts()
         self.app_config_1.app_data.config.sitemap_changefreq = 'daily'
         self.app_config_1.app_data.config.sitemap_priority = '0.2'
         self.app_config_1.save()
@@ -467,8 +468,8 @@ class ViewTest(BaseTest):
         )
 
     def test_templates(self):
-        posts = self.get_posts()
         pages = self.get_pages()
+        self.get_posts()
 
         with smart_override('en'):
             request = self.get_page_request(pages[1], self.user, edit=True)
