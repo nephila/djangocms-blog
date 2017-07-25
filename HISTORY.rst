@@ -5,7 +5,7 @@ History
 =======
 
 *******************
-0.8.13 (unreleased)
+0.8.13 (2017-07-25)
 *******************
 
 * Dropped python 2.6 compatibility
