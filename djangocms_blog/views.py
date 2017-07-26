@@ -15,6 +15,7 @@ from parler.views import TranslatableSlugMixin, ViewUrlMixin
 from django.shortcuts import get_object_or_404
 
 from .models import BlogCategory, Post
+from taggit.models import Tag
 from .settings import get_setting
 
 User = get_user_model()
@@ -66,6 +67,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
     def get_context_data(self, **kwargs):
         context = super(BaseBlogView, self).get_context_data(**kwargs)
         context['categories'] = BlogCategory.objects.all()
+        context['tags_list'] = Tag.objects.all()
         return context
 
 
