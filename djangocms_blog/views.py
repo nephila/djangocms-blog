@@ -71,6 +71,7 @@ class BaseBlogListView(BaseBlogView):
     def get_context_data(self, **kwargs):
         context = super(BaseBlogListView, self).get_context_data(**kwargs)
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        context['categories'] = BlogCategory.objects.all()
         return context
 
     def get_paginate_by(self, queryset):
