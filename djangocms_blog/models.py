@@ -72,6 +72,10 @@ class BlogCategory(TranslatableModel):
         BlogConfig, null=True, verbose_name=_('app. config')
     )
 
+    main_image = FilerImageField(verbose_name=_('category main image'), blank=True, null=True,
+                                 on_delete=models.SET_NULL,
+                                 related_name='djangocms_blog_category_image')
+
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
         slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
