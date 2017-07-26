@@ -62,6 +62,11 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
     def get_template_names(self):
         template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
         return os.path.join(template_path, self.base_template_name)
+    
+    def get_context_data(self, **kwargs):
+        context = super(BaseBlogView, self).get_context_data(**kwargs)
+        context['categories'] = BlogCategory.objects.all()
+        return context
 
 
 class BaseBlogListView(BaseBlogView):
@@ -71,7 +76,6 @@ class BaseBlogListView(BaseBlogView):
     def get_context_data(self, **kwargs):
         context = super(BaseBlogListView, self).get_context_data(**kwargs)
         context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
-        context['categories'] = BlogCategory.objects.all()
         return context
 
     def get_paginate_by(self, queryset):
