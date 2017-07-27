@@ -192,7 +192,10 @@ class CategoryEntriesView(BaseBlogListView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = get_object_or_404(BlogCategory, translations__slug=self.kwargs['category'])
+            self._category = get_object_or_404(
+                BlogCategory,
+                translations__slug=self.kwargs['category']
+            )
         return self._category
 
     def get(self, *args, **kwargs):
@@ -220,8 +223,10 @@ def copy_language(request, post_id):
         target_language = request.POST.get('target_language')
         post = Post.objects.get(pk=post_id)
 
-        if not target_language or not target_language in get_language_list():
-            return HttpResponseBadRequest(force_text(_("Language must be set to a supported language!")))
+        if not target_language or target_language not in get_language_list():
+            return HttpResponseBadRequest(
+                force_text(_("Language must be set to a supported language!"))
+            )
 
         placeholders = []
         for field in Post._meta.get_fields():

@@ -14,11 +14,10 @@ from .settings import get_setting
 
 @toolbar_pool.register
 class BlogToolbar(CMSToolbar):
-
     def populate(self):
         if (not self.is_current_app and not get_setting('ENABLE_THROUGH_TOOLBAR_MENU')) or \
-                not self.request.user.has_perm('djangocms_blog.add_post'):
-            return   # pragma: no cover
+            not self.request.user.has_perm('djangocms_blog.add_post'):
+            return  # pragma: no cover
         admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
         self.add_copy_language_to_menu()
         with override(self.current_lang):
@@ -35,7 +34,7 @@ class BlogToolbar(CMSToolbar):
             if current_post and self.request.user.has_perm('djangocms_blog.change_post'):  # pragma: no cover  # NOQA
                 admin_menu.add_modal_item(_('Edit Post'), reverse(
                     'admin:djangocms_blog_post_change', args=(current_post.pk,)),
-                    active=True)
+                                          active=True)
 
     def add_publish_button(self):
         """
@@ -57,7 +56,7 @@ class BlogToolbar(CMSToolbar):
         current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
         if current_post and self.request.user.has_perm('djangocms_blog.change_post'):  # pragma: no cover  # NOQA
             # removing page meta menu, if present, to avoid confusion
-            try:   # pragma: no cover
+            try:  # pragma: no cover
                 import djangocms_page_meta  # NOQA
                 menu = self.request.toolbar.get_or_create_menu('page')
                 pagemeta = menu.get_or_create_menu('pagemeta', 'meta')
@@ -65,7 +64,7 @@ class BlogToolbar(CMSToolbar):
             except ImportError:
                 pass
             # removing page tags menu, if present, to avoid confusion
-            try:   # pragma: no cover
+            try:  # pragma: no cover
                 import djangocms_page_tags  # NOQA
                 menu = self.request.toolbar.get_or_create_menu('page')
                 pagetags = menu.get_or_create_menu('pagetags', 'tags')
@@ -90,10 +89,16 @@ class BlogToolbar(CMSToolbar):
                 admin_menu.add_break(ADD_PAGE_LANGUAGE_BREAK)
             current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
             if current_post and copy:
-                copy_plugins_menu = admin_menu.get_or_create_menu('{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER), _('Copy all placeholders'))
+                copy_plugins_menu = admin_menu.get_or_create_menu(
+                    '{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER),
+                    _('Copy all placeholders')
+                )
                 title = _('from %s')
                 question = _('Are you sure you want to copy all plugins from %s?')
-                page_copy_url = reverse('{}:copy-language-blog'.format(current_post.app_config.namespace), args=(current_post.pk,))
+                page_copy_url = reverse(
+                    '{}:copy-language-blog'.format(current_post.app_config.namespace),
+                    args=(current_post.pk,)
+                )
                 for code, name in copy:
                     copy_plugins_menu.add_ajax_item(
                         title % name, action=page_copy_url,
