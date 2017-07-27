@@ -72,6 +72,10 @@ class BlogCategory(TranslatableModel):
         BlogConfig, null=True, verbose_name=_('app. config')
     )
 
+    main_image = FilerImageField(verbose_name=_('category main image'), blank=True, null=True,
+                                 on_delete=models.SET_NULL,
+                                 related_name='djangocms_blog_category_image')
+
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
         slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
@@ -110,14 +114,14 @@ class BlogCategory(TranslatableModel):
         if self.has_translation(lang, ):
             slug = self.safe_translation_getter('slug', language_code=lang)
             return reverse(
-                '%s:posts-category' % self.app_config.namespace,
+                'djangocms_blog:posts-category',
                 kwargs={'category': slug},
                 current_app=self.app_config.namespace
             )
         # in case category doesn't exist in this language, gracefully fallback
         # to posts-latest
         return reverse(
-            '%s:posts-latest' % self.app_config.namespace, current_app=self.app_config.namespace
+            'djangocms_blog:posts-latest', current_app=self.app_config.namespace
         )
 
     def __str__(self):
@@ -298,7 +302,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                 kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
             if '<category>' in urlconf:
                 kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
-            return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
+            return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def get_meta_attribute(self, param):
         """
