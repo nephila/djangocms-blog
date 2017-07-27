@@ -4,15 +4,22 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 
 from aldryn_apphooks_config.mixins import AppConfigMixin
+from cms.admin.pageadmin import create_revision
+from cms.models.fields import PlaceholderField
+from cms.utils import get_language_list, copy_plugins
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.http import HttpResponseBadRequest, HttpResponse
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from .models import BlogCategory, Post
 from taggit.models import Tag
@@ -63,7 +70,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
     def get_template_names(self):
         template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
         return os.path.join(template_path, self.base_template_name)
-    
+
     def get_context_data(self, **kwargs):
         context = super(BaseBlogView, self).get_context_data(**kwargs)
         context['categories'] = BlogCategory.objects.all()
@@ -204,3 +211,27 @@ class CategoryEntriesView(BaseBlogListView, ListView):
         kwargs['category'] = self.category
         context = super(CategoryEntriesView, self).get_context_data(**kwargs)
         return context
+
+
+@transaction.atomic
+def copy_language(request, post_id):
+    with create_revision():
+        source_language = request.POST.get('source_language')
+        target_language = request.POST.get('target_language')
+        post = Post.objects.get(pk=post_id)
+
+        if not target_language or not target_language in get_language_list():
+            return HttpResponseBadRequest(force_text(_("Language must be set to a supported language!")))
+
+        placeholders = []
+        for field in Post._meta.get_fields():
+            if type(field) is PlaceholderField:
+                placeholders.append(field.name)
+        for placeholder_field_name in placeholders:
+            placeholder = getattr(post, placeholder_field_name)
+            if not placeholder:
+                continue
+            plugins = list(
+                placeholder.cmsplugin_set.filter(language=source_language).order_by('path'))
+            copy_plugins.copy_plugins_to(plugins, placeholder, target_language)
+        return HttpResponse("ok")
