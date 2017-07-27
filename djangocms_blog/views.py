@@ -4,7 +4,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 
 from aldryn_apphooks_config.mixins import AppConfigMixin
-from cms.admin.pageadmin import create_revision
 from cms.models.fields import PlaceholderField
 from cms.utils import get_language_list, copy_plugins
 from django.apps import apps
@@ -192,7 +191,10 @@ class CategoryEntriesView(BaseBlogListView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = get_object_or_404(BlogCategory, translations__slug=self.kwargs['category'])
+            self._category = get_object_or_404(
+                BlogCategory,
+                translations__slug=self.kwargs['category']
+            )
         return self._category
 
     def get(self, *args, **kwargs):
@@ -215,23 +217,24 @@ class CategoryEntriesView(BaseBlogListView, ListView):
 
 @transaction.atomic
 def copy_language(request, post_id):
-    with create_revision():
-        source_language = request.POST.get('source_language')
-        target_language = request.POST.get('target_language')
-        post = Post.objects.get(pk=post_id)
+    source_language = request.POST.get('source_language')
+    target_language = request.POST.get('target_language')
+    post = Post.objects.get(pk=post_id)
 
-        if not target_language or not target_language in get_language_list():
-            return HttpResponseBadRequest(force_text(_("Language must be set to a supported language!")))
+    if not target_language or target_language not in get_language_list():
+        return HttpResponseBadRequest(
+            force_text(_("Language must be set to a supported language!"))
+        )
 
-        placeholders = []
-        for field in Post._meta.get_fields():
-            if type(field) is PlaceholderField:
-                placeholders.append(field.name)
-        for placeholder_field_name in placeholders:
-            placeholder = getattr(post, placeholder_field_name)
-            if not placeholder:
-                continue
-            plugins = list(
-                placeholder.cmsplugin_set.filter(language=source_language).order_by('path'))
-            copy_plugins.copy_plugins_to(plugins, placeholder, target_language)
-        return HttpResponse("ok")
+    placeholders = []
+    for field in Post._meta.get_fields():
+        if type(field) is PlaceholderField:
+            placeholders.append(field.name)
+    for placeholder_field_name in placeholders:
+        placeholder = getattr(post, placeholder_field_name)
+        if not placeholder:
+            continue
+        plugins = list(
+            placeholder.cmsplugin_set.filter(language=source_language).order_by('path'))
+        copy_plugins.copy_plugins_to(plugins, placeholder, target_language)
+    return HttpResponse("ok")
