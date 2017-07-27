@@ -4,16 +4,24 @@ from __future__ import absolute_import, print_function, unicode_literals
 import os.path
 
 from aldryn_apphooks_config.mixins import AppConfigMixin
+from cms.models.fields import PlaceholderField
+from cms.utils import get_language_list, copy_plugins
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.http import HttpResponseBadRequest, HttpResponse
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
+from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from .models import BlogCategory, Post
+from taggit.models import Tag
 from .settings import get_setting
 
 User = get_user_model()
@@ -48,9 +56,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        queryset = self.model._default_manager.namespace(
-            self.namespace
-        ).active_translations(
+        queryset = self.model._default_manager.active_translations(
             language_code=language
         )
         if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
@@ -61,6 +67,12 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
     def get_template_names(self):
         template_path = (self.config and self.config.template_prefix) or 'djangocms_blog'
         return os.path.join(template_path, self.base_template_name)
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseBlogView, self).get_context_data(**kwargs)
+        context['categories'] = BlogCategory.objects.all()
+        context['tags_list'] = Tag.objects.all()
+        return context
 
 
 class BaseBlogListView(BaseBlogView):
@@ -177,9 +189,10 @@ class CategoryEntriesView(BaseBlogListView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = BlogCategory.objects.active_translations(
-                get_language(), slug=self.kwargs['category']
-            ).get()
+            self._category = get_object_or_404(
+                BlogCategory,
+                translations__slug=self.kwargs['category']
+            )
         return self._category
 
     def get(self, *args, **kwargs):
@@ -198,3 +211,28 @@ class CategoryEntriesView(BaseBlogListView, ListView):
         kwargs['category'] = self.category
         context = super(CategoryEntriesView, self).get_context_data(**kwargs)
         return context
+
+
+@transaction.atomic
+def copy_language(request, post_id):
+    source_language = request.POST.get('source_language')
+    target_language = request.POST.get('target_language')
+    post = Post.objects.get(pk=post_id)
+
+    if not target_language or target_language not in get_language_list():
+        return HttpResponseBadRequest(
+            force_text(_("Language must be set to a supported language!"))
+        )
+
+    placeholders = []
+    for field in Post._meta.get_fields():
+        if type(field) is PlaceholderField:
+            placeholders.append(field.name)
+    for placeholder_field_name in placeholders:
+        placeholder = getattr(post, placeholder_field_name)
+        if not placeholder:
+            continue
+        plugins = list(
+            placeholder.cmsplugin_set.filter(language=source_language).order_by('path'))
+        copy_plugins.copy_plugins_to(plugins, placeholder, target_language)
+    return HttpResponse("ok")
