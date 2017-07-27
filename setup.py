@@ -41,6 +41,7 @@ setup(
         'django-meta-mixin>=0.3',
         'aldryn-apphooks-config>=0.2.6',
         'djangocms-apphook-setup',
+        'django-sortedm2m',
     ],
     extras_require={
         'search': ['aldryn-search'],

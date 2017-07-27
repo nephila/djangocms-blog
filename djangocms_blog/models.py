@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
 
+import django
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
@@ -25,9 +26,11 @@ from filer.fields.image import FilerImageField
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.utils.context import switch_language
+from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
+from .fields import AutoSlugField
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -107,14 +110,14 @@ class BlogCategory(TranslatableModel):
         if self.has_translation(lang, ):
             slug = self.safe_translation_getter('slug', language_code=lang)
             return reverse(
-                'djangocms_blog:%s:posts-category' % self.app_config.namespace,
+                '%s:posts-category' % self.app_config.namespace,
                 kwargs={'category': slug},
                 current_app=self.app_config.namespace
             )
         # in case category doesn't exist in this language, gracefully fallback
         # to posts-latest
         return reverse(
-            'djangocms_blog:%s:posts-latest' % self.app_config.namespace, current_app=self.app_config.namespace
+            '%s:posts-latest' % self.app_config.namespace, current_app=self.app_config.namespace
         )
 
     def __str__(self):
@@ -171,7 +174,8 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=255),
-        slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
+        slug=AutoSlugField(_('slug'), max_length=255, blank=True,
+                           db_index=True, allow_unicode=True),
         abstract=HTMLField(_('abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_('post meta description'),
                                           blank=True, default=''),
@@ -186,10 +190,16 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     )
     content = PlaceholderField('post_content', related_name='post_content')
     liveblog = PlaceholderField('live_blog', related_name='live_blog')
-    enable_liveblog = models.BooleanField(verbose_name=_('enable liveblog on post'), default=False)
+    enable_liveblog = models.BooleanField(verbose_name=_('enable liveblog on post'),
+                                          default=False)
 
     objects = GenericDateTaggedManager()
     tags = TaggableManager(blank=True, related_name='djangocms_blog_tags')
+
+    related = SortedManyToManyField('self',
+                                    verbose_name=_('Related Posts'),
+                                    blank=True,
+                                    symmetrical=False)
 
     _metadata = {
         'title': 'get_title',
@@ -251,7 +261,10 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
         if not self.slug and self.title:
-            self.slug = slugify(self.title)
+            if django.VERSION >= (1, 9):
+                self.slug = slugify(self.title, allow_unicode=True)
+            else:
+                self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):
@@ -285,7 +298,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                 kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
             if '<category>' in urlconf:
                 kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
-            return reverse('djangocms_blog:%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
+            return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
 
     def get_meta_attribute(self, param):
         """

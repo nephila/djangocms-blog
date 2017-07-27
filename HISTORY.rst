@@ -26,12 +26,12 @@ History
 
 
 *******************
-0.8.13 (unreleased)
+0.8.13 (2017-07-25)
 *******************
 
-* Drop python 2.6 compatibility
+* Dropped python 2.6 compatibility
 * Fixed exceptions in __str__
-* Drop python 2.6 compatibility
+* Fixed issue with duplicated categories in menu
 
 *******************
 0.8.12 (2017-03-11)

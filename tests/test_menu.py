@@ -6,6 +6,7 @@ from django.utils.translation import activate
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
 
+from djangocms_blog.models import BlogCategory
 from djangocms_blog.settings import (
     MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS,
 )
@@ -46,9 +47,10 @@ class MenuTest(BaseTest):
         for lang in ('en', 'it'):
             with smart_override(lang):
                 self._reset_menus()
-                request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
+                request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
                 nodes = menu_pool.get_nodes(request)
-                nodes_url = set([node.url for node in nodes])
+                self.assertTrue(len(nodes), BlogCategory.objects.all().count() + len(pages))
+                nodes_url = set([node.get_absolute_url() for node in nodes])
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
                 self.assertTrue(cats_url.issubset(nodes_url))
 
@@ -57,9 +59,11 @@ class MenuTest(BaseTest):
         for lang in ('en', 'it'):
             with smart_override(lang):
                 self._reset_menus()
-                request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang))
+                request = self.get_page_request(pages[1].get_draft_object(), self.user, pages[1].get_draft_object().get_absolute_url(lang))
                 nodes = menu_pool.get_nodes(request)
-                nodes_url = set([node.url for node in nodes])
+                urls = [node.get_absolute_url() for node in nodes]
+                nodes_url = [node.get_absolute_url() for node in nodes]
+                self.assertTrue(len(nodes_url), BlogCategory.objects.all().count() + len(pages))
                 self.assertFalse(posts[0].get_absolute_url(lang) in nodes_url)
                 self.assertTrue(posts[1].get_absolute_url(lang) in nodes_url)
 
@@ -94,7 +98,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
-                nodes_url = set([node.url for node in nodes])
+                nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
 
@@ -107,7 +111,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
-                nodes_url = set([node.url for node in nodes])
+                nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
 
@@ -120,7 +124,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
-                nodes_url = set([node.url for node in nodes])
+                nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
 
@@ -133,7 +137,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 nodes = menu_pool.get_nodes(request)
-                nodes_url = set([node.url for node in nodes])
+                nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
 

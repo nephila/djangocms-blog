@@ -8,7 +8,7 @@ from .settings import get_setting
 from .views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
     TaggedListView,
-)
+    copy_language)
 
 
 def get_urls():
@@ -42,4 +42,5 @@ urlpatterns = [
         TaggedListView.as_view(), name='posts-tagged'),
     url(r'^tag/(?P<tag>[-\w]+)/feed/$',
         TagFeed(), name='posts-tagged-feed'),
+    url(r'^copy_language/(?P<post_id>\d+)$', copy_language, name='copy-language-blog'),
 ] + detail_urls

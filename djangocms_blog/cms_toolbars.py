@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+from cms.cms_toolbars import LANGUAGE_MENU_IDENTIFIER, ADD_PAGE_LANGUAGE_BREAK
 from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
+from cms.utils.i18n import get_language_dict
 from cms.utils.urlutils import admin_reverse
 from django.core.urlresolvers import reverse
 from django.utils.translation import override, ugettext_lazy as _
@@ -18,6 +20,7 @@ class BlogToolbar(CMSToolbar):
                 not self.request.user.has_perm('djangocms_blog.add_post'):
             return   # pragma: no cover
         admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
+        self.add_copy_language_to_menu()
         with override(self.current_lang):
             url = reverse('admin:djangocms_blog_post_changelist')
             admin_menu.add_modal_item(_('Post list'), url=url)
@@ -70,3 +73,30 @@ class BlogToolbar(CMSToolbar):
             except ImportError:
                 pass
             self.add_publish_button()
+
+    def add_copy_language_to_menu(self):
+        if self.toolbar.edit_mode:
+            language_menu = self.toolbar.get_menu(LANGUAGE_MENU_IDENTIFIER)
+            copy_menu_orig = language_menu.menus.pop('{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER))
+            language_menu.items.remove(copy_menu_orig)
+            admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
+
+            languages = get_language_dict(self.current_site.pk)
+
+            add = [l for l in languages.items()]
+            copy = [(code, name) for code, name in languages.items() if code != self.current_lang]
+
+            if add or copy:
+                admin_menu.add_break(ADD_PAGE_LANGUAGE_BREAK)
+            current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
+            if current_post and copy:
+                copy_plugins_menu = admin_menu.get_or_create_menu('{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER), _('Copy all placeholders'))
+                title = _('from %s')
+                question = _('Are you sure you want to copy all plugins from %s?')
+                page_copy_url = reverse('{}:copy-language-blog'.format(current_post.app_config.namespace), args=(current_post.pk,))
+                for code, name in copy:
+                    copy_plugins_menu.add_ajax_item(
+                        title % name, action=page_copy_url,
+                        data={'source_language': code, 'target_language': self.current_lang},
+                        question=question % name, on_success=self.toolbar.REFRESH_PAGE
+                    )
