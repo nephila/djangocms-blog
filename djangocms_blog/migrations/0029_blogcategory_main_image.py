@@ -10,7 +10,6 @@ import filer.fields.image
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('filer', '0007_auto_20161016_1055'),
         ('djangocms_blog', '0028_auto_20170304_1040'),
     ]
 
