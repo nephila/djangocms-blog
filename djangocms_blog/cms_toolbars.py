@@ -76,8 +76,9 @@ class BlogToolbar(CMSToolbar):
     def add_copy_language_to_menu(self):
         if self.toolbar.edit_mode:
             language_menu = self.toolbar.get_menu(LANGUAGE_MENU_IDENTIFIER)
-            copy_menu_orig = language_menu.menus.pop('{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER))
-            language_menu.items.remove(copy_menu_orig)
+            if '{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER) in language_menu.menus:
+                copy_menu_orig = language_menu.menus.pop('{0}-copy'.format(LANGUAGE_MENU_IDENTIFIER))
+                language_menu.items.remove(copy_menu_orig)
             admin_menu = self.toolbar.get_or_create_menu('djangocms_blog', _('Blog'))
 
             languages = get_language_dict(self.current_site.pk)
