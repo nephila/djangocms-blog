@@ -47,7 +47,3 @@ docs/_build
 *~
 *.db
 *.sqlite
-
-**/migrations/**
-!**/migrations
-!**/migrations/__init__.py
