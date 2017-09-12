@@ -72,9 +72,20 @@ class BlogCategory(ModelMeta, TranslatableModel):
         BlogConfig, null=True, verbose_name=_('app. config')
     )
 
-    main_image = FilerImageField(verbose_name=_('category main image'), blank=True, null=True,
-                                 on_delete=models.SET_NULL,
-                                 related_name='djangocms_blog_category_image')
+    main_image = models.ImageField(
+        upload_to='blog_category_image',
+        verbose_name=_('Blog category image'),
+        blank=True,
+        null=True
+    )
+
+    order_by = models.PositiveIntegerField(default=0, blank=False, null=False)
+
+    import_id = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('Blog category import id')
+    )
 
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
@@ -249,6 +260,16 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                                     verbose_name=_('Related Posts'),
                                     blank=True,
                                     symmetrical=False)
+
+    hits = models.PositiveIntegerField(_('Hits'), default=0)
+
+    keywords = models.CharField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name=_("Keywords"),
+        help_text=_("Page meta keywords")
+    )
 
     _metadata = {
         'title': 'get_title',
@@ -451,6 +472,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
             apphook=self.app_config.namespace,
             post=self.safe_translation_getter('slug', any_language=True)
         )
+
+    def get_hits(self):
+        return self.hits
 
 
 class BasePostPlugin(CMSPlugin):
