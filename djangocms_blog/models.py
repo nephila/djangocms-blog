@@ -263,6 +263,11 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
 
     hits = models.PositiveIntegerField(_('Hits'), default=0)
 
+    recommended = models.BooleanField(
+        default=False,
+        verbose_name=_('Recommended')
+    )
+
     keywords = models.CharField(
         max_length=400,
         blank=True,

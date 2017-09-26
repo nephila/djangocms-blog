@@ -153,6 +153,54 @@ class PostArchiveView(BaseBlogListView, ListView):
         return context
 
 
+class RecommendedPostsView(PostListView):
+    def get_queryset(self):
+        query = Post.objects.filter(recommended=True).order_by('-date_published')
+        self.count = query.count()
+        if self.request.is_ajax():
+            query = query[self.get_offset(self.request):(self.get_offset(self.request)+self.get_limit(self.request))]
+        return query
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'list_name': 'Odporúčané'
+        })
+        return context
+
+
+class MostReadPostsView(PostListView):
+    def get_queryset(self):
+        query = sorted(Post.objects.all(), key=lambda x: x.get_hits(), reverse=True)
+        self.count = Post.objects.all()
+        if self.request.is_ajax():
+            query = query[self.get_offset(self.request):(self.get_offset(self.request)+self.get_limit(self.request))]
+        return query
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'list_name': 'Najčítanejšie'
+        })
+        return context
+
+
+class FavouritesPostsView(PostListView):
+    def get_queryset(self):
+        query = Post.objects.all().order_by('-date_created')
+        self.count = query.count()
+        if self.request.is_ajax():
+            query = query[self.get_offset(self.request):(self.get_offset(self.request)+self.get_limit(self.request))]
+        return query
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'list_name': 'Najnovšie'
+        })
+        return context
+
+
 class TaggedListView(BaseBlogListView, ListView):
     view_url_name = 'djangocms_blog:posts-tagged'
 

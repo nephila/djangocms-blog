@@ -7,7 +7,7 @@ from .feeds import FBInstantArticles, LatestEntriesFeed, TagFeed
 from .settings import get_setting
 from .views import (
     AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
-    TaggedListView,
+    TaggedListView, MostReadPostsView, RecommendedPostsView, FavouritesPostsView,
     copy_language)
 
 
@@ -26,6 +26,12 @@ detail_urls = get_urls()
 urlpatterns = [
     url(r'^$',
         PostListView.as_view(), name='posts-latest'),
+    url(r'^najcitanejsie/$',
+        MostReadPostsView.as_view(), name='posts-most-read'),
+    url(r'^odporucane/$',
+        RecommendedPostsView.as_view(), name='posts-recommended'),
+    url(r'^najnovsie/$',
+        FavouritesPostsView.as_view(), name='posts-newest'),
     url(r'^feed/$',
         LatestEntriesFeed(), name='posts-latest-feed'),
     url(r'^feed/fb/$',
