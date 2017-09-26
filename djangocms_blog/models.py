@@ -6,7 +6,7 @@ import hashlib
 import django
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
-from cms.models import CMSPlugin, PlaceholderField
+from cms.models import CMSPlugin, PlaceholderField, Site
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -59,7 +59,7 @@ except ImportError:
 
 
 @python_2_unicode_compatible
-class BlogCategory(TranslatableModel):
+class BlogCategory(ModelMeta, TranslatableModel):
     """
     Blog category
     """
@@ -72,13 +72,48 @@ class BlogCategory(TranslatableModel):
         BlogConfig, null=True, verbose_name=_('app. config')
     )
 
+    main_image = models.ImageField(
+        upload_to='blog_category_image',
+        verbose_name=_('Blog category image'),
+        blank=True,
+        null=True
+    )
+
+    order_by = models.PositiveIntegerField(default=0, blank=False, null=False)
+
+    import_id = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name=_('Blog category import id')
+    )
+
     translations = TranslatedFields(
         name=models.CharField(_('name'), max_length=255),
         slug=models.SlugField(_('slug'), max_length=255, blank=True, db_index=True),
+        meta_description=models.TextField(verbose_name=_('post meta description'),
+                                          blank=True, default=''),
+        meta_keywords=models.TextField(verbose_name=_('post meta keywords'),
+                                       blank=True, default=''),
+        meta_title=models.CharField(verbose_name=_('post meta title'),
+                                    help_text=_('used in title tag and social sharing'),
+                                    max_length=255,
+                                    blank=True, default=''),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
 
     objects = AppHookConfigTranslatableManager()
+
+    _metadata = {
+        'title': 'get_title',
+        'description': 'get_description',
+        'keywords': 'get_keywords',
+        'og_description': 'get_description',
+        'twitter_description': 'get_description',
+        'gplus_description': 'get_description',
+        'locale': 'get_locale',
+        'image': 'get_image_full_url',
+        'url': 'get_absolute_url',
+    }
 
     class Meta:
         verbose_name = _('blog category')
@@ -104,20 +139,45 @@ class BlogCategory(TranslatableModel):
     def count_all_sites(self):
         return self.linked_posts.published(current_site=False).count()
 
+    def get_title(self):
+        title = self.safe_translation_getter('meta_title', any_language=True)
+        if not title:
+            title = self.safe_translation_getter('name', any_language=True)
+        return "{} | {}".format(title.strip(), Site.objects.get_current())
+
+    def get_keywords(self):
+        """
+        Returns the list of keywords (as python list)
+        :return: list
+        """
+        return self.safe_translation_getter('meta_keywords', default='').strip().split(',')
+
+    def get_locale(self):
+        return self.get_current_language()
+
+    def get_description(self):
+        description = self.safe_translation_getter('meta_description', any_language=True)
+        return escape(strip_tags(description)).strip()
+
+    def get_image_full_url(self):
+        if self.main_image:
+            return self.build_absolute_uri(self.main_image.url)
+        return ''
+
     def get_absolute_url(self, lang=None):
-        if not lang:
+        if not lang or lang not in self.get_available_languages():
             lang = get_language()
         if self.has_translation(lang, ):
             slug = self.safe_translation_getter('slug', language_code=lang)
             return reverse(
-                '%s:posts-category' % self.app_config.namespace,
+                'djangocms_blog:posts-category',
                 kwargs={'category': slug},
                 current_app=self.app_config.namespace
             )
         # in case category doesn't exist in this language, gracefully fallback
         # to posts-latest
         return reverse(
-            '%s:posts-latest' % self.app_config.namespace, current_app=self.app_config.namespace
+            'djangocms_blog:posts-latest', current_app=self.app_config.namespace
         )
 
     def __str__(self):
@@ -200,6 +260,21 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                                     verbose_name=_('Related Posts'),
                                     blank=True,
                                     symmetrical=False)
+
+    hits = models.PositiveIntegerField(_('Hits'), default=0)
+
+    recommended = models.BooleanField(
+        default=False,
+        verbose_name=_('Recommended')
+    )
+
+    keywords = models.CharField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name=_("Keywords"),
+        help_text=_("Page meta keywords")
+    )
 
     _metadata = {
         'title': 'get_title',
@@ -298,7 +373,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
                 kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
             if '<category>' in urlconf:
                 kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
-            return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
+            return reverse('djangocms_blog:post-detail', kwargs=kwargs)
 
     def get_meta_attribute(self, param):
         """
@@ -311,7 +386,7 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
         title = self.safe_translation_getter('meta_title', any_language=True)
         if not title:
             title = self.safe_translation_getter('title', any_language=True)
-        return title.strip()
+        return "{} | {}".format(title.strip(), Site.objects.get_current())
 
     def get_keywords(self):
         """
@@ -402,6 +477,9 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
             apphook=self.app_config.namespace,
             post=self.safe_translation_getter('slug', any_language=True)
         )
+
+    def get_hits(self):
+        return self.hits
 
 
 class BasePostPlugin(CMSPlugin):
