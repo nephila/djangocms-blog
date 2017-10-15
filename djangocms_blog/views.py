@@ -166,7 +166,8 @@ class AuthorEntriesView(BaseBlogListView, ListView):
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
-        kwargs['author'] = get_object_or_404(User, **{User.USERNAME_FIELD: self.kwargs.get('username')})
+        kwargs['author'] = get_object_or_404(User,
+        **{User.USERNAME_FIELD: self.kwargs.get('username')})
         context = super(AuthorEntriesView, self).get_context_data(**kwargs)
         return context
 
