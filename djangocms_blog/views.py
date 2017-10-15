@@ -15,6 +15,7 @@ from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
 from .models import BlogCategory, Post
 from .settings import get_setting
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -165,7 +166,7 @@ class AuthorEntriesView(BaseBlogListView, ListView):
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
-        kwargs['author'] = User.objects.get(**{User.USERNAME_FIELD: self.kwargs.get('username')})
+        kwargs['author'] = get_object_or_404(User, **{User.USERNAME_FIELD: self.kwargs.get('username')})
         context = super(AuthorEntriesView, self).get_context_data(**kwargs)
         return context
 
