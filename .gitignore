@@ -42,6 +42,7 @@ docs/build
 lokalize*
 
 .idea
+.vscode
 docs/_build
 
 *~
