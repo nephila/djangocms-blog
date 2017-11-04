@@ -5,6 +5,7 @@ language: python
 sudo: false
 
 python:
+  - 3.6
   - 3.5
   - 3.4
   - 2.7
@@ -14,6 +15,7 @@ env:
   - TOXENV='pep8'
   - TOXENV='isort'
   - TOXENV='docs'
+  - DJANGO='django111' CMS='cms34'
   - DJANGO='django110' CMS='cms34'
   - DJANGO='django19' CMS='cms34'
   - DJANGO='django19' CMS='cms33'
@@ -28,6 +30,7 @@ install:
   - "if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then export PYVER=py27; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then export PYVER=py34; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then export PYVER=py35; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then export PYVER=py36; fi"
   - "if [[ ${DJANGO}z != 'z' ]]; then export TOXENV=$PYVER-$DJANGO-$CMS; fi"
 
 # command to run tests, e.g. python setup.py test
@@ -52,6 +55,12 @@ matrix:
   - python: 3.4
     env: TOXENV='pep8'
   - python: 3.4
+    env: TOXENV='isort'
+  - python: 3.5
+    env: TOXENV='docs'
+  - python: 3.5
+    env: TOXENV='pep8'
+  - python: 3.5
     env: TOXENV='isort'
 
 

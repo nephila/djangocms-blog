@@ -17,7 +17,6 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.utils.six import callable, text_type
 from django.utils.translation import get_language_from_request, ugettext_lazy as _, ungettext as __
-
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
