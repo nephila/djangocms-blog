@@ -12,7 +12,8 @@ from menus.menu_pool import menu_pool
 
 from .cms_appconfig import BlogConfig
 from .models import BlogCategory, Post
-from .settings import MENU_TYPE_NONE, MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_POSTS, get_setting
+from .settings import (MENU_TYPE_NONE, MENU_TYPE_CATEGORIES,
+                       MENU_TYPE_COMPLETE, MENU_TYPE_POSTS, get_setting)
 
 
 class BlogCategoryMenu(CMSAttachMenu):
