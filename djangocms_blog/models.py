@@ -6,6 +6,7 @@ import hashlib
 import django
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
+from aldryn_people.models import Person
 from cms.models import CMSPlugin, PlaceholderField
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
@@ -137,9 +138,12 @@ class Post(KnockerModel, ModelMeta, TranslatableModel):
     """
     Blog post
     """
-    author = models.ForeignKey(dj_settings.AUTH_USER_MODEL,
-                               verbose_name=_('author'), null=True, blank=True,
-                               related_name='djangocms_blog_post_author')
+    # author = models.ForeignKey(dj_settings.AUTH_USER_MODEL,
+    #                            verbose_name=_('author'), null=True, blank=True,
+    #                            related_name='djangocms_blog_post_author')
+
+    author = models.ForeignKey(Person, null=True, blank=True,
+                               verbose_name=_('author'),related_name='djangocms_blog_post_author')
 
     date_created = models.DateTimeField(_('created'), auto_now_add=True)
     date_modified = models.DateTimeField(_('last modified'), auto_now=True)
@@ -479,8 +483,13 @@ class LatestPostsPlugin(BasePostPlugin):
 
 @python_2_unicode_compatible
 class AuthorEntriesPlugin(BasePostPlugin):
+    # authors = models.ManyToManyField(
+    #     dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
+    #     limit_choices_to={'djangocms_blog_post_author__publish': True}
+    # )
+    
     authors = models.ManyToManyField(
-        dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
+        Person, verbose_name=_('authors'),
         limit_choices_to={'djangocms_blog_post_author__publish': True}
     )
     latest_posts = models.IntegerField(
