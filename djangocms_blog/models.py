@@ -483,8 +483,12 @@ class LatestPostsPlugin(BasePostPlugin):
 
 @python_2_unicode_compatible
 class AuthorEntriesPlugin(BasePostPlugin):
+    # authors = models.ManyToManyField(
+    #     dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
+    #     limit_choices_to={'djangocms_blog_post_author__publish': True}
+    # )
     authors = models.ManyToManyField(
-        dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
+        Person, verbose_name=_('authors'),
         limit_choices_to={'djangocms_blog_post_author__publish': True}
     )
     latest_posts = models.IntegerField(
