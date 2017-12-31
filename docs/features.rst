@@ -13,7 +13,7 @@ Attaching blog to the home page
 If you want to attach the blog to the home page you have to adapt settings a bit otherwise the
 "Just slug" permalink will swallow any CMS page you create.
 
-To avoit this add the following settings to you project::
+To avoid this add the following settings to you project::
 
     BLOG_AVAILABLE_PERMALINK_STYLES = (
         ('full_date', _('Full date')),
