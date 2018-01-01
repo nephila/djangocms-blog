@@ -494,4 +494,4 @@ class ViewTest(BaseTest):
             view_obj.namespace, view_obj.config = get_app_instance(request)
             with self.assertRaises(Http404):
                 view_obj.kwargs = {'category': 'unknown-category'}
-                category_obj = view_obj.get_object()
+                category_obj = view_obj.get_queryset()
