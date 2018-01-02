@@ -484,3 +484,14 @@ class ViewTest(BaseTest):
             self.assertEqual(view_obj.get_template_names(), os.path.join('whatever', 'post_list.html'))
             self.app_config_1.app_data.config.template_prefix = ''
             self.app_config_1.save()
+
+    def test_non_existing_blog_category_should_raise_404(self):
+        pages = self.get_pages()
+        with smart_override('en'):
+            request = self.get_request(pages[1], 'en', AnonymousUser())
+            view_obj = CategoryEntriesView()
+            view_obj.request = request
+            view_obj.namespace, view_obj.config = get_app_instance(request)
+            with self.assertRaises(Http404):
+                view_obj.kwargs = {'category': 'unknown-category'}
+                category_obj = view_obj.get_queryset()

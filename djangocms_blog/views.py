@@ -8,6 +8,7 @@ from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
@@ -177,9 +178,12 @@ class CategoryEntriesView(BaseBlogListView, ListView):
     @property
     def category(self):
         if not self._category:
-            self._category = BlogCategory.objects.active_translations(
-                get_language(), slug=self.kwargs['category']
-            ).get()
+            try:
+                self._category = BlogCategory.objects.active_translations(
+                    get_language(), slug=self.kwargs['category']
+                ).get()
+            except BlogCategory.DoesNotExist:
+                raise Http404
         return self._category
 
     def get(self, *args, **kwargs):
