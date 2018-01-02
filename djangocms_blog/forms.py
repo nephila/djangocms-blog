@@ -76,4 +76,3 @@ class PostAdminForm(TranslatableModelForm):
                 config.app_data['config'].get('default_image_full')
             self.initial['main_image_thumbnail'] = \
                 config.app_data['config'].get('default_image_thumbnail')
-
