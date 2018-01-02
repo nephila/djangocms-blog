@@ -30,6 +30,12 @@ from djangocms_blog.settings import MENU_TYPE_NONE, get_setting
 
 from .base import BaseTest
 
+try:  # pragma: no cover
+    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
+except ImportError:  # pragma: no cover
+    from filer.models import ThumbnailOption  # NOQA
+
+
 try:
     from unittest import SkipTest
 except ImportError:
@@ -48,6 +54,20 @@ class AdminTest(BaseTest):
     def setUp(self):
         super(AdminTest, self).setUp()
         admin.autodiscover()
+        self.default_thumbnail = ThumbnailOption.objects.create(
+            name='Blog thumbnail',
+            width=120,
+            height=120,
+            crop=True,
+            upscale=True,
+        )
+        self.default_full = ThumbnailOption.objects.create(
+            name='Blog image',
+            width=800,
+            height=200,
+            crop=True,
+            upscale=True,
+        )
 
     def test_admin_post_views(self):
         self.get_pages()
@@ -237,6 +257,8 @@ class AdminTest(BaseTest):
         self.assertFalse('abstract' in fsets[0][1]['fields'])
 
         self.app_config_1.app_data.config.use_abstract = True
+        self.app_config_1.app_data.config.default_image_full = self.default_full
+        self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
         self.app_config_1.save()
 
         with self.settings(BLOG_MULTISITE=True):
@@ -264,6 +286,8 @@ class AdminTest(BaseTest):
                 self.category_1.pk, self.category_1.safe_translation_getter('name', language_code='en')
             ))
             self.assertContains(response, 'id="id_sites" name="sites"')
+            self.assertContains(response, 'selected="selected">Blog image')
+            self.assertContains(response, 'selected="selected">Blog thumbnail')
 
         self.user.sites.add(self.site_1)
         with self.login_user_context(self.user):

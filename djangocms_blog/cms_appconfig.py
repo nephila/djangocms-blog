@@ -45,14 +45,14 @@ class BlogConfigForm(AppDataForm):
         label=_('Default size of full images'),
         queryset=ThumbnailOption.objects.all(),
         required=False,
-        help_text=_('If left  empty the image size will have to be set for '
+        help_text=_('If left empty the image size will have to be set for '
                     'every newly created post.'),
     )
     default_image_thumbnail = forms.ModelChoiceField(
         label=_('Default size of thumbnail images'),
         queryset=ThumbnailOption.objects.all(),
         required=False,
-        help_text=_('If left  empty the thumbnail image size will have to be '
+        help_text=_('If left empty the thumbnail image size will have to be '
                     'set for every newly created post.'),
     )
     url_patterns = forms.ChoiceField(
