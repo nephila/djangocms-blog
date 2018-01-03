@@ -2,33 +2,7 @@
 djangocms-blog
 ==============
 
-.. image:: https://img.shields.io/pypi/v/djangocms-blog.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/djangocms-blog
-    :alt: Latest PyPI version
-
-.. image:: https://img.shields.io/pypi/dm/djangocms-blog.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/djangocms-blog
-    :alt: Monthly downloads
-
-.. image:: https://img.shields.io/pypi/pyversions/djangocms-blog.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/djangocms-blog
-    :alt: Python versions
-
-.. image:: https://img.shields.io/travis/nephila/djangocms-blog.svg?style=flat-square
-    :target: https://travis-ci.org/nephila/djangocms-blog
-    :alt: Latest Travis CI build status
-
-.. image:: https://img.shields.io/coveralls/nephila/djangocms-blog/master.svg?style=flat-square
-    :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
-    :alt: Test coverage
-
-.. image:: https://img.shields.io/codecov/c/github/nephila/djangocms-blog/develop.svg?style=flat-square
-    :target: https://codecov.io/github/nephila/djangocms-blog
-    :alt: Test coverage
-
-.. image:: https://codeclimate.com/github/nephila/djangocms-blog/badges/gpa.svg?style=flat-square
-   :target: https://codeclimate.com/github/nephila/djangocms-blog
-   :alt: Code Climate
+|Gitter| |PyPiVersion| |PyVersion| |Status| |TestCoverage| |CodeClimate| |License|
 
 django CMS blog application - Support for multilingual posts, placeholders, social network meta tags and configurable apphooks.
 
@@ -73,7 +47,7 @@ djangocms-blog version together with cmsplugin-filer upgrade, you can just apply
 Migrating cmsplugin-filer to 1.1 and djangocms-blog 0.8.5+
 ==========================================================
 
-If you already a djangocms-blog 0.8.5+ up to 0.8.11, upgrade to 0.8.11, then 
+If you already a djangocms-blog 0.8.5+ up to 0.8.11, upgrade to 0.8.11, then
 you have to de-apply some blog migrations when doing the upgrade::
 
     pip install djangocms-blog==0.8.11
@@ -95,7 +69,7 @@ After this step you can upgrade to 0.8.12::
 Installing djangocms-blog in an existing project with Django 1.10
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-If your project has cmsplugin-filer 1.1+ already installed and it uses Django 1.10, 
+If your project has cmsplugin-filer 1.1+ already installed and it uses Django 1.10,
 install djangocms-blog 0.8.12 (and above)::
 
     pip install djangocms-blog==0.8.12
@@ -129,3 +103,33 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
 
 
 .. _installation docs: http://djangocms-blog.readthedocs.io/en/latest/installation.html
+
+
+
+.. |Gitter| image:: https://img.shields.io/badge/GITTER-join%20chat-brightgreen.svg?style=flat-square
+    :target: https://gitter.im/nephila/applications
+    :alt: Join the Gitter chat
+
+.. |PyPiVersion| image:: https://img.shields.io/pypi/v/djangocms-blog.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/djangocms-blog
+    :alt: Latest PyPI version
+
+.. |PyVersion| image:: https://img.shields.io/pypi/pyversions/djangocms-blog.svg?style=flat-square
+    :target: https://pypi.python.org/pypi/djangocms-blog
+    :alt: Python versions
+
+.. |Status| image:: https://img.shields.io/travis/nephila/djangocms-blog.svg?style=flat-square
+    :target: https://travis-ci.org/nephila/djangocms-blog
+    :alt: Latest Travis CI build status
+
+.. |TestCoverage| image:: https://img.shields.io/coveralls/nephila/djangocms-blog/master.svg?style=flat-square
+    :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
+    :alt: Test coverage
+
+.. |License| image:: https://img.shields.io/github/license/nephila/djangocms-blog.svg?style=flat-square
+   :target: https://pypi.python.org/pypi/djangocms-blog/
+    :alt: License
+
+.. |CodeClimate| image:: https://codeclimate.com/github/nephila/djangocms-blog/badges/gpa.svg?style=flat-square
+   :target: https://codeclimate.com/github/nephila/djangocms-blog
+   :alt: Code Climate
