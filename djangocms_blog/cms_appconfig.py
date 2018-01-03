@@ -11,6 +11,11 @@ from parler.models import TranslatableModel, TranslatedFields
 
 from .settings import MENU_TYPE_COMPLETE, get_setting
 
+try:  # pragma: no cover
+    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
+except ImportError:  # pragma: no cover
+    from filer.models import ThumbnailOption  # NOQA
+
 
 class BlogConfig(TranslatableModel, AppHookConfig):
     """
@@ -35,6 +40,20 @@ class BlogConfigForm(AppDataForm):
     default_published = forms.BooleanField(
         label=_('Post published by default'), required=False,
         initial=get_setting('DEFAULT_PUBLISHED')
+    )
+    default_image_full = forms.ModelChoiceField(
+        label=_('Default size of full images'),
+        queryset=ThumbnailOption.objects.all(),
+        required=False,
+        help_text=_('If left empty the image size will have to be set for '
+                    'every newly created post.'),
+    )
+    default_image_thumbnail = forms.ModelChoiceField(
+        label=_('Default size of thumbnail images'),
+        queryset=ThumbnailOption.objects.all(),
+        required=False,
+        help_text=_('If left empty the thumbnail image size will have to be '
+                    'set for every newly created post.'),
     )
     url_patterns = forms.ChoiceField(
         label=_('Permalink structure'), required=False,

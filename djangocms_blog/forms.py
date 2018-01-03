@@ -56,6 +56,7 @@ class PostAdminForm(TranslatableModelForm):
 
         qs = BlogCategory.objects
 
+        config = None
         if getattr(self.instance, 'app_config_id', None):
             qs = qs.namespace(self.instance.app_config.namespace)
         elif 'initial' in kwargs and 'app_config' in kwargs['initial']:
@@ -69,3 +70,9 @@ class PostAdminForm(TranslatableModelForm):
             # Don't allow app_configs to be added here. The correct way to add an
             # apphook-config is to create an apphook on a cms Page.
             self.fields['app_config'].widget.can_add_related = False
+
+        if config:
+            self.initial['main_image_full'] = \
+                config.app_data['config'].get('default_image_full')
+            self.initial['main_image_thumbnail'] = \
+                config.app_data['config'].get('default_image_thumbnail')
