@@ -207,11 +207,13 @@ To add the blog Sitemap, add the following code to the project ``urls.py``::
 Social shares
 *************
 
-``djangocms_blog`` integrates well with options for social shares. One of the many options available is [Shariff](https://github.com/heiseonline/shariff) which was developed by a popular German computer magazine.
+``djangocms_blog`` integrates well with options for social shares. One of the many options available is Shariff_ which was developed by a popular German computer magazine.
 
-To allow readers to share articles on Facebook, Twitter, LinkedIn or just mail them, simply add share buttons to your ``post_detail.html`` template just before ``</article>``. 
+.. _Shariff: https://github.com/heiseonline/shariff
 
-If you decide to use Shariff this just requires a simple ``<div>`` to be added (see documentation of shariff). Here is a simple template tag that loads all required conifigurations and javascript files. The ``<div>`` becomes ``{% shariff %}``:
+To allow readers to share articles on Facebook, Twitter, LinkedIn or just mail them, simply add share buttons to your ``post_detail.html`` template just before ``</article>``.
+
+If you decide to use Shariff this just requires a simple ``<div>`` to be added (see documentation of shariff). Here is a simple template tag that loads all required conifigurations and javascript files. The ``<div>`` becomes ``{% shariff %}``: ::
 
     from django.conf import settings
     from django import template
@@ -230,18 +232,20 @@ If you decide to use Shariff this just requires a simple ``<div>`` to be added (
             context['mail_url'] = settings.SHARIFF['mail-url']
         return(context)
 
-And in ``templates/djangocms_blog/shariff.html`` you simply need
+And in ``templates/djangocms_blog/shariff.html`` you simply need ::
 
     {% load static sekizai_tags %}
     {% addtoblock 'js' %}<script src="{% static 'js/shariff.min.js' %}"></script>{% endaddtoblock %}
     {% addtoblock 'css' %}<link href="{% static 'css/shariff.min.css' %}" rel="stylesheet">{% endaddtoblock %}
     <div class="shariff" data-services="{{services}}" data-orientation="{{orientation}}"{% if mail_url %} data-mail-url="{{mail_url}}"{% endif %}{% if short_message %} data-title="{{short_message}}"{% endif %}></div>
 
-The shariff files ``js/shariff.min.js `` and ``css/shariff.min.css`` will need to be added to your static files. Also, a little configuration in ``settings.py`` is needed, e.g.,
+The shariff files ``js/shariff.min.js`` and ``css/shariff.min.css`` will need to be added to your static files. Also, a little configuration in ``settings.py`` is needed, e.g.,
+
+::
 
     SHARIFF = {
         'services': '["twitter", "facebook", "googleplus", "linkedin", "xing", "mail"]',
-        'mail-url': 'mailto:',                  # optional 
+        'mail-url': 'mailto:',                  # optional
         'prefix':   'Have you seen this: "',	# optional
         'postfix':  '"',                        # optional
     }
