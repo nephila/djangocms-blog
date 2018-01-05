@@ -27,6 +27,7 @@ def liveblog_connect(message, apphook, lang, post):
         })
         return
     Group(post.liveblog_group).add(message.reply_channel)
+    message.reply_channel.send({"accept": True})
 
 
 def liveblog_disconnect(message, apphook, lang, post):
