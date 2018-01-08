@@ -3,8 +3,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from django import forms
 from django.conf import settings
+from django.core.validators import MaxLengthValidator
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
+
+from djangocms_blog.settings import get_setting
 
 from .models import BlogCategory, BlogConfig, Post
 
@@ -12,6 +15,16 @@ from .models import BlogCategory, BlogConfig, Post
 class CategoryAdminForm(TranslatableModelForm):
 
     def __init__(self, *args, **kwargs):
+        self.base_fields['meta_description'].validators = [
+            MaxLengthValidator(get_setting('META_DESCRIPTION_LENGTH'))
+        ]
+        original_attrs = self.base_fields['meta_description'].widget.attrs
+        if 'cols' in original_attrs:
+            del original_attrs['cols']
+        if 'rows' in original_attrs:
+            del original_attrs['rows']
+        original_attrs['maxlength'] = get_setting('META_DESCRIPTION_LENGTH')
+        self.base_fields['meta_description'].widget = forms.TextInput(original_attrs)
         super(CategoryAdminForm, self).__init__(*args, **kwargs)
 
         if 'parent' in self.fields:
@@ -52,6 +65,19 @@ class PostAdminForm(TranslatableModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
+        self.base_fields['meta_description'].validators = [
+            MaxLengthValidator(get_setting('META_DESCRIPTION_LENGTH'))
+        ]
+        original_attrs = self.base_fields['meta_description'].widget.attrs
+        if 'cols' in original_attrs:
+            del original_attrs['cols']
+        if 'rows' in original_attrs:
+            del original_attrs['rows']
+        original_attrs['maxlength'] = get_setting('META_DESCRIPTION_LENGTH')
+        self.base_fields['meta_description'].widget = forms.TextInput(original_attrs)
+        self.base_fields['meta_title'].validators = [
+            MaxLengthValidator(get_setting('META_TITLE_LENGTH'))
+        ]
         super(PostAdminForm, self).__init__(*args, **kwargs)
 
         qs = BlogCategory.objects

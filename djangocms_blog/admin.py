@@ -6,7 +6,6 @@ from copy import deepcopy
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from cms.models import CMSPlugin, ValidationError
-from django import forms
 from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
@@ -267,16 +266,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
                 return HttpResponseRedirect(request.META['HTTP_REFERER'])
             except KeyError:
                 return HttpResponseRedirect(reverse('djangocms_blog:posts-latest'))
-
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        field = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-        if db_field.name == 'meta_description':
-            original_attrs = field.widget.attrs
-            original_attrs['maxlength'] = 160
-            field.widget = forms.TextInput(original_attrs)
-        elif db_field.name == 'meta_title':
-            field.max_length = 70
-        return field
 
     def has_restricted_sites(self, request):
         """
