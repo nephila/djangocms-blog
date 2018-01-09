@@ -68,6 +68,10 @@ class BlogConfigForm(AppDataForm):
         label=_('Use abstract field'), required=False,
         initial=get_setting('USE_ABSTRACT')
     )
+    use_related = forms.BooleanField(
+        label=_('Enable related posts'), required=False,
+        initial=get_setting('USE_RELATED')
+    )
     set_author = forms.BooleanField(
         label=_('Set author'), required=False, help_text=_('Set author by default'),
         initial=get_setting('AUTHOR_DEFAULT')
