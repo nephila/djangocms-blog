@@ -254,6 +254,7 @@ class ViewTest(BaseTest):
             self.assertEqual(list(context['post_list']), [posts[0]])
             self.assertEqual(context['paginator'].count, 3)
             self.assertEqual(context['post_list'][0].title, 'First post')
+            self.assertTrue(context['meta'])
 
             request = self.get_page_request(pages[1], self.user, edit=False)
             view_obj.request = request

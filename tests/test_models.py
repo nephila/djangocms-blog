@@ -15,6 +15,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.test import override_settings
 from django.utils.encoding import force_text
 from django.utils.html import strip_tags
 from django.utils.timezone import now
@@ -25,6 +26,7 @@ from parler.utils.context import smart_override
 from taggit.models import Tag
 
 from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
+from djangocms_blog.forms import CategoryAdminForm, PostAdminForm
 from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import MENU_TYPE_NONE, get_setting
 
@@ -80,12 +82,13 @@ class AdminTest(BaseTest):
 
         # Add view only contains the apphook selection widget
         response = post_admin.add_view(request)
-        self.assertNotContains(response, '<input id="id_slug" maxlength="255" name="slug" type="text"')
+        self.assertNotContains(response, '<input id="id_slug" maxlength="2000" name="slug" type="text"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal'
         response = post_admin.change_view(request, str(post.pk))
-        self.assertContains(response, '<input id="id_slug" maxlength="255" name="slug" type="text" value="first-post" />')
+        self.assertContains(response, '<input id="id_slug" maxlength="2000" name="slug" type="text" value="first-post" />')
+        self.assertContains(response, 'id="id_meta_description" maxlength="320"')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Test for publish view
@@ -176,18 +179,54 @@ class AdminTest(BaseTest):
         self.assertContains(response, 'sample_app')
 
     def test_admin_category_views(self):
-        post_admin = admin.site._registry[BlogCategory]
+        category_admin = admin.site._registry[BlogCategory]
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
 
         # Add view only has an empty form - no type
-        response = post_admin.add_view(request)
-        self.assertNotContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1"')
+        response = category_admin.add_view(request)
+        self.assertNotContains(response, 'id="id_name" maxlength="2000" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal', with a few preselected items
-        response = post_admin.change_view(request, str(self.category_1.pk))
-        self.assertContains(response, 'id="id_name" maxlength="255" name="name" type="text" value="category 1"')
+        response = category_admin.change_view(request, str(self.category_1.pk))
+        self.assertContains(response, 'id="id_name" maxlength="2000" name="name" type="text" value="category 1"')
+        self.assertContains(response, 'id="id_meta_description" maxlength="320"')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
+
+    def test_form(self):
+        posts = self.get_posts()
+        with override_settings(BLOG_META_DESCRIPTION_LENGTH=20, BLOG_META_TITLE_LENGTH=20):
+            form = PostAdminForm(
+                data={'meta_description': 'major text over 20 characters long'},
+                instance=posts[0]
+            )
+            self.assertFalse(form.is_valid())
+            form = PostAdminForm(
+                data={'meta_title': 'major text over 20 characters long'},
+                instance=posts[0]
+            )
+            self.assertFalse(form.is_valid())
+            form = CategoryAdminForm(
+                data={'meta_description': 'major text over 20 characters long'},
+                instance=self.category_1
+            )
+            self.assertFalse(form.is_valid())
+
+            form = PostAdminForm(
+                data={'meta_description': 'mini text'},
+                instance=posts[0]
+            )
+            self.assertFalse(form.is_valid())
+            form = PostAdminForm(
+                data={'meta_title': 'mini text'},
+                instance=posts[0]
+            )
+            self.assertFalse(form.is_valid())
+            form = CategoryAdminForm(
+                data={'meta_description': 'mini text'},
+                instance=self.category_1
+            )
+            self.assertFalse(form.is_valid())
 
     def test_admin_category_parents(self):
         category1 = BlogCategory.objects.create(name='tree category 1', app_config=self.app_config_1)
@@ -617,6 +656,21 @@ class ModelsTest(BaseTest):
         self.assertTrue(meta_it.url.endswith(post.get_absolute_url()))
         self.assertNotEqual(meta_it.title, meta_en.title)
         self.assertEqual(meta_it.description, post.meta_description)
+
+        category = post.categories.first()
+        meta_cat = category.as_meta()
+        self.assertEqual(meta_cat.og_type, get_setting('FB_TYPE'))
+        self.assertEqual(meta_cat.title, category.name)
+        self.assertEqual(meta_cat.description, category.meta_description)
+        self.assertEqual(meta_cat.locale, 'en')
+        self.assertEqual(meta_cat.twitter_site, '')
+        self.assertEqual(meta_cat.twitter_author, '')
+        self.assertEqual(meta_cat.twitter_type, 'summary')
+        self.assertEqual(meta_cat.gplus_author, 'RandomJoe')
+        self.assertEqual(meta_cat.gplus_type, 'Blog')
+        self.assertEqual(meta_cat.og_type, 'Article')
+        self.assertEqual(meta_cat.facebook_app_id, None)
+        self.assertTrue(meta_cat.url.endswith(category.get_absolute_url()))
 
         with override('en'):
             post.set_current_language(get_language())

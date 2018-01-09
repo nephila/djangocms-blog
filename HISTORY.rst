@@ -22,7 +22,9 @@ History
 * Improved admin filtering.
 * Added featured date to post.
 * Fixed issue with urls in sitemap if apphook is not published
-* Use the easy_thumbnails_tags template tag. Require easy_thumbnails >= 2.4.1
+* Moved template to easy_thumbnails_tags template tag. Require easy_thumbnails >= 2.4.1
+* Made HTML description and title fields length configurable
+* Added meta representation for CategoryEntriesView
 
 
 *******************

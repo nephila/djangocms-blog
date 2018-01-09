@@ -58,6 +58,12 @@ def get_setting(name):
         'BLOG_POSTS_LIST_TRUNCWORDS_COUNT': getattr(
             settings, 'BLOG_POSTS_LIST_TRUNCWORDS_COUNT', 100
         ),
+        'BLOG_META_DESCRIPTION_LENGTH': getattr(
+            settings, 'BLOG_META_DESCRIPTION_LENGTH', 320
+        ),
+        'BLOG_META_TITLE_LENGTH': getattr(
+            settings, 'BLOG_META_TITLE_LENGTH', 70
+        ),
         'BLOG_MENU_TYPES': MENU_TYPES,
         'BLOG_MENU_EMPTY_CATEGORIES': getattr(settings, 'MENU_EMPTY_CATEGORIES', True),
         'BLOG_TYPE': getattr(settings, 'BLOG_TYPE', 'Article'),
