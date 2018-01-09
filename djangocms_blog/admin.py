@@ -24,12 +24,6 @@ from .forms import CategoryAdminForm, PostAdminForm
 from .models import BlogCategory, Post
 from .settings import get_setting
 
-try:
-    from admin_enhancer.admin import EnhancedModelAdminMixin
-except ImportError:
-    class EnhancedModelAdminMixin(object):
-        pass
-
 
 class SiteListFilter(admin.SimpleListFilter):
     title = _('site')
@@ -55,7 +49,7 @@ class SiteListFilter(admin.SimpleListFilter):
             raise admin.options.IncorrectLookupParameters(e)
 
 
-class BlogCategoryAdmin(EnhancedModelAdminMixin, ModelAppHookConfig, TranslatableAdmin):
+class BlogCategoryAdmin(ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
     list_display = [
         'name', 'parent', 'app_config', 'all_languages_column',

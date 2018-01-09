@@ -24,10 +24,10 @@ try:
     import HTMLParser
 
     h = HTMLParser.HTMLParser()
-except ImportError:
-    from html.parser import HTMLParser
+    unescape = h.unescape
 
-    h = HTMLParser()
+except ImportError:
+    from html import unescape
 
 
 class LatestEntriesFeed(Feed):
@@ -123,13 +123,13 @@ class FBInstantFeed(Rss201rev2Feed):
 
         handler.startElement('description', {})
         handler._write('<![CDATA[{0}]]>'.format(
-            h.unescape(normalize_newlines(force_text(item['abstract'])).replace('\n', ' ')))
+            unescape(normalize_newlines(force_text(item['abstract'])).replace('\n', ' ')))
         )
         handler.endElement('description')
         handler.startElement('content:encoded', {})
         handler._write('<![CDATA[')
         handler._write('<!doctype html>')
-        handler._write(h.unescape(force_text(item['content'])))
+        handler._write(unescape(force_text(item['content'])))
         handler._write(']]>')
         handler.endElement('content:encoded')
 
