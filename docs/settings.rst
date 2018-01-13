@@ -46,6 +46,8 @@ Global Settings
   no abstract field is available for every post; (default: ``True``)
 * BLOG_USE_PLACEHOLDER: Post content is managed via placeholder;
   if ``False`` a simple HTMLField is used; (default: ``True``)
+* BLOG_USE_RELATED: Enable related posts to link one post to others;
+  (default: ``True``)
 * BLOG_MULTISITE: Add support for multisite setup; (default: ``True``)
 * BLOG_AUTHOR_DEFAULT: Use a default if not specified; if set to ``True`` the
   current user is set as the default author, if set to ``False`` no default
@@ -121,6 +123,7 @@ be used as defaults.
 * Use placeholder and plugins for article body: Per-Apphook setting for
   BLOG_USE_PLACEHOLDER;
 * Use abstract field: Per-Apphook setting for BLOG_USE_ABSTRACT;
+* Enable related posts: Per-Apphook setting for BLOG_USE_RELATED;
 * Set author: Per-Apphook setting for BLOG_AUTHOR_DEFAULT;
 * Paginate sizePer-Apphook setting for BLOG_PAGINATION;
 * Template prefix: Alternative directory to load the blog templates from;

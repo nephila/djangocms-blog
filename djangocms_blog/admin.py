@@ -84,14 +84,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         'enable_comments',
         'disable_comments',
     ]
-    if 'djangocms_blog.liveblog' in settings.INSTALLED_APPS:
+    if apps.is_installed('djangocms_blog.liveblog'):
         actions += ['enable_liveblog', 'disable_liveblog']
     _fieldsets = [
         (None, {
             'fields': [['title', 'categories', 'publish', 'app_config']]
         }),
         (None, {
-            'fields': [['related', ]]
+            'fields': [[]]
         }),
         (_('Info'), {
             'fields': [['slug', 'tags'],
@@ -314,15 +314,17 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
 
         fsets = deepcopy(self._fieldsets)
         if config:
-            if config.use_abstract:
-                fsets[0][1]['fields'].append('abstract')
-            if not config.use_placeholder:
-                fsets[0][1]['fields'].append('post_text')
+            abstract = bool(config.use_abstract)
+            placeholder = bool(config.use_placeholder)
+            related = bool(config.use_related)
         else:
-            if get_setting('USE_ABSTRACT'):
-                fsets[0][1]['fields'].append('abstract')
-            if not get_setting('USE_PLACEHOLDER'):
-                fsets[0][1]['fields'].append('post_text')
+            abstract = get_setting('USE_ABSTRACT')
+            placeholder = get_setting('USE_PLACEHOLDER')
+            related = get_setting('USE_RELATED')
+        if abstract:
+            fsets[0][1]['fields'].append('abstract')
+        if not placeholder:
+            fsets[0][1]['fields'].append('post_text')
         if get_setting('MULTISITE') and not self.has_restricted_sites(request):
             fsets[1][1]['fields'][0].append('sites')
         if request.user.is_superuser:
@@ -330,6 +332,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         if apps.is_installed('djangocms_blog.liveblog'):
             fsets[2][1]['fields'][2].append('enable_liveblog')
         filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
+        if related:
+            fsets[1][1]['fields'][0].append('related')
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)
         return fsets
@@ -388,7 +392,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             (_('Generic'), {
                 'fields': (
                     'config.default_published', 'config.use_placeholder', 'config.use_abstract',
-                    'config.set_author',
+                    'config.set_author', 'config.use_related',
                 )
             }),
             (_('Layout'), {
