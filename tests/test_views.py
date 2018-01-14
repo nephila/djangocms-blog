@@ -11,7 +11,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import Http404
-from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from parler.tests.utils import override_parler_settings

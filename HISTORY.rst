@@ -8,7 +8,7 @@ History
 0.9.0 (unreleased)
 ******************
 
-* Added support for django CMS 3.4
+* Added support for django CMS 3.4, 3.5
 * Dropped support for Django<1.8, django CMS<3.2.
 * Added liveblog application.
 * Refactored plugin filters: by default only data for current site are now shown.

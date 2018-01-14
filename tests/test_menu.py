@@ -48,7 +48,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 self.assertTrue(len(nodes), BlogCategory.objects.all().count() + len(pages))
                 nodes_url = set([node.get_absolute_url() for node in nodes])
                 cats_url = set([cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)])
@@ -60,7 +60,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 request = self.get_page_request(pages[1].get_draft_object(), self.user, pages[1].get_draft_object().get_absolute_url(lang))
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 urls = [node.get_absolute_url() for node in nodes]
                 nodes_url = [node.get_absolute_url() for node in nodes]
                 self.assertTrue(len(nodes_url), BlogCategory.objects.all().count() + len(pages))
@@ -97,7 +97,7 @@ class MenuTest(BaseTest):
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
                 self._reset_menus()
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
@@ -110,7 +110,7 @@ class MenuTest(BaseTest):
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
                 self._reset_menus()
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertFalse(cats_url[lang].issubset(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
@@ -123,7 +123,7 @@ class MenuTest(BaseTest):
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
                 self._reset_menus()
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
@@ -136,7 +136,7 @@ class MenuTest(BaseTest):
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
                 self._reset_menus()
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 nodes_url = set([node.get_absolute_url() for node in nodes])
                 self.assertTrue(cats_url[lang].issubset(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
@@ -151,7 +151,7 @@ class MenuTest(BaseTest):
             request = self.get_page_request(None, self.user, r'/%s/page-two/' % lang)
             with smart_override(lang):
                 self._reset_menus()
-                nodes = menu_pool.get_nodes(request)
+                nodes = self.get_nodes(menu_pool, request)
                 nodes_url = set([node.url for node in nodes])
                 self.assertTrue(cats_with_post_url[lang].issubset(nodes_url))
                 self.assertFalse(cats_without_post_url[lang].intersection(nodes_url))
@@ -194,7 +194,7 @@ class MenuTest(BaseTest):
                     view_obj.get(request)
                     view_obj.get_context_data()
                     # check if selected menu node points to cat
-                    nodes = menu_pool.get_nodes(request)
+                    nodes = self.get_nodes(menu_pool, request)
                     found = []
                     for node in nodes:
                         if node.selected:
@@ -219,11 +219,8 @@ class MenuTest(BaseTest):
                     view_obj.get(request)
                     view_obj.get_context_data()
                     # check if selected menu node points to cat
-                    nodes = menu_pool.get_nodes(request)
-                    found = []
-                    for node in nodes:
-                        if node.selected:
-                            found.append(node.get_absolute_url())
+                    nodes = self.get_nodes(menu_pool, request)
+                    found = [node.get_absolute_url() for node in nodes if node.selected]
                     self.assertTrue(cat.get_absolute_url() in found)
 
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
