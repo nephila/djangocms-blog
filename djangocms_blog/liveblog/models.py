@@ -63,10 +63,14 @@ class LiveblogInterface(models.Model):
         })
         try:
             from cms.plugin_rendering import ContentRenderer
-            context['cms_content_renderer'] = ContentRenderer(request)
+            renderer = ContentRenderer(request)
+            return renderer.render_plugin(
+                instance=self,
+                context=context,
+                placeholder=self.placeholder,
+            )
         except ImportError:
-            pass
-        return self.render_plugin(context)
+            return self.render_plugin(context)
 
     def send(self, request):
         """

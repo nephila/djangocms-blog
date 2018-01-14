@@ -159,6 +159,13 @@ class BaseTest(BaseTestCase):
         cache.clear()
         super(BaseTest, self).tearDown()
 
+    def get_nodes(self, menu_pool, request):
+        try:
+            nodes = menu_pool.get_renderer(request).get_nodes()
+        except AttributeError:
+            nodes = menu_pool.get_nodes(request)
+        return nodes
+
     def _get_category(self, data, category=None, lang='en'):
         data = deepcopy(data)
         for k, v in data.items():

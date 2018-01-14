@@ -14,10 +14,10 @@ from .settings import get_setting
 @apphook_pool.register
 class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     name = _('Blog')
-    urls = ['djangocms_blog.urls']
+    _urls = ['djangocms_blog.urls']
     app_name = 'djangocms_blog'
     app_config = BlogConfig
-    menus = [BlogCategoryMenu]
+    _menus = [BlogCategoryMenu]
     auto_setup = {
         'enabled': get_setting('AUTO_SETUP'),
         'home title': get_setting('AUTO_HOME_TITLE'),
@@ -29,6 +29,14 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
             'object_name': get_setting('DEFAULT_OBJECT_NAME')
         },
     }
+
+    @property
+    def urls(self):
+        return self._urls
+
+    @property
+    def menus(self):
+        return self._menus
 
 
 BlogApp.setup()

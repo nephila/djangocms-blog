@@ -59,6 +59,7 @@ class SetupTest(BaseTest):
         # Tests starts with no page and no config
         self.assertFalse(Page.objects.exists())
         self.assertFalse(BlogConfig.objects.exists())
+        set_home = hasattr(Page, 'set_as_homepage')
 
         langs = get_language_list()
         home = None
@@ -69,6 +70,8 @@ class SetupTest(BaseTest):
                         'a new home', language=lang,
                         template='blog.html', in_navigation=True, published=True
                     )
+                    if set_home:
+                        home.set_as_homepage()
                 else:
                     create_title(
                         language=lang, title='a new home', page=home

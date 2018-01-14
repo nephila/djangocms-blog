@@ -38,19 +38,18 @@ class BlogCategoryMenu(CMSAttachMenu):
         language = get_language_from_request(request, check_path=True)
         current_site = get_current_site(request)
 
-        if self.instance.site != current_site:
+        if self.instance and self.instance.site != current_site:
             return []
 
         categories_menu = False
         posts_menu = False
         config = False
-        if hasattr(self, 'instance') and self.instance:
+        if self.instance:
             if not self._config.get(self.instance.application_namespace, False):
                 self._config[self.instance.application_namespace] = BlogConfig.objects.get(
                     namespace=self.instance.application_namespace
                 )
             config = self._config[self.instance.application_namespace]
-        if hasattr(self, 'instance') and self.instance:
             if not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
                 if self.instance == self.instance.get_draft_object():
                     return []
@@ -71,7 +70,6 @@ class BlogCategoryMenu(CMSAttachMenu):
                 posts = posts.namespace(self.instance.application_namespace).on_site()
             posts = posts.active_translations(language).distinct().\
                 select_related('app_config').prefetch_related('translations', 'categories')
-
             for post in posts:
                 post_id = None
                 parent = None

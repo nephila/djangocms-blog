@@ -583,7 +583,7 @@ class AdminTest(BaseTest):
         post = self._get_post(self._post_data[0]['en'])
 
         request = self.get_page_request(None, self.user, r'/en/page-two/')
-        first_nodes = menu_pool.get_nodes(request)
+        first_nodes = self.get_nodes(menu_pool, request)
         self._reset_menus()
         with pause_knocks(post):
             with self.login_user_context(self.user):
@@ -596,7 +596,7 @@ class AdminTest(BaseTest):
                 msg_mid.process_request(request)
                 config_admin = admin.site._registry[BlogConfig]
                 config_admin.change_view(request, str(self.app_config_1.pk))
-                second_nodes = menu_pool.get_nodes(request)
+                second_nodes = self.get_nodes(menu_pool, request)
                 self.assertNotEqual(len(first_nodes), len(second_nodes))
 
 
