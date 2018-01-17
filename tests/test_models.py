@@ -15,6 +15,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.http import QueryDict
 from django.test import override_settings
 from django.utils.encoding import force_text
 from django.utils.html import strip_tags
@@ -181,13 +182,32 @@ class AdminTest(BaseTest):
     def test_admin_category_views(self):
         category_admin = admin.site._registry[BlogCategory]
         request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+        BlogCategory.objects.create(name='category 1 - blog 2', app_config=self.app_config_2)
 
         # Add view only has an empty form - no type
         response = category_admin.add_view(request)
         self.assertNotContains(response, 'id="id_name" maxlength="767" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
+        # Add view select categories on the given appconfig, even when reloading the form
+        request.POST = QueryDict('app_config=1')
+        request.method = 'POST'
+        response = category_admin.add_view(request)
+        self.assertTrue(
+            response.context_data['adminform'].form.fields['parent'].queryset,
+            BlogCategory.objects.filter(app_config=self.app_config_1)
+        )
+
+        request.GET = QueryDict('app_config=1')
+        request.method = 'GET'
+        response = category_admin.add_view(request)
+        self.assertTrue(
+            response.context_data['adminform'].form.fields['parent'].queryset,
+            BlogCategory.objects.filter(app_config=self.app_config_1)
+        )
+
         # Changeview is 'normal', with a few preselected items
+        request.GET = QueryDict()
         response = category_admin.change_view(request, str(self.category_1.pk))
         self.assertContains(response, 'id="id_name" maxlength="767" name="name" type="text" value="category 1"')
         self.assertContains(response, 'id="id_meta_description" maxlength="320"')
@@ -240,31 +260,25 @@ class AdminTest(BaseTest):
 
         # Add view shows all the exising categories
         response = post_admin.add_view(request)
-        self.assertContains(response, '<option value="1">category 1</option>')
-        self.assertContains(response, '<option value="2">tree category 1</option>')
-        self.assertContains(response, '<option value="3">tree category 2</option>')
-        self.assertContains(response, '<option value="4">tree category 3</option>')
-        self.assertContains(response, '<option value="5">tree category 4</option>')
-        self.assertNotContains(response, 'category different branch</option>')
+        self.assertTrue(
+            response.context_data['adminform'].form.fields['parent'].queryset,
+            BlogCategory.objects.filter(app_config=self.app_config_1)
+        )
 
         # Changeview hides the children of the current category
         response = post_admin.change_view(request, str(category2.pk))
-        self.assertContains(response, '<option value="1">category 1</option>')
-        self.assertContains(response, '<option value="2" selected="selected">tree category 1</option>')
-        self.assertNotContains(response, '<option value="3">tree category 2</option>')
-        self.assertNotContains(response, '<option value="4">tree category 3</option>')
-        self.assertNotContains(response, '<option value="5">tree category 4</option>')
-        self.assertNotContains(response, 'category different branch</option>')
+        self.assertTrue(
+            response.context_data['adminform'].form.fields['parent'].queryset,
+            BlogCategory.objects.filter(app_config=self.app_config_1, parent__isnull=True)
+        )
 
         # Test second apphook categories
         request = self.get_page_request('/', self.user, r'/en/blog/?app_config=%s' % self.app_config_2.pk, edit=False)
         response = post_admin.add_view(request)
-        self.assertNotContains(response, '<option value="1">category 1</option>')
-        self.assertNotContains(response, '<option value="2">tree category 1</option>')
-        self.assertNotContains(response, '<option value="3">tree category 2</option>')
-        self.assertNotContains(response, '<option value="4">tree category 3</option>')
-        self.assertNotContains(response, '<option value="5">tree category 4</option>')
-        self.assertContains(response, 'category different branch</option>')
+        self.assertTrue(
+            response.context_data['adminform'].form.fields['parent'].queryset,
+            BlogCategory.objects.filter(app_config=self.app_config_2)
+        )
 
     def test_admin_fieldsets(self):
         post_admin = admin.site._registry[Post]
@@ -339,12 +353,30 @@ class AdminTest(BaseTest):
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.add_view(request)
-            self.assertContains(response, '<option value="%s">%s</option>' % (
-                self.category_1.pk, self.category_1.safe_translation_getter('name', language_code='en')
-            ))
+            self.assertTrue(
+                response.context_data['adminform'].form.fields['categories'].queryset,
+                BlogCategory.objects.filter(app_config=self.app_config_1)
+            )
             self.assertContains(response, 'id="id_sites" name="sites"')
             self.assertContains(response, 'selected="selected">Blog image')
             self.assertContains(response, 'selected="selected">Blog thumbnail')
+
+            # Add view select categories on the given appconfig, even when reloading the form
+            request.POST = QueryDict('app_config=1')
+            request.method = 'POST'
+            response = post_admin.add_view(request)
+            self.assertTrue(
+                response.context_data['adminform'].form.fields['categories'].queryset,
+                BlogCategory.objects.filter(app_config=self.app_config_1)
+            )
+
+            request.GET = QueryDict('app_config=1')
+            request.method = 'GET'
+            response = post_admin.add_view(request)
+            self.assertTrue(
+                response.context_data['adminform'].form.fields['categories'].queryset,
+                BlogCategory.objects.filter(app_config=self.app_config_1)
+            )
 
         self.user.sites.add(self.site_1)
         with self.login_user_context(self.user):
