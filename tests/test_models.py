@@ -82,12 +82,12 @@ class AdminTest(BaseTest):
 
         # Add view only contains the apphook selection widget
         response = post_admin.add_view(request)
-        self.assertNotContains(response, '<input id="id_slug" maxlength="2000" name="slug" type="text"')
+        self.assertNotContains(response, '<input id="id_slug" maxlength="767" name="slug" type="text"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal'
         response = post_admin.change_view(request, str(post.pk))
-        self.assertContains(response, '<input id="id_slug" maxlength="2000" name="slug" type="text" value="first-post" />')
+        self.assertContains(response, '<input id="id_slug" maxlength="767" name="slug" type="text" value="first-post" />')
         self.assertContains(response, 'id="id_meta_description" maxlength="320"')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
@@ -184,12 +184,12 @@ class AdminTest(BaseTest):
 
         # Add view only has an empty form - no type
         response = category_admin.add_view(request)
-        self.assertNotContains(response, 'id="id_name" maxlength="2000" name="name" type="text" value="category 1"')
+        self.assertNotContains(response, 'id="id_name" maxlength="767" name="name" type="text" value="category 1"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal', with a few preselected items
         response = category_admin.change_view(request, str(self.category_1.pk))
-        self.assertContains(response, 'id="id_name" maxlength="2000" name="name" type="text" value="category 1"')
+        self.assertContains(response, 'id="id_name" maxlength="767" name="name" type="text" value="category 1"')
         self.assertContains(response, 'id="id_meta_description" maxlength="320"')
         self.assertContains(response, '<option value="%s" selected="selected">Blog / sample_app</option>' % self.app_config_1.pk)
 
