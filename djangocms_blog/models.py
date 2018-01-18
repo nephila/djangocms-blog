@@ -3,7 +3,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
 
-import django
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, PlaceholderField
@@ -19,7 +18,6 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
-from django.utils.text import slugify
 from django.utils.translation import get_language, ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
@@ -30,7 +28,7 @@ from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
-from .fields import AutoSlugField
+from .fields import AutoSlugField, slugify
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -46,7 +44,6 @@ except ImportError:  # pragma: no cover
 thumbnail_model = '%s.%s' % (
     ThumbnailOption._meta.app_label, ThumbnailOption.__name__
 )
-
 
 try:
     from knocker.mixins import KnockerModel
@@ -315,10 +312,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
         if not self.slug and self.title:
-            if django.VERSION >= (1, 9):
-                self.slug = slugify(self.title, allow_unicode=True)
-            else:
-                self.slug = slugify(self.title)
+            self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):
@@ -349,9 +343,12 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             if '<day>' in urlconf:
                 kwargs['day'] = '%02d' % current_date.day
             if '<slug>' in urlconf:
-                kwargs['slug'] = self.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
+                kwargs['slug'] = self.safe_translation_getter(
+                    'slug', language_code=lang, any_language=True
+                )  # NOQA
             if '<category>' in urlconf:
-                kwargs['category'] = category.safe_translation_getter('slug', language_code=lang, any_language=True)  # NOQA
+                kwargs['category'] = category.safe_translation_getter(
+                    'slug', language_code=lang, any_language=True)  # NOQA
             return reverse('%s:post-detail' % self.app_config.namespace, kwargs=kwargs)
 
     def get_title(self):
@@ -555,7 +552,6 @@ class AuthorEntriesPlugin(BasePostPlugin):
 
 @python_2_unicode_compatible
 class GenericBlogPlugin(BasePostPlugin):
-
     class Meta:
         abstract = False
 
