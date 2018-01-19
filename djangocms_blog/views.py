@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
@@ -166,7 +167,10 @@ class AuthorEntriesView(BaseBlogListView, ListView):
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
-        kwargs['author'] = User.objects.get(**{User.USERNAME_FIELD: self.kwargs.get('username')})
+        kwargs['author'] = get_object_or_404(
+            User,
+            **{User.USERNAME_FIELD: self.kwargs.get('username')}
+        )
         context = super(AuthorEntriesView, self).get_context_data(**kwargs)
         return context
 

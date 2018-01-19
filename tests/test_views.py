@@ -494,4 +494,15 @@ class ViewTest(BaseTest):
             view_obj.namespace, view_obj.config = get_app_instance(request)
             with self.assertRaises(Http404):
                 view_obj.kwargs = {'category': 'unknown-category'}
-                category_obj = view_obj.get_queryset()
+                view_obj.get_queryset()
+
+    def test_non_existing_author_should_raise_404(self):
+        pages = self.get_pages()
+        with smart_override('en'):
+            request = self.get_request(pages[1], 'en', AnonymousUser())
+            view_obj = AuthorEntriesView()
+            view_obj.request = request
+            view_obj.namespace, view_obj.config = get_app_instance(request)
+            with self.assertRaises(Http404):
+                view_obj.kwargs = {'username': 'unknown-author'}
+                view_obj.get_context_data()
