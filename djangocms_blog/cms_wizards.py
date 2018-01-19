@@ -10,13 +10,13 @@ from django import forms
 from django.conf import settings
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from parler.forms import TranslatableModelForm
 
 from .cms_appconfig import BlogConfig
+from .forms import PostAdminFormBase
 from .models import Post
 
 
-class PostWizardForm(TranslatableModelForm):
+class PostWizardForm(PostAdminFormBase):
     default_appconfig = None
 
     def __init__(self, *args, **kwargs):
@@ -31,6 +31,8 @@ class PostWizardForm(TranslatableModelForm):
             choices=self.fields['app_config'].widget.choices,
         )
         self.fields['app_config'].widget.attrs['disabled'] = True
+        if 'categories' in self.fields:
+            self.fields['categories'].queryset = self.available_categories
 
     class Meta:
         model = Post
