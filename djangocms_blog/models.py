@@ -92,8 +92,8 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     )
 
     translations = TranslatedFields(
-        name=models.CharField(_('name'), max_length=2000),
-        slug=models.SlugField(_('slug'), max_length=2000, blank=True, db_index=True),
+        name=models.CharField(_('name'), max_length=767),
+        slug=models.SlugField(_('slug'), max_length=767, blank=True, db_index=True),
         meta_description=models.TextField(
             verbose_name=_('category meta description'), blank=True, default=''
         ),
@@ -227,8 +227,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     )
 
     translations = TranslatedFields(
-        title=models.CharField(_('title'), max_length=2000),
-        slug=AutoSlugField(_('slug'), max_length=2000, blank=True,
+        title=models.CharField(_('title'), max_length=767),
+        slug=AutoSlugField(_('slug'), max_length=767, blank=True,
                            db_index=True, allow_unicode=True),
         abstract=HTMLField(_('abstract'), blank=True, default=''),
         meta_description=models.TextField(verbose_name=_('post meta description'),
