@@ -25,7 +25,10 @@ History
 * Moved template to easy_thumbnails_tags template tag. Require easy_thumbnails >= 2.4.1
 * Made HTML description and title fields length configurable
 * Added meta representation for CategoryEntriesView
-
+* Generated valid slug in wizard if the given one is taken
+* Fixed error in category filtering when loading the for via POST
+* Returned 404 in AuthorEntriesView if author does not exists
+* Returned 404 in CategoryEntriesView if category does not exists
 
 *******************
 0.8.13 (2017-07-25)
