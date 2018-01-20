@@ -8,16 +8,21 @@ from cms.wizards.wizard_base import Wizard
 from cms.wizards.wizard_pool import AlreadyRegisteredException, wizard_pool
 from django import forms
 from django.conf import settings
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from .cms_appconfig import BlogConfig
+from .fields import slugify
 from .forms import PostAdminFormBase
 from .models import Post
 
 
 class PostWizardForm(PostAdminFormBase):
     default_appconfig = None
+
+    slug = forms.SlugField(
+        label=_('Slug'), max_length=767, required=False,
+        help_text=_('Leave empty for automatic slug, or override as required.'),
+    )
 
     def __init__(self, *args, **kwargs):
         if 'initial' not in kwargs or not kwargs.get('initial', False):
@@ -36,7 +41,7 @@ class PostWizardForm(PostAdminFormBase):
 
     class Meta:
         model = Post
-        fields = ['app_config', 'title', 'abstract', 'categories']
+        fields = ['app_config', 'title', 'slug', 'abstract', 'categories']
 
     class Media:
         js = ('admin/js/jquery.js', 'admin/js/jquery.init.js',)
@@ -44,6 +49,23 @@ class PostWizardForm(PostAdminFormBase):
     def save(self, commit=True):
         self.instance._set_default_author(get_current_user())
         return super(PostWizardForm, self).save(commit)
+
+    def clean_slug(self):
+        """
+        Generate a valid slug, in case the given one is taken
+        """
+        source = self.cleaned_data.get('slug', '')
+        lang_choice = self.language_code
+        if not source:
+            source = slugify(self.cleaned_data.get('title', ''))
+        qs = Post._default_manager.active_translations(lang_choice).language(lang_choice)
+        used = list(qs.values_list('translations__slug', flat=True))
+        slug = source
+        i = 1
+        while slug in used:
+            slug = '%s-%s' % (source, i)
+            i += 1
+        return slug
 
 
 class PostWizard(Wizard):

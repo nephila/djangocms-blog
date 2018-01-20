@@ -82,6 +82,51 @@ class WizardTest(BaseTest):
                     instance = form.save()
                     self.assertEqual(instance.author, self.user_normal)
 
+    def test_wizard_duplicate_slug(self):
+        from cms.utils.permissions import current_user
+        from cms.wizards.wizard_pool import wizard_pool
+        from djangocms_blog.models import Post
+        self.get_pages()
+        cat_2 = BlogCategory.objects.create(name='category 1 - blog 2', app_config=self.app_config_2)
+
+        with current_user(self.user_staff):
+            wiz = None
+            for wiz in wizard_pool.get_entries():
+                if wiz.model == Post and wiz.title == 'New Blog':
+                    break
+            form = wiz.form(data={
+                '1-title': 'title article',
+                '1-abstract': 'abstract article',
+                '1-categories': [self.category_1.pk],
+            }, prefix=1)
+            self.assertEqual(form.default_appconfig, self.app_config_1.pk)
+            self.assertTrue(form.is_valid())
+            instance1 = form.save()
+            self.assertEqual(instance1.slug, 'title-article')
+
+            form = wiz.form(data={
+                '1-title': 'title article',
+                '1-abstract': 'abstract article',
+                '1-categories': [self.category_1.pk],
+            }, prefix=1)
+            self.assertEqual(form.default_appconfig, self.app_config_1.pk)
+            self.assertTrue(form.is_valid())
+            instance2 = form.save()
+            self.assertEqual(instance2.slug, 'title-article-1')
+
+            for wiz in wizard_pool.get_entries():
+                if wiz.model == Post and wiz.title == 'New Article':
+                    break
+            form = wiz.form(data={
+                '1-title': 'title article',
+                '1-abstract': 'abstract article',
+                '1-categories': [cat_2.pk],
+            }, prefix=1)
+            self.assertEqual(form.default_appconfig, self.app_config_2.pk)
+            self.assertTrue(form.is_valid())
+            instance3 = form.save()
+            self.assertEqual(instance3.slug, 'title-article-2')
+
     def test_wizard_init_categories_check(self):
         from cms.utils.permissions import current_user
         from cms.wizards.wizard_pool import wizard_pool
