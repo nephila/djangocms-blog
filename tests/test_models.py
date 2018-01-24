@@ -304,6 +304,10 @@ class AdminTest(BaseTest):
         self.app_config_1.app_data.config.use_related = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
+        self.assertFalse('related' in fsets[1][1]['fields'][0])
+
+        Post.objects.language('en').create(title='post x', app_config=self.app_config_1)
+        fsets = post_admin.get_fieldsets(request)
         self.assertTrue('related' in fsets[1][1]['fields'][0])
 
         self.app_config_1.app_data.config.use_related = False
