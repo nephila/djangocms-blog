@@ -39,7 +39,7 @@ install:
 script: COMMAND='coverage run' tox -e$TOXENV
 
 before_install:
-  - pip install -U tox>=1.8 coveralls codecov wheel pip
+  - pip install -U setuptools tox>=1.8 coveralls codecov wheel pip
 after_success:
   - codecov
   - coveralls
