@@ -94,7 +94,7 @@ class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
     def available_categories(self):
         qs = BlogCategory.objects
         if self.app_config:
-            return qs.namespace(self.app_config.namespace)
+            return qs.namespace(self.app_config.namespace).active_translations()
         return qs
 
 
