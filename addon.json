@@ -9,6 +9,7 @@
         "taggit",
         "taggit_autosuggest",
         "meta",
-        "djangocms_blog"
+        "djangocms_blog",
+        "sortedm2m"
     ]
 }
