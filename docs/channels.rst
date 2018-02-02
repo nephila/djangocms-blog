@@ -17,11 +17,13 @@ For detailed information on channels setup, please refer to `channels documentat
 Notifications
 *************
 
-``djangocms-blog`` is integrated with `django-knocker`_ to provide real time desktop notifications.
+``djangocms-blog`` integrates `django-knocker`_ to provide real time desktop notifications.
 
 To enable notifications:
 
-* Add ``knocker`` application to ``INSTALLED_APPS`` together with channels::
+* Install **django-knocker** and **channels<2.0**
+
+* Add ``channels`` and ``knocker`` application to ``INSTALLED_APPS`` together with channels::
 
       INSTALLED_APPS = [
           ...
