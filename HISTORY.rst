@@ -29,6 +29,8 @@ History
 * Fixed error in category filtering when loading the for via POST
 * Returned 404 in AuthorEntriesView if author does not exists
 * Returned 404 in CategoryEntriesView if category does not exists
+* Generate valid slug in wizard if the given one is taken
+* Limit categories / related in forms only to current lan
 
 *******************
 0.8.13 (2017-07-25)
