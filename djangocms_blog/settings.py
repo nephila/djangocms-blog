@@ -53,6 +53,7 @@ def get_setting(name):
             'upscale': False
         }),
 
+        'BLOG_URLCONF': getattr(settings, 'BLOG_URLCONF', 'djangocms_blog.urls'),
         'BLOG_PAGINATION': getattr(settings, 'BLOG_PAGINATION', 10),
         'BLOG_LATEST_POSTS': getattr(settings, 'BLOG_LATEST_POSTS', 5),
         'BLOG_POSTS_LIST_TRUNCWORDS_COUNT': getattr(
