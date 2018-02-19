@@ -2,21 +2,25 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import os.path
+import sys
 
 from aldryn_apphooks_config.utils import get_app_instance
 from cms.api import add_plugin
+from cms.appresolver import APP_RESOLVERS, get_app_patterns
 from cms.toolbar.items import ModalItem
 from cms.utils.apphook_reload import reload_urlconf
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.test import override_settings
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.feeds import FBInstantArticles, FBInstantFeed, LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.settings import get_setting
@@ -30,6 +34,19 @@ from .base import BaseTest
 
 
 class ViewTest(BaseTest):
+
+    @override_settings(BLOG_URLCONF='tests.test_utils.blog_urls')
+    def test_post_list_view_custom_urlconf(self):
+        pages = self.get_pages()
+        self.get_posts()
+        self.get_request(pages[1], 'en', AnonymousUser())
+        self.assertEqual(reverse('sample_app:posts-latest'), '/en/page-two/latests/')
+
+    def test_post_list_view_base_urlconf(self):
+        pages = self.get_pages()
+        self.get_posts()
+        self.get_request(pages[1], 'en', AnonymousUser())
+        self.assertEqual(reverse('sample_app:posts-latest'), '/en/page-two/')
 
     def test_post_list_view(self):
         pages = self.get_pages()

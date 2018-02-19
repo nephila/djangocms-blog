@@ -68,6 +68,7 @@ Global Settings
 * BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
 * BLOG_PERMALINK_URLS: URLConf corresponding to
   BLOG_AVAILABLE_PERMALINK_STYLES;
+* BLOG_URLCONF: Apphoo URLConf; (default: ``'djangocms_blog.urls'``);
 * BLOG_DEFAULT_OBJECT_NAME: Default name for Blog item (used in django CMS Wizard);
 * BLOG_AUTO_SETUP: Enable the blog **Auto setup** feature; (default: ``True``)
 * BLOG_AUTO_HOME_TITLE: Title of the home page created by **Auto setup**;
