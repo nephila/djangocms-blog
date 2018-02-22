@@ -90,11 +90,7 @@ tests, including testing other Python versions with tox::
 
     $ tox
 
-<<<<<<< HEAD
 To get tox, just pip install them into your virtualenv.
-=======
-To get flake8 and tox, just pip install them into your virtualenv.
->>>>>>> release/0.8.x
 
 6. Commit your changes and push your branch to GitHub::
 
