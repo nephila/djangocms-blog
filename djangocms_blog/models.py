@@ -287,7 +287,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         get_latest_by = 'date_published'
 
     def __str__(self):
-        return self.safe_translation_getter('title', any_language=True)
+        return "{}".format(self.safe_translation_getter('title', any_language=True))
 
     @property
     def guid(self, language=None):
