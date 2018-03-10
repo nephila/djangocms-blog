@@ -42,6 +42,7 @@ setup(
         'aldryn-apphooks-config>=0.2.6',
         'djangocms-apphook-setup',
         'django-sortedm2m',
+        'lxml',
     ],
     extras_require={
         'search': ['aldryn-search'],
