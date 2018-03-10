@@ -29,7 +29,9 @@ class PostWizardForm(PostAdminFormBase):
             kwargs['initial'] = {}
         kwargs['initial']['app_config'] = self.default_appconfig
         if 'data' in kwargs and kwargs['data'] is not None:
-            kwargs['data']['1-app_config'] = self.default_appconfig
+            data = kwargs['data'].copy()
+            data['1-app_config'] = self.default_appconfig
+            kwargs['data'] = data
         super(PostWizardForm, self).__init__(*args, **kwargs)
         self.fields['app_config'].widget = forms.Select(
             attrs=self.fields['app_config'].widget.attrs,
