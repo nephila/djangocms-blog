@@ -5,6 +5,13 @@ History
 =======
 
 ******************
+0.9.3 (unreleased)
+******************
+
+* Add dependency on lxml used in feeds
+* Fix warning on django CMS 3.5
+
+******************
 0.9.2 (2018-02-27)
 ******************
 
