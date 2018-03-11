@@ -38,7 +38,11 @@ class BlogCategoryMenu(CMSAttachMenu):
         language = get_language_from_request(request, check_path=True)
         current_site = get_current_site(request)
 
-        if self.instance and self.instance.site != current_site:
+        try:
+            page_site = self.instance.node.site
+        except AttributeError:  # Compatibility with django CMS 3.4-
+            page_site = self.instance.site
+        if self.instance and page_site != current_site:
             return []
 
         categories_menu = False
