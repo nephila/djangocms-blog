@@ -10,6 +10,7 @@ History
 
 * Add dependency on lxml used in feeds
 * Fix warning on django CMS 3.5
+* Fix wizard in Django 1.11
 
 ******************
 0.9.2 (2018-02-27)
