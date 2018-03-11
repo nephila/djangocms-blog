@@ -3,45 +3,45 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Diego Ponci <dgo.ponciano@gmail.com>, 2016
+# Rivo Zängov <eraser@eraser.ee>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-20 17:19+0100\n"
-"PO-Revision-Date: 2018-02-21 22:36+0000\n"
-"Last-Translator: yakky <i.spalletti@nephila.it>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/nephila/djangocms-blog/language/pt_BR/)\n"
+"PO-Revision-Date: 2018-02-27 11:56+0000\n"
+"Last-Translator: Rivo Zängov <eraser@eraser.ee>\n"
+"Language-Team: Estonian (http://www.transifex.com/nephila/djangocms-blog/language/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pt_BR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: et\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.5\n"
 
 #: admin.py:28
 msgid "site"
-msgstr ""
+msgstr "sait"
 
 #: admin.py:96
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: admin.py:102
 msgid "Images"
-msgstr ""
+msgstr "Pildid"
 
 #: admin.py:106
 msgid "SEO"
-msgstr ""
+msgstr "SEO"
 
 #: admin.py:199
 msgid "Publish selection"
-msgstr ""
+msgstr "Avalda valik"
 
 #: admin.py:200
 msgid "Unpublish selection"
-msgstr ""
+msgstr "Peida valik"
 
 #: admin.py:201
 msgid "Enable comments for selection"
@@ -61,55 +61,55 @@ msgstr ""
 
 #: admin.py:392
 msgid "Generic"
-msgstr ""
+msgstr "Üldine"
 
 #: admin.py:398
 msgid "Layout"
-msgstr ""
+msgstr "Paigutus"
 
 #: admin.py:406
 msgid "Notifications"
-msgstr ""
+msgstr "Teavitused"
 
 #: admin.py:412
 msgid "Sitemap"
-msgstr ""
+msgstr "Sisukaart"
 
 #: admin.py:418
 msgid "Meta"
-msgstr ""
+msgstr "META"
 
 #: admin.py:429 admin.py:437 admin.py:445
 msgid "You can provide plain strings, Post model attribute or method names"
-msgstr "Você pode fornecer texto puro, atributos do modelo Post ou nomes de métodos"
+msgstr ""
 
 #: apps.py:15
 msgid "django CMS Blog"
-msgstr "blog do django CMS"
+msgstr ""
 
 #: cms_appconfig.py:25
 msgid "application title"
-msgstr "título da aplicação"
+msgstr "rakenduse nimi"
 
 #: cms_appconfig.py:27
 msgid "object name"
-msgstr "nome do objeto"
+msgstr "objekti nimi"
 
 #: cms_appconfig.py:32
 msgid "blog config"
-msgstr "configuração do blog"
+msgstr "blogi seaded"
 
 #: cms_appconfig.py:33
 msgid "blog configs"
-msgstr "configurações do blog"
+msgstr "blogi seaded"
 
 #: cms_appconfig.py:36
 msgid "untitled"
-msgstr "sem título"
+msgstr "pealkirjata"
 
 #: cms_appconfig.py:41
 msgid "Post published by default"
-msgstr "Post publicado por padrão"
+msgstr ""
 
 #: cms_appconfig.py:45
 msgid "Default size of full images"
@@ -133,15 +133,15 @@ msgstr ""
 
 #: cms_appconfig.py:59
 msgid "Permalink structure"
-msgstr "Estrutura de links permanentes"
+msgstr "Püsilingi struktuur"
 
 #: cms_appconfig.py:64
 msgid "Use placeholder and plugins for article body"
-msgstr "Usar placeholder e plugins para o corpo da notícia"
+msgstr ""
 
 #: cms_appconfig.py:68
 msgid "Use abstract field"
-msgstr "Usar campo abstrato"
+msgstr ""
 
 #: cms_appconfig.py:72
 msgid "Enable related posts"
@@ -149,35 +149,35 @@ msgstr ""
 
 #: cms_appconfig.py:76
 msgid "Set author"
-msgstr "Informar o autor"
+msgstr "Määra autor"
 
 #: cms_appconfig.py:76
 msgid "Set author by default"
-msgstr "Informar o autor por padrão"
+msgstr ""
 
 #: cms_appconfig.py:80
 msgid "Paginate size"
-msgstr "Tamanho da paginação"
+msgstr ""
 
 #: cms_appconfig.py:81
 msgid "When paginating list views, how many articles per page?"
-msgstr "Em paginações de listagem, quantas notícias por página?"
+msgstr ""
 
 #: cms_appconfig.py:84
 msgid "Template prefix"
-msgstr "Prefixo do template"
+msgstr ""
 
 #: cms_appconfig.py:85
 msgid "Alternative directory to load the blog templates from"
-msgstr "Diretório alternativo de origem dos templates do blog"
+msgstr ""
 
 #: cms_appconfig.py:88
 msgid "Menu structure"
-msgstr "Estrutura do menu"
+msgstr "Menüü struktuur"
 
 #: cms_appconfig.py:90
 msgid "Structure of the django CMS menu"
-msgstr "Estrutura do menu do django CMS"
+msgstr ""
 
 #: cms_appconfig.py:93
 msgid "Show empty categories in menu"
@@ -189,113 +189,113 @@ msgstr ""
 
 #: cms_appconfig.py:98
 msgid "Sitemap changefreq"
-msgstr "'changefreq' do sitemap"
+msgstr ""
 
 #: cms_appconfig.py:101
 msgid "Changefreq attribute for sitemap items"
-msgstr "Atributo changefreq de items do sitemap"
+msgstr ""
 
 #: cms_appconfig.py:104
 msgid "Sitemap priority"
-msgstr "'priority' do sitemap"
+msgstr ""
 
 #: cms_appconfig.py:106
 msgid "Priority attribute for sitemap items"
-msgstr "Atributo 'priority' de items do sitemap"
+msgstr ""
 
 #: cms_appconfig.py:109
 msgid "Object type"
-msgstr "Tipo de objeto"
+msgstr "Objekti liik"
 
 #: cms_appconfig.py:113
 msgid "Facebook type"
-msgstr "Tipo de conta do facebook"
+msgstr "Facebooki liik"
 
 #: cms_appconfig.py:117
 msgid "Facebook application ID"
-msgstr "ID da aplicação no Facebook"
+msgstr "Facebooki rakenduse ID"
 
 #: cms_appconfig.py:121
 msgid "Facebook profile ID"
-msgstr "ID do perfil no Facebook"
+msgstr "Facebooki profiili ID"
 
 #: cms_appconfig.py:125
 msgid "Facebook page URL"
-msgstr "URL da página no Facebook"
+msgstr "Facebook lehekülje URL"
 
 #: cms_appconfig.py:129
 msgid "Facebook author URL"
-msgstr "URL do autor no Facebook"
+msgstr "Facebooki autori URL"
 
 #: cms_appconfig.py:133
 msgid "Facebook author"
-msgstr "Autor no Facebook"
+msgstr "Facebooki autor"
 
 #: cms_appconfig.py:137
 msgid "Twitter type"
-msgstr "Tipo do Twitter"
+msgstr "Twitteri liik"
 
 #: cms_appconfig.py:141
 msgid "Twitter site handle"
-msgstr "Nome de usuário no Twitter"
+msgstr ""
 
 #: cms_appconfig.py:145
 msgid "Twitter author handle"
-msgstr "Usuário do autor no Twitter"
+msgstr ""
 
 #: cms_appconfig.py:149
 msgid "Google+ type"
-msgstr "Tipo do Google+"
+msgstr ""
 
 #: cms_appconfig.py:153
 msgid "Google+ author name"
-msgstr "Nome do autor no Google+"
+msgstr ""
 
 #: cms_appconfig.py:158
 msgid "Send notifications on post publish"
-msgstr "Enviar notificações ao publicar postagem"
+msgstr ""
 
 #: cms_appconfig.py:159
 msgid "Emits a desktop notification -if enabled- when publishing a new post"
-msgstr "Enviar notificação de desktop -se ativada- quando publicar uma nova postagem"
+msgstr ""
 
 #: cms_appconfig.py:162
 msgid "Send notifications on post update"
-msgstr "Enviar notificações ao atualizar postagem"
+msgstr ""
 
 #: cms_appconfig.py:163
 msgid ""
 "Emits a desktop notification -if enabled- when editing a published post"
-msgstr "Enviar notificação de desktop -se ativada- quando editar uma postagem publicada"
+msgstr ""
 
 #: cms_apps.py:16 cms_toolbars.py:20 settings.py:123
 msgid "Blog"
-msgstr "Blog"
+msgstr ""
 
 #: cms_menus.py:26
 msgid "Blog menu"
-msgstr "Menu do blog"
+msgstr "Blogi menüü"
 
 #: cms_toolbars.py:23
 msgid "Post list"
-msgstr "Lista de postagens"
+msgstr "Postituste nimekiri"
 
 #: cms_toolbars.py:25
 msgid "Add post"
-msgstr "Adicionar postagem"
+msgstr "Lisa postitus"
 
 #: cms_toolbars.py:29
 msgid "Edit configuration"
-msgstr "Editar preferências"
+msgstr "Muuda seadistust"
 
 #: cms_toolbars.py:33
 msgid "Edit Post"
-msgstr "Ediar Postagem"
+msgstr "Muuda postitust"
 
 #: cms_toolbars.py:47
 #, python-brace-format
 msgid "Publish {0} now"
-msgstr "Publicar {0} agora"
+msgstr ""
 
 #: cms_wizards.py:23
 msgid "Slug"
@@ -308,17 +308,17 @@ msgstr ""
 #: cms_wizards.py:82
 #, python-brace-format
 msgid "New {0}"
-msgstr "Novo {0}"
+msgstr "Uus {0}"
 
 #: cms_wizards.py:86
 #, python-brace-format
 msgid "Create a new {0} in {1}"
-msgstr "Criar um novo {0} em {1}"
+msgstr ""
 
 #: feeds.py:49
 #, python-format
 msgid "Blog articles on %(site_name)s"
-msgstr "Artigos em %(site_name)s"
+msgstr ""
 
 #: liveblog/apps.py:10
 msgid "Liveblog"
@@ -334,7 +334,7 @@ msgstr ""
 
 #: liveblog/models.py:30
 msgid "post date"
-msgstr ""
+msgstr "postituse kuupäev"
 
 #: liveblog/models.py:33 liveblog/models.py:112
 msgid "liveblog entry"
@@ -346,133 +346,133 @@ msgstr ""
 
 #: liveblog/models.py:101 models.py:227
 msgid "title"
-msgstr "título"
+msgstr "pealkiri"
 
 #: liveblog/models.py:103
 msgid "image"
-msgstr ""
+msgstr "pilt"
 
 #: liveblog/models.py:107
 msgid "thumbnail size"
-msgstr ""
+msgstr "pispildi suurus"
 
 #: models.py:83
 msgid "parent"
-msgstr "pai"
+msgstr "peamine"
 
 #: models.py:85
 msgid "created at"
-msgstr "criado em"
+msgstr "loodud"
 
 #: models.py:86
 msgid "modified at"
-msgstr "modificado em"
+msgstr "muudetud"
 
 #: models.py:88 models.py:223 models.py:444
 msgid "app. config"
-msgstr "configuração da aplicação"
+msgstr "rakenduse seaded"
 
 #: models.py:92
 msgid "name"
-msgstr "nome"
+msgstr "nimi"
 
 #: models.py:93 models.py:228
 msgid "slug"
-msgstr "slug"
+msgstr ""
 
 #: models.py:95
 msgid "category meta description"
-msgstr ""
+msgstr "kategooria META kirjeldus"
 
 #: models.py:125
 msgid "blog category"
-msgstr "categoria do blog"
+msgstr "blogi kategooria"
 
 #: models.py:126
 msgid "blog categories"
-msgstr "categorias do blog"
+msgstr "blogi kategooriad"
 
 #: models.py:192
 msgid "author"
-msgstr "autor"
+msgstr "tor"
 
 #: models.py:195
 msgid "created"
-msgstr "criado"
+msgstr "loodud"
 
 #: models.py:196
 msgid "last modified"
-msgstr "última modificação"
+msgstr "viimati muudetud"
 
 #: models.py:197
 msgid "published since"
-msgstr "publicado desde"
+msgstr "avaldatud alates"
 
 #: models.py:198
 msgid "published until"
-msgstr "publicado até"
+msgstr "avaldatud kuni"
 
 #: models.py:199
 msgid "featured date"
-msgstr ""
+msgstr "esiletõstmise kuupäev"
 
 #: models.py:200
 msgid "publish"
-msgstr "publicar"
+msgstr "avalda"
 
 #: models.py:201
 msgid "category"
-msgstr "categoria"
+msgstr "kategooria"
 
 #: models.py:203
 msgid "main image"
-msgstr "imagem principal"
+msgstr "peamine pilt"
 
 #: models.py:207
 msgid "main image thumbnail"
-msgstr "miniatura da imagem principal"
+msgstr "peamise pildi pisipilt"
 
 #: models.py:212
 msgid "main image full"
-msgstr "imagem principal completa"
+msgstr "peamine pilt täissuuruses"
 
 #: models.py:216
 msgid "enable comments on post"
-msgstr "habilitar comentários nessa postagem"
+msgstr ""
 
 #: models.py:218
 msgid "Site(s)"
-msgstr "Site(s)"
+msgstr "Sait (Saidid)"
 
 #: models.py:219
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
-msgstr "Selecionar sites onde a postagem deve aparecer. Se nenhum for selecionado ela ficará visível em todos os sites configurados."
+msgstr ""
 
 #: models.py:230
 msgid "abstract"
-msgstr "resumo"
+msgstr "abstraktne"
 
 #: models.py:231
 msgid "post meta description"
-msgstr "meta descrição da postagem"
+msgstr ""
 
 #: models.py:233
 msgid "post meta keywords"
-msgstr "palavras-chave da postagem"
+msgstr ""
 
 #: models.py:235
 msgid "post meta title"
-msgstr "meta título da postagem"
+msgstr ""
 
 #: models.py:236
 msgid "used in title tag and social sharing"
-msgstr "usado na tag de título e compartilhamento em redes sociais"
+msgstr ""
 
 #: models.py:239
 msgid "text"
-msgstr "texto"
+msgstr "tekst"
 
 #: models.py:244
 msgid "enable liveblog on post"
@@ -480,19 +480,19 @@ msgstr ""
 
 #: models.py:251
 msgid "Related Posts"
-msgstr ""
+msgstr "Seotud postitused"
 
 #: models.py:284
 msgid "blog article"
-msgstr "artigo do blog"
+msgstr "blogi artikkel"
 
 #: models.py:285
 msgid "blog articles"
-msgstr "artigos do blog"
+msgstr "blogi artiklid"
 
 #: models.py:447
 msgid "current site"
-msgstr ""
+msgstr "praegune sait"
 
 #: models.py:447
 msgid "Select items from the current site only"
@@ -500,7 +500,7 @@ msgstr ""
 
 #: models.py:451
 msgid "Plugin template"
-msgstr ""
+msgstr "Plugina mall"
 
 #: models.py:452
 msgid "Select plugin template to load for this instance"
@@ -508,146 +508,146 @@ msgstr ""
 
 #: models.py:486 models.py:522
 msgid "articles"
-msgstr "artigos"
+msgstr "artiklit"
 
 #: models.py:487
 msgid "The number of latests articles to be displayed."
-msgstr "O número dos últimos artigos a serem exibidos."
+msgstr ""
 
 #: models.py:489
 msgid "filter by tag"
-msgstr "filtrar por tag"
+msgstr "filtreeri sildi järgi"
 
 #: models.py:490
 msgid "Show only the blog articles tagged with chosen tags."
-msgstr "Exibir apenas os artigos marcados com as tags escolhidas."
+msgstr ""
 
 #: models.py:493
 msgid "filter by category"
-msgstr "filtrar por categoria"
+msgstr "filtreeri kategooria järgi"
 
 #: models.py:494
 msgid "Show only the blog articles tagged with chosen categories."
-msgstr "Exibir apenas os artigos marcados com as categorias escolhidas."
+msgstr ""
 
 #: models.py:498
 #, python-format
 msgid "%s latest articles by tag"
-msgstr "%s últimos artigos por tag"
+msgstr ""
 
 #: models.py:518
 msgid "authors"
-msgstr "autores"
+msgstr "autorid"
 
 #: models.py:523
 msgid "The number of author articles to be displayed."
-msgstr "Número de artigos do autor a serem exibidos."
+msgstr ""
 
 #: models.py:527
 #, python-format
 msgid "%s latest articles by author"
-msgstr "%s últimos artigos por autor"
+msgstr ""
 
 #: models.py:559
 msgid "generic blog plugin"
-msgstr "plugin genérico do blog"
+msgstr "üldine blogi plugin"
 
 #: settings.py:17
 msgid "Full date"
-msgstr "Data completa"
+msgstr "Täispikk kuupäev"
 
 #: settings.py:18
 msgid "Year /  Month"
-msgstr "Ano / Mês"
+msgstr "Aasta / Kuu"
 
 #: settings.py:19 templates/djangocms_blog/post_list.html:14
 msgid "Category"
-msgstr "Categoria"
+msgstr "Kategooria"
 
 #: settings.py:20
 msgid "Just slug"
-msgstr "Apenas a slug"
+msgstr ""
 
 #: settings.py:29
 msgid "Categories and posts"
-msgstr "Categorias e postagens"
+msgstr "Kategooriad ja postitused"
 
 #: settings.py:30
 msgid "Categories only"
-msgstr "Apenas categorias"
+msgstr "Ainult kategooriad"
 
 #: settings.py:31
 msgid "Posts only"
-msgstr "Apenas postagens"
+msgstr "Ainult postitused"
 
 #: settings.py:32
 msgid "None"
-msgstr "Nenhum"
+msgstr "Mitte midagi"
 
 #: settings.py:35
 msgid "always"
-msgstr "sempre"
+msgstr "alati"
 
 #: settings.py:36
 msgid "hourly"
-msgstr "a cada hora"
+msgstr "iga tund"
 
 #: settings.py:37
 msgid "daily"
-msgstr "diariamente"
+msgstr "iga päev"
 
 #: settings.py:38
 msgid "weekly"
-msgstr "semanalmente"
+msgstr "iga nädal"
 
 #: settings.py:39
 msgid "monthly"
-msgstr "mensalmente"
+msgstr "iga kuu"
 
 #: settings.py:40
 msgid "yearly"
-msgstr "anualmente"
+msgstr "iga aasta"
 
 #: settings.py:41
 msgid "never"
-msgstr "nunca"
+msgstr "mitte kunagi"
 
 #: settings.py:125
 msgid "Latest Blog Articles"
-msgstr "Últimos Artigos"
+msgstr "Viimased blogi artiklid"
 
 #: settings.py:127
 msgid "Latest Blog Articles - Cache"
-msgstr ""
+msgstr "Viimased blogi artiklid - Vahemälust"
 
 #: settings.py:129
 msgid "Author Blog Articles"
-msgstr "Artigos do Autor"
+msgstr "Autori blogi artiklid"
 
 #: settings.py:131 templates/djangocms_blog/plugins/tags.html:3
 msgid "Tags"
-msgstr "Tags"
+msgstr "Sildid"
 
 #: settings.py:133 templates/djangocms_blog/plugins/categories.html:3
 msgid "Categories"
-msgstr "Categorias"
+msgstr "Kategooriad"
 
 #: settings.py:135 templates/djangocms_blog/plugins/archive.html:3
 #: templates/djangocms_blog/post_list.html:12
 msgid "Archive"
-msgstr "Arquivo"
+msgstr "Arhiiv"
 
 #: settings.py:148
 msgid "Default template"
-msgstr ""
+msgstr "Vaikimisi kujundus"
 
 #: templates/djangocms_blog/includes/blog_item.html:24
 msgid "read more"
-msgstr "ler mais"
+msgstr "loe lisa"
 
 #: templates/djangocms_blog/includes/blog_meta.html:6
 msgid "by"
-msgstr "por"
+msgstr "autor"
 
 #: templates/djangocms_blog/plugins/archive.html:17
 #: templates/djangocms_blog/plugins/authors.html:10
@@ -656,15 +656,15 @@ msgstr "por"
 #, python-format
 msgid "1 article"
 msgid_plural "%(articles)s articles"
-msgstr[0] "1 artigo"
-msgstr[1] "%(articles)s artigos"
+msgstr[0] "1 artikkel"
+msgstr[1] "%(articles)s artiklit"
 
 #: templates/djangocms_blog/plugins/archive.html:18
 #: templates/djangocms_blog/plugins/authors.html:11
 #: templates/djangocms_blog/plugins/categories.html:11
 #: templates/djangocms_blog/plugins/tags.html:11
 msgid "0 articles"
-msgstr "0 artigos"
+msgstr "0 artiklit"
 
 #: templates/djangocms_blog/plugins/archive.html:26
 #: templates/djangocms_blog/plugins/authors.html:15
@@ -672,40 +672,40 @@ msgstr "0 artigos"
 #: templates/djangocms_blog/plugins/tags.html:15
 #: templates/djangocms_blog/post_list.html:21
 msgid "No article found."
-msgstr "Nenhum artigo encontrado."
+msgstr "Ühtegi artiklit ei leitud"
 
 #: templates/djangocms_blog/plugins/authors.html:3
 msgid "Authors"
-msgstr "Autores"
+msgstr "Autorid"
 
 #: templates/djangocms_blog/plugins/categories.html:15
 msgid "No categories found."
-msgstr "Nenhuma categoria encontrada."
+msgstr "Ühtegi kategooriat ei leitud"
 
 #: templates/djangocms_blog/post_list.html:11
 msgid "Articles by"
-msgstr "Artigos por"
+msgstr "Artiklid autorilt"
 
 #: templates/djangocms_blog/post_list.html:13
 msgid "Tag"
-msgstr "Tag"
+msgstr "Silt"
 
 #: templates/djangocms_blog/post_list.html:24
 msgid "Back"
-msgstr "Voltar"
+msgstr "Tagasi"
 
 #: templates/djangocms_blog/post_list.html:29
 msgid "previous"
-msgstr "anterior"
+msgstr "eelmine"
 
 #: templates/djangocms_blog/post_list.html:32
 msgid "Page"
-msgstr "Página"
+msgstr "Lehekülg"
 
 #: templates/djangocms_blog/post_list.html:32
 msgid "of"
-msgstr "de"
+msgstr "/"
 
 #: templates/djangocms_blog/post_list.html:35
 msgid "next"
-msgstr "próxima"
+msgstr "järgmine"

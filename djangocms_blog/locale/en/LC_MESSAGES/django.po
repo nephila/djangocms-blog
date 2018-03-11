@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-20 17:19+0100\n"
+"POT-Creation-Date: 2018-03-11 13:37+0100\n"
 "PO-Revision-Date: 2014-03-05 18:09+0100\n"
 "Last-Translator: Iacopo Spalletti\n"
 "Language-Team: Italian <i.spalletti@nephila.it>\n"
@@ -304,12 +304,12 @@ msgstr ""
 msgid "Leave empty for automatic slug, or override as required."
 msgstr ""
 
-#: cms_wizards.py:82
+#: cms_wizards.py:84
 #, python-brace-format
 msgid "New {0}"
 msgstr ""
 
-#: cms_wizards.py:86
+#: cms_wizards.py:88
 #, python-brace-format
 msgid "Create a new {0} in {1}"
 msgstr ""

@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-13 16:05+0100\n"
-"PO-Revision-Date: 2018-01-13 15:06+0000\n"
+"POT-Creation-Date: 2018-02-20 17:19+0100\n"
+"PO-Revision-Date: 2018-02-21 22:36+0000\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: Russian (http://www.transifex.com/nephila/djangocms-blog/language/ru/)\n"
 "MIME-Version: 1.0\n"
@@ -271,7 +271,7 @@ msgid ""
 "Emits a desktop notification -if enabled- when editing a published post"
 msgstr "Уведомлять сигналами на рабочем столе, если включено, при редактировании опубликованной записи"
 
-#: cms_apps.py:16 cms_toolbars.py:20 settings.py:122
+#: cms_apps.py:16 cms_toolbars.py:20 settings.py:123
 msgid "Blog"
 msgstr "Блог"
 
@@ -300,12 +300,20 @@ msgstr "Редактировать статью"
 msgid "Publish {0} now"
 msgstr "Опубликовано сейчас {0} "
 
-#: cms_wizards.py:58
+#: cms_wizards.py:23
+msgid "Slug"
+msgstr ""
+
+#: cms_wizards.py:24
+msgid "Leave empty for automatic slug, or override as required."
+msgstr ""
+
+#: cms_wizards.py:82
 #, python-brace-format
 msgid "New {0}"
 msgstr "Новых {0}"
 
-#: cms_wizards.py:62
+#: cms_wizards.py:86
 #, python-brace-format
 msgid "Create a new {0} in {1}"
 msgstr "Создать новых {0} из {1}"
@@ -331,219 +339,219 @@ msgstr "опубликовать запись в транслируемый бл
 msgid "post date"
 msgstr "дата публикации"
 
-#: liveblog/models.py:33 liveblog/models.py:108
+#: liveblog/models.py:33 liveblog/models.py:112
 msgid "liveblog entry"
 msgstr "запись транслируемого блога"
 
-#: liveblog/models.py:34 liveblog/models.py:109
+#: liveblog/models.py:34 liveblog/models.py:113
 msgid "liveblog entries"
 msgstr "записи в транслируемом блоге"
 
-#: liveblog/models.py:97 models.py:230
+#: liveblog/models.py:101 models.py:227
 msgid "title"
 msgstr "Заголовок"
 
-#: liveblog/models.py:99
+#: liveblog/models.py:103
 msgid "image"
 msgstr "изображение"
 
-#: liveblog/models.py:103
+#: liveblog/models.py:107
 msgid "thumbnail size"
 msgstr "размер миниатюры"
 
-#: models.py:86
+#: models.py:83
 msgid "parent"
 msgstr "предок"
 
-#: models.py:88
+#: models.py:85
 msgid "created at"
 msgstr "время создания"
 
-#: models.py:89
+#: models.py:86
 msgid "modified at"
 msgstr "время изменения"
 
-#: models.py:91 models.py:226 models.py:447
+#: models.py:88 models.py:223 models.py:444
 msgid "app. config"
 msgstr "настройки приложения"
 
-#: models.py:95
+#: models.py:92
 msgid "name"
 msgstr "название"
 
-#: models.py:96 models.py:231
+#: models.py:93 models.py:228
 msgid "slug"
 msgstr "ЧПУ"
 
-#: models.py:98
+#: models.py:95
 msgid "category meta description"
 msgstr ""
 
-#: models.py:128
+#: models.py:125
 msgid "blog category"
 msgstr "категория блога"
 
-#: models.py:129
+#: models.py:126
 msgid "blog categories"
 msgstr "категории блога"
 
-#: models.py:195
+#: models.py:192
 msgid "author"
 msgstr "автор"
 
-#: models.py:198
+#: models.py:195
 msgid "created"
 msgstr "создан(о)"
 
-#: models.py:199
+#: models.py:196
 msgid "last modified"
 msgstr "последние изменения"
 
-#: models.py:200
+#: models.py:197
 msgid "published since"
 msgstr "опубликовано"
 
-#: models.py:201
+#: models.py:198
 msgid "published until"
 msgstr "опубликовано до"
 
-#: models.py:202
+#: models.py:199
 msgid "featured date"
 msgstr "избранная дата"
 
-#: models.py:203
+#: models.py:200
 msgid "publish"
 msgstr "опубликовать"
 
-#: models.py:204
+#: models.py:201
 msgid "category"
 msgstr "категория"
 
-#: models.py:206
+#: models.py:203
 msgid "main image"
 msgstr "главная страница"
 
-#: models.py:210
+#: models.py:207
 msgid "main image thumbnail"
 msgstr "уменьшенная копия главного изображения"
 
-#: models.py:215
+#: models.py:212
 msgid "main image full"
 msgstr "Полноразмерное изображение"
 
-#: models.py:219
+#: models.py:216
 msgid "enable comments on post"
 msgstr "Разрешить комментарии к статье"
 
-#: models.py:221
+#: models.py:218
 msgid "Site(s)"
 msgstr "Сайт(ы)"
 
-#: models.py:222
+#: models.py:219
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
 msgstr "Выберите сайты на которых будет опубликована статья. Если сайты не выбраны, статья будет опубликована на всех сайтах сразу."
 
-#: models.py:233
+#: models.py:230
 msgid "abstract"
 msgstr "Краткое описание"
 
-#: models.py:234
+#: models.py:231
 msgid "post meta description"
 msgstr "мета-описание статьи"
 
-#: models.py:236
+#: models.py:233
 msgid "post meta keywords"
 msgstr "ключевые слова к статье"
 
-#: models.py:238
+#: models.py:235
 msgid "post meta title"
 msgstr "мета-заголовок к статье"
 
-#: models.py:239
+#: models.py:236
 msgid "used in title tag and social sharing"
 msgstr "используется в метках и обмене в социальных сетях"
 
-#: models.py:242
+#: models.py:239
 msgid "text"
 msgstr "текст"
 
-#: models.py:247
+#: models.py:244
 msgid "enable liveblog on post"
 msgstr "включить трансляцию при публикации"
 
-#: models.py:254
+#: models.py:251
 msgid "Related Posts"
 msgstr ""
 
-#: models.py:287
+#: models.py:284
 msgid "blog article"
 msgstr "статья блога"
 
-#: models.py:288
+#: models.py:285
 msgid "blog articles"
 msgstr "статьи блога"
 
-#: models.py:450
+#: models.py:447
 msgid "current site"
 msgstr "текущий сайт"
 
-#: models.py:450
+#: models.py:447
 msgid "Select items from the current site only"
 msgstr "Выбрать записи только из текущего сайта"
 
-#: models.py:454
+#: models.py:451
 msgid "Plugin template"
 msgstr "Шаблон плагина"
 
-#: models.py:455
+#: models.py:452
 msgid "Select plugin template to load for this instance"
 msgstr "Выберите шаблон плагина для загрузки к данному экземпляру объекта"
 
-#: models.py:489 models.py:525
+#: models.py:486 models.py:522
 msgid "articles"
 msgstr "статьи"
 
-#: models.py:490
+#: models.py:487
 msgid "The number of latests articles to be displayed."
 msgstr "Количество последних статей, которые будут показаны."
 
-#: models.py:492
+#: models.py:489
 msgid "filter by tag"
 msgstr "фильтровать по тегам"
 
-#: models.py:493
+#: models.py:490
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Показывать статьи только с выбранными метками."
 
-#: models.py:496
+#: models.py:493
 msgid "filter by category"
 msgstr "фильтровать по категориям"
 
-#: models.py:497
+#: models.py:494
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Показывать статьи только из выбранных категорий."
 
-#: models.py:501
+#: models.py:498
 #, python-format
 msgid "%s latest articles by tag"
 msgstr "%s последних статей по тегам"
 
-#: models.py:521
+#: models.py:518
 msgid "authors"
 msgstr "авторы"
 
-#: models.py:526
+#: models.py:523
 msgid "The number of author articles to be displayed."
 msgstr "Количество статей автора, которые будут показаны."
 
-#: models.py:530
+#: models.py:527
 #, python-format
 msgid "%s latest articles by author"
 msgstr "%s последних статей по авторам"
 
-#: models.py:563
+#: models.py:559
 msgid "generic blog plugin"
 msgstr "генерируемый плагин блога"
 
@@ -607,32 +615,32 @@ msgstr "ежегодно"
 msgid "never"
 msgstr "никогда"
 
-#: settings.py:124
+#: settings.py:125
 msgid "Latest Blog Articles"
 msgstr "Последние статьи блога"
 
-#: settings.py:126
+#: settings.py:127
 msgid "Latest Blog Articles - Cache"
 msgstr "Последние статьи блога - Кэш"
 
-#: settings.py:128
+#: settings.py:129
 msgid "Author Blog Articles"
 msgstr "Автор статей блога"
 
-#: settings.py:130 templates/djangocms_blog/plugins/tags.html:3
+#: settings.py:131 templates/djangocms_blog/plugins/tags.html:3
 msgid "Tags"
 msgstr "Метки"
 
-#: settings.py:132 templates/djangocms_blog/plugins/categories.html:3
+#: settings.py:133 templates/djangocms_blog/plugins/categories.html:3
 msgid "Categories"
 msgstr "Категории"
 
-#: settings.py:134 templates/djangocms_blog/plugins/archive.html:3
+#: settings.py:135 templates/djangocms_blog/plugins/archive.html:3
 #: templates/djangocms_blog/post_list.html:12
 msgid "Archive"
 msgstr "Архив"
 
-#: settings.py:147
+#: settings.py:148
 msgid "Default template"
 msgstr "Шаблон по умолчанию"
 
