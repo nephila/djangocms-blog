@@ -5,6 +5,21 @@ History
 =======
 
 ******************
+0.9.3 (2018-03-12)
+******************
+
+* Added dependency on lxml used in feeds
+* Fixed warning on django CMS 3.5
+* Fixed wizard in Django 1.11
+* Updated translations
+
+******************
+0.9.2 (2018-02-27)
+******************
+
+* Fixed missing migration
+
+******************
 0.9.1 (2018-02-22)
 ******************
 
