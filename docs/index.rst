@@ -21,6 +21,7 @@ Contents
    settings
    features
    channels
+   cmsplugin_filer
    development
    contributing
    history

@@ -7,14 +7,10 @@ from app_data import AppDataForm
 from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from filer.models import ThumbnailOption
 from parler.models import TranslatableModel, TranslatedFields
 
 from .settings import MENU_TYPE_COMPLETE, get_setting
-
-try:  # pragma: no cover
-    from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
-except ImportError:  # pragma: no cover
-    from filer.models import ThumbnailOption  # NOQA
 
 
 class BlogConfig(TranslatableModel, AppHookConfig):
