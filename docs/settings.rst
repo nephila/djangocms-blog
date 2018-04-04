@@ -97,7 +97,8 @@ Global Settings
 * BLOG_PLUGIN_TEMPLATE_FOLDERS: (Sub-)folder from which the plugin templates are loaded. The default folder is ``plugins``. It goes into the ``djangocms_blog`` template folder (or, if set, the folder named in the app hook). This allows, e.g., different templates for showing a post list as tables, columns, ... . New templates have the same names as the standard templates in the ``plugins`` folder (``latest_entries.html``, ``authors.html``, ``tags.html``, ``categories.html``, ``archive.html``). Default behavior corresponds to this setting being ``( ("plugins", _("Default template") )``. To add new templates add to this setting, e.g., ``('timeline', _('Vertical timeline') )``.
 * BLOG_META_DESCRIPTION_LENGTH: Maximum length for the Meta description field (default: ``320``)
 * BLOG_META_TITLE_LENGTH: Maximum length for the Meta title field (default: ``70``)
-
+* BLOG_ABSTRACT_CKEDITOR: Configuration for the CKEditor of the abstract field (as per https://github.com/divio/djangocms-text-ckeditor/#customizing-htmlfield-editor)
+* BLOG_POST_TEXT_CKEDITOR: Configuration for the CKEditor of the post content field
 
 ******************
 Read-only settings
