@@ -8,7 +8,7 @@ History
 0.9.5 (unreleased)
 ******************
 
-* Nothing yet
+* Fixed jquery path in Django 1.9+"Fix jquery path in Django 1.9+
 
 ******************
 0.9.4 (2018-03-24)
