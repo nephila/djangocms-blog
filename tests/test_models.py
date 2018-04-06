@@ -1146,6 +1146,10 @@ class ModelsTest2(BaseTest):
         )
         self.assertEqual(force_text(plugin.__str__()), 'generic blog plugin')
 
+        no_translation_post = Post()
+        no_translation_default_title = ''
+        self.assertEqual(force_text(no_translation_post), no_translation_default_title)
+
 
 class KnockerTest(BaseTest):
 
