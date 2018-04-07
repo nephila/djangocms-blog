@@ -9,6 +9,7 @@ History
 ******************
 
 * Fixed jquery path in Django 1.9+"Fix jquery path in Django 1.9+
+* Added configurable blog abstract/text CKEditor
 
 ******************
 0.9.4 (2018-03-24)
