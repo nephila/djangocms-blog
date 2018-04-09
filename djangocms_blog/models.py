@@ -164,7 +164,8 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         )
 
     def __str__(self):
-        return self.safe_translation_getter('name', any_language=True, default=ugettext('BlogCategory (no translation)'))
+        default = ugettext('BlogCategory (no translation)')
+        return self.safe_translation_getter('name', any_language=True, default=default)
 
     def save(self, *args, **kwargs):
         super(BlogCategory, self).save(*args, **kwargs)
@@ -287,7 +288,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         get_latest_by = 'date_published'
 
     def __str__(self):
-        return self.safe_translation_getter('title', any_language=True, default=ugettext('Post (no translation)'))
+        default = ugettext('Post (no translation)')
+        return self.safe_translation_getter('title', any_language=True, default=default)
 
     @property
     def guid(self, language=None):
