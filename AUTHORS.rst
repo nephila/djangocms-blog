@@ -44,6 +44,7 @@ Contributors
 * Petr Klus
 * Plamen Nikolov
 * Sami Kalliomäki
+* Sidnei Pereira
 * Stefan Wehrmeyer
 * Sylvain Fankhauser
 * Tadas Dailyda

@@ -5,6 +5,12 @@ History
 =======
 
 ******************
+0.9.6 (unreleased)
+******************
+
+* Fixed string representation when model has no language
+
+******************
 0.9.5 (2018-04-07)
 ******************
 
