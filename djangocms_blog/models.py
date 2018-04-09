@@ -18,7 +18,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
-from django.utils.translation import get_language, ugettext_lazy as _, ugettext
+from django.utils.translation import get_language, ugettext, ugettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta.models import ModelMeta
