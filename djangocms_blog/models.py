@@ -18,7 +18,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _, ugettext
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from meta.models import ModelMeta
@@ -164,7 +164,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         )
 
     def __str__(self):
-        return self.safe_translation_getter('name', any_language=True)
+        return self.safe_translation_getter('name', any_language=True, default=ugettext('BlogCategory (no translation)'))
 
     def save(self, *args, **kwargs):
         super(BlogCategory, self).save(*args, **kwargs)
@@ -287,7 +287,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         get_latest_by = 'date_published'
 
     def __str__(self):
-        return self.safe_translation_getter('title', any_language=True)
+        return self.safe_translation_getter('title', any_language=True, default=ugettext('Post (no translation)'))
 
     @property
     def guid(self, language=None):
