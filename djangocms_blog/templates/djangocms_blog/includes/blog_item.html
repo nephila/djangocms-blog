@@ -3,6 +3,9 @@
 <article id="post-{{ post.slug }}" class="post-item">
     <header>
         <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+        {% if post.subtitle %}
+            <h4>{{ post.subtitle }}</h4>
+        {% endif %}
         {% block blog_meta %}
             {% include "djangocms_blog/includes/blog_meta.html" %}
         {% endblock %}

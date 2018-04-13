@@ -10,6 +10,9 @@
     <article>
       <header>
         <h1>{{ post.title }}</h1>
+        {% if post.subtitle %}
+            <h2>{{ post.subtitle }}</h2>
+        {% endif %}
         <time class="op-published" datetime="{{ post.date_published|date:"Y-m-d\TH:i:sO" }}">{{ post.date_published|date:"DATE_FORMAT" }}</time>
         <time class="op-modified" dateTime="{{ post.date_modified|date:"Y-m-d\TH:i:sO" }}">{{ post.date_modified|date:"DATE_FORMAT" }}</time>
         <address>

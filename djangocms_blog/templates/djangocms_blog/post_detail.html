@@ -8,6 +8,9 @@
 <article id="post-{{ post.slug }}" class="post-item post-detail">
     <header>
         <h2>{% render_model post "title" %}</h2>
+        {% if post.subtitle %}
+            <h3>{% render_model post "subtitle" %}</h3>
+        {% endif %}
         {% block blog_meta %}
             {% include "djangocms_blog/includes/blog_meta.html" %}
         {% endblock %}
