@@ -9,6 +9,7 @@ History
 ******************
 
 * Fixed string representation when model has no language
+* Added subtitle field
 
 ******************
 0.9.5 (2018-04-07)
