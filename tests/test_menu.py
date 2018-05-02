@@ -21,7 +21,6 @@ class MenuTest(BaseTest):
     def setUp(self):
         super(MenuTest, self).setUp()
         self.cats = [self.category_1]
-        self._reset_menus()
         for i, lang_data in enumerate(self._categories_data):
             cat = self._get_category(lang_data['en'])
             if 'it' in lang_data:
@@ -29,12 +28,7 @@ class MenuTest(BaseTest):
             self.cats.append(cat)
 
         activate('en')
-        menu_pool.clear(all=True)
-        menu_pool.discover_menus()
-        # All cms menu modifiers should be removed from menu_pool.modifiers
-        # so that they do not interfere with our menu nodes
-        menu_pool.modifiers = [m for m in menu_pool.modifiers if m.__module__.startswith('djangocms_blog')]
-        self._reset_menus()
+        self._reload_menus()
 
     def test_menu_nodes(self):
         """
