@@ -9,6 +9,7 @@ from django.core.cache import cache
 from djangocms_helper.base_test import BaseTestCase
 from haystack import connections
 from haystack.constants import DEFAULT_ALIAS
+from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override
 
 from djangocms_blog.cms_appconfig import BlogConfig
@@ -229,3 +230,11 @@ class BaseTest(BaseTestCase):
         cache.clear()
         BlogCategoryMenu._config = {}
         BlogNavModifier._config = {}
+
+    def _reload_menus(self):
+        menu_pool.clear(all=True)
+        menu_pool.discover_menus()
+        # All cms menu modifiers should be removed from menu_pool.modifiers
+        # so that they do not interfere with our menu nodes
+        menu_pool.modifiers = [m for m in menu_pool.modifiers if m.__module__.startswith('djangocms_blog')]
+        self._reset_menus()
