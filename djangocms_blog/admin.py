@@ -88,7 +88,10 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         actions += ['enable_liveblog', 'disable_liveblog']
     _fieldsets = [
         (None, {
-            'fields': [['title', 'categories', 'publish', 'app_config']]
+            'fields': [
+                ['title', 'subtitle', 'publish'],
+                ['categories', 'app_config']
+            ]
         }),
         (None, {
             'fields': [[]]
