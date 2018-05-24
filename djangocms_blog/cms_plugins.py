@@ -7,6 +7,7 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
+from django.template.loader import select_template
 
 from .forms import LatestEntriesForm
 from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
@@ -17,15 +18,18 @@ class BlogPlugin(CMSPluginBase):
     module = get_setting('PLUGIN_MODULE_NAME')
 
     def get_render_template(self, context, instance, placeholder):
-        if instance.app_config and instance.app_config.template_prefix:
-            return os.path.join(instance.app_config.template_prefix,
-                                instance.template_folder,
-                                self.base_render_template)
-        else:
-            return os.path.join('djangocms_blog',
-                                instance.template_folder,
-                                self.base_render_template)
 
+        templates = [os.path.join('djangocms_blog',
+                                  instance.template_folder,
+                                  self.base_render_template)]
+
+        if instance.app_config and instance.app_config.template_prefix:
+            templates.insert(0, os.path.join(instance.app_config.template_prefix,
+                                             instance.template_folder,
+                                             self.base_render_template))
+
+        selected = select_template(templates)
+        return selected.template.name
 
 class BlogLatestEntriesPlugin(BlogPlugin):
     """
