@@ -124,6 +124,10 @@ class PostAdminForm(PostAdminFormBase):
         ]
         super(PostAdminForm, self).__init__(*args, **kwargs)
         if 'categories' in self.fields:
+            if self.app_config:
+                if self.app_config.url_patterns:
+                    if self.app_config.url_patterns == 'category':
+                        self.fields['categories'].required = True
             self.fields['categories'].queryset = self.available_categories
 
         if 'app_config' in self.fields:
