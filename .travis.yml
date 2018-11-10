@@ -17,16 +17,6 @@ env:
   - TOXENV='docs'
   - DJANGO='django111' CMS='cms35'
   - DJANGO='django111' CMS='cms34'
-  - DJANGO='django110' CMS='cms35'
-  - DJANGO='django110' CMS='cms34'
-  - DJANGO='django19' CMS='cms35'
-  - DJANGO='django19' CMS='cms34'
-  - DJANGO='django19' CMS='cms33'
-  - DJANGO='django19' CMS='cms32'
-  - DJANGO='django18' CMS='cms35'
-  - DJANGO='django18' CMS='cms34'
-  - DJANGO='django18' CMS='cms33'
-  - DJANGO='django18' CMS='cms32'
 
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
@@ -66,42 +56,6 @@ matrix:
     env: TOXENV='pep8'
   - python: 3.5
     env: TOXENV='isort'
-  - python: 2.7
-    env: DJANGO='django110' CMS='cms35'
-  - python: 2.7
-    env: DJANGO='django110' CMS='cms34'
-  - python: 2.7
-    env: DJANGO='django19' CMS='cms35'
-  - python: 2.7
-    env: DJANGO='django19' CMS='cms34'
-  - python: 2.7
-    env: DJANGO='django19' CMS='cms33'
-  - python: 2.7
-    env: DJANGO='django19' CMS='cms32'
-  - python: 3.5
-    env: DJANGO='django110' CMS='cms35'
-  - python: 3.5
-    env: DJANGO='django110' CMS='cms34'
-  - python: 3.5
-    env: DJANGO='django19' CMS='cms35'
-  - python: 3.5
-    env: DJANGO='django19' CMS='cms34'
-  - python: 3.5
-    env: DJANGO='django19' CMS='cms33'
-  - python: 3.5
-    env: DJANGO='django19' CMS='cms32'
-  - python: 3.4
-    env: DJANGO='django110' CMS='cms35'
-  - python: 3.4
-    env: DJANGO='django110' CMS='cms34'
-  - python: 3.4
-    env: DJANGO='django19' CMS='cms35'
-  - python: 3.4
-    env: DJANGO='django19' CMS='cms34'
-  - python: 3.4
-    env: DJANGO='django19' CMS='cms33'
-  - python: 3.4
-    env: DJANGO='django19' CMS='cms32'
 
 
 cache:

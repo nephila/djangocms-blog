@@ -20,7 +20,6 @@ HELPER_SETTINGS = dict(
         'easy_thumbnails',
         'django.contrib.sitemaps',
         'djangocms_text_ckeditor',
-        'cmsplugin_filer_image',
         'taggit',
         'taggit_autosuggest',
         'aldryn_apphooks_config',

@@ -15,21 +15,11 @@ ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or 'filer.Image'
 
 class Migration(migrations.Migration):
 
-    if 'cmsplugin_filer' not in thumbnail_model:
-        filer_dependencies = [
-            ('filer', '0003_thumbnailoption'),
-            ('cmsplugin_filer_image', '0003_mv_thumbnail_option_to_filer_20160119_1720'),
-        ]
-    else:
-        filer_dependencies = [
-            ('filer', '__first__'),
-            ('cmsplugin_filer_image', '__first__'),
-        ]
-
     dependencies = [
         ('djangocms_blog', '0006_auto_20150214_1907'),
         migrations.swappable_dependency(ACTUAL_FILER_IMAGE_MODEL),
-    ] + filer_dependencies
+        ('filer', '0003_thumbnailoption'),
+    ]
 
     operations = [
         migrations.AlterModelOptions(
