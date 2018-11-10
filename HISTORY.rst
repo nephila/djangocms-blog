@@ -5,6 +5,13 @@ History
 =======
 
 ******************
+0.9.8 (unreleased)
+******************
+
+* Fixed test environment in Django 1.8, 1.9
+* Added related posts to templates / documentation
+
+******************
 0.9.7 (2018-05-05)
 ******************
 
