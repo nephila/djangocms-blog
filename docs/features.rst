@@ -218,6 +218,7 @@ To add the blog Sitemap, add the following code to the project ``urls.py``::
         }),
     )
 
+.. _social_sahres:
 
 *************
 Social shares
@@ -265,3 +266,20 @@ The shariff files ``js/shariff.min.js`` and ``css/shariff.min.css`` will need to
         'prefix':   'Have you seen this: "',	# optional
         'postfix':  '"',                        # optional
     }
+
+
+.. linked_content:
+
+**************
+Linked content
+**************
+
+Each blog entry can have an image assigned for the blog post. The image is typically presented in the post details and a thumbnail in the post list.
+
+Dangocms-blog, however, also allows to link external content to a blog entry. This is done by enternig a valid URL in the field ``content link`` when editing a blog entry.
+
+Such a content link could be a featured video, a podcast episode or just a link to an image, or any content you deem important for the blog entry.
+
+If no main image is assigned to the blog, djangocms will try to see if it can gereate an image and/or thumbnail from the link. To this end it uses regular expressions that will for example turn a YouTube video url into an url for a still or thumbnail. An audiofile url might be turned into a link for album art or image of the podcast narrator. Default settings will only return stills for YouTube videos and jpeg, png and tiff images. See :ref:`settings` for more information on how to configure this feature.
+
+The content link can be accessed in the templates by ``post.content_link_url``. If set ``post.content_link_image_url`` will return the url of the assigned image and ``post.content_link_thumbnail_url`` will return if the corresponding thumbnail. This allows template editors to implement different actions on template level, e.g. a light box for video viewing or an audio player for podcast entries.

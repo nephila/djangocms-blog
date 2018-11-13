@@ -2,6 +2,7 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
+import re
 
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
@@ -50,6 +51,19 @@ except ImportError:
         Stub class if django-knocker is not installed
         """
         pass
+
+
+# Read LINKED_IMAGE settings and compile regex
+def _compile_re(setting):
+    if setting:
+        list = []
+        for i in range(len(setting)):
+            list.append((re.compile(setting[i][0]), setting[i][1]))
+        return list
+
+
+BLOG_LINKED_IMAGE = _compile_re(get_setting('LINKED_IMAGE'))
+BLOG_LINKED_THUMBNAIL = _compile_re(get_setting('LINKED_THUMBNAIL'))
 
 
 class BlogMetaMixin(ModelMeta):
@@ -211,6 +225,10 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                                         related_name='djangocms_blog_post_full',
                                         on_delete=models.SET_NULL,
                                         blank=True, null=True)
+    linked_content_url = models.URLField(verbose_name=_('linked content url'),
+                                         help_text=_('Enter URL of linked content, '
+                                         'like an external image, video or audio'),
+                                         blank=True, null=True)
     enable_comments = models.BooleanField(verbose_name=_('enable comments on post'),
                                           default=get_setting('ENABLE_COMMENTS'))
     sites = models.ManyToManyField('sites.Site', verbose_name=_('Site(s)'), blank=True,
@@ -307,6 +325,38 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         if self.date_featured:
             return self.date_featured
         return self.date_published
+
+    def _match_linked_content(self, url, patterns):
+        if not url:
+            return None
+        for p, r in patterns:
+            match = p.match(url)
+            if match:
+                parameters = match.groupdict()
+                parameters['url'] = url
+                if callable(r):
+                    return r(**parameters)
+                else:
+                    return r % parameters
+        return None
+
+    @property
+    def linked_content_thumbnail_url(self):
+        if not hasattr(self, '_content_thumbnail_cache'):
+            self._content_thumbnail_cache = \
+                self._match_linked_content(self.linked_content_url, BLOG_LINKED_THUMBNAIL)
+        return self._content_thumbnail_cache
+
+    @property
+    def linked_content_image_url(self):
+        if not hasattr(self, '_content_image_cache'):
+            self._content_image_cache = \
+                self._match_linked_content(self.linked_content_url, BLOG_LINKED_IMAGE)
+        return self._content_image_cache
+
+    @property
+    def has_image(self):
+        return self.main_image
 
     def save(self, *args, **kwargs):
         """

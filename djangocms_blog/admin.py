@@ -103,7 +103,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             'classes': ('collapse',)
         }),
         (_('Images'), {
-            'fields': [['main_image', 'main_image_thumbnail', 'main_image_full']],
+            'fields': [['main_image', 'main_image_thumbnail', 'main_image_full'],
+                       ['linked_content_url']],
             'classes': ('collapse',)
         }),
         (_('SEO'), {
