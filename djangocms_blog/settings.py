@@ -149,7 +149,7 @@ def get_setting(name):
 
         'BLOG_LINKED_IMAGE': (
             # Images represent themselves
-            ('^.*\.(jpeg|jpg|png|tiff|tif)$',
+            ('^.*\\.(jpeg|jpg|png|tiff|tif)$',
              '%(url)s'),
             # Videos are represented by their still
             ('^https://youtu.be/(?P<vid>[-\\w]+)$',
@@ -159,7 +159,7 @@ def get_setting(name):
         ),
         'BLOG_LINKED_THUMBNAIL': (
             # Images represent themselves
-            ('^.*\.(jpeg|jpg|png|tiff|tif)$',
+            ('^.*\\.(jpeg|jpg|png|tiff|tif)$',
              '%(url)s'),
             # Videos are represented by their still
             ('^https://youtu.be/(?P<vid>[-\\w]+)$',
