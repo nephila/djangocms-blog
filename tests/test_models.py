@@ -867,6 +867,11 @@ class ModelsTest(BaseTest):
         self.assertEqual(post.linked_content_thumbnail,
                          'https://img.youtube.com/vi/RKK7wGAYP6k/hqdefault.jpg')
 
+        post.linked_content_url = 'https://soundcloud.com/startindus/episode-4-launch-your-business-in-a-weekend'
+        post.save()
+        self.assertEqual(post.linked_content_image[-4:], '.png')
+        self.assertEqual(post.linked_content_thumbnail[-4:], '.jpg')
+
     def test_urls(self):
         self.get_pages()
         post = self._get_post(self._post_data[0]['en'])
