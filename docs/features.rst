@@ -218,7 +218,7 @@ To add the blog Sitemap, add the following code to the project ``urls.py``::
         }),
     )
 
-.. _social_sahres:
+.. _social_shares:
 
 *************
 Social shares
@@ -280,6 +280,6 @@ Dangocms-blog, however, also allows to link external content to a blog entry. Th
 
 Such a content link could be a featured video, a podcast episode or just a link to an image, or any content you deem important for the blog entry.
 
-If no main image is assigned to the blog, djangocms will try to see if it can gereate an image and/or thumbnail from the link. To this end it uses regular expressions that will for example turn a YouTube video url into an url for a still or thumbnail. An audiofile url might be turned into a link for album art or image of the podcast narrator. Default settings will only return stills for YouTube videos and jpeg, png and tiff images. See :ref:`settings` for more information on how to configure this feature.
+If no main image is assigned to the blog, djangocms will try to see if it can generate an image and/or thumbnail from the link. An audiofile url might be turned into a link for album art or image of the podcast narrator. This feature is currently available for images (jpeg, tiff nad png), YouTube videos, Vimeo videos and Soundcloud. The use of Soundcloud requires ``SOUNDCLOUD_APIKEY`` to be set in the project's ``settings.py``. If not set, djangocms-blog will use a public API key that might be restricted in terms of allowed accesses.
 
-The content link can be accessed in the templates by ``post.content_link_url``. If set ``post.content_link_image_url`` will return the url of the assigned image and ``post.content_link_thumbnail_url`` will return if the corresponding thumbnail. This allows template editors to implement different actions on template level, e.g. a light box for video viewing or an audio player for podcast entries.
+The content link can be accessed in the templates by ``post.content_link_url``. If set ``post.content_link_image`` will return the url of the assigned image and ``post.content_link_thumbnail`` will return if the corresponding thumbnail. This allows template editors to implement different actions on template level, e.g. a light box for video viewing or an audio player for podcast entries.

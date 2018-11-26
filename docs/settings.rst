@@ -99,19 +99,6 @@ Global Settings
 * BLOG_META_TITLE_LENGTH: Maximum length for the Meta title field (default: ``70``)
 * BLOG_ABSTRACT_CKEDITOR: Configuration for the CKEditor of the abstract field (as per https://github.com/divio/djangocms-text-ckeditor/#customizing-htmlfield-editor)
 * BLOG_POST_TEXT_CKEDITOR: Configuration for the CKEditor of the post content field
-* BLOG_LINKED_IMAGE and BLOG_LINKED_THUMBNAIL: Both provide a list of 2-tuples djangocms-blog will use to create a valid url from ``linked_content_url`` field. The format is ``('regular expression'), 'url')``. Assume, e.g., that ``linked_content_url`` contains a link to a YouTube video. Then the entry 
-
-		('^https://www.youtube.com/watch\?v=(?P<vid>[-\w]+)$',
-		'https://img.youtube.com/vi/%(vid)s/hqdefault.jpg')
-              
-will create a thumbnail link by matching and finding the video id ``vid``and incorporating it in an appropriate link. In addition to parsed parameters (``vid`` in the YouTube example) the full original url will be passed to the pattern in the second part of the 2-tuple. If the url is callable, e.g. a lambda expression, djangocms-blog will call the function and pass the parameters and the original url. This would allow to call API if neccessary. This illustrative example would call the Vimeo API to get a large thumbnail for a video: 
-
-	('^https://vimeo.com/(?P<id>[0-9]+)$',
-             lambda id, url: requests.get('http://vimeo.com/api/v2/video/%s.json' % id)
-                .json()[0]['thumbnail_large'])
-
-For practical reasons please consider that servider-side API calls significantly reduce reaction time of the server. 
-
 
 ******************
 Read-only settings

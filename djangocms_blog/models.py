@@ -2,7 +2,6 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import hashlib
-import re
 
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
@@ -31,6 +30,7 @@ from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
 from .fields import AutoSlugField, slugify
+from .linked_content import LinkedContent
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -51,19 +51,6 @@ except ImportError:
         Stub class if django-knocker is not installed
         """
         pass
-
-
-# Read LINKED_IMAGE settings and compile regex
-def _compile_re(setting):
-    if setting:
-        list = []
-        for i in range(len(setting)):
-            list.append((re.compile(setting[i][0]), setting[i][1]))
-        return list
-
-
-BLOG_LINKED_IMAGE = _compile_re(get_setting('LINKED_IMAGE'))
-BLOG_LINKED_THUMBNAIL = _compile_re(get_setting('LINKED_THUMBNAIL'))
 
 
 class BlogMetaMixin(ModelMeta):
@@ -196,7 +183,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
 
 @python_2_unicode_compatible
-class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
+class Post(LinkedContent, KnockerModel, BlogMetaMixin, TranslatableModel):
     """
     Blog post
     """
@@ -229,6 +216,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                                          help_text=_('Enter URL of linked content, '
                                          'like an external image, video or audio'),
                                          blank=True, null=True)
+    linked_content_thumbnail = models.URLField(verbose_name=_('linked content url'),
+                                               help_text=_('Do not enter value. '
+                                               'This is set automatically.'),
+                                               blank=True, null=True)
+    linked_content_image = models.URLField(verbose_name=_('linked content url'),
+                                           help_text=_('Do not enter value. '
+                                           'This is set automatically.'),
+                                           blank=True, null=True)
     enable_comments = models.BooleanField(verbose_name=_('enable comments on post'),
                                           default=get_setting('ENABLE_COMMENTS'))
     sites = models.ManyToManyField('sites.Site', verbose_name=_('Site(s)'), blank=True,
@@ -326,34 +321,6 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             return self.date_featured
         return self.date_published
 
-    def _match_linked_content(self, url, patterns):
-        if not url:
-            return None
-        for p, r in patterns:
-            match = p.match(url)
-            if match:
-                parameters = match.groupdict()
-                parameters['url'] = url
-                if callable(r):
-                    return r(**parameters)
-                else:
-                    return r % parameters
-        return None
-
-    @property
-    def linked_content_thumbnail_url(self):
-        if not hasattr(self, '_content_thumbnail_cache'):
-            self._content_thumbnail_cache = \
-                self._match_linked_content(self.linked_content_url, BLOG_LINKED_THUMBNAIL)
-        return self._content_thumbnail_cache
-
-    @property
-    def linked_content_image_url(self):
-        if not hasattr(self, '_content_image_cache'):
-            self._content_image_cache = \
-                self._match_linked_content(self.linked_content_url, BLOG_LINKED_IMAGE)
-        return self._content_image_cache
-
     @property
     def has_image(self):
         return self.main_image
@@ -366,6 +333,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             self.date_published = timezone.now()
         if not self.slug and self.title:
             self.slug = slugify(self.title)
+        if self.linked_content_url:
+            images = self.get_linked_content_images(self.linked_content_url)
+            if images:
+                self.linked_content_image = images[0]
+                self.linked_content_thumbnail = images[1]
+        else:
+            self.linked_content_image = ''
+            self.linked_content_thumbnail = ''
         super(Post, self).save(*args, **kwargs)
 
     def save_translation(self, translation, *args, **kwargs):

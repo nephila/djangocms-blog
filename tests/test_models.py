@@ -853,6 +853,20 @@ class ModelsTest(BaseTest):
         post.save()
         self.assertFalse(post.is_published)
 
+        post.linked_content_url = 'https://www.youtube.com/watch?v=RKK7wGAYP6k'
+        post.save()
+        self.assertEqual(post.linked_content_image,
+                         'https://img.youtube.com/vi/RKK7wGAYP6k/maxresdefault.jpg')
+        self.assertEqual(post.linked_content_thumbnail,
+                         'https://img.youtube.com/vi/RKK7wGAYP6k/hqdefault.jpg')
+
+        post.linked_content_url = 'https://www.youtube.com/watch?v=RKK7wGAYP6k'
+        post.save()
+        self.assertEqual(post.linked_content_image,
+                         'https://img.youtube.com/vi/RKK7wGAYP6k/maxresdefault.jpg')
+        self.assertEqual(post.linked_content_thumbnail,
+                         'https://img.youtube.com/vi/RKK7wGAYP6k/hqdefault.jpg')
+
     def test_urls(self):
         self.get_pages()
         post = self._get_post(self._post_data[0]['en'])

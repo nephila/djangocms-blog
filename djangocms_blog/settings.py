@@ -146,26 +146,5 @@ def get_setting(name):
 
         'BLOG_PLUGIN_TEMPLATE_FOLDERS': getattr(
             settings, 'BLOG_PLUGIN_TEMPLATE_FOLDERS', (('plugins', _('Default template')),)),
-
-        'BLOG_LINKED_IMAGE': (
-            # Images represent themselves
-            ('^.*\\.(jpeg|jpg|png|tiff|tif)$',
-             '%(url)s'),
-            # Videos are represented by their still
-            ('^https://youtu.be/(?P<vid>[-\\w]+)$',
-             'https://img.youtube.com/vi/%(vid)s/maxresdefault.jpg'),
-            ('^https://www.youtube.com/watch\\?v=(?P<vid>[-\\w]+)$',
-             'https://img.youtube.com/vi/%(vid)s/maxresdefault.jpg'),
-        ),
-        'BLOG_LINKED_THUMBNAIL': (
-            # Images represent themselves
-            ('^.*\\.(jpeg|jpg|png|tiff|tif)$',
-             '%(url)s'),
-            # Videos are represented by their still
-            ('^https://youtu.be/(?P<vid>[-\\w]+)$',
-             'https://img.youtube.com/vi/%(vid)s/hqdefault.jpg'),
-            ('^https://www.youtube.com/watch\\?v=(?P<vid>[-\\w]+)$',
-             'https://img.youtube.com/vi/%(vid)s/hqdefault.jpg'),
-        )
     }
     return default['BLOG_%s' % name]
