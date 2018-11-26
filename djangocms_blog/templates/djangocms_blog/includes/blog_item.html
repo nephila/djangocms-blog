@@ -15,9 +15,9 @@
         {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %}
         <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
-    {% elif image and post.linked_content_thumbnail_url %}
+    {% elif image and post.linked_content_thumbnail %}
     <div class="blog-visual">
-      <img src="{{ post.linked_content_thumbnail_url }}" alt="{{post.title}}" width="{{ post.thumbnail_options.width }}" height="{{ post.thumbnail_options.height }}" />
+      <img src="{{ post.linked_content_thumbnail }}" alt="{{post.title}}" width="{{ post.thumbnail_options.width }}" height="{{ post.thumbnail_options.height }}" />
     </div>
     {% endif %}
     <div class="blog-lead">
