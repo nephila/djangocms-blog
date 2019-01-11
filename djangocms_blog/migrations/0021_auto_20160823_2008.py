@@ -16,17 +16,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='authorentriesplugin',
             name='cmsplugin_ptr',
-            field=models.OneToOneField(parent_link=True, related_name='djangocms_blog_authorentriesplugin', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin'),
+            field=models.OneToOneField(parent_link=True, related_name='djangocms_blog_authorentriesplugin', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin', on_delete=models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='genericblogplugin',
             name='cmsplugin_ptr',
-            field=models.OneToOneField(parent_link=True, related_name='djangocms_blog_genericblogplugin', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin'),
+            field=models.OneToOneField(parent_link=True, related_name='djangocms_blog_genericblogplugin', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin', on_delete=models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='latestpostsplugin',
             name='cmsplugin_ptr',
-            field=models.OneToOneField(parent_link=True, related_name='djangocms_blog_latestpostsplugin', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin'),
+            field=models.OneToOneField(parent_link=True, related_name='djangocms_blog_latestpostsplugin', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin', on_delete=models.deletion.CASCADE),
         ),
         migrations.AlterField(
             model_name='post',

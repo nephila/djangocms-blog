@@ -5,7 +5,7 @@ import os.path
 import re
 
 from cms.api import add_plugin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.timezone import now
 from taggit.models import Tag
 

@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='post',
             name='author',
-            field=models.ForeignKey(blank=True, verbose_name='author', to=settings.AUTH_USER_MODEL, related_name='djangocms_blog_post_author', null=True),
+            field=models.ForeignKey(blank=True, verbose_name='author', to=settings.AUTH_USER_MODEL, related_name='djangocms_blog_post_author', null=True, on_delete=models.deletion.PROTECT),
             preserve_default=True,
         ),
         migrations.AlterField(

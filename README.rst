@@ -8,13 +8,13 @@ django CMS blog application - Support for multilingual posts, placeholders, soci
 
 Supported Django versions:
 
-* Django 1.11
+* Django 1.11, 2.0, 2.1
 
 Supported django CMS versions:
 
-* django CMS 3.4+
+* django CMS 3.5+
 
-.. warning:: For Django<1.11, django CMS<3.4 versions support, use djangocms-blog 0.9.
+.. warning:: For Django<1.11, django CMS<3.5 versions support, use djangocms-blog 0.9.x.
 
 .. warning:: Since 1.0 compatibility with cmsplugin-filer has been dropped.
              Check `cmsplugin-filer migration documentation`_

@@ -3,15 +3,11 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from cms.utils import get_language_list
 from django.contrib.sitemaps import Sitemap
+from django.urls.exceptions import NoReverseMatch
 from parler.utils.context import smart_override
 
 from ..models import Post
 from ..settings import get_setting
-
-try:
-    from django.urls.exceptions import NoReverseMatch
-except ImportError:
-    from django.core.urlresolvers import NoReverseMatch
 
 
 class BlogSitemap(Sitemap):

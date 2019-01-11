@@ -9,8 +9,11 @@ History
 1.0.0 (unreleased)
 ******************
 
+* Added Djando 2.0, 2.1
+* Added django CMS 3.6
 * Dropped Django <1.11
-* Dropped django CMS <3.4
+* Dropped django CMS <3.5
+* Dropped Python 3.4
 
 ******************
 0.9.8 (2019-01-13)

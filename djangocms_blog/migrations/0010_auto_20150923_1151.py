@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, verbose_name='ID', serialize=False, primary_key=True)),
                 ('language_code', models.CharField(db_index=True, verbose_name='Language', max_length=15)),
                 ('app_title', models.CharField(verbose_name='application title', max_length=234)),
-                ('master', models.ForeignKey(editable=False, to='djangocms_blog.BlogConfig', related_name='translations', null=True)),
+                ('master', models.ForeignKey(editable=False, to='djangocms_blog.BlogConfig', related_name='translations', null=True, on_delete=models.deletion.CASCADE)),
             ],
             options={
                 'verbose_name': 'blog config Translation',
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GenericBlogPlugin',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, serialize=False, primary_key=True, auto_created=True, to='cms.CMSPlugin')),
+                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, serialize=False, primary_key=True, auto_created=True, to='cms.CMSPlugin', on_delete=models.deletion.CASCADE)),
                 ('app_config', aldryn_apphooks_config.fields.AppHookConfigField(verbose_name='app. config', blank=True, to='djangocms_blog.BlogConfig', help_text='When selecting a value, the form is reloaded to get the updated default')),
             ],
             options={

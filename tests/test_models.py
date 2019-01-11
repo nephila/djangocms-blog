@@ -14,9 +14,9 @@ from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import override_settings
+from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.html import strip_tags
 from django.utils.timezone import now
@@ -37,6 +37,7 @@ try:  # pragma: no cover
     from cmsplugin_filer_image.models import ThumbnailOption  # NOQA
 except ImportError:  # pragma: no cover
     from filer.models import ThumbnailOption  # NOQA
+
 
 
 try:

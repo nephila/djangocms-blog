@@ -23,6 +23,8 @@ def get_urls():
 
 detail_urls = get_urls()
 
+# module-level app_name attribute as per django 1.9+
+app_name = 'djangocms_blog'
 urlpatterns = [
     url(r'^$',
         PostListView.as_view(), name='posts-latest'),

@@ -7,9 +7,9 @@ from aldryn_apphooks_config.mixins import AppConfigMixin
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
@@ -55,7 +55,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         ).active_translations(
             language_code=language
         )
-        if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
+        if not getattr(self.request, 'toolbar', None) or not self.request.toolbar.edit_mode_active:
             queryset = queryset.published()
         setattr(self.request, get_setting('CURRENT_NAMESPACE'), self.config)
         return self.optimize(queryset.on_site())
@@ -97,7 +97,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
 
     def get_queryset(self):
         queryset = self.model._default_manager.all()
-        if not getattr(self.request, 'toolbar', False) or not self.request.toolbar.edit_mode:
+        if not getattr(self.request, 'toolbar', None) or not self.request.toolbar.edit_mode_active:
             queryset = queryset.published()
         return self.optimize(queryset)
 

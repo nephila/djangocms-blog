@@ -3,7 +3,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import warnings
 
-from cms.utils.compat import DJANGO_1_8
 from cms.utils.permissions import get_current_user
 from cms.wizards.wizard_base import Wizard
 from cms.wizards.wizard_pool import AlreadyRegisteredException, wizard_pool
@@ -47,10 +46,7 @@ class PostWizardForm(PostAdminFormBase):
         fields = ['app_config', 'title', 'slug', 'abstract', 'categories']
 
     class Media:
-        if DJANGO_1_8:
-            js = ('admin/js/jquery.js', 'admin/js/jquery.init.js',)
-        else:
-            js = ('admin/js/vendor/jquery/jquery.js', 'admin/js/jquery.init.js',)
+        js = ('admin/js/vendor/jquery/jquery.js', 'admin/js/jquery.init.js',)
 
     def save(self, commit=True):
         self.instance._set_default_author(get_current_user())
