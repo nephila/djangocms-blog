@@ -205,7 +205,7 @@ class PluginTest(BaseTest):
         self.app_config_1.save()
 
 
-class PluginTest2(BaseTest):
+class PluginTest10(BaseTest):
 
     def test_plugin_authors(self):
         pages = self.get_pages()
@@ -246,6 +246,8 @@ class PluginTest2(BaseTest):
 
         casted_authors, __ = new[0].get_plugin_instance()
         self.assertEqual(casted_authors.authors.count(), 3)
+
+class PluginTest2(BaseTest):
 
     def test_blog_category_plugin(self):
         pages = self.get_pages()
