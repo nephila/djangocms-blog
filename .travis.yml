@@ -38,7 +38,7 @@ install:
   - "if [[ ${DJANGO}z != 'z' ]]; then export TOXENV=$PYVER-$DJANGO-$CMS; fi"
 
 # command to run tests, e.g. python setup.py test
-script: COMMAND='coverage run' tox -e$TOXENV
+script: COMMAND='coverage run' tox -e$TOXENV -- --verbose=2
 
 before_install:
   - pip install -U setuptools tox>=1.8 coveralls codecov wheel pip
