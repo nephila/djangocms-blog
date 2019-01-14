@@ -97,6 +97,14 @@ class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
             return qs.namespace(self.app_config.namespace).active_translations()
         return qs
 
+    def _post_clean_translation(self, translation):
+        # This is a quickfix for https://github.com/django-parler/django-parler/issues/236
+        # which needs to be fixed in parler
+        # operating at form level ensure that if the model is validated outside the form
+        # the uniqueness check is not disabled
+        super(PostAdminFormBase, self)._post_clean_translation(translation)
+        self._validate_unique = False
+
 
 class PostAdminForm(PostAdminFormBase):
 

@@ -2,13 +2,16 @@
 from __future__ import absolute_import, print_function, unicode_literals
 
 import json
+from operator import itemgetter
 
 import django
 from channels import Group
-from cms.models import CMSPlugin, itemgetter, now, python_2_unicode_compatible
+from cms.models import CMSPlugin
 from cms.utils.plugins import reorder_plugins
 from django.db import models
 from django.template import Context
+from django.utils.six import python_2_unicode_compatible
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.models import AbstractText
 from filer.fields.image import FilerImageField

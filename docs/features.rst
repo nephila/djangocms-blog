@@ -141,6 +141,17 @@ It is possibile to configure per Apphook, whether the menu includes post and cat
 If "post and categories" or "only categories" are set, all the posts not associated with a
 category are not added to the menu.
 
+.. _related_posts:
+
+*************
+Related posts
+*************
+
+To each post a number of (sortable) related posts can be attached.
+
+The default template implementation shows them a the bottom of the post detail,
+but it can be customized.
+
 .. _templates:
 
 *********

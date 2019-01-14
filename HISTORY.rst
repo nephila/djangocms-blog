@@ -13,6 +13,14 @@ History
 * Dropped django CMS <3.4
 
 ******************
+0.9.8 (2019-01-13)
+******************
+
+* Fixed test environment in Django 1.8, 1.9
+* Added related posts to templates / documentation
+* Added a fix for multiple error messages when slug is not unique
+
+******************
 0.9.7 (2018-05-05)
 ******************
 
