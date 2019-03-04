@@ -29,7 +29,7 @@ setup(
     install_requires=[
         'django-parler>=1.5',
         'django-cms>=3.2',
-        'django-taggit>=0.12.2',
+        'django-taggit>=0.12.2,<0.24',
         'django-filer>=1.1',
         'pytz',
         'django-taggit-templatetags',
