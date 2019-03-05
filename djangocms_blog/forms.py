@@ -132,7 +132,9 @@ class PostAdminForm(PostAdminFormBase):
             self.fields['app_config'].widget.can_add_related = False
 
         if self.app_config:
-            self.initial['main_image_full'] = \
-                self.app_config.app_data['config'].get('default_image_full')
-            self.initial['main_image_thumbnail'] = \
-                self.app_config.app_data['config'].get('default_image_thumbnail')
+            if not self.initial.get('main_image_full', ''):
+                self.initial['main_image_full'] = \
+                    self.app_config.app_data['config'].get('default_image_full')
+            if not self.initial.get('main_image_thumbnail', ''):
+                self.initial['main_image_thumbnail'] = \
+                    self.app_config.app_data['config'].get('default_image_thumbnail')
