@@ -4,8 +4,8 @@ from __future__ import absolute_import, print_function, unicode_literals
 from cms.apphook_pool import apphook_pool
 from cms.menu_bases import CMSAttachMenu
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import resolve
 from django.db.models.signals import post_delete, post_save
+from django.urls import resolve
 from django.utils.translation import get_language_from_request, ugettext_lazy as _
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
@@ -38,10 +38,7 @@ class BlogCategoryMenu(CMSAttachMenu):
         language = get_language_from_request(request, check_path=True)
         current_site = get_current_site(request)
 
-        try:
-            page_site = self.instance.node.site
-        except AttributeError:  # Compatibility with django CMS 3.4-
-            page_site = self.instance.site
+        page_site = self.instance.node.site
         if self.instance and page_site != current_site:
             return []
 
@@ -54,7 +51,7 @@ class BlogCategoryMenu(CMSAttachMenu):
                     namespace=self.instance.application_namespace
                 )
             config = self._config[self.instance.application_namespace]
-            if not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode:
+            if not getattr(request, 'toolbar', False) or not request.toolbar.edit_mode_active:
                 if self.instance == self.instance.get_draft_object():
                     return []
             else:

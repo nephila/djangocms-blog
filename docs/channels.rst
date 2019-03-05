@@ -11,6 +11,8 @@ djangocms-blog implements some channels related features:
 
 For detailed information on channels setup, please refer to `channels documentation`_.
 
+.. warning:: liveblog does not currently work on django 2.0 and up
+
 .. _knocker:
 
 *************

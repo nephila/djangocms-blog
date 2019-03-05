@@ -18,14 +18,14 @@ class Migration(migrations.Migration):
                 name='main_image_full_new',
                 field=models.ForeignKey(related_name='djangocms_blog_post_full',
                                         verbose_name='Main image full', blank=True,
-                                        to=thumbnail_model, null=True),
+                                        to=thumbnail_model, null=True, on_delete=models.deletion.SET_NULL),
             ),
             migrations.AddField(
                 model_name='post',
                 name='main_image_thumbnail_new',
                 field=models.ForeignKey(related_name='djangocms_blog_post_thumbnail',
                                         verbose_name='Main image thumbnail', blank=True,
-                                        to=thumbnail_model, null=True),
+                                        to=thumbnail_model, null=True, on_delete=models.deletion.SET_NULL),
             ),
         ]
     else:

@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
 from cms.utils.urlutils import admin_reverse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.translation import override, ugettext_lazy as _
 
 from .settings import get_setting
@@ -39,7 +39,7 @@ class BlogToolbar(CMSToolbar):
         Adds the publish button to the toolbar if the current post is unpublished
         """
         current_post = getattr(self.request, get_setting('CURRENT_POST_IDENTIFIER'), None)
-        if (self.toolbar.edit_mode and current_post and
+        if (self.toolbar.edit_mode_active and current_post and
                 not current_post.publish and
                 self.request.user.has_perm('djangocms_blog.change_post')
             ):  # pragma: no cover  # NOQA

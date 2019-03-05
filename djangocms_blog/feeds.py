@@ -5,7 +5,7 @@ from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.utils.html import strip_tags
