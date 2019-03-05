@@ -5,6 +5,13 @@ History
 =======
 
 ******************
+0.9.9 (2019-04-05)
+******************
+
+* Fixed issue with thumbnails not being preserved in admin form
+* Pinned django-taggit version
+
+******************
 0.9.8 (2019-01-13)
 ******************
 
