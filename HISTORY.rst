@@ -5,6 +5,14 @@ History
 =======
 
 ******************
+0.9.10 (unreleased)
+******************
+
+* Fixed allow_unicode kwarg for AutoSlugField
+* Fixed sphinx conf isort
+* Set category as requested or not depending on the permalink setting
+
+******************
 0.9.9 (2019-04-05)
 ******************
 
