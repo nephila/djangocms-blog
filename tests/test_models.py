@@ -73,6 +73,49 @@ class AdminTest(BaseTest):
             upscale=True,
         )
 
+    def test_admin_thumbnails(self):
+        self.get_pages()
+
+        custom_thumbnail = ThumbnailOption.objects.create(
+            name='Custom thumbnail', width=120, height=120, crop=True, upscale=True,
+        )
+        custom_full = ThumbnailOption.objects.create(
+            name='Custom image', width=800, height=200, crop=True, upscale=True,
+        )
+
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request('/', self.user, r'/en/blog/', edit=False)
+
+        post = self._get_post(self._post_data[0]['en'])
+        post = self._get_post(self._post_data[0]['it'], post, 'it')
+
+        response = post_admin.change_view(request, str(post.pk))
+        response.render()
+        self.assertRegexpMatches(force_text(response.content), r'[^>]*>Custom image')
+        self.assertRegexpMatches(force_text(response.content), r'[^>]*>Custom thumbnail')
+        self.assertRegexpMatches(force_text(response.content), r'[^>]*>Blog image')
+        self.assertRegexpMatches(force_text(response.content), r'[^>]*>Blog thumbnail')
+
+        post.main_image_full = custom_full
+        post.main_image_thumbnail = custom_thumbnail
+        post.save()
+        response = post_admin.change_view(request, str(post.pk))
+        response.render()
+        self.assertRegexpMatches(force_text(response.content), r'selected[^>]*>Custom image')
+        self.assertRegexpMatches(force_text(response.content), r'selected[^>]*>Custom thumbnail')
+
+        self.app_config_1.app_data.config.default_image_full = self.default_full
+        self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
+        self.app_config_1.save()
+        post.main_image_full = None
+        post.main_image_thumbnail = None
+        post.save()
+
+        response = post_admin.change_view(request, str(post.pk))
+        response.render()
+        self.assertRegexpMatches(force_text(response.content), r'selected[^>]*>Blog image')
+        self.assertRegexpMatches(force_text(response.content), r'selected[^>]*>Blog thumbnail')
+
     def test_admin_post_views(self):
         self.get_pages()
 
