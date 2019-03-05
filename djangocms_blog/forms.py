@@ -8,9 +8,8 @@ from django.utils.functional import cached_property
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
 
-from djangocms_blog.settings import get_setting
-
 from .models import BlogCategory, BlogConfig, Post
+from .settings import PERMALINK_TYPE_CATEGORY, get_setting
 
 
 class ConfigFormBase(object):
@@ -124,10 +123,8 @@ class PostAdminForm(PostAdminFormBase):
         ]
         super(PostAdminForm, self).__init__(*args, **kwargs)
         if 'categories' in self.fields:
-            if self.app_config:
-                if self.app_config.url_patterns:
-                    if self.app_config.url_patterns == 'category':
-                        self.fields['categories'].required = True
+            if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
+                self.fields['categories'].required = True
             self.fields['categories'].queryset = self.available_categories
 
         if 'app_config' in self.fields:
