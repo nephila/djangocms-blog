@@ -25,6 +25,7 @@ HELPER_SETTINGS = dict(
         'aldryn_apphooks_config',
         'aldryn_search',
         'sortedm2m',
+        'tests.media_app',
     ],
     LANGUAGE_CODE='en',
     LANGUAGES=(

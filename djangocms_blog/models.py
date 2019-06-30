@@ -243,6 +243,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                             configuration='BLOG_POST_TEXT_CKEDITOR'),
         meta={'unique_together': (('language_code', 'slug'),)}
     )
+    media = PlaceholderField('media', related_name='media')
     content = PlaceholderField('post_content', related_name='post_content')
     liveblog = PlaceholderField('live_blog', related_name='live_blog')
     enable_liveblog = models.BooleanField(verbose_name=_('enable liveblog on post'),
