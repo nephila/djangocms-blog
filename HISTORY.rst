@@ -4,9 +4,9 @@
 History
 =======
 
-******************
+*******************
 0.9.10 (unreleased)
-******************
+*******************
 
 * Fixed allow_unicode kwarg for AutoSlugField
 * Fixed sphinx conf isort
