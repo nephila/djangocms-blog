@@ -5,7 +5,7 @@ History
 =======
 
 *******************
-0.9.10 (unreleased)
+0.9.10 (2019-07-02)
 *******************
 
 * Fixed allow_unicode kwarg for AutoSlugField
