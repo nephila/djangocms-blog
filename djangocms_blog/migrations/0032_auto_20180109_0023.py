@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import djangocms_blog.fields
 
 
 class Migration(migrations.Migration):
@@ -36,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='posttranslation',
             name='slug',
-            field=djangocms_blog.fields.AutoSlugField(allow_unicode=True, blank=True, db_index=False, max_length=767, verbose_name='slug'),
+            field=models.SlugField(allow_unicode=True, blank=True, db_index=False, max_length=767, verbose_name='slug'),
         ),
         migrations.AlterField(
             model_name='posttranslation',

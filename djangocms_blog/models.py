@@ -29,7 +29,7 @@ from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
-from .fields import AutoSlugField, slugify
+from .fields import slugify
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
 
@@ -225,8 +225,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_('title'), max_length=767),
-        slug=AutoSlugField(_('slug'), max_length=767, blank=True,
-                           db_index=True, allow_unicode=True),
+        slug=models.SlugField(_('slug'), max_length=767, blank=True,
+                              db_index=True, allow_unicode=True),
         subtitle=models.CharField(verbose_name=_('subtitle'), max_length=767,
                                   blank=True, default=''),
         abstract=HTMLField(_('abstract'), blank=True, default='',
