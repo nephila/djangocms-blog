@@ -811,6 +811,8 @@ class ModelsTest(BaseTest):
         self.assertEqual(meta_en.gplus_author, 'RandomJoe')
         self.assertEqual(meta_en.gplus_type, 'Blog')
         self.assertEqual(meta_en.og_type, 'Article')
+        self.assertEqual(meta_en.image_width, post.main_image.width)
+        self.assertEqual(meta_en.image_height, post.main_image.height)
         self.assertEqual(meta_en.facebook_app_id, None)
         post.set_current_language('it')
         meta_it = post.as_meta()
