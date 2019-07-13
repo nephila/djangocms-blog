@@ -265,6 +265,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         'gplus_description': 'get_description',
         'locale': 'get_locale',
         'image': 'get_image_full_url',
+        'image_width': 'get_image_width',
+        'image_height': 'get_image_height',
         'object_type': 'get_meta_attribute',
         'og_type': 'get_meta_attribute',
         'og_app_id': 'get_meta_attribute',
@@ -379,6 +381,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         if self.main_image:
             return self.build_absolute_uri(self.main_image.url)
         return ''
+
+    def get_image_width(self):
+        if self.main_image:
+            return self.main_image.width
+
+    def get_image_height(self):
+        if self.main_image:
+            return self.main_image.height
 
     def get_tags(self):
         """
