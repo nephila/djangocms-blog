@@ -150,3 +150,7 @@ def setup():
 
 if __name__ == '__main__':
     run()
+
+if __name__ == 'cms_helper':
+    # this is needed to run cms_helper in pycharm
+    setup()
