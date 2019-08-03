@@ -191,3 +191,4 @@ def clear_menu_cache(**kwargs):
 
 post_save.connect(clear_menu_cache, sender=BlogCategory)
 post_delete.connect(clear_menu_cache, sender=BlogCategory)
+post_delete.connect(clear_menu_cache, sender=BlogConfig)
