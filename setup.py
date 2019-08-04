@@ -27,7 +27,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'django-parler>=1.5',
+        'django-parler>=1.5,<2.0',
         'django-cms>=3.2',
         'django-taggit>=0.12.2,<0.24',
         'django-filer>=1.1',
@@ -42,7 +42,7 @@ setup(
         'aldryn-apphooks-config>=0.2.6',
         'djangocms-apphook-setup',
         'django-sortedm2m',
-        'lxml',
+        'lxml<4.4;python_version<"3.5"',
     ],
     extras_require={
         'search': ['aldryn-search'],
