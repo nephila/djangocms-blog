@@ -112,7 +112,10 @@ class BlogCategoryPlugin(BlogPlugin):
             qs = qs.filter(
                 models.Q(blog_posts__sites__isnull=True) | models.Q(blog_posts__sites=site.pk)
             )
-        context['categories'] = qs.distinct()
+        categories = qs.distinct()
+        if instance.app_config and not instance.app_config.menu_empty_categories:
+            categories = qs.filter(blog_posts__isnull=False).distinct()
+        context['categories'] = categories
         return context
 
 

@@ -4,6 +4,28 @@
 History
 =======
 
+*******************
+0.9.11 (2019-08-06)
+*******************
+
+* Use menu_empty_categories config for BlogCategoryPlugin
+* Purge menu cache when deleting a BlogConfig
+
+*******************
+0.9.10 (2019-07-02)
+*******************
+
+* Fixed allow_unicode kwarg for AutoSlugField
+* Fixed sphinx conf isort
+* Set category as requested or not depending on the permalink setting
+
+******************
+0.9.9 (2019-04-05)
+******************
+
+* Fixed issue with thumbnails not being preserved in admin form
+* Pinned django-taggit version
+
 ******************
 1.0.0 (unreleased)
 ******************
