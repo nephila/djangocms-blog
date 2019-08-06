@@ -6,6 +6,7 @@ from django.utils.translation import activate
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
 
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.models import BlogCategory
 from djangocms_blog.settings import (
     MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS,
@@ -29,6 +30,64 @@ class MenuTest(BaseTest):
 
         activate('en')
         self._reload_menus()
+
+    def test_menu_cache_clear_blogconfig(self):
+        """
+        Tests if menu cache is cleared after config deletion
+        """
+
+        from menus.models import CacheKey
+        from django.core.cache import cache
+        pages = self.get_pages()
+        self.get_posts()
+        self.reload_urlconf()
+
+        app_config_test = BlogConfig.objects.create(namespace='test_config')
+        app_config_test.app_title = 'appx'
+        app_config_test.object_name = 'Blogx'
+        app_config_test.save()
+        lang = 'en'
+        with smart_override(lang):
+            self._reset_menus()
+            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
+            self.get_nodes(menu_pool, request)
+            keys = CacheKey.objects.get_keys().distinct().values_list('key', flat=True)
+            self.assertTrue(cache.get_many(keys))
+            app_config_test.delete()
+            self.assertFalse(cache.get_many(keys))
+
+    def test_menu_cache_clear_category(self):
+        """
+        Tests if menu cache is cleared after category deletion
+        """
+
+        from menus.models import CacheKey
+        from django.core.cache import cache
+        pages = self.get_pages()
+        self.get_posts()
+        self.reload_urlconf()
+
+        lang = 'en'
+        with smart_override(lang):
+            self._reset_menus()
+            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
+            self.get_nodes(menu_pool, request)
+            keys = CacheKey.objects.get_keys().distinct().values_list('key', flat=True)
+            self.assertTrue(cache.get_many(keys))
+            category_test = BlogCategory.objects.create(
+                name='category test', app_config=self.app_config_1
+            )
+            category_test.set_current_language('it', initialize=True)
+            category_test.name = 'categoria test'
+            category_test.save()
+            self.assertFalse(cache.get_many(keys))
+            self.get_nodes(menu_pool, request)
+            keys = CacheKey.objects.get_keys().distinct().values_list('key', flat=True)
+            self.assertTrue(cache.get_many(keys))
+            category_test.delete()
+            self.assertFalse(cache.get_many(keys))
+            keys = CacheKey.objects.get_keys().distinct().values_list('key', flat=True)
+            self.assertFalse(keys)
 
     def test_menu_nodes(self):
         """
