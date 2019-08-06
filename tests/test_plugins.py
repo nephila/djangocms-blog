@@ -289,3 +289,16 @@ class PluginTest2(BaseTest):
         with self.settings(SITE_ID=2):
             context = plugin_class.render(context, plugin, ph)
             self.assertEqual(list(context['categories']), [self.category_1, new_category])
+
+        empty_category = BlogCategory.objects.create(
+            name='empty 2', app_config=self.app_config_1
+        )
+        self.app_config_1.app_data.config.menu_empty_categories = False
+        self.app_config_1.save()
+        context = plugin_class.render(context, plugin, ph)
+        self.assertEqual(list(context['categories']), [self.category_1, new_category])
+
+        self.app_config_1.app_data.config.menu_empty_categories = True
+        self.app_config_1.save()
+        context = plugin_class.render(context, plugin, ph)
+        self.assertEqual(list(context['categories']), [self.category_1, new_category, empty_category])
