@@ -5,6 +5,13 @@ History
 =======
 
 *******************
+0.9.11 (2019-08-06)
+*******************
+
+* Use menu_empty_categories config for BlogCategoryPlugin
+* Purge menu cache when deleting a BlogConfig
+
+*******************
 0.9.10 (2019-07-02)
 *******************
 
