@@ -43,6 +43,7 @@ setup(
         'djangocms-apphook-setup',
         'django-sortedm2m',
         'lxml<4.4;python_version<"3.5"',
+        'twisted<19.3;python_version<"3.5"',
     ],
     extras_require={
         'search': ['aldryn-search'],
