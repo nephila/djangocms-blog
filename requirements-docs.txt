@@ -1,4 +1,4 @@
 -r requirements-test.txt
 Django<3.0
 html5lib<0.99999999
-easy-thumbnails<2.5
+easy-thumbnails<2.7
