@@ -1,4 +1,4 @@
 -r requirements-test.txt
-Django<2.0
+Django<3.0
 html5lib<1.1
-easy-thumbnails<2.5
+easy-thumbnails<2.7
