@@ -6,6 +6,7 @@ from collections import Counter
 from aldryn_apphooks_config.managers.parler import (
     AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset,
 )
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.timezone import now
@@ -63,7 +64,10 @@ class TaggedFilterItem(object):
         tag_ids = self._taglist(other_model, queryset)
         kwargs = {}
         if published:
-            kwargs = TaggedItem.bulk_lookup_kwargs(self.model.objects.published())
+            kwargs = {
+                'object_id__in': self.model.objects.published(),
+                'content_type': ContentType.objects.get_for_model(self.model),
+            }
         kwargs['tag_id__in'] = tag_ids
         counted_tags = dict(TaggedItem.objects
                                       .filter(**kwargs)
