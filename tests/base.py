@@ -145,18 +145,10 @@ class BaseTest(BaseTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        BlogConfig.objects.all().delete()
-        BlogCategory.objects.all().delete()
-        ThumbnailOption.objects.all().delete()
         cache.clear()
         super(BaseTest, cls).tearDownClass()
 
     def tearDown(self):
-        self.user.sites.clear()
-        for post in Post.objects.all():
-            post.sites.clear()
-            post.tags.clear()
-            post.categories.clear()
         cache.clear()
         super(BaseTest, self).tearDown()
 

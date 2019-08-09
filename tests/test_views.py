@@ -30,7 +30,7 @@ from djangocms_blog.views import (
 from .base import BaseTest
 
 
-class ViewTest(BaseTest):
+class CustomUrlViewTest(BaseTest):
 
     @override_settings(BLOG_URLCONF='tests.test_utils.blog_urls')
     def test_post_list_view_custom_urlconf(self):
@@ -38,6 +38,9 @@ class ViewTest(BaseTest):
         self.get_posts()
         self.get_request(pages[1], 'en', AnonymousUser())
         self.assertEqual(reverse('sample_app:posts-latest'), '/en/page-two/latests/')
+
+
+class ViewTest(BaseTest):
 
     def test_post_list_view_base_urlconf(self):
         pages = self.get_pages()
@@ -303,6 +306,49 @@ class ViewTest(BaseTest):
             qs = view_obj.get_queryset()
             self.assertEqual(qs.count(), 1)
 
+    def test_templates(self):
+        pages = self.get_pages()
+        self.get_posts()
+
+        with smart_override('en'):
+            request = self.get_page_request(pages[1], self.user, edit=True)
+            view_obj = PostListView()
+            view_obj.request = request
+            view_obj.namespace = self.app_config_1.namespace
+            view_obj.config = self.app_config_1
+            self.assertEqual(view_obj.get_template_names(), os.path.join('djangocms_blog', 'post_list.html'))
+
+            self.app_config_1.app_data.config.template_prefix = 'whatever'
+            self.app_config_1.save()
+            self.assertEqual(view_obj.get_template_names(), os.path.join('whatever', 'post_list.html'))
+            self.app_config_1.app_data.config.template_prefix = ''
+            self.app_config_1.save()
+
+    def test_non_existing_blog_category_should_raise_404(self):
+        pages = self.get_pages()
+        with smart_override('en'):
+            request = self.get_request(pages[1], 'en', AnonymousUser())
+            view_obj = CategoryEntriesView()
+            view_obj.request = request
+            view_obj.namespace, view_obj.config = get_app_instance(request)
+            with self.assertRaises(Http404):
+                view_obj.kwargs = {'category': 'unknown-category'}
+                view_obj.get_queryset()
+
+    def test_non_existing_author_should_raise_404(self):
+        pages = self.get_pages()
+        with smart_override('en'):
+            request = self.get_request(pages[1], 'en', AnonymousUser())
+            view_obj = AuthorEntriesView()
+            view_obj.request = request
+            view_obj.namespace, view_obj.config = get_app_instance(request)
+            with self.assertRaises(Http404):
+                view_obj.kwargs = {'username': 'unknown-author'}
+                view_obj.get_context_data()
+
+
+class TaggedItemViewTest(BaseTest):
+
     def test_taggedlist_view(self):
         pages = self.get_pages()
         posts = self.get_posts()
@@ -372,41 +418,7 @@ class ViewTest(BaseTest):
                 feed.config = self.app_config_1
                 self.assertEqual(list(feed.items('tag-2')), [posts[0]])
 
-    def test_instant_articles(self):
-        self.user.first_name = 'Admin'
-        self.user.last_name = 'User'
-        self.user.save()
-        pages = self.get_pages()
-        posts = self.get_posts()
-        posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
-        posts[0].categories.add(self.category_1)
-        posts[0].author = self.user
-        posts[0].save()
-        add_plugin(
-            posts[0].content, 'TextPlugin', language='en', body='<h3>Ciao</h3><p></p><p>Ciao</p>'
-        )
-
-        with smart_override('en'):
-            with switch_language(posts[0], 'en'):
-                request = self.get_page_request(
-                    pages[1], self.user, path=posts[0].get_absolute_url()
-                )
-
-                feed = FBInstantArticles()
-                feed.namespace, feed.config = get_app_instance(request)
-                self.assertEqual(list(feed.items()), [posts[0]])
-                xml = feed(request)
-                self.assertContains(xml, '<guid>{0}</guid>'.format(posts[0].guid))
-                self.assertContains(xml, 'content:encoded')
-                self.assertContains(xml, 'class="op-modified" datetime="{0}"'.format(
-                    posts[0].date_modified.strftime(FBInstantFeed.date_format)
-                ))
-                self.assertContains(xml, '<link rel="canonical" href="{0}"/>'.format(
-                    posts[0].get_full_url()
-                ))
-                # Assert text transformation
-                self.assertContains(xml, '<h2>Ciao</h2><p>Ciao</p>')
-                self.assertContains(xml, '<a>Admin User</a>')
+class SitemapViewTest(BaseTest):
 
     def test_sitemap(self):
         self.get_pages()
@@ -481,42 +493,41 @@ class ViewTest(BaseTest):
             sitemap.changefreq(None), get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
         )
 
-    def test_templates(self):
+
+class InstanctArticlesViewTest(BaseTest):
+
+    def test_instant_articles(self):
+        self.user.first_name = 'Admin'
+        self.user.last_name = 'User'
+        self.user.save()
         pages = self.get_pages()
-        self.get_posts()
+        posts = self.get_posts()
+        posts[0].tags.add('tag 1', 'tag 2', 'tag 3', 'tag 4')
+        posts[0].categories.add(self.category_1)
+        posts[0].author = self.user
+        posts[0].save()
+        add_plugin(
+            posts[0].content, 'TextPlugin', language='en', body='<h3>Ciao</h3><p></p><p>Ciao</p>'
+        )
 
         with smart_override('en'):
-            request = self.get_page_request(pages[1], self.user, edit=True)
-            view_obj = PostListView()
-            view_obj.request = request
-            view_obj.namespace = self.app_config_1.namespace
-            view_obj.config = self.app_config_1
-            self.assertEqual(view_obj.get_template_names(), os.path.join('djangocms_blog', 'post_list.html'))
+            with switch_language(posts[0], 'en'):
+                request = self.get_page_request(
+                    pages[1], self.user, path=posts[0].get_absolute_url()
+                )
 
-            self.app_config_1.app_data.config.template_prefix = 'whatever'
-            self.app_config_1.save()
-            self.assertEqual(view_obj.get_template_names(), os.path.join('whatever', 'post_list.html'))
-            self.app_config_1.app_data.config.template_prefix = ''
-            self.app_config_1.save()
-
-    def test_non_existing_blog_category_should_raise_404(self):
-        pages = self.get_pages()
-        with smart_override('en'):
-            request = self.get_request(pages[1], 'en', AnonymousUser())
-            view_obj = CategoryEntriesView()
-            view_obj.request = request
-            view_obj.namespace, view_obj.config = get_app_instance(request)
-            with self.assertRaises(Http404):
-                view_obj.kwargs = {'category': 'unknown-category'}
-                view_obj.get_queryset()
-
-    def test_non_existing_author_should_raise_404(self):
-        pages = self.get_pages()
-        with smart_override('en'):
-            request = self.get_request(pages[1], 'en', AnonymousUser())
-            view_obj = AuthorEntriesView()
-            view_obj.request = request
-            view_obj.namespace, view_obj.config = get_app_instance(request)
-            with self.assertRaises(Http404):
-                view_obj.kwargs = {'username': 'unknown-author'}
-                view_obj.get_context_data()
+                feed = FBInstantArticles()
+                feed.namespace, feed.config = get_app_instance(request)
+                self.assertEqual(list(feed.items()), [posts[0]])
+                xml = feed(request)
+                self.assertContains(xml, '<guid>{0}</guid>'.format(posts[0].guid))
+                self.assertContains(xml, 'content:encoded')
+                self.assertContains(xml, 'class="op-modified" datetime="{0}"'.format(
+                    posts[0].date_modified.strftime(FBInstantFeed.date_format)
+                ))
+                self.assertContains(xml, '<link rel="canonical" href="{0}"/>'.format(
+                    posts[0].get_full_url()
+                ))
+                # Assert text transformation
+                self.assertContains(xml, '<h2>Ciao</h2><p>Ciao</p>')
+                self.assertContains(xml, '<a>Admin User</a>')
