@@ -12,6 +12,7 @@ History
 * Add support for Python 3.7
 * Add image size meta for Facebook
 * Add support for django-parler >= 2
+* Move to django-app-helper
 * Drop support for Django < 1.11
 * Drop support for django CMS < 3.5
 * Drop older compatibilities
