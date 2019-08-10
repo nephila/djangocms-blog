@@ -5,6 +5,18 @@ History
 =======
 
 *******************
+0.1.0 (unreleased)
+*******************
+
+* Add support for django CMS 3.7
+* Add support for Python 3.7
+* Add image size meta for Facebook
+* Add support for django-parler >= 2
+* Drop support for Django < 1.11
+* Drop support for django CMS < 3.5
+* Drop older compatibilities
+
+*******************
 0.9.11 (2019-08-06)
 *******************
 
