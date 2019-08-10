@@ -3,10 +3,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from copy import deepcopy
 
+from app_helper.base_test import BaseTestCase
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
-from djangocms_helper.base_test import BaseTestCase
 from haystack import connections
 from haystack.constants import DEFAULT_ALIAS
 from menus.menu_pool import menu_pool

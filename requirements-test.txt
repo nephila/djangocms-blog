@@ -10,3 +10,4 @@ pysolr
 django-parler>=1.6
 aldryn-search
 django-taggit-helpers
+django-app-helper>=2.0.0a2

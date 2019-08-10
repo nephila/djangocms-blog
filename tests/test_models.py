@@ -21,7 +21,6 @@ from django.utils.encoding import force_text
 from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
-from djangocms_helper.utils import CMS_30
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override
 from taggit.models import Tag
@@ -1160,14 +1159,9 @@ class ModelsTest2(BaseTest):
         )
         plugin.tags.add(tag1)
         plugin.tags.add(tag2)
-        if CMS_30:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
-                'tree_id', 'level', 'position'
-            ))
-        else:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
-                'path', 'depth', 'position'
-            ))
+        plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+            'path', 'depth', 'position'
+        ))
         copy_plugins_to(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].tags.all()), set([tag1, tag2]))
@@ -1201,14 +1195,9 @@ class ModelsTest2(BaseTest):
             post1.content, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1
         )
         plugin.authors.add(self.user)
-        if CMS_30:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
-                'tree_id', 'level', 'position'
-            ))
-        else:
-            plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
-                'path', 'depth', 'position'
-            ))
+        plugins = list(post1.content.cmsplugin_set.filter(language='en').order_by(
+            'path', 'depth', 'position'
+        ))
         copy_plugins_to(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].authors.all()), set([self.user]))
