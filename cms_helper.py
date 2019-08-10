@@ -138,12 +138,12 @@ if 'server' in sys.argv[:3]:
 
 
 def run():
-    from djangocms_helper import runner
+    from app_helper import runner
     runner.cms('djangocms_blog')
 
 
 def setup():
-    from djangocms_helper import runner
+    from app_helper import runner
     runner.setup('djangocms_blog', sys.modules[__name__], use_cms=True)
 
 

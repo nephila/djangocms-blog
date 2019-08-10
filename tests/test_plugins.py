@@ -40,13 +40,13 @@ class PluginTest(BaseTest):
             ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
         )
         # FIXME: Investigate the correct number of queries expected here
-        with self.assertNumQueries(19):
+        with self.assertNumQueries(17):
             self.render_plugin(pages[0], 'en', plugin_nocache)
 
-        with self.assertNumQueries(19):
+        with self.assertNumQueries(17):
             self.render_plugin(pages[0], 'en', plugin)
 
-        with self.assertNumQueries(19):
+        with self.assertNumQueries(17):
             rendered = self.render_plugin(pages[0], 'en', plugin)
 
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
