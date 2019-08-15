@@ -5,7 +5,7 @@ History
 =======
 
 *******************
-0.1.0 (unreleased)
+1.0.0 (unreleased)
 *******************
 
 * Add support for django CMS 3.7
