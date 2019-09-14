@@ -1,8 +1,8 @@
 .. _channels_features:
 
-#################
-Channels Features
-#################
+########
+Channels
+########
 
 djangocms-blog implements some channels related features:
 
@@ -25,7 +25,9 @@ To enable notifications:
 
 * Install **django-knocker** and **channels<2.0**
 
-* Add ``channels`` and ``knocker`` application to ``INSTALLED_APPS`` together with channels::
+* Add ``channels`` and ``knocker`` application to ``INSTALLED_APPS`` together with channels:
+
+.. code-block:: python
 
       INSTALLED_APPS = [
           ...
@@ -34,7 +36,9 @@ To enable notifications:
           ...
       ]
 
-* Load the ``knocker`` routing into channels configuration::
+* Load the ``knocker`` routing into channels configuration:
+
+.. code-block:: python
 
     CHANNEL_LAYERS={
         'default': {
@@ -46,9 +50,9 @@ To enable notifications:
         },
     }
 
-* Add to ``myproject.routing.channel_routing.py`` the knocker routes::
+* Add to ``myproject.routing.channel_routing.py`` the knocker routes:
 
-    # -*- coding: utf-8 -*-
+.. code-block:: python
 
     from channels import include
     from knocker.routing import channel_routing as knocker_routing
@@ -60,7 +64,9 @@ To enable notifications:
 * Load ``{% static "js/knocker.js" %}`` and ``{% static "js/reconnecting-websocket.min.js" %}`` into
   the templates
 
-* Add the following code::
+* Add the following code:
+
+.. code-block:: python
 
     <script type="text/javascript">
       var knocker_language = '{{ LANGUAGE_CODE }}';
@@ -94,7 +100,9 @@ Enabling liveblog
 
 To enable liveblog features:
 
-* Add ``djangocms_blog.liveblog`` application to ``INSTALLED_APPS`` together with channels::
+* Add ``djangocms_blog.liveblog`` application to ``INSTALLED_APPS`` together with channels:
+
+.. code-block:: python
 
       INSTALLED_APPS = [
           ...
@@ -104,7 +112,9 @@ To enable liveblog features:
       ]
 
 * It's advised to configure ``CMS_PLACEHOLDER_CONF`` to only allow ``Liveblog`` plugins in
-  ``Liveblog`` placeholder, and remove them from other placeholders::
+  ``Liveblog`` placeholder, and remove them from other placeholders:
+
+.. code-block:: python
 
       CMS_PLACEHOLDER_CONF = {
         None: {
@@ -117,7 +127,9 @@ To enable liveblog features:
         ...
       }
 
-* Add channels routing configuration::
+* Add channels routing configuration:
+
+.. code-block:: python
 
     CHANNEL_LAYERS={
         'default': {
@@ -131,9 +143,9 @@ To enable liveblog features:
 
   Check `channels documentation`_ for more detailed information on ``CHANNEL_LAYERS`` setup.
 
-* Add to ``myproject.routing.channel_routing.py`` the knocker routes::
+* Add to ``myproject.routing.channel_routing.py`` the knocker routes:
 
-    # -*- coding: utf-8 -*-
+.. code-block:: python
 
     from channels import include
     from djangocms_blog.liveblog.routing import channel_routing as djangocms_blog_routing
@@ -143,14 +155,15 @@ To enable liveblog features:
     ]
 
 * If you overwrite the post detail template, add the following code where you want to show
-  the liveblog content::
+  the liveblog content:
 
+.. code-block:: html+django
 
       {% if view.liveblog_enabled %}
           {% include "liveblog/includes/post_detail.html" %}
       {% endif %}
 
-Liveblob and notifications can obviously activated at the same time, you just need to configure both.
+Liveblob and notifications can be activated at the same time by configuring each.
 
 
 Using liveblog
@@ -175,16 +188,16 @@ Extending liveblog plugin
 Liveblog support ships with a default liveblog plugin that provides a title, a body and
 a filer image.
 
-To customize the appearance of the plugin, just override the ``liveblog/plugins/liveblog.html``
+To customize the appearance of the plugin override the ``liveblog/plugins/liveblog.html``
 template. Both the real time and non realtime version of the plugin will be rendered accordingly.
 
-If you need something different, you can create your own plugin by creating your own plugin
+If you need something different, you can create your own plugin
 inheriting from ``LiveblogInterface`` and calling the method ``self._post_save()`` in the
 save method, after the model has been saved.
 
 In ``models.py``:
 
-.. code-block:: django
+.. code-block:: python
 
     class MyLiveblog(LiveblogInterface, CMSPlugin):
     """
@@ -199,7 +212,7 @@ In ``models.py``:
 
 The plugin class does not require any special inheritance; in ``cms_plugins.py``:
 
-.. code-block:: django
+.. code-block:: python
 
     class MyLiveblogPlugin(CMSPluginBase):
         name = _('Liveblog item')

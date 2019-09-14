@@ -40,31 +40,6 @@ History
 * Pinned django-taggit version
 
 ******************
-1.0.0 (unreleased)
-******************
-
-* Added Djando 2.0, 2.1
-* Added django CMS 3.6
-* Dropped Django <1.11
-* Dropped django CMS <3.5
-* Dropped Python 3.4
-
-*******************
-0.9.10 (2019-07-02)
-*******************
-
-* Fixed allow_unicode kwarg for AutoSlugField
-* Fixed sphinx conf isort
-* Set category as requested or not depending on the permalink setting
-
-******************
-0.9.9 (2019-04-05)
-******************
-
-* Fixed issue with thumbnails not being preserved in admin form
-* Pinned django-taggit version
-
-******************
 0.9.8 (2019-01-13)
 ******************
 
