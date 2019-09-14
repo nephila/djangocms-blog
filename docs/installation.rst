@@ -4,14 +4,18 @@
 Installation
 ############
 
-django CMS blog assumes a completely setup and working django CMS project.
-See `django CMS installation docs <http://django-cms.readthedocs.io/en/release-3.4.x/how_to/install.html>`_ for reference.
+django CMS blog assumes a **completely setup and working django CMS project**.
+See `django CMS installation docs <https://django-cms.readthedocs.io/en/latest/how_to/index.html#set-up>`_ for reference.
 
-Install djangocms-blog::
+Install djangocms-blog:
+
+.. code-block:: python
 
     pip install djangocms-blog
 
-Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
+Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS:
+
+.. code-block:: python
 
     INSTALLED_APPS = [
         ...
@@ -29,13 +33,17 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS::
     ]
 
 
-Then migrate::
+Then apply migrations:
 
-    $ python manage.py migrate
+.. code-block:: python
+
+    python manage.py migrate
 
 If you want to enable haystack support, in addition to the above:
 
-* install djangocms-blog with::
+* install djangocms-blog with:
+
+.. code-block:: python
 
     pip install djangocms-blog[search]
 
@@ -43,7 +51,9 @@ If you want to enable haystack support, in addition to the above:
 * configure haystack according to `aldryn-search docs <https://github.com/aldryn/aldryn-search#usage>`_
   and `haystack docs <http://django-haystack.readthedocs.io/en/stable/>`_.
 
-To enable taggit filtering support in the admin install djangocms-blog with::
+To enable taggit filtering support in the admin install djangocms-blog with:
+
+.. code-block:: python
 
     pip install djangocms-blog[taggit]
 
@@ -54,7 +64,9 @@ Minimal configuration
 The following are minimal defaults to get the blog running; they may not be
 suited for your deployment.
 
-* Add the following settings to your project::
+* Add the following settings to your project:
+
+.. code-block:: python
 
     THUMBNAIL_PROCESSORS = (
         'easy_thumbnails.processors.colorspace',
@@ -65,7 +77,9 @@ suited for your deployment.
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
 
-* Configure parler according to your languages::
+* Configure parler according to your languages:
+
+.. code-block:: python
 
     PARLER_LANGUAGES = {
         1: (
@@ -80,7 +94,9 @@ suited for your deployment.
 
     Since parler 1.6 this can be skipped if the language configuration is the same as ``CMS_LANGUAGES``.
 
-* Add the following to your ``urls.py``::
+* Add the following to your ``urls.py``:
+
+.. code-block:: python
 
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
 

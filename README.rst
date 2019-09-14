@@ -29,6 +29,7 @@ See `installation documentation`_
 Features
 ********
 
+See `features documentation`_  for all the features details
 
 * Placeholder content editing
 * Frontend editing using django CMS 3.x frontend editor
@@ -53,6 +54,7 @@ Known djangocms-blog websites
 
 See DjangoPackages for an updated list https://www.djangopackages.com/packages/p/djangocms-blog/
 
+.. _features documentation: http://djangocms-blog.readthedocs.io/en/latest/features/
 .. _installation documentation: http://djangocms-blog.readthedocs.io/en/latest/installation.html
 .. _cmsplugin-filer migration documentation: http://djangocms-blog.readthedocs.io/en/latest/cmsplugin_filer.html
 

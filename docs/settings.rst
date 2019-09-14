@@ -45,7 +45,7 @@ Global Settings
 * BLOG_USE_ABSTRACT: Use an abstract field for the post; if ``False``
   no abstract field is available for every post; (default: ``True``)
 * BLOG_USE_PLACEHOLDER: Post content is managed via placeholder;
-  if ``False`` a simple HTMLField is used; (default: ``True``)
+  if ``False`` a HTMLField is provided instead; (default: ``True``)
 * BLOG_USE_RELATED: Enable related posts to link one post to others;
   (default: ``True``)
 * BLOG_MULTISITE: Add support for multisite setup; (default: ``True``)
@@ -56,14 +56,14 @@ Global Settings
 * BLOG_DEFAULT_PUBLISHED: If posts are marked as published by default;
   (default: ``False``)
 * BLOG_ADMIN_POST_FIELDSET_FILTER: Callable function to change(add or filter)
-  fields to fieldsets for admin post edit form; (default: ``False``). Function simple example::
+  fields to fieldsets for admin post edit form; (default: ``False``). Function example:
 
+.. code-block:: python
 
     def fieldset_filter_function(fsets, request, obj=None):
         if request.user.groups.filter(name='Editor').exists():
             fsets[1][1]['fields'][0].append('author')  # adding 'author' field if user is Editor
         return fsets
-
 
 * BLOG_AVAILABLE_PERMALINK_STYLES: Choices of permalinks styles;
 * BLOG_PERMALINK_URLS: URLConf corresponding to
