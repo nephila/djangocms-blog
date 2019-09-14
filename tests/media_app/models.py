@@ -27,14 +27,8 @@ class YoutTubeVideo(MediaAttachmentPluginMixin, CMSPlugin):
         return self.url
 
     @property
-    def _media_url(self):
+    def media_url(self):
         return self.url
-
-    @property
-    def media_id(self):
-        if self._media_params:
-            return self._media_params['media_id']
-        return None
 
 
 class Vimeo(MediaAttachmentPluginMixin, CMSPlugin):
@@ -53,20 +47,15 @@ class Vimeo(MediaAttachmentPluginMixin, CMSPlugin):
         return self.url
 
     @property
-    def media_id(self):
-        if self._media_params:
-            return self._media_params['id']
-        return None
+    def media_url(self):
+        return self.url
 
     @property
     def media_title(self):
-        if self._media_params:
-            return self._media_params['title']
-        return None
-
-    @property
-    def _media_url(self):
-        return self.url
+        try:
+            return self.media_params['title']
+        except KeyError:
+            return None
 
     def vimeo_data(self, media_id):
         response = requests.get(
@@ -78,6 +67,7 @@ class Vimeo(MediaAttachmentPluginMixin, CMSPlugin):
             data = json[0]
             data.update(
                 {
+                    'media_id': media_id,
                     'main_url': data['thumbnail_large'],
                     'thumb_url': data['thumbnail_medium'],
                 }

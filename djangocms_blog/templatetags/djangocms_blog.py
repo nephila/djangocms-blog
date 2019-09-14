@@ -23,7 +23,7 @@ def media_plugins(context, post):
     :param context: template context
     :type context: dict
     :param post: post instance
-    :type post: djangocms_blog.models.BlogPost
+    :type post: :py:class:`djangocms_blog.models.Post`
     :return: list of :py:class:`djangocms_blog.media.base.MediaAttachmentPluginMixin` plugins
     :rtype: List[djangocms_blog.media.base.MediaAttachmentPluginMixin]
     """
@@ -55,7 +55,7 @@ def media_images(context, post, main=True):
     :param context: template context
     :type context: dict
     :param post: post instance
-    :type post: djangocms_blog.models.BlogPost
+    :type post: :py:class:`djangocms_blog.models.Post`
     :param main: retrieve main image or thumbnail
     :type main: bool
     :return: list of images urls

@@ -14,7 +14,7 @@ from .base import BaseTest
 class MediaTest(BaseTest):
 
     def setUp(self):
-        super().setUp()
+        super(MediaTest, self).setUp()
         self.get_pages()
         posts = self.get_posts()
         self.post = posts[0]
@@ -76,7 +76,7 @@ class MediaTest(BaseTest):
 
     @patch('tests.media_app.models.requests.get')
     def test_media_attributes(self, get_request):
-        src_ids = ['szbGc7ymFhQ', 12915013]
+        src_ids = ['szbGc7ymFhQ', '12915013']
         get_request.return_value = self._get_request_mock(os.path.join('fixtures', 'vimeo.json'))
         context = {'request': self.request('/')}
         plugins = media_plugins(context, self.post)

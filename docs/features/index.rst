@@ -12,6 +12,7 @@ Features
    permalinks
    templates
    shares
+   media
    menu
    multisite
    related
