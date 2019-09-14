@@ -18,10 +18,9 @@ class YoutTubeVideo(MediaAttachmentPluginMixin, CMSPlugin):
             re.compile('^https://youtu.be/(?P<media_id>[-\\w]+)$'),
             re.compile('^https://www.youtube.com/watch\\?v=(?P<media_id>[-\\w]+)$')
         ],
-        'thumb_image_url': 'https://img.youtube.com/vi/%(media_id)s/hqdefault.jpg',
-        'main_image_url': 'https://img.youtube.com/vi/%(media_id)s/maxresdefault.jpg',
-        'thumb_callable': None,
-        'main_callable': None,
+        'thumb_url': 'https://img.youtube.com/vi/%(media_id)s/hqdefault.jpg',
+        'main_url': 'https://img.youtube.com/vi/%(media_id)s/maxresdefault.jpg',
+        'callable': None,
     }
 
     def __str__(self):
@@ -74,6 +73,7 @@ class Vimeo(MediaAttachmentPluginMixin, CMSPlugin):
             'https://vimeo.com/api/v2/video/%(media_id)s.json' % {'media_id': media_id, }
         )
         json = response.json()
+        data = {}
         if json:
             data = json[0]
             data.update(

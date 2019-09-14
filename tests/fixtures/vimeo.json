@@ -1,0 +1,28 @@
+[
+    {
+        "id": 12915013,
+        "title": "Futurama - Don't date robots",
+        "description": "Redacted.",
+        "url": "https:\/\/vimeo.com\/12915013",
+        "upload_date": "Redacted",
+        "mobile_url": "https:\/\/vimeo.com\/12915013",
+        "thumbnail_small": "https:\/\/i.vimeocdn.com\/video\/73266401_100x75.jpg",
+        "thumbnail_medium": "https:\/\/i.vimeocdn.com\/video\/73266401_200x150.jpg",
+        "thumbnail_large": "https:\/\/i.vimeocdn.com\/video\/73266401_640.jpg",
+        "user_id": 999999999,
+        "user_name": "Redacted",
+        "user_url": "https:\/\/vimeo.com\/999999999",
+        "user_portrait_small": "https:\/\/i.vimeocdn.com\/portrait\/defaults-blue_30x30.png",
+        "user_portrait_medium": "https:\/\/i.vimeocdn.com\/portrait\/defaults-blue_75x75.png",
+        "user_portrait_large": "https:\/\/i.vimeocdn.com\/portrait\/defaults-blue_100x100.png",
+        "user_portrait_huge": "https:\/\/i.vimeocdn.com\/portrait\/defaults-blue_300x300.png",
+        "stats_number_of_likes": 0,
+        "stats_number_of_plays": 0,
+        "stats_number_of_comments": 0,
+        "duration": 150,
+        "width": 576,
+        "height": 432,
+        "tags": "",
+        "embed_privacy": "anywhere"
+    }
+]

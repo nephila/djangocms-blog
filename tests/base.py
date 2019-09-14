@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
+import json
+import os
 from copy import deepcopy
 
 from app_helper.base_test import BaseTestCase
@@ -203,6 +205,8 @@ class BaseTest(BaseTestCase):
     def get_posts(self, sites=None):
         posts = []
         cache.clear()
+        if Post.objects.all().exists():
+            return list(Post.objects.all())
         for post in self._post_data:
             post1 = self._get_post(post['en'], sites=sites)
             post1 = self._get_post(post['it'], post=post1, lang='it')
@@ -230,3 +234,21 @@ class BaseTest(BaseTestCase):
         # so that they do not interfere with our menu nodes
         menu_pool.modifiers = [m for m in menu_pool.modifiers if m.__module__.startswith('djangocms_blog')]
         self._reset_menus()
+
+    def read_json(self, path, raw=False):
+        """
+        Read a json file from the given path
+
+        :param path: JSON file path (relative to the current test file
+        :type path: str
+        :param raw: return the file content without loading as a json object
+        :type raw: bool
+        :return json data (either raw or loaded)
+        :type: (dict|str)
+        """
+        full_path = os.path.join(os.path.dirname(__file__), path)
+        with open(full_path, 'r') as src:
+            if raw:
+                return src.read()
+            else:
+                return json.load(src)

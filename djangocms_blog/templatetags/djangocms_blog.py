@@ -61,18 +61,15 @@ def media_images(context, post, main=True):
     :return: list of images urls
     :rtype: list
     """
-    request = context['request']
-    if post.media.get_plugins().exists():
-        plugins = get_plugins(request, post.media, None)
-        if main:
-            image_method = 'get_main_image'
-        else:
-            image_method = 'get_thumb_image'
-        images = []
-        for plugin in plugins:
-            try:
-                images.append(getattr(plugin, image_method))
-            except Exception:
-                pass
-        return images
-    return []
+    plugins = media_plugins(context, post)
+    if main:
+        image_method = 'get_main_image'
+    else:
+        image_method = 'get_thumb_image'
+    images = []
+    for plugin in plugins:
+        try:
+            images.append(getattr(plugin, image_method)())
+        except Exception:
+            pass
+    return images
