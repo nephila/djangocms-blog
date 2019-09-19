@@ -12,7 +12,7 @@ Example:
 
 .. code-block:: python
 
-    BLOG_URLCONF = 'my_project.blog_urls.py'
+    BLOG_URLCONF = 'my_project.blog_urls'
 
 The custom urlconf can be created by copying the existing urlconf in ``djangocms_blog/urls.py``,
 saving it to a new file ``my_project.blog_urls.py`` and editing it according to the custom needs.
