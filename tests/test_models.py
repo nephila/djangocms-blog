@@ -408,21 +408,21 @@ class AdminTest(BaseTest):
         self.app_config_1.app_data.config.use_related = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
-        self.assertFalse('related' in fsets[1][1]['fields'][0])
+        self.assertFalse('related' in fsets[0][1]['fields'][0])
 
         Post.objects.language('en').create(title='post x', app_config=self.app_config_1)
         fsets = post_admin.get_fieldsets(request)
-        self.assertTrue('related' in fsets[1][1]['fields'][0])
+        self.assertTrue('related' in fsets[0][1]['fields'][0])
 
         self.app_config_1.app_data.config.use_related = False
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
-        self.assertFalse('related' in fsets[1][1]['fields'][0])
+        self.assertFalse('related' in fsets[0][1]['fields'][0])
 
         self.app_config_1.app_data.config.use_related = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
-        self.assertTrue('related' in fsets[1][1]['fields'][0])
+        self.assertTrue('related' in fsets[0][1]['fields'][0])
 
         # Use abstract
         self.app_config_1.app_data.config.use_abstract = True
@@ -442,16 +442,16 @@ class AdminTest(BaseTest):
 
         with self.settings(BLOG_MULTISITE=True):
             fsets = post_admin.get_fieldsets(request)
-            self.assertTrue('sites' in fsets[1][1]['fields'][0])
+            self.assertTrue('sites' in fsets[0][1]['fields'][0])
         with self.settings(BLOG_MULTISITE=False):
             fsets = post_admin.get_fieldsets(request)
-            self.assertFalse('sites' in fsets[1][1]['fields'][0])
+            self.assertFalse('sites' in fsets[0][1]['fields'][0])
 
         request = self.get_page_request(
             '/', self.user, r'/en/blog/?app_config=%s' % self.app_config_1.pk, edit=False
         )
         fsets = post_admin.get_fieldsets(request)
-        self.assertTrue('author' in fsets[1][1]['fields'][0])
+        self.assertTrue('author' in fsets[0][1]['fields'][0])
 
         with self.login_user_context(self.user):
             request = self.get_request(
@@ -582,13 +582,13 @@ class AdminTest(BaseTest):
 
         post_admin._sites = None
         fsets = post_admin.get_fieldsets(request)
-        self.assertFalse('author' in fsets[1][1]['fields'][0])
-        self.assertTrue('sites' in fsets[1][1]['fields'][0])
+        self.assertFalse('author' in fsets[0][1]['fields'][0])
+        self.assertTrue('sites' in fsets[0][1]['fields'][0])
         post_admin._sites = None
 
         def filter_function(fs, request, obj=None):
             if request.user == self.user_normal:
-                fs[1][1]['fields'][0].append('author')
+                fs[0][1]['fields'][0].append('author')
             return fs
 
         self.user_normal.sites.add(self.site_1)
@@ -596,8 +596,8 @@ class AdminTest(BaseTest):
         post_admin._sites = None
         with self.settings(BLOG_ADMIN_POST_FIELDSET_FILTER=filter_function):
             fsets = post_admin.get_fieldsets(request)
-            self.assertTrue('author' in fsets[1][1]['fields'][0])
-            self.assertFalse('sites' in fsets[1][1]['fields'][0])
+            self.assertTrue('author' in fsets[0][1]['fields'][0])
+            self.assertFalse('sites' in fsets[0][1]['fields'][0])
         post_admin._sites = None
         self.user_normal.sites.clear()
 

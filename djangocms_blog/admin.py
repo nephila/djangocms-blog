@@ -329,14 +329,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         if not placeholder:
             fsets[0][1]['fields'].append('post_text')
         if get_setting('MULTISITE') and not self.has_restricted_sites(request):
-            fsets[1][1]['fields'][0].append('sites')
+            fsets[0][1]['fields'][0].append('sites')
         if request.user.is_superuser:
-            fsets[1][1]['fields'][0].append('author')
+            fsets[0][1]['fields'][0].append('author')
         if apps.is_installed('djangocms_blog.liveblog'):
             fsets[2][1]['fields'][2].append('enable_liveblog')
         filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
         if related and Post.objects.namespace(config.namespace).active_translations().exists():
-            fsets[1][1]['fields'][0].append('related')
+            fsets[0][1]['fields'][0].append('related')
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)
         return fsets
