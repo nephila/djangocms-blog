@@ -24,6 +24,7 @@ HELPER_SETTINGS = dict(
         'taggit_autosuggest',
         'aldryn_apphooks_config',
         'aldryn_search',
+        'djangocms_video',
         'sortedm2m',
         'tests.media_app',
     ],

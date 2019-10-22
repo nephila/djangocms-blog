@@ -54,6 +54,22 @@ class MediaTest(BaseTest):
         self.assertIn(self.media_text, plugins)
         self.assertNotIn(self.general_text, plugins)
 
+    def test_djangocms_video_plugins(self):
+        filer_image = self.create_filer_image_object()
+        src_thumbs = [
+            'https://img.youtube.com/vi/szbGc7ymFhQ/hqdefault.jpg',
+            'https://i.vimeocdn.com/video/73266401_200x150.jpg',
+            filer_image.url
+        ]
+        add_plugin(
+            self.post.media, 'VideoPlayerPlugin', language='en',
+            poster=filer_image
+        )
+        context = {'request': self.request('/')}
+        images = media_images(context, self.post, main=False)
+        self.assertEqual(3, len(images))
+        self.assertEqual(images, src_thumbs)
+
     @patch('tests.media_app.models.requests.get')
     def test_media_images(self, get_request):
         src_images = [

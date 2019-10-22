@@ -195,3 +195,17 @@ A basic implementation is rendering the media plugins as you would do with norma
         <div class="blog-visual">{% render_placeholder post.media %}</div>
     {% else %}
     ...
+
+***********************
+djangocms-video support
+***********************
+
+``poster`` attribute from ``djangocms-video`` is also supported.
+
+``poster`` is just a static fixed-size image you can set to a
+``djangocms-video`` instance, but adding the plugin to the ``media``
+placeholder allows to extract the image from the field and display along with
+the generated previews by seamlessly using ``media_images``.
+
+The rendering of the full content is of course fully supported.
+

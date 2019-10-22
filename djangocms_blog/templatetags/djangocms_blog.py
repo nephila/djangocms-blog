@@ -38,7 +38,10 @@ def media_images(context, post, main=True):
     """
     Extract images of the given size from all the
     :py:class:`djangocms_blog.media.base.MediaAttachmentPluginMixin`
-    plugins in the ``media`` placeholder of the provided post
+    plugins in the ``media`` placeholder of the provided post.
+
+    Support ``djangocms-video`` ``poster`` field in case the plugin
+    does not implement ``MediaAttachmentPluginMixin`` API.
 
     Usage:
 
@@ -71,5 +74,10 @@ def media_images(context, post, main=True):
         try:
             images.append(getattr(plugin, image_method)())
         except Exception:
-            pass
+            try:
+                image = getattr(plugin, 'poster')
+                if image:
+                    images.append(image.url)
+            except AttributeError:
+                pass
     return images
