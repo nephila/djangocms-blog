@@ -1,4 +1,4 @@
-{% load i18n easy_thumbnails_tags cms_tags %}
+{% load djangocms_blog i18n easy_thumbnails_tags cms_tags %}
 
 <article id="post-{{ post.slug }}" class="post-item">
     <header>
@@ -15,6 +15,11 @@
         {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %}
         <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
+    {% else %}
+        {% media_images post as previews %}
+        <div class="blog-visual">
+          {% for preview in previews %}<img src="{{ preview }}" />{% endfor %}
+        </div>
     {% endif %}
     <div class="blog-lead">
         {% if not TRUNCWORDS_COUNT %}

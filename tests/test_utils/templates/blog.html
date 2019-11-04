@@ -23,6 +23,7 @@
     <ul class="nav">
         {% show_menu 0 100 100 100 %}
     </ul>
+    <h1>{% page_attribute "title" %}</h1>
     {% block content %}
         {% placeholder "content" %}
     {% endblock content %}
