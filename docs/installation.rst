@@ -22,7 +22,6 @@ Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS:
         'filer',
         'easy_thumbnails',
         'aldryn_apphooks_config',
-        'cmsplugin_filer_image',
         'parler',
         'taggit',
         'taggit_autosuggest',

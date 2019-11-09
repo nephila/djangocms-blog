@@ -5,6 +5,12 @@ History
 =======
 
 *******************
+1.0.1 (unreleased)
+*******************
+
+* Remove cmsplugin_filer from installation docs
+
+*******************
 1.0.0 (2019-11-04)
 *******************
 
