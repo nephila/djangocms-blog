@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Christoph Reimers <christoph@superservice-international.com>, 2014
 # fsbraun <fsbraun@gmx.de>, 2016
@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-08-11 22:09+0200\n"
-"PO-Revision-Date: 2019-08-11 20:11+0000\n"
+"PO-Revision-Date: 2019-11-28 23:43+0100\n"
 "Last-Translator: yakky <i.spalletti@nephila.it>\n"
 "Language-Team: German (http://www.transifex.com/nephila/djangocms-blog/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: admin.py:28
 msgid "site"
@@ -118,9 +118,7 @@ msgid "Default size of full images"
 msgstr "Standardgröße für Beitragsbilder"
 
 #: cms_appconfig.py:44
-msgid ""
-"If left empty the image size will have to be set for every newly created "
-"post."
+msgid "If left empty the image size will have to be set for every newly created post."
 msgstr "Wenn das Feld leer bleibt, muß die Größe für jedes Beitragsbild neu gesetzt werden."
 
 #: cms_appconfig.py:48
@@ -128,9 +126,7 @@ msgid "Default size of thumbnail images"
 msgstr "Standardgröße für Vorschaubilder"
 
 #: cms_appconfig.py:51
-msgid ""
-"If left empty the thumbnail image size will have to be set for every newly "
-"created post."
+msgid "If left empty the thumbnail image size will have to be set for every newly created post."
 msgstr "Wenn das Feld leer bleibt, muß die Größe für jedes Vorschaubild neu gesetzt werden."
 
 #: cms_appconfig.py:55
@@ -266,8 +262,7 @@ msgid "Send notifications on post update"
 msgstr "Mitteilung bei Aktualisierungen senden"
 
 #: cms_appconfig.py:159
-msgid ""
-"Emits a desktop notification -if enabled- when editing a published post"
+msgid "Emits a desktop notification -if enabled- when editing a published post"
 msgstr "Wenn aktiviert: Desktop-Mitteilung senden, wenn Beiträge aktualisiert werden"
 
 #: cms_apps.py:16 cms_toolbars.py:20 settings.py:136
@@ -451,14 +446,12 @@ msgid "Site(s)"
 msgstr "Web-Site(s)"
 
 #: models.py:219
-msgid ""
-"Select sites in which to show the post. If none is set it will be visible in"
-" all the configured sites."
+msgid "Select sites in which to show the post. If none is set it will be visible in all the configured sites."
 msgstr "Wähle Web-Sites aus, auf welchen der Post angezeigt wird. Ohne Auswahl sichtbar auf allen konfigurierten Seiten."
 
 #: models.py:230
 msgid "subtitle"
-msgstr ""
+msgstr "Untertitel"
 
 #: models.py:232
 msgid "abstract"
@@ -646,8 +639,7 @@ msgstr "Schlagworte"
 msgid "Categories"
 msgstr "Kategorien"
 
-#: settings.py:148 templates/djangocms_blog/plugins/archive.html:3
-#: templates/djangocms_blog/post_list.html:12
+#: settings.py:148 templates/djangocms_blog/plugins/archive.html:3 templates/djangocms_blog/post_list.html:12
 msgid "Archive"
 msgstr "Archiv"
 
@@ -663,27 +655,21 @@ msgstr "weiterlesen"
 msgid "by"
 msgstr "von"
 
-#: templates/djangocms_blog/plugins/archive.html:17
-#: templates/djangocms_blog/plugins/authors.html:10
-#: templates/djangocms_blog/plugins/categories.html:10
-#: templates/djangocms_blog/plugins/tags.html:10
+#: templates/djangocms_blog/plugins/archive.html:17 templates/djangocms_blog/plugins/authors.html:10
+#: templates/djangocms_blog/plugins/categories.html:10 templates/djangocms_blog/plugins/tags.html:10
 #, python-format
 msgid "1 article"
 msgid_plural "%(articles)s articles"
 msgstr[0] "Ein Artikel"
 msgstr[1] "%(articles)s Beiträge"
 
-#: templates/djangocms_blog/plugins/archive.html:18
-#: templates/djangocms_blog/plugins/authors.html:11
-#: templates/djangocms_blog/plugins/categories.html:11
-#: templates/djangocms_blog/plugins/tags.html:11
+#: templates/djangocms_blog/plugins/archive.html:18 templates/djangocms_blog/plugins/authors.html:11
+#: templates/djangocms_blog/plugins/categories.html:11 templates/djangocms_blog/plugins/tags.html:11
 msgid "0 articles"
 msgstr "0 Beiträge"
 
-#: templates/djangocms_blog/plugins/archive.html:26
-#: templates/djangocms_blog/plugins/authors.html:15
-#: templates/djangocms_blog/plugins/latest_entries.html:7
-#: templates/djangocms_blog/plugins/tags.html:15
+#: templates/djangocms_blog/plugins/archive.html:26 templates/djangocms_blog/plugins/authors.html:15
+#: templates/djangocms_blog/plugins/latest_entries.html:7 templates/djangocms_blog/plugins/tags.html:15
 #: templates/djangocms_blog/post_list.html:21
 msgid "No article found."
 msgstr "Keinen Beitrag gefunden."
