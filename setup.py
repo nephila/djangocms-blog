@@ -35,7 +35,7 @@ setup(
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
         'djangocms-text-ckeditor>=3.5',
-        'easy-thumbnails>=2.4.1,<2.7',
+        'easy-thumbnails>=2.4.1,<2.8',
         'django-meta>=1.4',
         'aldryn-apphooks-config>=0.5',
         'djangocms-apphook-setup',
