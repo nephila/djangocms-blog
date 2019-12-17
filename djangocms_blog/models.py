@@ -532,7 +532,10 @@ class LatestPostsPlugin(BasePostPlugin):
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
-        limit_choices_to={'djangocms_blog_post_author__publish': True}
+        help_text=_(
+            'All authors are shown here. It\' possible to hide authors with 0 published posts '
+            'in the template.'
+        )
     )
     latest_posts = models.IntegerField(
         _('articles'), default=get_setting('LATEST_POSTS'),
@@ -544,10 +547,6 @@ class AuthorEntriesPlugin(BasePostPlugin):
 
     def copy_relations(self, oldinstance):
         self.authors.set(oldinstance.authors.all())
-
-    def get_posts(self, request, published_only=True):
-        posts = self.post_queryset(request, published_only)
-        return posts[:self.latest_posts]
 
     def get_authors(self):
         authors = self.authors.all()
