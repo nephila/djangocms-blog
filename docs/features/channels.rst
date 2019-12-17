@@ -66,7 +66,7 @@ To enable notifications:
 
 * Add the following code:
 
-.. code-block:: python
+.. code-block:: html+django
 
     <script type="text/javascript">
       var knocker_language = '{{ LANGUAGE_CODE }}';
@@ -131,28 +131,28 @@ To enable liveblog features:
 
 .. code-block:: python
 
-    CHANNEL_LAYERS={
-        'default': {
-            'BACKEND': 'asgi_redis.RedisChannelLayer',
-            'CONFIG': {
-                'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-            },
-            'ROUTING': 'myproject.routing.channel_routing',
-        },
-    }
+      CHANNEL_LAYERS={
+          'default': {
+              'BACKEND': 'asgi_redis.RedisChannelLayer',
+              'CONFIG': {
+                  'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+              },
+              'ROUTING': 'myproject.routing.channel_routing',
+          },
+      }
 
-  Check `channels documentation`_ for more detailed information on ``CHANNEL_LAYERS`` setup.
+.. note:: Check `channels documentation`_ for more detailed information on ``CHANNEL_LAYERS`` setup.
 
 * Add to ``myproject.routing.channel_routing.py`` the knocker routes:
 
 .. code-block:: python
 
-    from channels import include
-    from djangocms_blog.liveblog.routing import channel_routing as djangocms_blog_routing
+      from channels import include
+      from djangocms_blog.liveblog.routing import channel_routing as djangocms_blog_routing
 
-    channel_routing = [
-        include(djangocms_blog_routing, path=r'^/liveblog'),
-    ]
+      channel_routing = [
+          include(djangocms_blog_routing, path=r'^/liveblog'),
+      ]
 
 * If you overwrite the post detail template, add the following code where you want to show
   the liveblog content:
