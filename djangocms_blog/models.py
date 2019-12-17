@@ -562,7 +562,10 @@ class AuthorEntriesPlugin(BasePostPlugin):
                 qs = qs.published(current_site=False)
             count = qs.count()
             if count:
+                # total nb of articles
                 author.count = count
+                # "the number of author articles to be displayed"
+                author.posts = qs[:self.latest_posts]
         return authors
 
 
