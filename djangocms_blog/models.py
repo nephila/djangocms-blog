@@ -547,25 +547,16 @@ class AuthorEntriesPlugin(BasePostPlugin):
 
     def get_posts(self, request, published_only=True):
         posts = self.post_queryset(request, published_only)
-        return posts[:self.latest_posts]
+        return posts
 
-    def get_authors(self):
+    def get_authors(self, request):
         authors = self.authors.all()
         for author in authors:
-            author.count = 0
-            qs = author.djangocms_blog_post_author
-            if self.app_config:
-                qs = qs.namespace(self.app_config.namespace)
-            if self.current_site:
-                qs = qs.published()
-            else:
-                qs = qs.published(current_site=False)
-            count = qs.count()
-            if count:
-                # total nb of articles
-                author.count = count
-                # "the number of author articles to be displayed"
-                author.posts = qs[:self.latest_posts]
+            qs = self.get_posts(request).filter(author=author)
+            # total nb of articles
+            author.count = qs.count()
+            # "the number of author articles to be displayed"
+            author.posts = qs[:self.latest_posts]
         return authors
 
 
