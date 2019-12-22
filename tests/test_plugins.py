@@ -218,7 +218,7 @@ class PluginTest10(BaseTest):
         plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
 
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
-        self.assertTrue(rendered.find('No article found') > -1)
+        self.assertTrue(rendered.find('No author found') > -1)
 
         plugin.authors.add(self.user)
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
@@ -246,6 +246,7 @@ class PluginTest10(BaseTest):
 
         casted_authors, __ = new[0].get_plugin_instance()
         self.assertEqual(casted_authors.authors.count(), 3)
+
 
 class PluginTest2(BaseTest):
 
