@@ -5,13 +5,19 @@ import os.path
 import re
 
 from cms.api import add_plugin
+from cms.models import Page
+from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.http import urlencode
 from django.utils.timezone import now
 from taggit.models import Tag
 
 from djangocms_blog.models import BlogCategory
 
 from .base import BaseTest
+
+User = get_user_model()
 
 
 class PluginTest(BaseTest):
@@ -246,6 +252,38 @@ class PluginTest10(BaseTest):
 
         casted_authors, __ = new[0].get_plugin_instance()
         self.assertEqual(casted_authors.authors.count(), 3)
+
+    def test_plugin_authors_admin(self):
+        other_author = User.objects.create(username='other_author')
+        non_author = User.objects.create(username='non_author')
+        unpublished_author = User.objects.create(username='unpublished_author')
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[0].publish = True
+        posts[0].save()
+        posts[1].publish = True
+        posts[1].author = other_author
+        posts[1].save()
+        posts[2].publish = False
+        posts[2].author = unpublished_author
+        posts[2].save()
+        ph = pages[0].placeholders.get(slot='content')
+        page_admin = admin.site._registry[Page]
+        parms = {
+            'cms_path': '/en/',
+            'placeholder_id': ph.pk,
+            'plugin_type': 'BlogAuthorPostsPlugin',
+            'plugin_language': 'en'
+        }
+        path = '/en/?%s' % urlencode(parms)
+        request = self.get_request(pages[0], 'en', user=self.user, path=path)
+        response = page_admin.add_plugin(request)
+        form_authors = response.context_data['adminform'].form.fields['authors'].queryset
+        self.assertEqual(form_authors.count(), 2)
+        self.assertIn(other_author, form_authors)
+        self.assertIn(self.user, form_authors)
+        self.assertNotIn(unpublished_author, form_authors)
+        self.assertNotIn(non_author, form_authors)
 
 
 class PluginTest2(BaseTest):

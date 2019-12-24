@@ -8,7 +8,7 @@ from cms.plugin_pool import plugin_pool
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 
-from .forms import LatestEntriesForm
+from .forms import AuthorPostsForm, LatestEntriesForm
 from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
 from .settings import get_setting
 
@@ -71,6 +71,7 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     module = get_setting('PLUGIN_MODULE_NAME')
     name = get_setting('AUTHOR_POSTS_PLUGIN_NAME')
     model = AuthorEntriesPlugin
+    form = AuthorPostsForm
     base_render_template = 'authors.html'
     filter_horizontal = ['authors']
     fields = ['app_config', 'current_site', 'authors'] + \
