@@ -10,6 +10,8 @@ History
 
 * Remove cmsplugin_filer from installation docs
 * Set minimum django-parler version to 2.0
+* Fix duplicated authors in BlogAuthorPostsPlugin
+* Add BlogAuthorPostsListPlugin to show posts per author
 
 *******************
 1.0.0 (2019-11-04)
