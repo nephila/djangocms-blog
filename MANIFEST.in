@@ -3,4 +3,4 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
-recursive-include djangocms_blog *.html *.png *.gif *js *jpg *jpeg *svg *py *css *po *mo
+recursive-include djangocms_blog *.html *.png *.gif *js *jpg *jpeg *svg *py *css *po *mo *json
