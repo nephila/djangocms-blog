@@ -179,4 +179,3 @@ def get_setting(name):
         ),
     }
     return default["BLOG_%s" % name]
-

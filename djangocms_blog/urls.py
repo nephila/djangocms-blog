@@ -3,14 +3,10 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from django.conf.urls import url
 
-from .feeds import FBInstantArticles, LatestEntriesFeed, TagFeed, CategoryFeed
+from .feeds import CategoryFeed, FBInstantArticles, LatestEntriesFeed, TagFeed
 from .settings import get_setting
 from .views import (
-    AuthorEntriesView,
-    CategoryEntriesView,
-    PostArchiveView,
-    PostDetailView,
-    PostListView,
+    AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
     TaggedListView,
 )
 
