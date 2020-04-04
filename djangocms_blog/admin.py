@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from copy import deepcopy
 
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig

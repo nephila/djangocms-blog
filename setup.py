@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import djangocms_blog
+from setuptools import setup
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+import djangocms_blog
 
 version = djangocms_blog.__version__
 
@@ -17,7 +14,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='djangocms-blog',
     version=version,
-    description='A djangoCMS 3 blog application',
+    description='A djangoCMS blog application',
     long_description=readme + '\n\n' + history,
     author='Iacopo Spalletti',
     author_email='i.spalletti@nephila.it',
@@ -28,13 +25,13 @@ setup(
     include_package_data=True,
     install_requires=[
         'django-parler>=2.0',
-        'django-cms>=3.5',
-        'django-taggit>=0.20,<1.3',
+        'django-cms>=3.7',
+        'django-taggit>=1.0',
         'django-filer>=1.4',
         'pytz',
         'django-taggit-templatetags',
         'django-taggit-autosuggest',
-        'djangocms-text-ckeditor>=3.5',
+        'djangocms-text-ckeditor>=3.9',
         'easy-thumbnails>=2.4.1,<2.8',
         'django-meta>=1.4',
         'aldryn-apphooks-config>=0.5',
@@ -57,15 +54,12 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Framework :: Django',
-        'Framework :: Django :: 1.11',
-        'Framework :: Django :: 2.0',
-        'Framework :: Django :: 2.1',
         'Framework :: Django :: 2.2',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Framework :: Django :: 3.0',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
 )

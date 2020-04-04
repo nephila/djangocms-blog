@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from operator import itemgetter
 
 from asgiref.sync import async_to_sync
@@ -63,16 +61,13 @@ class LiveblogInterface(models.Model):
         context = Context({
             'request': request
         })
-        try:
-            from cms.plugin_rendering import ContentRenderer
-            renderer = ContentRenderer(request)
-            return renderer.render_plugin(
-                instance=self,
-                context=context,
-                placeholder=self.placeholder,
-            )
-        except ImportError:
-            return self.render_plugin(context)
+        from cms.plugin_rendering import ContentRenderer
+        renderer = ContentRenderer(request)
+        return renderer.render_plugin(
+            instance=self,
+            context=context,
+            placeholder=self.placeholder,
+        )
 
     def send(self, request):
         """
