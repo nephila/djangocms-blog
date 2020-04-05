@@ -10,6 +10,8 @@ History
 
 * Remove cmsplugin_filer from installation docs
 * Set minimum django-parler version to 2.0
+* Fix to respect current locale for category names
+* Reduce the maximum length of slug fields to 752 characters
 * Fix duplicated authors in BlogAuthorPostsPlugin
 * Add BlogAuthorPostsListPlugin to show posts per author
 

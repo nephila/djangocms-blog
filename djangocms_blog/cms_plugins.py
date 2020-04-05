@@ -114,7 +114,7 @@ class BlogCategoryPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
-        qs = BlogCategory.objects.language().active_translations()
+        qs = BlogCategory.objects.active_translations()
         if instance.app_config:
             qs = qs.namespace(instance.app_config.namespace)
         if instance.current_site:

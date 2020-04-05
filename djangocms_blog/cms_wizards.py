@@ -20,7 +20,7 @@ class PostWizardForm(PostAdminFormBase):
     default_appconfig = None
 
     slug = forms.SlugField(
-        label=_('Slug'), max_length=767, required=False,
+        label=_('Slug'), max_length=752, required=False,
         help_text=_('Leave empty for automatic slug, or override as required.'),
     )
 
