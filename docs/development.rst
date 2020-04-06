@@ -26,8 +26,8 @@ policies.
 
 These include:
 
-* `guidelines and policies
-  <http://docs.django-cms.org/en/latest/contributing/contributing.html>`_ for contributing
+* `development policies
+  <http://docs.django-cms.org/en/latest/contributing/development-policies.html>`_ for contributing
   to the project, including standards for code and documentation
 * standards for `managing the project's development
   <http://docs.django-cms.org/en/latest/contributing/management.html>`_

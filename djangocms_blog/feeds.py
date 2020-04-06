@@ -80,11 +80,29 @@ class LatestEntriesFeed(Feed):
 class TagFeed(LatestEntriesFeed):
     feed_items_number = get_setting('FEED_TAGS_ITEMS')
 
-    def get_object(self, request, tag):
-        return tag  # pragma: no cover
+    def get_object(self, request, tag, feed_items_number=None):
+        if feed_items_number is None:
+            feed_items_number = get_setting('FEED_TAGS_ITEMS')
+
+        return {'tag': tag, 'feed_items_number': int(feed_items_number)}
 
     def items(self, obj=None):
-        return Post.objects.published().filter(tags__slug=obj)[:self.feed_items_number]
+        return Post.objects.published().filter(tags__slug=obj['tag'])[
+            : obj['feed_items_number']
+        ]
+
+
+class CategoryFeed(LatestEntriesFeed):
+    def get_object(self, request, category, feed_items_number=None):
+        if feed_items_number is None:
+            feed_items_number = get_setting('FEED_CATEGORY_ITEMS')
+
+        return {'category': category, 'feed_items_number': int(feed_items_number)}
+
+    def items(self, obj=None):
+        return Post.objects.published().filter(
+            categories__translations__slug=obj['category']
+        )[: obj['feed_items_number']]
 
 
 class FBInstantFeed(Rss201rev2Feed):

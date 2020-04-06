@@ -154,9 +154,10 @@ def get_setting(name):
             settings, 'BLOG_FEED_LATEST_ITEMS', 10),
         'BLOG_FEED_TAGS_ITEMS': getattr(
             settings, 'BLOG_FEED_TAGS_ITEMS', 10),
+        'BLOG_FEED_CATEGORY_ITEMS': getattr(
+            settings, 'BLOG_FEED_CATEGORY_ITEMS', 10),
         'BLOG_LIVEBLOG_PLUGINS': getattr(
             settings, 'BLOG_LIVEBLOG_PLUGINS', ('LiveblogPlugin',)),
-
         'BLOG_PLUGIN_TEMPLATE_FOLDERS': getattr(
             settings, 'BLOG_PLUGIN_TEMPLATE_FOLDERS', (('plugins', _('Default template')),)),
 
