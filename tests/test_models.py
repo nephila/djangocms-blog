@@ -1176,17 +1176,17 @@ class ModelsTest2(BaseTest):
         )
         plugin.authors.add(self.user)
         self.assertEqual(len(plugin.get_posts(request)), 0)
-        self.assertEqual(plugin.get_authors()[0].count, 0)
+        self.assertEqual(plugin.get_authors(request)[0].count, 0)
 
         post1.publish = True
         post1.save()
         self.assertEqual(len(plugin.get_posts(request)), 1)
-        self.assertEqual(plugin.get_authors()[0].count, 1)
+        self.assertEqual(plugin.get_authors(request)[0].count, 1)
 
         post2.publish = True
         post2.save()
         self.assertEqual(len(plugin.get_posts(request)), 2)
-        self.assertEqual(plugin.get_authors()[0].count, 2)
+        self.assertEqual(plugin.get_authors(request)[0].count, 2)
 
     def test_copy_plugin_author(self):
         post1 = self._get_post(self._post_data[0]['en'])

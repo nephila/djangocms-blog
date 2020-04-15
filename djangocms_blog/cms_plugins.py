@@ -8,7 +8,7 @@ from cms.plugin_pool import plugin_pool
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 
-from .forms import LatestEntriesForm
+from .forms import AuthorPostsForm, LatestEntriesForm
 from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
 from .settings import get_setting
 
@@ -71,14 +71,24 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     module = get_setting('PLUGIN_MODULE_NAME')
     name = get_setting('AUTHOR_POSTS_PLUGIN_NAME')
     model = AuthorEntriesPlugin
+    form = AuthorPostsForm
     base_render_template = 'authors.html'
     filter_horizontal = ['authors']
+    fields = ['app_config', 'current_site', 'authors'] + \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
     exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogAuthorPostsPlugin, self).render(context, instance, placeholder)
-        context['authors_list'] = instance.get_authors()
+        context['authors_list'] = instance.get_authors(context['request'])
         return context
+
+
+class BlogAuthorPostsListPlugin(BlogAuthorPostsPlugin):
+    name = get_setting('AUTHOR_POSTS_LIST_PLUGIN_NAME')
+    base_render_template = 'authors_posts.html'
+    fields = ['app_config', 'current_site', 'authors', 'latest_posts'] + \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
 
 
 class BlogTagsPlugin(BlogPlugin):
@@ -136,6 +146,7 @@ class BlogArchivePlugin(BlogPlugin):
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
 plugin_pool.register_plugin(BlogLatestEntriesPluginCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
+plugin_pool.register_plugin(BlogAuthorPostsListPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
 plugin_pool.register_plugin(BlogCategoryPlugin)

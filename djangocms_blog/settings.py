@@ -140,6 +140,8 @@ def get_setting(name):
             settings, 'BLOG_LATEST_ENTRIES_PLUGIN_NAME_CACHED', _('Latest Blog Articles - Cache')),
         'BLOG_AUTHOR_POSTS_PLUGIN_NAME': getattr(
             settings, 'BLOG_AUTHOR_POSTS_PLUGIN_NAME', _('Author Blog Articles')),
+        'BLOG_AUTHOR_POSTS_LIST_PLUGIN_NAME': getattr(
+            settings, 'BLOG_AUTHOR_POSTS_LIST_PLUGIN_NAME', _('Author Blog Articles List')),
         'BLOG_TAGS_PLUGIN_NAME': getattr(
             settings, 'BLOG_TAGS_PLUGIN_NAME', _('Tags')),
         'BLOG_CATEGORY_PLUGIN_NAME': getattr(
