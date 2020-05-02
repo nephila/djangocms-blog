@@ -13,7 +13,10 @@
     ],
     "settings": {
         "META_SITE_PROTOCOL": "http",
-        "META_USE_SITES": true
+        "META_USE_SITES": true,
+        "META_USE_OG_PROPERTIES": true,
+        "META_USE_TWITTER_PROPERTIES": true,
+        "META_USE_GOOGLEPLUS_PROPERTIES": true
     },
     "urls": [
         "djangocms_blog.taggit_urls"
