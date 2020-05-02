@@ -72,13 +72,6 @@ matrix:
     env: TOXENV='pep8'
   - python: 3.7
     env: TOXENV='isort'
-  allow_failures:
-    - python: 3.5
-      env: DJANGO='django22' CMS='cms37'
-    - python: 3.6
-      env: DJANGO='django22' CMS='cms37'
-    - python: 3.7
-      env: DJANGO='django22' CMS='cms37'
 
 
 cache: pip
