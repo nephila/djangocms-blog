@@ -5,7 +5,6 @@ import json
 from operator import itemgetter
 
 import django
-from channels import Group
 from cms.models import CMSPlugin
 from cms.utils.plugins import reorder_plugins
 from django.db import models
@@ -95,12 +94,11 @@ class Liveblog(LiveblogInterface, AbstractText):
     """
     Basic liveblog plugin model
     """
-    if django.VERSION >= (1, 10):
-        cmsplugin_ptr = models.OneToOneField(
-            CMSPlugin,
-            related_name='%(app_label)s_%(class)s', primary_key=True,
-            parent_link=True, on_delete=models.CASCADE
-        )
+    cmsplugin_ptr = models.OneToOneField(
+        CMSPlugin,
+        related_name='%(app_label)s_%(class)s', primary_key=True,
+        parent_link=True, on_delete=models.CASCADE
+    )
     title = models.CharField(_('title'), max_length=255)
     image = FilerImageField(
         verbose_name=_('image'), blank=True, null=True, on_delete=models.SET_NULL,

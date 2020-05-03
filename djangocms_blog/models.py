@@ -434,14 +434,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                 (self.date_published_end is None or self.date_published_end > timezone.now())
                 )
 
-    def should_knock(self, created=False):
+    def should_knock(self, signal_type, created=False):
         """
         Returns whether to emit knocks according to the post state
         """
         new = (self.app_config.send_knock_create and self.is_published and
                self.date_published == self.date_modified)
         updated = self.app_config.send_knock_update and self.is_published
-        return new or updated
+        return (new or updated) and signal_type in ('post_save', 'post_delete')
 
     def get_cache_key(self, language, prefix):
         return 'djangocms-blog:{2}:{0}:{1}'.format(language, self.guid, prefix)

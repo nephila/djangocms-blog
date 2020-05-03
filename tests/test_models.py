@@ -1267,7 +1267,7 @@ class KnockerTest(BaseTest):
         for language in posts[0].get_available_languages():
             with smart_override(language):
                 posts[0].set_current_language(language)
-                knock_create = posts[0].as_knock(True)
+                knock_create = posts[0].as_knock(signal_type='post_save', created=True)
                 self.assertEqual(knock_create['title'],
                                  'new {0}'.format(posts[0]._meta.verbose_name))
                 self.assertEqual(knock_create['message'], posts[0].title)
@@ -1276,7 +1276,7 @@ class KnockerTest(BaseTest):
         for language in posts[0].get_available_languages():
             with smart_override(language):
                 posts[0].set_current_language(language)
-                knock_create = posts[0].as_knock(False)
+                knock_create = posts[0].as_knock(signal_type='post_save', created=False)
                 self.assertEqual(knock_create['title'],
                                  'new {0}'.format(posts[0]._meta.verbose_name))
                 self.assertEqual(knock_create['message'], posts[0].title)
@@ -1295,18 +1295,18 @@ class KnockerTest(BaseTest):
         }
         post = Post.objects.create(**post_data)
         # Object is not published, no knock
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
         post.publish = True
         post.save()
         # Object is published, send knock
-        self.assertTrue(post.should_knock())
+        self.assertTrue(post.should_knock(signal_type='post_save'))
 
         # Knock disabled for updates
         self.app_config_1.app_data.config.send_knock_update = False
         self.app_config_1.save()
         post.abstract = 'what'
         post.save()
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
 
         # Knock disabled for publishing
         self.app_config_1.app_data.config.send_knock_create = False
@@ -1320,10 +1320,10 @@ class KnockerTest(BaseTest):
             'app_config': self.app_config_1
         }
         post = Post.objects.create(**post_data)
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
         post.publish = True
         post.save()
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
 
         # Restore default values
         self.app_config_1.app_data.config.send_knock_create = True
