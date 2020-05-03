@@ -4,16 +4,17 @@ from __future__ import absolute_import, print_function, unicode_literals
 import json
 from operator import itemgetter
 
-import django
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from cms.models import CMSPlugin
 from cms.utils.plugins import reorder_plugins
 from django.db import models
 from django.template import Context
-from django.utils.six import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.models import AbstractText
 from filer.fields.image import FilerImageField
+from six import python_2_unicode_compatible
 
 from djangocms_blog.models import Post, thumbnail_model
 from djangocms_blog.settings import DATE_FORMAT
@@ -85,8 +86,10 @@ class LiveblogInterface(models.Model):
                 'creation_date': self.post_date.strftime(DATE_FORMAT),
                 'changed_date': self.changed_date.strftime(DATE_FORMAT),
             }
-            Group(self.liveblog_group).send({
-                'text': json.dumps(notification),
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(self.liveblog_group, {
+                'type': 'knocker.saved',
+                'message': json.dumps(notification)
             })
 
 

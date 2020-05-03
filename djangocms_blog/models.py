@@ -15,7 +15,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
+from django.utils.encoding import force_bytes, force_text
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
 from django.utils.translation import get_language, ugettext, ugettext_lazy as _
@@ -25,6 +25,7 @@ from filer.models import ThumbnailOption
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.utils.context import switch_language
+from six import python_2_unicode_compatible
 from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
