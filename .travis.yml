@@ -12,6 +12,7 @@ env:
   - TOXENV='pep8'
   - TOXENV='isort'
   - TOXENV='docs'
+  - DJANGO='django30' CMS='cms37'
   - DJANGO='django22' CMS='cms37'
   - DJANGO='django21' CMS='cms37'
   - DJANGO='django21' CMS='cms36'
@@ -20,6 +21,8 @@ env:
   - DJANGO='django111' CMS='cms36'
   - DJANGO='django111' CMS='cms35'
 
+services:
+  - redis-server
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
@@ -41,6 +44,8 @@ after_success:
 matrix:
   exclude:
   - python: 2.7
+    env: DJANGO='django30' CMS='cms37'
+  - python: 2.7
     env: DJANGO='django22' CMS='cms37'
   - python: 2.7
     env: DJANGO='django21' CMS='cms37'
@@ -54,6 +59,8 @@ matrix:
     env: DJANGO='django20' CMS='cms36'
   - python: 2.7
     env: DJANGO='django20' CMS='cms35'
+  - python: 3.5
+    env: DJANGO='django30' CMS='cms37'
   - python: 2.7
     env: TOXENV='docs'
   - python: 2.7
