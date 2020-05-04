@@ -5,15 +5,18 @@ History
 =======
 
 *******************
-1.0.1 (unreleased)
+1.1.0 (unreleased)
 *******************
 
+* Add support for django 3.0
+* Add BlogAuthorPostsListPlugin to show posts per author
+* Add experimental support for django-app-enabler
 * Remove cmsplugin_filer from installation docs
 * Set minimum django-parler version to 2.0
-* Fix to respect current locale for category names
 * Reduce the maximum length of slug fields to 752 characters
 * Fix duplicated authors in BlogAuthorPostsPlugin
-* Add BlogAuthorPostsListPlugin to show posts per author
+* Fix to respect current locale for category names
+* Improve documentation for meta tags
 
 *******************
 1.0.0 (2019-11-04)
