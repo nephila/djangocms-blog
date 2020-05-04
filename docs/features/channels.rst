@@ -11,7 +11,7 @@ djangocms-blog implements some channels related features:
 
 For detailed information on channels setup, please refer to `channels documentation`_.
 
-.. warning:: liveblog does not currently work on django 2.0 and up
+.. warning:: channels support works only on Django 2.2 and up
 
 .. _knocker:
 
@@ -40,13 +40,13 @@ To enable notifications:
 
 .. code-block:: python
 
+    ASGI_APPLICATION = 'myproject.routing.channel_routing'
     CHANNEL_LAYERS={
         'default': {
-            'BACKEND': 'asgi_redis.RedisChannelLayer',
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
             'CONFIG': {
                 'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
             },
-            'ROUTING': 'myproject.routing.channel_routing',
         },
     }
 
@@ -131,15 +131,15 @@ To enable liveblog features:
 
 .. code-block:: python
 
-      CHANNEL_LAYERS={
-          'default': {
-              'BACKEND': 'asgi_redis.RedisChannelLayer',
-              'CONFIG': {
-                  'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-              },
-              'ROUTING': 'myproject.routing.channel_routing',
-          },
-      }
+    ASGI_APPLICATION = 'myproject.routing.channel_routing'
+    CHANNEL_LAYERS={
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                'hosts': [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            },
+        },
+    }
 
 .. note:: Check `channels documentation`_ for more detailed information on ``CHANNEL_LAYERS`` setup.
 
