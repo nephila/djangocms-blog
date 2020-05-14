@@ -107,6 +107,7 @@ HELPER_SETTINGS = dict(
     },
     BLOG_AUTO_SETUP=False,
     ALLOWED_HOSTS=['*'],
+    TEST_RUNNER='app_helper.pytest_runner.PytestTestRunner',
 )
 
 try:
@@ -124,8 +125,8 @@ try:
 
     HELPER_SETTINGS['INSTALLED_APPS'].append('knocker')
     HELPER_SETTINGS['INSTALLED_APPS'].append('channels')
-    HELPER_SETTINGS['INSTALLED_APPS'].append('djangocms_blog.liveblog', )
-    HELPER_SETTINGS['ASGI_APPLICATION'] = 'tests.test_utils.routing.channel_routing',
+    HELPER_SETTINGS['INSTALLED_APPS'].append('djangocms_blog.liveblog')
+    HELPER_SETTINGS['ASGI_APPLICATION'] = 'tests.test_utils.routing.application'
     HELPER_SETTINGS['CHANNEL_LAYERS'] = {
         'default': {
             'BACKEND': 'channels_redis.core.RedisChannelLayer',

@@ -13,3 +13,4 @@ django-taggit-helpers
 django-app-helper>=2.0.0a2
 sphinx-autobuild
 djangocms-video
+pytest-django

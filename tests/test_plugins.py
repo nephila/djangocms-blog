@@ -35,9 +35,13 @@ class PluginTest(BaseTest):
         )
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
         try:
-            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms-plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         except AssertionError:
-            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms_plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
@@ -75,9 +79,13 @@ class PluginTest(BaseTest):
 
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
         try:
-            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms-plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         except AssertionError:
-            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms_plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         self.assertTrue(
             rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1
         )
@@ -98,12 +106,17 @@ class PluginTest(BaseTest):
 
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
         try:
-            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-2') > -1)
+            self.assertTrue(
+                rendered.find('cms-plugin-djangocms_blog-post-abstract-%s' % posts[1].pk) > -1
+            )
         except AssertionError:
-            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-2') > -1)
+            self.assertTrue(
+                rendered.find('cms_plugin-djangocms_blog-post-abstract-%s' % posts[1].pk) > -1
+            )
         self.assertTrue(
-            rendered.find(reverse('djangocms_blog:posts-category',
-                                  kwargs={'category': category_2.slug})) > -1
+            rendered.find(
+                reverse('djangocms_blog:posts-category', kwargs={'category': category_2.slug})
+            ) > -1
         )
         self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-second-post"') > -1)
