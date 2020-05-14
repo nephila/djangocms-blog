@@ -299,6 +299,11 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             form.base_fields['sites'].queryset = self.get_restricted_sites(request).all()
         return form
 
+    def _get_available_posts(self, config):
+        if config:
+            return self.model.objects.namespace(config.namespace).active_translations().exists()
+        return []
+
     def get_fieldsets(self, request, obj=None):
         """
         Customize the fieldsets according to the app settings
@@ -316,6 +321,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             config = obj.app_config
 
         fsets = deepcopy(self._fieldsets)
+        related_posts = []
         if config:
             abstract = bool(config.use_abstract)
             placeholder = bool(config.use_placeholder)
@@ -324,6 +330,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             abstract = get_setting('USE_ABSTRACT')
             placeholder = get_setting('USE_PLACEHOLDER')
             related = get_setting('USE_RELATED')
+        if related:
+            related_posts = self._get_available_posts(config)
         if abstract:
             fsets[0][1]['fields'].append('abstract')
         if not placeholder:
@@ -335,7 +343,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
         if apps.is_installed('djangocms_blog.liveblog'):
             fsets[2][1]['fields'][2].append('enable_liveblog')
         filter_function = get_setting('ADMIN_POST_FIELDSET_FILTER')
-        if related and Post.objects.namespace(config.namespace).active_translations().exists():
+        if related_posts:
             fsets[1][1]['fields'][0].append('related')
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)
