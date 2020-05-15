@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 from django.utils.text import slugify as django_slugify
 
-__all__ = ['slugify']
+__all__ = ["slugify"]
 
 
 def slugify(base):

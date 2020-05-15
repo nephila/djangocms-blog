@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-__author__ = 'Iacopo Spalletti'
-__email__ = 'i.spalletti@nephila.it'
-__version__ = '1.1.2.dev0'
+__author__ = "Iacopo Spalletti"
+__email__ = "i.spalletti@nephila.it"
+__version__ = "1.1.2.dev0"
 
-default_app_config = 'djangocms_blog.apps.BlogAppConfig'
+default_app_config = "djangocms_blog.apps.BlogAppConfig"

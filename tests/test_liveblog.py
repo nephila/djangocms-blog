@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from datetime import timedelta
 
 import pytest
@@ -20,10 +18,9 @@ from .test_utils.routing import application
 
 
 async def _connect(post):
-    path = "liveblog/%(namespace)s/%(lang)s/%(slug)s/" % {
-        'namespace': post.app_config.namespace, 'lang': post.get_current_language(),
-        'slug': post.slug
-    }
+    path = "liveblog/{namespace}/{lang}/{slug}/".format(
+        namespace=post.app_config.namespace, lang=post.get_current_language(), slug=post.slug,
+    )
     communicator = WebsocketCommunicator(application, path)
     connected, __ = await communicator.connect()
     assert connected
@@ -39,12 +36,9 @@ def get_request(path):
 
 @database_sync_to_async
 def get_post():
-    config, __ = BlogConfig.objects.get_or_create(namespace='bla_bla_bla')
+    config, __ = BlogConfig.objects.get_or_create(namespace="bla_bla_bla")
 
-    post_data = {
-        'title': words(count=3, common=False),
-        'app_config': config
-    }
+    post_data = {"title": words(count=3, common=False), "app_config": config}
     post = Post.objects.create(**post_data)
     post.enable_liveblog = True
     post.save()
@@ -60,10 +54,7 @@ def delete_post(post):
 @database_sync_to_async
 def add_livelobg_plugin(placeholder, publish=True):
     plugin_text = words(count=3, common=False)
-    plugin = add_plugin(
-        placeholder, 'LiveblogPlugin', language='en', body=plugin_text,
-        publish=publish
-    )
+    plugin = add_plugin(placeholder, "LiveblogPlugin", language="en", body=plugin_text, publish=publish)
     __, admin = plugin.get_plugin_instance()
     admin.save_model(get_request("/"), plugin, None, None)
     return plugin, admin, plugin_text
@@ -88,21 +79,21 @@ async def test_add_plugin():
     plugin, admin, plugin_text = await add_livelobg_plugin(post.liveblog)
     rendered = await communicator.receive_json_from()
 
-    assert plugin.pk == rendered['id']
-    assert plugin.creation_date.strftime(DATE_FORMAT) == rendered['creation_date']
-    assert plugin.changed_date.strftime(DATE_FORMAT) == rendered['changed_date']
-    assert rendered['content'].find('data-post-id="{}"'.format(plugin.pk)) > -1
-    assert rendered['content'].find(plugin_text) > -1
+    assert plugin.pk == rendered["id"]
+    assert plugin.creation_date.strftime(DATE_FORMAT) == rendered["creation_date"]
+    assert plugin.changed_date.strftime(DATE_FORMAT) == rendered["changed_date"]
+    assert rendered["content"].find('data-post-id="{}"'.format(plugin.pk)) > -1
+    assert rendered["content"].find(plugin_text) > -1
 
     plugin, admin, new_plugin_text = await update_livelobg_plugin_content(plugin)
     rendered = await communicator.receive_json_from()
 
-    assert plugin.pk == rendered['id']
-    assert plugin.creation_date.strftime(DATE_FORMAT) == rendered['creation_date']
-    assert plugin.changed_date.strftime(DATE_FORMAT) == rendered['changed_date']
-    assert rendered['content'].find('data-post-id="{}"'.format(plugin.pk)) > -1
-    assert rendered['content'].find(new_plugin_text) > -1
-    assert rendered['content'].find(plugin_text) == -1
+    assert plugin.pk == rendered["id"]
+    assert plugin.creation_date.strftime(DATE_FORMAT) == rendered["creation_date"]
+    assert plugin.changed_date.strftime(DATE_FORMAT) == rendered["changed_date"]
+    assert rendered["content"].find('data-post-id="{}"'.format(plugin.pk)) > -1
+    assert rendered["content"].find(new_plugin_text) > -1
+    assert rendered["content"].find(plugin_text) == -1
 
     await communicator.disconnect()
     await delete_post(post)
@@ -119,12 +110,12 @@ async def test_add_plugin_no_publish():
     plugin, admin, new_plugin_text = await update_livelobg_plugin_content(plugin, publish=True)
     rendered = await communicator.receive_json_from()
 
-    assert plugin.pk == rendered['id']
-    assert plugin.creation_date.strftime(DATE_FORMAT) == rendered['creation_date']
-    assert plugin.changed_date.strftime(DATE_FORMAT) == rendered['changed_date']
-    assert rendered['content'].find('data-post-id="{}"'.format(plugin.pk)) > -1
-    assert rendered['content'].find(new_plugin_text) > -1
-    assert rendered['content'].find(plugin_text) == -1
+    assert plugin.pk == rendered["id"]
+    assert plugin.creation_date.strftime(DATE_FORMAT) == rendered["creation_date"]
+    assert plugin.changed_date.strftime(DATE_FORMAT) == rendered["changed_date"]
+    assert rendered["content"].find('data-post-id="{}"'.format(plugin.pk)) > -1
+    assert rendered["content"].find(new_plugin_text) > -1
+    assert rendered["content"].find(plugin_text) == -1
 
     await communicator.disconnect()
     await delete_post(post)
@@ -138,7 +129,7 @@ async def test_disconnect():
 
     plugin, admin, plugin_text = await add_livelobg_plugin(post.liveblog)
     rendered = await communicator.receive_json_from()
-    assert rendered['content']
+    assert rendered["content"]
 
     await communicator.disconnect()
 
@@ -152,7 +143,7 @@ async def test_disconnect():
 @pytest.mark.asyncio
 async def test_nopost():
     post = await get_post()
-    post.slug = 'something'
+    post.slug = "something"
     communicator = await _connect(post)
 
     assert await communicator.receive_nothing() is True
@@ -189,17 +180,15 @@ class LiveBlogTest(BaseTest):
         post = posts[0]
         post.enable_liveblog = True
         post.save()
-        plugin = add_plugin(
-            post.liveblog, 'LiveblogPlugin', language='en', body='live text', publish=False
-        )
-        rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
+        plugin = add_plugin(post.liveblog, "LiveblogPlugin", language="en", body="live text", publish=False)
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         self.assertFalse(rendered.strip())
 
         plugin.publish = True
         plugin.save()
-        rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         self.assertTrue(rendered.find('data-post-id="{}"'.format(plugin.pk)) > -1)
-        self.assertTrue(rendered.find('live text') > -1)
+        self.assertTrue(rendered.find("live text") > -1)
 
     def test_plugins_order(self):
         posts = self.get_posts()
@@ -211,25 +200,37 @@ class LiveBlogTest(BaseTest):
         current_date = now()
 
         plugin_1 = add_plugin(
-            post.liveblog, 'LiveblogPlugin', language='en', body='plugin 1', publish=True,
-            post_date=current_date - timedelta(seconds=1)
+            post.liveblog,
+            "LiveblogPlugin",
+            language="en",
+            body="plugin 1",
+            publish=True,
+            post_date=current_date - timedelta(seconds=1),
         )
         plugin_2 = add_plugin(
-            post.liveblog, 'LiveblogPlugin', language='en', body='plugin 2', publish=True,
-            post_date=current_date - timedelta(seconds=5)
+            post.liveblog,
+            "LiveblogPlugin",
+            language="en",
+            body="plugin 2",
+            publish=True,
+            post_date=current_date - timedelta(seconds=5),
         )
         plugin_3 = add_plugin(
-            post.liveblog, 'LiveblogPlugin', language='en', body='plugin 3', publish=True,
-            post_date=current_date - timedelta(seconds=10)
+            post.liveblog,
+            "LiveblogPlugin",
+            language="en",
+            body="plugin 3",
+            publish=True,
+            post_date=current_date - timedelta(seconds=10),
         )
         self.assertEqual(
-            list(Liveblog.objects.all().order_by('position').values_list('pk', flat=True)),
-            [plugin_1.pk, plugin_2.pk, plugin_3.pk]
+            list(Liveblog.objects.all().order_by("position").values_list("pk", flat=True)),
+            [plugin_1.pk, plugin_2.pk, plugin_3.pk],
         )
 
         plugin_1.post_date = current_date - timedelta(seconds=20)
         plugin_1.save()
         self.assertEqual(
-            list(Liveblog.objects.all().order_by('position').values_list('pk', flat=True)),
-            [plugin_2.pk, plugin_3.pk, plugin_1.pk]
+            list(Liveblog.objects.all().order_by("position").values_list("pk", flat=True)),
+            [plugin_2.pk, plugin_3.pk, plugin_1.pk],
         )

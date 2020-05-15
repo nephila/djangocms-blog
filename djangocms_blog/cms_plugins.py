@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os.path
 
 from cms.plugin_base import CMSPluginBase
@@ -13,17 +12,15 @@ from .settings import get_setting
 
 
 class BlogPlugin(CMSPluginBase):
-    module = get_setting('PLUGIN_MODULE_NAME')
+    module = get_setting("PLUGIN_MODULE_NAME")
 
     def get_render_template(self, context, instance, placeholder):
-        templates = [
-            os.path.join('djangocms_blog', instance.template_folder, self.base_render_template)
-        ]
+        templates = [os.path.join("djangocms_blog", instance.template_folder, self.base_render_template)]
         if instance.app_config and instance.app_config.template_prefix:
-            templates.insert(0, os.path.join(
-                instance.app_config.template_prefix, instance.template_folder,
-                self.base_render_template
-            ))
+            templates.insert(
+                0,
+                os.path.join(instance.app_config.template_prefix, instance.template_folder, self.base_render_template),
+            )
 
         selected = select_template(templates)
         return selected.template.name
@@ -34,19 +31,23 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     Non cached plugin which returns the latest posts taking into account the
       user / toolbar state
     """
-    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME')
+
+    name = get_setting("LATEST_ENTRIES_PLUGIN_NAME")
     model = LatestPostsPlugin
     form = LatestEntriesForm
-    filter_horizontal = ('categories',)
-    fields = ['app_config', 'latest_posts', 'tags', 'categories'] + \
-        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
+    filter_horizontal = ("categories",)
+    fields = (
+        ["app_config", "latest_posts", "tags", "categories"] + ["template_folder"]
+        if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) > 1
+        else []
+    )
     cache = False
-    base_render_template = 'latest_entries.html'
+    base_render_template = "latest_entries.html"
 
     def render(self, context, instance, placeholder):
-        context = super(BlogLatestEntriesPlugin, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts(context['request'], published_only=False)
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        context = super().render(context, instance, placeholder)
+        context["posts_list"] = instance.get_posts(context["request"], published_only=False)
+        context["TRUNCWORDS_COUNT"] = get_setting("POSTS_LIST_TRUNCWORDS_COUNT")
         return context
 
 
@@ -54,94 +55,102 @@ class BlogLatestEntriesPluginCached(BlogPlugin):
     """
     Cached plugin which returns the latest published posts
     """
-    name = get_setting('LATEST_ENTRIES_PLUGIN_NAME_CACHED')
+
+    name = get_setting("LATEST_ENTRIES_PLUGIN_NAME_CACHED")
     model = LatestPostsPlugin
     form = LatestEntriesForm
-    filter_horizontal = ('categories',)
-    fields = ['app_config', 'latest_posts', 'tags', 'categories'] + \
-        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
-    base_render_template = 'latest_entries.html'
+    filter_horizontal = ("categories",)
+    fields = (
+        ["app_config", "latest_posts", "tags", "categories"] + ["template_folder"]
+        if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) > 1
+        else []
+    )
+    base_render_template = "latest_entries.html"
 
     def render(self, context, instance, placeholder):
-        context = super(BlogLatestEntriesPluginCached, self).render(context, instance, placeholder)
-        context['posts_list'] = instance.get_posts(context['request'])
-        context['TRUNCWORDS_COUNT'] = get_setting('POSTS_LIST_TRUNCWORDS_COUNT')
+        context = super().render(context, instance, placeholder)
+        context["posts_list"] = instance.get_posts(context["request"])
+        context["TRUNCWORDS_COUNT"] = get_setting("POSTS_LIST_TRUNCWORDS_COUNT")
         return context
 
 
 class BlogAuthorPostsPlugin(BlogPlugin):
-    module = get_setting('PLUGIN_MODULE_NAME')
-    name = get_setting('AUTHOR_POSTS_PLUGIN_NAME')
+    module = get_setting("PLUGIN_MODULE_NAME")
+    name = get_setting("AUTHOR_POSTS_PLUGIN_NAME")
     model = AuthorEntriesPlugin
     form = AuthorPostsForm
-    base_render_template = 'authors.html'
-    filter_horizontal = ['authors']
-    fields = ['app_config', 'current_site', 'authors'] + \
-        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
+    base_render_template = "authors.html"
+    filter_horizontal = ["authors"]
+    fields = (
+        ["app_config", "current_site", "authors"] + ["template_folder"]
+        if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) > 1
+        else []
+    )
+    exclude = ["template_folder"] if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) >= 1 else []
 
     def render(self, context, instance, placeholder):
-        context = super(BlogAuthorPostsPlugin, self).render(context, instance, placeholder)
-        context['authors_list'] = instance.get_authors(context['request'])
+        context = super().render(context, instance, placeholder)
+        context["authors_list"] = instance.get_authors(context["request"])
         return context
 
 
 class BlogAuthorPostsListPlugin(BlogAuthorPostsPlugin):
-    name = get_setting('AUTHOR_POSTS_LIST_PLUGIN_NAME')
-    base_render_template = 'authors_posts.html'
-    fields = ['app_config', 'current_site', 'authors', 'latest_posts'] + \
-        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
+    name = get_setting("AUTHOR_POSTS_LIST_PLUGIN_NAME")
+    base_render_template = "authors_posts.html"
+    fields = (
+        ["app_config", "current_site", "authors", "latest_posts"] + ["template_folder"]
+        if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) > 1
+        else []
+    )
 
 
 class BlogTagsPlugin(BlogPlugin):
-    module = get_setting('PLUGIN_MODULE_NAME')
-    name = get_setting('TAGS_PLUGIN_NAME')
+    module = get_setting("PLUGIN_MODULE_NAME")
+    name = get_setting("TAGS_PLUGIN_NAME")
     model = GenericBlogPlugin
-    base_render_template = 'tags.html'
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
+    base_render_template = "tags.html"
+    exclude = ["template_folder"] if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) >= 1 else []
 
     def render(self, context, instance, placeholder):
-        context = super(BlogTagsPlugin, self).render(context, instance, placeholder)
-        qs = instance.post_queryset(context['request'])
-        context['tags'] = Post.objects.tag_cloud(queryset=qs.published())
+        context = super().render(context, instance, placeholder)
+        qs = instance.post_queryset(context["request"])
+        context["tags"] = Post.objects.tag_cloud(queryset=qs.published())
         return context
 
 
 class BlogCategoryPlugin(BlogPlugin):
-    module = get_setting('PLUGIN_MODULE_NAME')
-    name = get_setting('CATEGORY_PLUGIN_NAME')
+    module = get_setting("PLUGIN_MODULE_NAME")
+    name = get_setting("CATEGORY_PLUGIN_NAME")
     model = GenericBlogPlugin
-    base_render_template = 'categories.html'
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
+    base_render_template = "categories.html"
+    exclude = ["template_folder"] if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) >= 1 else []
 
     def render(self, context, instance, placeholder):
-        context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
+        context = super().render(context, instance, placeholder)
         qs = BlogCategory.objects.active_translations()
         if instance.app_config:
             qs = qs.namespace(instance.app_config.namespace)
         if instance.current_site:
-            site = get_current_site(context['request'])
-            qs = qs.filter(
-                models.Q(blog_posts__sites__isnull=True) | models.Q(blog_posts__sites=site.pk)
-            )
+            site = get_current_site(context["request"])
+            qs = qs.filter(models.Q(blog_posts__sites__isnull=True) | models.Q(blog_posts__sites=site.pk))
         categories = qs.distinct()
         if instance.app_config and not instance.app_config.menu_empty_categories:
             categories = qs.filter(blog_posts__isnull=False).distinct()
-        context['categories'] = categories
+        context["categories"] = categories
         return context
 
 
 class BlogArchivePlugin(BlogPlugin):
-    module = get_setting('PLUGIN_MODULE_NAME')
-    name = get_setting('ARCHIVE_PLUGIN_NAME')
+    module = get_setting("PLUGIN_MODULE_NAME")
+    name = get_setting("ARCHIVE_PLUGIN_NAME")
     model = GenericBlogPlugin
-    base_render_template = 'archive.html'
-    exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
+    base_render_template = "archive.html"
+    exclude = ["template_folder"] if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) >= 1 else []
 
     def render(self, context, instance, placeholder):
-        context = super(BlogArchivePlugin, self).render(context, instance, placeholder)
-        qs = instance.post_queryset(context['request'])
-        context['dates'] = Post.objects.get_months(queryset=qs.published())
+        context = super().render(context, instance, placeholder)
+        qs = instance.post_queryset(context["request"])
+        context["dates"] = Post.objects.get_months(queryset=qs.published())
         return context
 
 
