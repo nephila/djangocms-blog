@@ -87,7 +87,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
     _fieldsets = [
         (None, {
             'fields': [
-                ['title', 'subtitle', 'publish'],
+                ['title', 'subtitle', 'slug', 'publish'],
                 ['categories', 'app_config']
             ]
         }),
@@ -95,7 +95,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin,
             'fields': [[]]
         }),
         (_('Info'), {
-            'fields': [['slug', 'tags'],
+            'fields': [['tags'],
                        ['date_published', 'date_published_end', 'date_featured'],
                        ['enable_comments']],
             'classes': ('collapse',)
