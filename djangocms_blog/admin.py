@@ -8,6 +8,8 @@ from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.sites.models import Site
+from django.db import models
+from django.db.models import signals
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
@@ -18,6 +20,47 @@ from .cms_appconfig import BlogConfig
 from .forms import CategoryAdminForm, PostAdminForm
 from .models import BlogCategory, Post
 from .settings import get_setting
+
+signal_dict = {}
+
+
+def register_extension(klass):
+    if issubclass(klass, admin.TabularInline):
+        PostAdmin.inlines = type(PostAdmin.inlines)([klass]) + PostAdmin.inlines
+        return
+    if issubclass(klass, models.Model):
+        if klass in signal_dict:
+            raise Exception("Can not register {} twice.".format(klass))
+        signal_dict[klass] = create_post_post_save(klass)
+        signals.post_save.connect(signal_dict[klass], sender=Post, weak=False)
+        return
+    raise Exception("Can not register {} type. You can only register a Model or a TabularInline.".format(klass))
+
+
+def unregister_extension(klass):
+    if issubclass(klass, admin.TabularInline):
+        PostAdmin.inlines.remove(klass)
+        return
+    if issubclass(klass, models.Model):
+        if klass not in signal_dict:
+            raise Exception("Can not unregister {}. No signal found for this class.".format(klass))
+        signals.post_save.disconnect(signal_dict[klass], sender=Post)
+        del signal_dict[klass]
+        return
+    raise Exception("Can not unregister {} type. You can only unregister a Model or a TabularInline.".format(klass))
+
+
+def create_post_post_save(model):
+    """ A wrapper for creating create_instance function for a specific model.
+    """
+
+    def create_instance(sender, instance, created, **kwargs):
+        """ Create Model instance for every new Post.
+        """
+        if created:
+            model.objects.create(post=instance)
+
+    return create_instance
 
 
 class SiteListFilter(admin.SimpleListFilter):
@@ -77,6 +120,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         "enable_comments",
         "disable_comments",
     ]
+    inlines = []
     if apps.is_installed("djangocms_blog.liveblog"):
         actions += ["enable_liveblog", "disable_liveblog"]
     _fieldsets = [
