@@ -120,4 +120,5 @@ Tips
 
 To run a subset of tests::
 
-	$ python cms_helper.py test tests.test_views
+    $ pip install -r requirements-test.txt
+    $ python cms_helper.py test tests.test_views
