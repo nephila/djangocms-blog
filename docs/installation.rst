@@ -76,6 +76,12 @@ suited for your deployment.
     META_SITE_PROTOCOL = 'http'
     META_USE_SITES = True
 
+* For meta tags support enable the needed types::
+
+    META_USE_OG_PROPERTIES=True
+    META_USE_TWITTER_PROPERTIES=True
+    META_USE_GOOGLEPLUS_PROPERTIES=True
+
 * Configure parler according to your languages:
 
 .. code-block:: python
@@ -91,7 +97,7 @@ suited for your deployment.
         }
     }
 
-    Since parler 1.6 this can be skipped if the language configuration is the same as ``CMS_LANGUAGES``.
+.. note:: Since parler 1.6 this can be skipped if the language configuration is the same as ``CMS_LANGUAGES``.
 
 * Add the following to your ``urls.py``:
 

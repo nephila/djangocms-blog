@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import re
 from contextlib import contextmanager
 from copy import deepcopy
@@ -156,7 +154,7 @@ class AdminTest(BaseTest):
 
         # Add view only contains the apphook selection widget
         response = post_admin.add_view(request)
-        self.assertNotContains(response, '<input id="id_slug" maxlength="767" name="slug" type="text"')
+        self.assertNotContains(response, '<input id="id_slug" maxlength="752" name="slug" type="text"')
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Changeview is 'normal'
@@ -225,7 +223,7 @@ class AdminTest(BaseTest):
         self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
 
         # Filtering on the apphook config and site
-        request = self.get_page_request('/', self.user, r'/en/blog/?app_config__id__exact=1&sites=1', edit=False)
+        request = self.get_page_request('/', self.user, r'/en/blog/?app_config__id__exact=%s&sites=1' % self.app_config_1.pk, edit=False)
         response = post_admin.changelist_view(request)
         # First and last post in the list are now in the queryset
         self.assertEqual(response.context_data['cl'].queryset.count(), len(posts) - 2)
@@ -284,7 +282,7 @@ class AdminTest(BaseTest):
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Add view select categories on the given appconfig, even when reloading the form
-        request.POST = QueryDict('app_config=1')
+        request.POST = QueryDict('app_config=%s' % self.app_config_1.pk)
         request.method = 'POST'
         response = category_admin.add_view(request)
         self.assertEqual(
@@ -292,7 +290,7 @@ class AdminTest(BaseTest):
             list(BlogCategory.objects.filter(app_config=self.app_config_1))
         )
 
-        request.GET = QueryDict('app_config=1')
+        request.GET = QueryDict('app_config=%s' % self.app_config_1.pk)
         request.method = 'GET'
         response = category_admin.add_view(request)
         self.assertEqual(
@@ -471,7 +469,7 @@ class AdminTest(BaseTest):
             self.assertRegexpMatches(force_text(response.content), r'selected[^>]*>Blog thumbnail')
 
             # Add view select categories on the given appconfig, even when reloading the form
-            request.POST = QueryDict('app_config=1')
+            request.POST = QueryDict('app_config=%s' % self.app_config_1.pk)
             request.method = 'POST'
             response = post_admin.add_view(request)
             self.assertTrue(
@@ -479,7 +477,7 @@ class AdminTest(BaseTest):
                 BlogCategory.objects.filter(app_config=self.app_config_1)
             )
 
-            request.GET = QueryDict('app_config=1')
+            request.GET = QueryDict('app_config=%s' % self.app_config_1.pk)
             request.method = 'GET'
             response = post_admin.add_view(request)
             self.assertTrue(
@@ -1176,17 +1174,17 @@ class ModelsTest2(BaseTest):
         )
         plugin.authors.add(self.user)
         self.assertEqual(len(plugin.get_posts(request)), 0)
-        self.assertEqual(plugin.get_authors()[0].count, 0)
+        self.assertEqual(plugin.get_authors(request)[0].count, 0)
 
         post1.publish = True
         post1.save()
         self.assertEqual(len(plugin.get_posts(request)), 1)
-        self.assertEqual(plugin.get_authors()[0].count, 1)
+        self.assertEqual(plugin.get_authors(request)[0].count, 1)
 
         post2.publish = True
         post2.save()
         self.assertEqual(len(plugin.get_posts(request)), 2)
-        self.assertEqual(plugin.get_authors()[0].count, 2)
+        self.assertEqual(plugin.get_authors(request)[0].count, 2)
 
     def test_copy_plugin_author(self):
         post1 = self._get_post(self._post_data[0]['en'])
@@ -1267,7 +1265,7 @@ class KnockerTest(BaseTest):
         for language in posts[0].get_available_languages():
             with smart_override(language):
                 posts[0].set_current_language(language)
-                knock_create = posts[0].as_knock(True)
+                knock_create = posts[0].as_knock(signal_type='post_save', created=True)
                 self.assertEqual(knock_create['title'],
                                  'new {0}'.format(posts[0]._meta.verbose_name))
                 self.assertEqual(knock_create['message'], posts[0].title)
@@ -1276,7 +1274,7 @@ class KnockerTest(BaseTest):
         for language in posts[0].get_available_languages():
             with smart_override(language):
                 posts[0].set_current_language(language)
-                knock_create = posts[0].as_knock(False)
+                knock_create = posts[0].as_knock(signal_type='post_save', created=False)
                 self.assertEqual(knock_create['title'],
                                  'new {0}'.format(posts[0]._meta.verbose_name))
                 self.assertEqual(knock_create['message'], posts[0].title)
@@ -1295,18 +1293,18 @@ class KnockerTest(BaseTest):
         }
         post = Post.objects.create(**post_data)
         # Object is not published, no knock
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
         post.publish = True
         post.save()
         # Object is published, send knock
-        self.assertTrue(post.should_knock())
+        self.assertTrue(post.should_knock(signal_type='post_save'))
 
         # Knock disabled for updates
         self.app_config_1.app_data.config.send_knock_update = False
         self.app_config_1.save()
         post.abstract = 'what'
         post.save()
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
 
         # Knock disabled for publishing
         self.app_config_1.app_data.config.send_knock_create = False
@@ -1320,10 +1318,10 @@ class KnockerTest(BaseTest):
             'app_config': self.app_config_1
         }
         post = Post.objects.create(**post_data)
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
         post.publish = True
         post.save()
-        self.assertFalse(post.should_knock())
+        self.assertFalse(post.should_knock(signal_type='post_save'))
 
         # Restore default values
         self.app_config_1.app_data.config.send_knock_create = True

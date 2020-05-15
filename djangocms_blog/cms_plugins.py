@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import os.path
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
+from django.template.loader import select_template
 
-from .forms import LatestEntriesForm
+from .forms import AuthorPostsForm, LatestEntriesForm
 from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
 from .settings import get_setting
 
@@ -17,14 +16,17 @@ class BlogPlugin(CMSPluginBase):
     module = get_setting('PLUGIN_MODULE_NAME')
 
     def get_render_template(self, context, instance, placeholder):
+        templates = [
+            os.path.join('djangocms_blog', instance.template_folder, self.base_render_template)
+        ]
         if instance.app_config and instance.app_config.template_prefix:
-            return os.path.join(instance.app_config.template_prefix,
-                                instance.template_folder,
-                                self.base_render_template)
-        else:
-            return os.path.join('djangocms_blog',
-                                instance.template_folder,
-                                self.base_render_template)
+            templates.insert(0, os.path.join(
+                instance.app_config.template_prefix, instance.template_folder,
+                self.base_render_template
+            ))
+
+        selected = select_template(templates)
+        return selected.template.name
 
 
 class BlogLatestEntriesPlugin(BlogPlugin):
@@ -71,14 +73,24 @@ class BlogAuthorPostsPlugin(BlogPlugin):
     module = get_setting('PLUGIN_MODULE_NAME')
     name = get_setting('AUTHOR_POSTS_PLUGIN_NAME')
     model = AuthorEntriesPlugin
+    form = AuthorPostsForm
     base_render_template = 'authors.html'
     filter_horizontal = ['authors']
+    fields = ['app_config', 'current_site', 'authors'] + \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
     exclude = ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) >= 1 else []
 
     def render(self, context, instance, placeholder):
         context = super(BlogAuthorPostsPlugin, self).render(context, instance, placeholder)
-        context['authors_list'] = instance.get_authors()
+        context['authors_list'] = instance.get_authors(context['request'])
         return context
+
+
+class BlogAuthorPostsListPlugin(BlogAuthorPostsPlugin):
+    name = get_setting('AUTHOR_POSTS_LIST_PLUGIN_NAME')
+    base_render_template = 'authors_posts.html'
+    fields = ['app_config', 'current_site', 'authors', 'latest_posts'] + \
+        ['template_folder'] if len(get_setting('PLUGIN_TEMPLATE_FOLDERS')) > 1 else []
 
 
 class BlogTagsPlugin(BlogPlugin):
@@ -104,7 +116,7 @@ class BlogCategoryPlugin(BlogPlugin):
 
     def render(self, context, instance, placeholder):
         context = super(BlogCategoryPlugin, self).render(context, instance, placeholder)
-        qs = BlogCategory.objects.language().active_translations()
+        qs = BlogCategory.objects.active_translations()
         if instance.app_config:
             qs = qs.namespace(instance.app_config.namespace)
         if instance.current_site:
@@ -136,6 +148,7 @@ class BlogArchivePlugin(BlogPlugin):
 plugin_pool.register_plugin(BlogLatestEntriesPlugin)
 plugin_pool.register_plugin(BlogLatestEntriesPluginCached)
 plugin_pool.register_plugin(BlogAuthorPostsPlugin)
+plugin_pool.register_plugin(BlogAuthorPostsListPlugin)
 plugin_pool.register_plugin(BlogTagsPlugin)
 plugin_pool.register_plugin(BlogArchivePlugin)
 plugin_pool.register_plugin(BlogCategoryPlugin)

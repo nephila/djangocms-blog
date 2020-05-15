@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import warnings
 
 from cms.utils.permissions import get_current_user
@@ -20,7 +18,7 @@ class PostWizardForm(PostAdminFormBase):
     default_appconfig = None
 
     slug = forms.SlugField(
-        label=_('Slug'), max_length=767, required=False,
+        label=_('Slug'), max_length=752, required=False,
         help_text=_('Leave empty for automatic slug, or override as required.'),
     )
 

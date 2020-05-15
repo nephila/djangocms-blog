@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
+from html import unescape
 
 from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.sites.models import Site
@@ -10,24 +10,15 @@ from django.utils.encoding import force_text
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
-from django.utils.six import BytesIO
 from django.utils.text import normalize_newlines
 from django.utils.translation import get_language_from_request, ugettext as _
 from lxml import etree
+from six import BytesIO
 
 from djangocms_blog.settings import get_setting
 from djangocms_blog.views import PostDetailView
 
 from .models import Post
-
-try:
-    import HTMLParser
-
-    h = HTMLParser.HTMLParser()
-    unescape = h.unescape
-
-except ImportError:
-    from html import unescape
 
 
 class LatestEntriesFeed(Feed):

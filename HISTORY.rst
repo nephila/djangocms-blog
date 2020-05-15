@@ -5,11 +5,26 @@ History
 =======
 
 *******************
-1.0.1 (unreleased)
+1.1.1 (2020-05-15)
 *******************
 
+* Fix channels support
+* Avoid admin exception for related posts when config is None
+* Fix error when overriding templates folder
+
+*******************
+1.1.0 (2020-05-04)
+*******************
+
+* Add support for django 3.0
+* Add BlogAuthorPostsListPlugin to show posts per author
+* Add experimental support for django-app-enabler
 * Remove cmsplugin_filer from installation docs
 * Set minimum django-parler version to 2.0
+* Reduce the maximum length of slug fields to 752 characters
+* Fix duplicated authors in BlogAuthorPostsPlugin
+* Fix to respect current locale for category names
+* Improve documentation for meta tags
 
 *******************
 1.0.0 (2019-11-04)

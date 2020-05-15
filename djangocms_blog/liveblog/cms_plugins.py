@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from cms.plugin_pool import plugin_pool
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.cms_plugins import TextPlugin

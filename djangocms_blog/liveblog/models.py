@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
-import json
 from operator import itemgetter
 
-import django
-from channels import Group
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from cms.models import CMSPlugin
 from cms.utils.plugins import reorder_plugins
 from django.db import models
 from django.template import Context
-from django.utils.six import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from djangocms_text_ckeditor.models import AbstractText
 from filer.fields.image import FilerImageField
+from six import python_2_unicode_compatible
 
 from djangocms_blog.models import Post, thumbnail_model
 from djangocms_blog.settings import DATE_FORMAT
@@ -64,43 +61,40 @@ class LiveblogInterface(models.Model):
         context = Context({
             'request': request
         })
-        try:
-            from cms.plugin_rendering import ContentRenderer
-            renderer = ContentRenderer(request)
-            return renderer.render_plugin(
-                instance=self,
-                context=context,
-                placeholder=self.placeholder,
-            )
-        except ImportError:
-            return self.render_plugin(context)
+        from cms.plugin_rendering import ContentRenderer
+        renderer = ContentRenderer(request)
+        return renderer.render_plugin(
+            instance=self,
+            context=context,
+            placeholder=self.placeholder,
+        )
 
     def send(self, request):
         """
         Render the content and send to the related group
         """
         if self.liveblog_group:
+            content = self.render(request)
             notification = {
                 'id': self.pk,
-                'content': self.render(request),
+                'content': content,
                 'creation_date': self.post_date.strftime(DATE_FORMAT),
                 'changed_date': self.changed_date.strftime(DATE_FORMAT),
+                'type': 'send.json',
             }
-            Group(self.liveblog_group).send({
-                'text': json.dumps(notification),
-            })
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
 
 
 class Liveblog(LiveblogInterface, AbstractText):
     """
     Basic liveblog plugin model
     """
-    if django.VERSION >= (1, 10):
-        cmsplugin_ptr = models.OneToOneField(
-            CMSPlugin,
-            related_name='%(app_label)s_%(class)s', primary_key=True,
-            parent_link=True, on_delete=models.CASCADE
-        )
+    cmsplugin_ptr = models.OneToOneField(
+        CMSPlugin,
+        related_name='%(app_label)s_%(class)s', primary_key=True,
+        parent_link=True, on_delete=models.CASCADE
+    )
     title = models.CharField(_('title'), max_length=255)
     image = FilerImageField(
         verbose_name=_('image'), blank=True, null=True, on_delete=models.SET_NULL,

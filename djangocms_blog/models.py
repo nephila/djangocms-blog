@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import hashlib
 
 from aldryn_apphooks_config.fields import AppHookConfigField
@@ -15,7 +13,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import force_bytes, force_text, python_2_unicode_compatible
+from django.utils.encoding import force_bytes, force_text
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
 from django.utils.translation import get_language, ugettext, ugettext_lazy as _
@@ -46,7 +44,7 @@ thumbnail_model = '%s.%s' % (
 try:
     from knocker.mixins import KnockerModel
 except ImportError:
-    class KnockerModel(object):
+    class KnockerModel:
         """
         Stub class if django-knocker is not installed
         """
@@ -72,7 +70,6 @@ class BlogMetaMixin(ModelMeta):
         return self.build_absolute_uri(self.get_absolute_url())
 
 
-@python_2_unicode_compatible
 class BlogCategory(BlogMetaMixin, TranslatableModel):
     """
     Blog category
@@ -88,8 +85,8 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     )
 
     translations = TranslatedFields(
-        name=models.CharField(_('name'), max_length=767),
-        slug=models.SlugField(_('slug'), max_length=767, blank=True, db_index=True),
+        name=models.CharField(_('name'), max_length=752),
+        slug=models.SlugField(_('slug'), max_length=752, blank=True, db_index=True),
         meta_description=models.TextField(
             verbose_name=_('category meta description'), blank=True, default=''
         ),
@@ -183,7 +180,6 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         return escape(strip_tags(description)).strip()
 
 
-@python_2_unicode_compatible
 class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     """
     Blog post
@@ -224,8 +220,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     )
 
     translations = TranslatedFields(
-        title=models.CharField(_('title'), max_length=767),
-        slug=models.SlugField(_('slug'), max_length=767, blank=True,
+        title=models.CharField(_('title'), max_length=752),
+        slug=models.SlugField(_('slug'), max_length=752, blank=True,
                               db_index=True, allow_unicode=True),
         subtitle=models.CharField(verbose_name=_('subtitle'), max_length=767,
                                   blank=True, default=''),
@@ -434,14 +430,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                 (self.date_published_end is None or self.date_published_end > timezone.now())
                 )
 
-    def should_knock(self, created=False):
+    def should_knock(self, signal_type, created=False):
         """
         Returns whether to emit knocks according to the post state
         """
         new = (self.app_config.send_knock_create and self.is_published and
                self.date_published == self.date_modified)
         updated = self.app_config.send_knock_update and self.is_published
-        return new or updated
+        return (new or updated) and signal_type in ('post_save', 'post_delete')
 
     def get_cache_key(self, language, prefix):
         return 'djangocms-blog:{2}:{0}:{1}'.format(language, self.guid, prefix)
@@ -497,7 +493,6 @@ class BasePostPlugin(CMSPlugin):
         return self.optimize(posts.all())
 
 
-@python_2_unicode_compatible
 class LatestPostsPlugin(BasePostPlugin):
     latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests '
@@ -528,7 +523,6 @@ class LatestPostsPlugin(BasePostPlugin):
         return self.optimize(posts.distinct())[:self.latest_posts]
 
 
-@python_2_unicode_compatible
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
@@ -547,26 +541,19 @@ class AuthorEntriesPlugin(BasePostPlugin):
 
     def get_posts(self, request, published_only=True):
         posts = self.post_queryset(request, published_only)
-        return posts[:self.latest_posts]
+        return posts
 
-    def get_authors(self):
+    def get_authors(self, request):
         authors = self.authors.all()
         for author in authors:
-            author.count = 0
-            qs = author.djangocms_blog_post_author
-            if self.app_config:
-                qs = qs.namespace(self.app_config.namespace)
-            if self.current_site:
-                qs = qs.published()
-            else:
-                qs = qs.published(current_site=False)
-            count = qs.count()
-            if count:
-                author.count = count
+            qs = self.get_posts(request).filter(author=author)
+            # total nb of articles
+            author.count = qs.count()
+            # "the number of author articles to be displayed"
+            author.posts = qs[:self.latest_posts]
         return authors
 
 
-@python_2_unicode_compatible
 class GenericBlogPlugin(BasePostPlugin):
     class Meta:
         abstract = False

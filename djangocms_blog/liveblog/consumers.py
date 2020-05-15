@@ -1,51 +1,32 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
 
-import json
+from channels.generic.websocket import JsonWebsocketConsumer
 
-from channels import Group
-
-from djangocms_blog.models import Post
+from ..models import Post
 
 
-def liveblog_connect(message, apphook, lang, post):
-    """
-    Connect users to the group of the given post according to the given language
+class LiveblogConsumer(JsonWebsocketConsumer):
 
-    Return with an error message if a post cannot be found
+    def _get_post(self, kwargs):
+        apphook = kwargs.get('apphook')
+        lang = kwargs.get('lang')
+        slug = kwargs.get('post')
+        try:
+            return Post.objects.namespace(apphook).language(lang).active_translations(
+                slug=slug).get()
+        except Post.DoesNotExist:
+            return
 
-    :param message: channel connect message
-    :param apphook: apphook config namespace
-    :param lang: language
-    :param post: post slug
-    """
-    try:
-        post = Post.objects.namespace(apphook).language(lang).active_translations(slug=post).get()
-    except Post.DoesNotExist:
-        message.reply_channel.send({
-            'text': json.dumps({'error': 'no_post'}),
-        })
-        return
-    Group(post.liveblog_group).add(message.reply_channel)
-    message.reply_channel.send({"accept": True})
+    def websocket_connect(self, message):
+        self.groups = self.get_groups()
+        return super().websocket_connect(message)
 
-
-def liveblog_disconnect(message, apphook, lang, post):
-    """
-    Disconnect users to the group of the given post according to the given language
-
-    Return with an error message if a post cannot be found
-
-    :param message: channel connect message
-    :param apphook: apphook config namespace
-    :param lang: language
-    :param post: post slug
-    """
-    try:
-        post = Post.objects.namespace(apphook).language(lang).active_translations(slug=post).get()
-    except Post.DoesNotExist:
-        message.reply_channel.send({
-            'text': json.dumps({'error': 'no_post'}),
-        })
-        return
-    Group(post.liveblog_group).discard(message.reply_channel)
+    def get_groups(self):
+        """
+        Connect users to the group of the post according to the URL parameters
+        """
+        post = self._get_post(self.scope['url_route']['kwargs'])
+        if post:
+            return [post.liveblog_group]
+        else:
+            return []

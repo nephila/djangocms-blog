@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import os.path
 import re
 
 from cms.api import add_plugin
+from cms.models import Page
+from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils.http import urlencode
 from django.utils.timezone import now
 from taggit.models import Tag
 
 from djangocms_blog.models import BlogCategory
 
 from .base import BaseTest
+
+User = get_user_model()
 
 
 class PluginTest(BaseTest):
@@ -29,9 +33,13 @@ class PluginTest(BaseTest):
         )
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
         try:
-            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms-plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         except AssertionError:
-            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms_plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         self.assertTrue(rendered.find('<p>first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
@@ -69,9 +77,13 @@ class PluginTest(BaseTest):
 
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
         try:
-            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms-plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         except AssertionError:
-            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-1') > -1)
+            self.assertTrue(
+                rendered.find('cms_plugin-djangocms_blog-post-abstract-%s' % posts[0].pk) > -1
+            )
         self.assertTrue(
             rendered.find(reverse('djangocms_blog:posts-tagged', kwargs={'tag': tag.slug})) > -1
         )
@@ -92,12 +104,17 @@ class PluginTest(BaseTest):
 
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
         try:
-            self.assertTrue(rendered.find('cms_plugin-djangocms_blog-post-abstract-2') > -1)
+            self.assertTrue(
+                rendered.find('cms-plugin-djangocms_blog-post-abstract-%s' % posts[1].pk) > -1
+            )
         except AssertionError:
-            self.assertTrue(rendered.find('cms-plugin-djangocms_blog-post-abstract-2') > -1)
+            self.assertTrue(
+                rendered.find('cms_plugin-djangocms_blog-post-abstract-%s' % posts[1].pk) > -1
+            )
         self.assertTrue(
-            rendered.find(reverse('djangocms_blog:posts-category',
-                                  kwargs={'category': category_2.slug})) > -1
+            rendered.find(
+                reverse('djangocms_blog:posts-category', kwargs={'category': category_2.slug})
+            ) > -1
         )
         self.assertTrue(rendered.find('<p>second post first line</p>') > -1)
         self.assertTrue(rendered.find('<article id="post-second-post"') > -1)
@@ -181,28 +198,52 @@ class PluginTest(BaseTest):
         self.assertEqual(context['dates'][0]['count'], 1)
 
     def test_templates(self):
+        def _test_custom_templates_path(parts):
+            templates_path = os.path.join(os.path.dirname(__file__), 'test_utils', 'templates')
+
+            self.app_config_1.app_data.config.template_prefix = parts[0]
+            self.app_config_1.save()
+            tmp = plugin.template_folder
+            plugin.template_folder = parts[1]
+            plugin.save()
+            dir_parts = (templates_path,) + parts
+            template_parts = parts + (plugin_class.base_render_template, )
+            try:
+                os.makedirs(os.path.join(*dir_parts))
+            except OSError:
+                pass
+            fake_template = os.path.join(*template_parts)
+            with open(os.path.join(templates_path, fake_template), 'w'):
+                self.assertEqual(
+                    plugin_class.get_render_template(context, plugin, ph),
+                    fake_template
+                )
+            plugin.template_folder = tmp
+            plugin.save()
+            self.app_config_1.app_data.config.template_prefix = ''
+            self.app_config_1.save()
+            os.unlink(os.path.join(templates_path, fake_template))
+
         posts = self.get_posts()
         pages = self.get_pages()
 
         ph = pages[0].placeholders.get(slot='content')
-        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
 
         context = self.get_plugin_context(pages[0], 'en', plugin)
         plugin_class = plugin.get_plugin_class_instance()
-        self.assertEqual(plugin_class.get_render_template(context, plugin, ph),
-            os.path.join('djangocms_blog', plugin.template_folder, plugin_class.base_render_template))
+        self.assertEqual(
+            plugin_class.get_render_template(context, plugin, ph),
+            os.path.join('djangocms_blog', plugin.template_folder, plugin_class.base_render_template)
+        )
 
-        self.app_config_1.app_data.config.template_prefix = 'whatever'
-        self.app_config_1.save()
-        tmp = plugin.template_folder
-        plugin.template_folder = 'whereever'
-        plugin.save()
-        self.assertEqual(plugin_class.get_render_template(context, plugin, ph),
-            os.path.join('whatever', 'whereever', plugin_class.base_render_template))
-        plugin.template_folder = tmp
-        plugin.save()
-        self.app_config_1.app_data.config.template_prefix = ''
-        self.app_config_1.save()
+        custom_parts = ('whatever', 'whereever')
+        _test_custom_templates_path(custom_parts)
+
+        custom_parts = ('djangocms_blog', 'whereever')
+        _test_custom_templates_path(custom_parts)
 
 
 class PluginTest10(BaseTest):
@@ -218,7 +259,7 @@ class PluginTest10(BaseTest):
         plugin = add_plugin(ph, 'BlogAuthorPostsPlugin', language='en', app_config=self.app_config_1)
 
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
-        self.assertTrue(rendered.find('No article found') > -1)
+        self.assertTrue(rendered.find('No author found') > -1)
 
         plugin.authors.add(self.user)
         rendered = self.render_plugin(pages[0], 'en', plugin, edit=True)
@@ -246,6 +287,39 @@ class PluginTest10(BaseTest):
 
         casted_authors, __ = new[0].get_plugin_instance()
         self.assertEqual(casted_authors.authors.count(), 3)
+
+    def test_plugin_authors_admin(self):
+        other_author = User.objects.create(username='other_author')
+        non_author = User.objects.create(username='non_author')
+        unpublished_author = User.objects.create(username='unpublished_author')
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[0].publish = True
+        posts[0].save()
+        posts[1].publish = True
+        posts[1].author = other_author
+        posts[1].save()
+        posts[2].publish = False
+        posts[2].author = unpublished_author
+        posts[2].save()
+        ph = pages[0].placeholders.get(slot='content')
+        page_admin = admin.site._registry[Page]
+        parms = {
+            'cms_path': '/en/',
+            'placeholder_id': ph.pk,
+            'plugin_type': 'BlogAuthorPostsPlugin',
+            'plugin_language': 'en'
+        }
+        path = '/en/?%s' % urlencode(parms)
+        request = self.get_request(pages[0], 'en', user=self.user, path=path)
+        response = page_admin.add_plugin(request)
+        form_authors = response.context_data['adminform'].form.fields['authors'].queryset
+        self.assertEqual(form_authors.count(), 2)
+        self.assertIn(other_author, form_authors)
+        self.assertIn(self.user, form_authors)
+        self.assertNotIn(unpublished_author, form_authors)
+        self.assertNotIn(non_author, form_authors)
+
 
 class PluginTest2(BaseTest):
 

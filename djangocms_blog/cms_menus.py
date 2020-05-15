@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from cms.apphook_pool import apphook_pool
 from cms.menu_bases import CMSAttachMenu
 from django.contrib.sites.shortcuts import get_current_site

@@ -8,16 +8,13 @@ django CMS blog application - Support for multilingual posts, placeholders, soci
 
 Supported Django versions:
 
-* Django 1.11, 2.0, 2.1, 2.2
+* Django 2.2, 3.0
 
 Supported django CMS versions:
 
-* django CMS 3.5+
+* django CMS 3.7+
 
-.. warning:: For Django<1.11, django CMS<3.5 versions support, use djangocms-blog 0.9.x.
-
-.. warning:: Since 1.0 compatibility with cmsplugin-filer has been dropped.
-             Check `cmsplugin-filer migration documentation`_
+.. warning:: For Django<2.2, django CMS<3.7 versions support, use djangocms-blog 1.1x.
 
 ************
 Installation
@@ -32,7 +29,7 @@ Features
 See `features documentation`_  for all the features details
 
 * Placeholder content editing
-* Frontend editing using django CMS 3.x frontend editor
+* Frontend editing using django CMS frontend editor
 * Multilingual support using django-parler
 * Twitter cards, Open Graph and Google+ snippets meta tags
 * Optional simpler TextField-based content editing
@@ -43,7 +40,7 @@ See `features documentation`_  for all the features details
 * Per-Apphook templates set
 * Auto Apphook setup
 * Django sitemap framework
-* django CMS 3.2+ Wizard
+* django CMS Wizard integration
 * Haystack index
 * Desktop notifications
 * Liveblog

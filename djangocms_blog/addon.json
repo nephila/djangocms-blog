@@ -1,0 +1,24 @@
+{
+    "package-name": "djangocms-blog",
+    "installed-apps": [
+        "filer",
+        "easy_thumbnails",
+        "aldryn_apphooks_config",
+        "parler",
+        "taggit",
+        "taggit_autosuggest",
+        "meta",
+        "djangocms_blog",
+        "sortedm2m"
+    ],
+    "settings": {
+        "META_SITE_PROTOCOL": "http",
+        "META_USE_SITES": true,
+        "META_USE_OG_PROPERTIES": true,
+        "META_USE_TWITTER_PROPERTIES": true,
+        "META_USE_GOOGLEPLUS_PROPERTIES": true
+    },
+    "urls": [
+        "djangocms_blog.taggit_urls"
+    ]
+}

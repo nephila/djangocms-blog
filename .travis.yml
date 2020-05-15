@@ -2,34 +2,29 @@ language: python
 dist: xenial
 
 python:
+  - 3.8
   - 3.7
   - 3.6
   - 3.5
-  - 2.7
 
 env:
   matrix:
   - TOXENV='pep8'
   - TOXENV='isort'
   - TOXENV='docs'
+  - DJANGO='django30' CMS='cms37'
   - DJANGO='django22' CMS='cms37'
-  - DJANGO='django21' CMS='cms37'
-  - DJANGO='django21' CMS='cms36'
-  - DJANGO='django21' CMS='cms35'
-  - DJANGO='django111' CMS='cms37'
-  - DJANGO='django111' CMS='cms36'
-  - DJANGO='django111' CMS='cms35'
 
+services:
+  - redis-server
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - "if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then export PYVER=py27; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then export PYVER=py35; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then export PYVER=py36; fi"
   - "if [[ $TRAVIS_PYTHON_VERSION == '3.7' ]]; then export PYVER=py37; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == '3.8' ]]; then export PYVER=py38; fi"
   - "if [[ ${DJANGO}z != 'z' ]]; then export TOXENV=$PYVER-$DJANGO-$CMS; fi"
 
-# command to run tests, e.g. python setup.py test
 script: COMMAND='coverage run' tox -e$TOXENV -- --verbose=2
 
 before_install:
@@ -40,31 +35,19 @@ after_success:
 
 matrix:
   exclude:
-  - python: 2.7
-    env: DJANGO='django22' CMS='cms37'
-  - python: 2.7
-    env: DJANGO='django21' CMS='cms37'
-  - python: 2.7
-    env: DJANGO='django21' CMS='cms36'
-  - python: 2.7
-    env: DJANGO='django21' CMS='cms35'
-  - python: 2.7
-    env: DJANGO='django20' CMS='cms37'
-  - python: 2.7
-    env: DJANGO='django20' CMS='cms36'
-  - python: 2.7
-    env: DJANGO='django20' CMS='cms35'
-  - python: 2.7
+  - python: 3.5
+    env: DJANGO='django30' CMS='cms37'
+  - python: 3.5
     env: TOXENV='docs'
-  - python: 2.7
+  - python: 3.5
     env: TOXENV='pep8'
-  - python: 2.7
+  - python: 3.5
     env: TOXENV='isort'
-  - python: 3.5
+  - python: 3.6
     env: TOXENV='docs'
-  - python: 3.5
+  - python: 3.6
     env: TOXENV='pep8'
-  - python: 3.5
+  - python: 3.6
     env: TOXENV='isort'
   - python: 3.7
     env: TOXENV='docs'
@@ -72,13 +55,6 @@ matrix:
     env: TOXENV='pep8'
   - python: 3.7
     env: TOXENV='isort'
-  allow_failures:
-    - python: 3.5
-      env: DJANGO='django22' CMS='cms37'
-    - python: 3.6
-      env: DJANGO='django22' CMS='cms37'
-    - python: 3.7
-      env: DJANGO='django22' CMS='cms37'
 
 
 cache: pip

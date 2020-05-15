@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from django import forms
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxLengthValidator
 from django.utils.functional import cached_property
 from parler.forms import TranslatableModelForm
@@ -11,8 +10,10 @@ from taggit_autosuggest.widgets import TagAutoSuggest
 from .models import BlogCategory, BlogConfig, Post
 from .settings import PERMALINK_TYPE_CATEGORY, get_setting
 
+User = get_user_model()
 
-class ConfigFormBase(object):
+
+class ConfigFormBase:
     """
     This provide the app_config property which returns the currently
     selected app_config, whether it's an instance attribute or
@@ -78,6 +79,15 @@ class LatestEntriesForm(forms.ModelForm):
                 settings.STATIC_URL, 'djangocms_blog_admin.css'
             ),)
         }
+
+
+class AuthorPostsForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AuthorPostsForm, self).__init__(*args, **kwargs)
+        # apply distinct due to django issue #11707
+        self.fields['authors'].queryset = User.objects.filter(
+            djangocms_blog_post_author__publish=True
+        ).distinct()
 
 
 class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
