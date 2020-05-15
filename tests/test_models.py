@@ -225,7 +225,7 @@ class AdminTest(BaseTest):
         self.assertTrue(posts[0] in response.context_data['cl'].queryset.all())
 
         # Filtering on the apphook config and site
-        request = self.get_page_request('/', self.user, r'/en/blog/?app_config__id__exact=1&sites=1', edit=False)
+        request = self.get_page_request('/', self.user, r'/en/blog/?app_config__id__exact=%s&sites=1' % self.app_config_1.pk, edit=False)
         response = post_admin.changelist_view(request)
         # First and last post in the list are now in the queryset
         self.assertEqual(response.context_data['cl'].queryset.count(), len(posts) - 2)
@@ -284,7 +284,7 @@ class AdminTest(BaseTest):
         self.assertContains(response, '<option value="%s">Blog / sample_app</option>' % self.app_config_1.pk)
 
         # Add view select categories on the given appconfig, even when reloading the form
-        request.POST = QueryDict('app_config=1')
+        request.POST = QueryDict('app_config=%s' % self.app_config_1.pk)
         request.method = 'POST'
         response = category_admin.add_view(request)
         self.assertEqual(
@@ -292,7 +292,7 @@ class AdminTest(BaseTest):
             list(BlogCategory.objects.filter(app_config=self.app_config_1))
         )
 
-        request.GET = QueryDict('app_config=1')
+        request.GET = QueryDict('app_config=%s' % self.app_config_1.pk)
         request.method = 'GET'
         response = category_admin.add_view(request)
         self.assertEqual(
@@ -471,7 +471,7 @@ class AdminTest(BaseTest):
             self.assertRegexpMatches(force_text(response.content), r'selected[^>]*>Blog thumbnail')
 
             # Add view select categories on the given appconfig, even when reloading the form
-            request.POST = QueryDict('app_config=1')
+            request.POST = QueryDict('app_config=%s' % self.app_config_1.pk)
             request.method = 'POST'
             response = post_admin.add_view(request)
             self.assertTrue(
@@ -479,7 +479,7 @@ class AdminTest(BaseTest):
                 BlogCategory.objects.filter(app_config=self.app_config_1)
             )
 
-            request.GET = QueryDict('app_config=1')
+            request.GET = QueryDict('app_config=%s' % self.app_config_1.pk)
             request.method = 'GET'
             response = post_admin.add_view(request)
             self.assertTrue(

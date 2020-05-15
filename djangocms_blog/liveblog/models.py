@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function, unicode_literals
 
-import json
 from operator import itemgetter
 
 from asgiref.sync import async_to_sync
@@ -80,17 +79,16 @@ class LiveblogInterface(models.Model):
         Render the content and send to the related group
         """
         if self.liveblog_group:
+            content = self.render(request)
             notification = {
                 'id': self.pk,
-                'content': self.render(request),
+                'content': content,
                 'creation_date': self.post_date.strftime(DATE_FORMAT),
                 'changed_date': self.changed_date.strftime(DATE_FORMAT),
+                'type': 'send.json',
             }
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(self.liveblog_group, {
-                'type': 'knocker.saved',
-                'message': json.dumps(notification)
-            })
+            async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
 
 
 class Liveblog(LiveblogInterface, AbstractText):

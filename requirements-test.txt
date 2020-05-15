@@ -1,5 +1,5 @@
 -r requirements.txt
-coverage<5.0
+coverage
 coveralls
 mock>=1.0.1
 django-nose>=1.2
@@ -13,3 +13,4 @@ django-taggit-helpers
 django-app-helper>=2.0.0a2
 sphinx-autobuild
 djangocms-video
+pytest-django
