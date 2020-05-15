@@ -5,7 +5,15 @@ History
 =======
 
 *******************
-1.1.0 (unreleased)
+1.1.1 (2020-05-15)
+*******************
+
+* Fix channels support
+* Avoid admin exception for related posts when config is None
+* Fix error when overriding templates folder
+
+*******************
+1.1.0 (2020-05-04)
 *******************
 
 * Add support for django 3.0
