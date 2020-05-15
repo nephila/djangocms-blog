@@ -1,5 +1,5 @@
 -r requirements.txt
-coverage<5.0
+coverage
 coveralls
 mock>=1.0.1
 django-nose>=1.2
