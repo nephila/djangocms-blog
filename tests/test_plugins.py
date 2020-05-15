@@ -200,28 +200,52 @@ class PluginTest(BaseTest):
         self.assertEqual(context['dates'][0]['count'], 1)
 
     def test_templates(self):
+        def _test_custom_templates_path(parts):
+            templates_path = os.path.join(os.path.dirname(__file__), 'test_utils', 'templates')
+
+            self.app_config_1.app_data.config.template_prefix = parts[0]
+            self.app_config_1.save()
+            tmp = plugin.template_folder
+            plugin.template_folder = parts[1]
+            plugin.save()
+            dir_parts = (templates_path,) + parts
+            template_parts = parts + (plugin_class.base_render_template, )
+            try:
+                os.makedirs(os.path.join(*dir_parts))
+            except OSError:
+                pass
+            fake_template = os.path.join(*template_parts)
+            with open(os.path.join(templates_path, fake_template), 'w'):
+                self.assertEqual(
+                    plugin_class.get_render_template(context, plugin, ph),
+                    fake_template
+                )
+            plugin.template_folder = tmp
+            plugin.save()
+            self.app_config_1.app_data.config.template_prefix = ''
+            self.app_config_1.save()
+            os.unlink(os.path.join(templates_path, fake_template))
+
         posts = self.get_posts()
         pages = self.get_pages()
 
         ph = pages[0].placeholders.get(slot='content')
-        plugin = add_plugin(ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1)
+        plugin = add_plugin(
+            ph, 'BlogLatestEntriesPlugin', language='en', app_config=self.app_config_1
+        )
 
         context = self.get_plugin_context(pages[0], 'en', plugin)
         plugin_class = plugin.get_plugin_class_instance()
-        self.assertEqual(plugin_class.get_render_template(context, plugin, ph),
-            os.path.join('djangocms_blog', plugin.template_folder, plugin_class.base_render_template))
+        self.assertEqual(
+            plugin_class.get_render_template(context, plugin, ph),
+            os.path.join('djangocms_blog', plugin.template_folder, plugin_class.base_render_template)
+        )
 
-        self.app_config_1.app_data.config.template_prefix = 'whatever'
-        self.app_config_1.save()
-        tmp = plugin.template_folder
-        plugin.template_folder = 'whereever'
-        plugin.save()
-        self.assertEqual(plugin_class.get_render_template(context, plugin, ph),
-            os.path.join('whatever', 'whereever', plugin_class.base_render_template))
-        plugin.template_folder = tmp
-        plugin.save()
-        self.app_config_1.app_data.config.template_prefix = ''
-        self.app_config_1.save()
+        custom_parts = ('whatever', 'whereever')
+        _test_custom_templates_path(custom_parts)
+
+        custom_parts = ('djangocms_blog', 'whereever')
+        _test_custom_templates_path(custom_parts)
 
 
 class PluginTest10(BaseTest):

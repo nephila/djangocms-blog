@@ -18,18 +18,18 @@ class BlogPlugin(CMSPluginBase):
     module = get_setting('PLUGIN_MODULE_NAME')
 
     def get_render_template(self, context, instance, placeholder):
-
-        templates = [os.path.join('djangocms_blog',
-                                  instance.template_folder,
-                                  self.base_render_template)]
-
+        templates = [
+            os.path.join('djangocms_blog', instance.template_folder, self.base_render_template)
+        ]
         if instance.app_config and instance.app_config.template_prefix:
-            templates.insert(0, os.path.join(instance.app_config.template_prefix,
-                                             instance.template_folder,
-                                             self.base_render_template))
+            templates.insert(0, os.path.join(
+                instance.app_config.template_prefix, instance.template_folder,
+                self.base_render_template
+            ))
 
         selected = select_template(templates)
         return selected.template.name
+
 
 class BlogLatestEntriesPlugin(BlogPlugin):
     """
