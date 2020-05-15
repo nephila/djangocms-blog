@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import hashlib
 
 from aldryn_apphooks_config.fields import AppHookConfigField
@@ -25,7 +23,6 @@ from filer.models import ThumbnailOption
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from parler.utils.context import switch_language
-from six import python_2_unicode_compatible
 from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
@@ -47,7 +44,7 @@ thumbnail_model = '%s.%s' % (
 try:
     from knocker.mixins import KnockerModel
 except ImportError:
-    class KnockerModel(object):
+    class KnockerModel:
         """
         Stub class if django-knocker is not installed
         """
@@ -73,7 +70,6 @@ class BlogMetaMixin(ModelMeta):
         return self.build_absolute_uri(self.get_absolute_url())
 
 
-@python_2_unicode_compatible
 class BlogCategory(BlogMetaMixin, TranslatableModel):
     """
     Blog category
@@ -184,7 +180,6 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         return escape(strip_tags(description)).strip()
 
 
-@python_2_unicode_compatible
 class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     """
     Blog post
@@ -498,7 +493,6 @@ class BasePostPlugin(CMSPlugin):
         return self.optimize(posts.all())
 
 
-@python_2_unicode_compatible
 class LatestPostsPlugin(BasePostPlugin):
     latest_posts = models.IntegerField(_('articles'), default=get_setting('LATEST_POSTS'),
                                        help_text=_('The number of latests '
@@ -529,7 +523,6 @@ class LatestPostsPlugin(BasePostPlugin):
         return self.optimize(posts.distinct())[:self.latest_posts]
 
 
-@python_2_unicode_compatible
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL, verbose_name=_('authors'),
@@ -561,7 +554,6 @@ class AuthorEntriesPlugin(BasePostPlugin):
         return authors
 
 
-@python_2_unicode_compatible
 class GenericBlogPlugin(BasePostPlugin):
     class Meta:
         abstract = False

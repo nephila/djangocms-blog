@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
+from html import unescape
 
 from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.sites.models import Site
@@ -19,15 +19,6 @@ from djangocms_blog.settings import get_setting
 from djangocms_blog.views import PostDetailView
 
 from .models import Post
-
-try:
-    import HTMLParser
-
-    h = HTMLParser.HTMLParser()
-    unescape = h.unescape
-
-except ImportError:
-    from html import unescape
 
 
 class LatestEntriesFeed(Feed):

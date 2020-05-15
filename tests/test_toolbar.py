@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from cms.toolbar.items import ButtonList, ModalItem
 from django.urls import reverse
 from django.utils.encoding import force_text
