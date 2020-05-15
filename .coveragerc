@@ -3,7 +3,7 @@ branch = True
 source = djangocms_blog
 
 [report]
-omit = ../*migrations*,../*tests*,../*compat.*
+omit = *migrations*,*tests*,*test_utils*
 # Regexes for lines to exclude from consideration
 exclude_lines =
     # Have to re-enable the standard pragma

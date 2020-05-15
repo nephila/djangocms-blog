@@ -5,5 +5,4 @@ languages:
   Python: true
 exclude_paths:
  - 'djangocms_blog/migrations/*'
- - 'djangocms_blog/south_migrations/*'
  - 'tests/*'
