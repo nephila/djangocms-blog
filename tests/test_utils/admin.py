@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import CustomUser
+from .models import CustomUser, PostExtension
 
 
 class CustomUserAdmin(UserAdmin):
@@ -18,3 +18,13 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+class PostExtensionInline(admin.TabularInline):
+    model = PostExtension
+    fields = ["some_field"]
+    classes = ["collapse"]
+    extra = 1
+    can_delete = False
+    verbose_name = "PostExtension"
+    verbose_name_plural = "PostExtensions"
