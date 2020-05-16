@@ -69,18 +69,18 @@ class AdminTest(BaseTest):
 
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegexpMatches(force_text(response.content), r"[^>]*>Custom image")
-        self.assertRegexpMatches(force_text(response.content), r"[^>]*>Custom thumbnail")
-        self.assertRegexpMatches(force_text(response.content), r"[^>]*>Blog image")
-        self.assertRegexpMatches(force_text(response.content), r"[^>]*>Blog thumbnail")
+        self.assertRegex(force_text(response.content), r"[^>]*>Custom image")
+        self.assertRegex(force_text(response.content), r"[^>]*>Custom thumbnail")
+        self.assertRegex(force_text(response.content), r"[^>]*>Blog image")
+        self.assertRegex(force_text(response.content), r"[^>]*>Blog thumbnail")
 
         post.main_image_full = custom_full
         post.main_image_thumbnail = custom_thumbnail
         post.save()
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegexpMatches(force_text(response.content), r"selected[^>]*>Custom image")
-        self.assertRegexpMatches(force_text(response.content), r"selected[^>]*>Custom thumbnail")
+        self.assertRegex(force_text(response.content), r"selected[^>]*>Custom image")
+        self.assertRegex(force_text(response.content), r"selected[^>]*>Custom thumbnail")
 
         self.app_config_1.app_data.config.default_image_full = self.default_full
         self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
@@ -91,8 +91,8 @@ class AdminTest(BaseTest):
 
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegexpMatches(force_text(response.content), r"selected[^>]*>Blog image")
-        self.assertRegexpMatches(force_text(response.content), r"selected[^>]*>Blog thumbnail")
+        self.assertRegex(force_text(response.content), r"selected[^>]*>Blog image")
+        self.assertRegex(force_text(response.content), r"selected[^>]*>Blog thumbnail")
 
     def test_admin_category_required(self):
         self.get_pages()
@@ -140,20 +140,20 @@ class AdminTest(BaseTest):
         response = post_admin.change_view(request, str(post.pk))
         response.render()
         try:
-            self.assertRegexpMatches(force_text(response.content), r'name="slug"[^>]*value="first-post"')
+            self.assertRegex(force_text(response.content), r'name="slug"[^>]*value="first-post"')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'value="first-post"[^>]*name="slug"')
+            self.assertRegex(force_text(response.content), r'value="first-post"[^>]*name="slug"')
         try:
-            self.assertRegexpMatches(force_text(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
+            self.assertRegex(force_text(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
+            self.assertRegex(force_text(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
         try:
-            self.assertRegexpMatches(
+            self.assertRegex(
                 force_text(response.content),
                 r'selected[^>]*value="%s">Blog / sample_app</option>' % self.app_config_1.pk,
             )
         except AssertionError:
-            self.assertRegexpMatches(
+            self.assertRegex(
                 force_text(response.content),
                 r'value="%s"[^>]*selected[^>]*>Blog / sample_app</option>' % self.app_config_1.pk,
             )
@@ -237,24 +237,24 @@ class AdminTest(BaseTest):
         response.render()
         self.assertNotContains(response, "djangocms_blog.cms_appconfig.BlogConfig")
         try:
-            self.assertRegexpMatches(force_text(response.content), r'maxlength="100"[^>]*id="id_namespace"')
+            self.assertRegex(force_text(response.content), r'maxlength="100"[^>]*id="id_namespace"')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'id="id_namespace"[^>]*maxlength="100"')
+            self.assertRegex(force_text(response.content), r'id="id_namespace"[^>]*maxlength="100"')
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.app_config_1.pk))
         self.assertContains(response, "djangocms_blog.cms_appconfig.BlogConfig")
         try:
-            self.assertRegexpMatches(force_text(response.content), r'selected[^>]*value="Article">Article')
+            self.assertRegex(force_text(response.content), r'selected[^>]*value="Article">Article')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'value="Article"[^>]*selected[^>]*>Article')
+            self.assertRegex(force_text(response.content), r'value="Article"[^>]*selected[^>]*>Article')
         # check that all the form fields are visible in the admin
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
         try:
-            self.assertRegexpMatches(force_text(response.content), r'maxlength="200"[^>]*id="id_config-og_app_id"')
+            self.assertRegex(force_text(response.content), r'maxlength="200"[^>]*id="id_config-og_app_id"')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'id="id_config-og_app_id"[^>]*maxlength="200"')
+            self.assertRegex(force_text(response.content), r'id="id_config-og_app_id"[^>]*maxlength="200"')
 
         self.assertContains(response, "sample_app")
 
@@ -290,20 +290,20 @@ class AdminTest(BaseTest):
         response = category_admin.change_view(request, str(self.category_1.pk))
         response.render()
         try:
-            self.assertRegexpMatches(force_text(response.content), r'id="id_name"[^>]*value="category 1"')
+            self.assertRegex(force_text(response.content), r'id="id_name"[^>]*value="category 1"')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'value="category 1"[^>]*id="id_name"')
+            self.assertRegex(force_text(response.content), r'value="category 1"[^>]*id="id_name"')
         try:
-            self.assertRegexpMatches(force_text(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
+            self.assertRegex(force_text(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
         except AssertionError:
-            self.assertRegexpMatches(force_text(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
+            self.assertRegex(force_text(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
         try:
-            self.assertRegexpMatches(
+            self.assertRegex(
                 force_text(response.content),
                 r'selected[^>]*value="%s">Blog / sample_app</option>' % self.app_config_1.pk,
             )
         except AssertionError:
-            self.assertRegexpMatches(
+            self.assertRegex(
                 force_text(response.content),
                 r'value="%s"[^>]*selected[^>]*>Blog / sample_app</option>' % self.app_config_1.pk,
             )
@@ -442,8 +442,8 @@ class AdminTest(BaseTest):
             )
             response.render()
             self.assertContains(response, 'id="id_sites"')
-            self.assertRegexpMatches(force_text(response.content), r"selected[^>]*>Blog image")
-            self.assertRegexpMatches(force_text(response.content), r"selected[^>]*>Blog thumbnail")
+            self.assertRegex(force_text(response.content), r"selected[^>]*>Blog image")
+            self.assertRegex(force_text(response.content), r"selected[^>]*>Blog thumbnail")
 
             # Add view select categories on the given appconfig, even when reloading the form
             request.POST = QueryDict("app_config=%s" % self.app_config_1.pk)
@@ -612,14 +612,14 @@ class AdminTest(BaseTest):
                 "app_config": self.app_config_1.pk,
             }
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
-            self.assertEquals(post.sites.count(), 0)
+            self.assertEqual(post.sites.count(), 0)
             msg_mid = MessageMiddleware()
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.change_view(request, str(post.pk))
             self.assertEqual(response.status_code, 302)
             post = self.reload_model(post)
-            self.assertEquals(post.sites.count(), 2)
+            self.assertEqual(post.sites.count(), 2)
         post.sites.clear()
         post = self.reload_model(post)
 
@@ -636,7 +636,7 @@ class AdminTest(BaseTest):
                 "app_config": self.app_config_1.pk,
             }
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
-            self.assertEquals(post.sites.count(), 2)
+            self.assertEqual(post.sites.count(), 2)
             msg_mid = MessageMiddleware()
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
@@ -644,7 +644,7 @@ class AdminTest(BaseTest):
             response = post_admin.change_view(request, str(post.pk))
             self.assertEqual(response.status_code, 302)
             post = self.reload_model(post)
-            self.assertEquals(post.sites.count(), 3)
+            self.assertEqual(post.sites.count(), 3)
         self.user.sites.clear()
         post.sites.clear()
 
@@ -658,7 +658,7 @@ class AdminTest(BaseTest):
         with self.login_user_context(self.user):
             data = {"sites": [self.site_3.pk], "title": "some title", "app_config": self.app_config_1.pk}
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
-            self.assertEquals(post.sites.count(), 3)
+            self.assertEqual(post.sites.count(), 3)
             msg_mid = MessageMiddleware()
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
@@ -666,7 +666,7 @@ class AdminTest(BaseTest):
             response = post_admin.change_view(request, str(post.pk))
             self.assertEqual(response.status_code, 302)
             post = self.reload_model(post)
-            self.assertEquals(post.sites.count(), 2)
+            self.assertEqual(post.sites.count(), 2)
         self.user.sites.clear()
         post.sites.clear()
 
@@ -680,7 +680,7 @@ class AdminTest(BaseTest):
         with self.login_user_context(self.user):
             data = {"sites": [], "title": "some title", "app_config": self.app_config_1.pk}
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
-            self.assertEquals(post.sites.count(), 2)
+            self.assertEqual(post.sites.count(), 2)
             msg_mid = MessageMiddleware()
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
@@ -688,7 +688,7 @@ class AdminTest(BaseTest):
             response = post_admin.change_view(request, str(post.pk))
             self.assertEqual(response.status_code, 302)
             post = self.reload_model(post)
-            self.assertEquals(post.sites.count(), 1)
+            self.assertEqual(post.sites.count(), 1)
         self.user.sites.clear()
         post.sites.clear()
         self.reload_model(post)
