@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.core.cache import cache
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.utils.html import strip_tags
 from django.utils.safestring import mark_safe
@@ -106,13 +106,13 @@ class FBInstantFeed(Rss201rev2Feed):
 
         handler.startElement("description", {})
         handler._write(
-            "<![CDATA[{}]]>".format(unescape(normalize_newlines(force_text(item["abstract"])).replace("\n", " ")))
+            "<![CDATA[{}]]>".format(unescape(normalize_newlines(force_str(item["abstract"])).replace("\n", " ")))
         )
         handler.endElement("description")
         handler.startElement("content:encoded", {})
         handler._write("<![CDATA[")
         handler._write("<!doctype html>")
-        handler._write(unescape(force_text(item["content"])))
+        handler._write(unescape(force_str(item["content"])))
         handler._write("]]>")
         handler.endElement("content:encoded")
 

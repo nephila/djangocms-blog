@@ -15,7 +15,7 @@ from django.contrib.sites.models import Site
 from django.http import QueryDict
 from django.test import override_settings
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
@@ -71,18 +71,18 @@ class AdminTest(BaseTest):
 
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegex(force_text(response.content), r"[^>]*>Custom image")
-        self.assertRegex(force_text(response.content), r"[^>]*>Custom thumbnail")
-        self.assertRegex(force_text(response.content), r"[^>]*>Blog image")
-        self.assertRegex(force_text(response.content), r"[^>]*>Blog thumbnail")
+        self.assertRegex(force_str(response.content), r"[^>]*>Custom image")
+        self.assertRegex(force_str(response.content), r"[^>]*>Custom thumbnail")
+        self.assertRegex(force_str(response.content), r"[^>]*>Blog image")
+        self.assertRegex(force_str(response.content), r"[^>]*>Blog thumbnail")
 
         post.main_image_full = custom_full
         post.main_image_thumbnail = custom_thumbnail
         post.save()
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegex(force_text(response.content), r"selected[^>]*>Custom image")
-        self.assertRegex(force_text(response.content), r"selected[^>]*>Custom thumbnail")
+        self.assertRegex(force_str(response.content), r"selected[^>]*>Custom image")
+        self.assertRegex(force_str(response.content), r"selected[^>]*>Custom thumbnail")
 
         self.app_config_1.app_data.config.default_image_full = self.default_full
         self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
@@ -93,8 +93,8 @@ class AdminTest(BaseTest):
 
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegex(force_text(response.content), r"selected[^>]*>Blog image")
-        self.assertRegex(force_text(response.content), r"selected[^>]*>Blog thumbnail")
+        self.assertRegex(force_str(response.content), r"selected[^>]*>Blog image")
+        self.assertRegex(force_str(response.content), r"selected[^>]*>Blog thumbnail")
 
     def test_admin_category_required(self):
         self.get_pages()
@@ -142,21 +142,21 @@ class AdminTest(BaseTest):
         response = post_admin.change_view(request, str(post.pk))
         response.render()
         try:
-            self.assertRegex(force_text(response.content), r'name="slug"[^>]*value="first-post"')
+            self.assertRegex(force_str(response.content), r'name="slug"[^>]*value="first-post"')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'value="first-post"[^>]*name="slug"')
+            self.assertRegex(force_str(response.content), r'value="first-post"[^>]*name="slug"')
         try:
-            self.assertRegex(force_text(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
+            self.assertRegex(force_str(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
+            self.assertRegex(force_str(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
         try:
             self.assertRegex(
-                force_text(response.content),
+                force_str(response.content),
                 r'selected[^>]*value="%s">Blog / sample_app</option>' % self.app_config_1.pk,
             )
         except AssertionError:
             self.assertRegex(
-                force_text(response.content),
+                force_str(response.content),
                 r'value="%s"[^>]*selected[^>]*>Blog / sample_app</option>' % self.app_config_1.pk,
             )
 
@@ -239,24 +239,24 @@ class AdminTest(BaseTest):
         response.render()
         self.assertNotContains(response, "djangocms_blog.cms_appconfig.BlogConfig")
         try:
-            self.assertRegex(force_text(response.content), r'maxlength="100"[^>]*id="id_namespace"')
+            self.assertRegex(force_str(response.content), r'maxlength="100"[^>]*id="id_namespace"')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'id="id_namespace"[^>]*maxlength="100"')
+            self.assertRegex(force_str(response.content), r'id="id_namespace"[^>]*maxlength="100"')
 
         # Changeview is 'normal', with a few preselected items
         response = post_admin.change_view(request, str(self.app_config_1.pk))
         self.assertContains(response, "djangocms_blog.cms_appconfig.BlogConfig")
         try:
-            self.assertRegex(force_text(response.content), r'selected[^>]*value="Article">Article')
+            self.assertRegex(force_str(response.content), r'selected[^>]*value="Article">Article')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'value="Article"[^>]*selected[^>]*>Article')
+            self.assertRegex(force_str(response.content), r'value="Article"[^>]*selected[^>]*>Article')
         # check that all the form fields are visible in the admin
         for fieldname in BlogConfigForm.base_fields:
             self.assertContains(response, 'id="id_config-%s"' % fieldname)
         try:
-            self.assertRegex(force_text(response.content), r'maxlength="200"[^>]*id="id_config-og_app_id"')
+            self.assertRegex(force_str(response.content), r'maxlength="200"[^>]*id="id_config-og_app_id"')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'id="id_config-og_app_id"[^>]*maxlength="200"')
+            self.assertRegex(force_str(response.content), r'id="id_config-og_app_id"[^>]*maxlength="200"')
 
         self.assertContains(response, "sample_app")
 
@@ -292,21 +292,21 @@ class AdminTest(BaseTest):
         response = category_admin.change_view(request, str(self.category_1.pk))
         response.render()
         try:
-            self.assertRegex(force_text(response.content), r'id="id_name"[^>]*value="category 1"')
+            self.assertRegex(force_str(response.content), r'id="id_name"[^>]*value="category 1"')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'value="category 1"[^>]*id="id_name"')
+            self.assertRegex(force_str(response.content), r'value="category 1"[^>]*id="id_name"')
         try:
-            self.assertRegex(force_text(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
+            self.assertRegex(force_str(response.content), r'id="id_meta_description"[^>]*maxlength="320"')
         except AssertionError:
-            self.assertRegex(force_text(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
+            self.assertRegex(force_str(response.content), r'maxlength="320"[^>]*id="id_meta_description"')
         try:
             self.assertRegex(
-                force_text(response.content),
+                force_str(response.content),
                 r'selected[^>]*value="%s">Blog / sample_app</option>' % self.app_config_1.pk,
             )
         except AssertionError:
             self.assertRegex(
-                force_text(response.content),
+                force_str(response.content),
                 r'value="%s"[^>]*selected[^>]*>Blog / sample_app</option>' % self.app_config_1.pk,
             )
 
@@ -444,8 +444,8 @@ class AdminTest(BaseTest):
             )
             response.render()
             self.assertContains(response, 'id="id_sites"')
-            self.assertRegex(force_text(response.content), r"selected[^>]*>Blog image")
-            self.assertRegex(force_text(response.content), r"selected[^>]*>Blog thumbnail")
+            self.assertRegex(force_str(response.content), r"selected[^>]*>Blog image")
+            self.assertRegex(force_str(response.content), r"selected[^>]*>Blog thumbnail")
 
             # Add view select categories on the given appconfig, even when reloading the form
             request.POST = QueryDict("app_config=%s" % self.app_config_1.pk)
@@ -1187,25 +1187,25 @@ class ModelsTest2(BaseTest):
         post1.main_image = None
         post1.save()
 
-        self.assertEqual(force_text(post1), post1.title)
+        self.assertEqual(force_str(post1), post1.title)
         self.assertEqual(post1.get_description(), strip_tags(post1.abstract))
         self.assertEqual(post1.get_image_full_url(), "")
         self.assertEqual(post1.get_author(), self.user)
 
-        self.assertEqual(force_text(post1.categories.first()), "category 1")
+        self.assertEqual(force_str(post1.categories.first()), "category 1")
 
         plugin = add_plugin(post1.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
-        self.assertEqual(force_text(plugin.__str__()), "5 latest articles by author")
+        self.assertEqual(force_str(plugin.__str__()), "5 latest articles by author")
 
         plugin = add_plugin(post1.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
-        self.assertEqual(force_text(plugin.__str__()), "5 latest articles by tag")
+        self.assertEqual(force_str(plugin.__str__()), "5 latest articles by tag")
 
         plugin = add_plugin(post1.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
-        self.assertEqual(force_text(plugin.__str__()), "generic blog plugin")
+        self.assertEqual(force_str(plugin.__str__()), "generic blog plugin")
 
         no_translation_post = Post()
         no_translation_default_title = "Post (no translation)"
-        self.assertEqual(force_text(no_translation_post), no_translation_default_title)
+        self.assertEqual(force_str(no_translation_post), no_translation_default_title)
 
 
 class KnockerTest(BaseTest):
