@@ -1,6 +1,6 @@
 from aldryn_search.helpers import get_plugin_index_data
 from aldryn_search.utils import get_index_base, strip_tags
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from haystack import indexes
 from parler.utils.context import switch_language
 
@@ -57,9 +57,9 @@ class PostIndex(get_index_base()):
                 text_bits.append(" ".join(keywords))
                 self.prepared_data["keywords"] = ",".join(keywords)
             for category in post.categories.all():
-                text_bits.append(force_text(category.safe_translation_getter("name")))
+                text_bits.append(force_str(category.safe_translation_getter("name")))
             for tag in post.tags.all():
-                text_bits.append(force_text(tag.name))
+                text_bits.append(force_str(tag.name))
 
             if get_setting("USE_PLACEHOLDER"):
                 plugins = post.content.cmsplugin_set.filter(language=language)
