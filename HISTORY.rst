@@ -4,6 +4,12 @@
 History
 =======
 
+**********
+Unreleased
+**********
+
+* Add BLOG_USE_FALLBACK_LANGUAGE_IN_URL setting
+
 *******************
 1.1.1 (2020-05-15)
 *******************
