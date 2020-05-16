@@ -20,6 +20,8 @@ from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from menus.menu_pool import menu_pool
+from parler.tests.utils import override_parler_settings
+from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override
 from taggit.models import Tag
 
@@ -977,6 +979,32 @@ class ModelsTest(BaseTest):
         with override('en'):
             self.assertEqual(post.get_current_language(), 'it')
             self.assertEqual(post.get_absolute_url(), post.get_absolute_url('en'))
+
+    def test_url_language_use_fallback(self):
+        self.get_pages()
+        post = self._get_post(self._post_data[0]['en'])
+
+        PARLER_FALLBACK = {
+            1: (
+                {'code': 'en'},
+                {'code': 'it'},
+            ),
+            'default': {
+                'fallbacks': ['fr', 'en'],
+                'hide_untranslated': False,
+            }
+        }
+        PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)
+
+        with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
+            with override('it'):
+                post.set_current_language('it')
+                self.assertEqual(post.get_absolute_url(), post.get_absolute_url('it'))
+
+            with override_settings(BLOG_USE_FALLBACK_LANGUAGE_IN_URL=True):
+                with override('it'):
+                    post.set_current_language('it')
+                    self.assertEqual(post.get_absolute_url(), post.get_absolute_url('en'))
 
     def test_manager(self):
         self.get_pages()

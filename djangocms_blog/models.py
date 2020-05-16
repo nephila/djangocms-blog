@@ -51,6 +51,23 @@ except ImportError:
         pass
 
 
+def _get_language(instance, language):
+    available_languages = instance.get_available_languages()
+    if language and language in available_languages:
+        return language
+    language = get_language()
+    if language and language in available_languages:
+        return language
+    language = instance.get_current_language()
+    if language and language in available_languages:
+        return language
+    if get_setting('USE_FALLBACK_LANGUAGE_IN_URL'):
+        for fallback_language in instance.get_fallback_languages():
+            if fallback_language in available_languages:
+                return fallback_language
+    return language
+
+
 class BlogMetaMixin(ModelMeta):
 
     def get_meta_attribute(self, param):
@@ -142,10 +159,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         return self.linked_posts.published(current_site=False).count()
 
     def get_absolute_url(self, lang=None):
-        if not lang or lang not in self.get_available_languages():
-            lang = get_language()
-        if not lang or lang not in self.get_available_languages():
-            lang = self.get_current_language()
+        lang = _get_language(self, lang)
         if self.has_translation(lang):
             slug = self.safe_translation_getter('slug', language_code=lang)
             return reverse(
@@ -328,10 +342,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         super(Post, self).save_translation(translation, *args, **kwargs)
 
     def get_absolute_url(self, lang=None):
-        if not lang or lang not in self.get_available_languages():
-            lang = get_language()
-        if not lang or lang not in self.get_available_languages():
-            lang = self.get_current_language()
+        lang = _get_language(self, lang)
         with switch_language(self, lang):
             category = self.categories.first()
             kwargs = {}
