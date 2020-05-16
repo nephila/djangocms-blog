@@ -208,4 +208,3 @@ placeholder allows to extract the image from the field and display along with
 the generated previews by seamlessly using ``media_images``.
 
 The rendering of the full content is of course fully supported.
-

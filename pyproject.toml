@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=40.6.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 119
+target-version = ["py27"]
+include = 'djangocms_blog/*py'
+
+[tool.towncrier]
+package = "djangocms_blog"
+directory = "changes"
+filename = "HISTORY.rst"
+title_format = "{version} ({project_date})"

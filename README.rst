@@ -2,7 +2,7 @@
 djangocms-blog
 ==============
 
-|Gitter| |PyPiVersion| |PyVersion| |Status| |TestCoverage| |CodeClimate| |License|
+|Gitter| |PyPiVersion| |PyVersion| |GAStatus| |TestCoverage| |CodeClimate| |License|
 
 django CMS blog application - Support for multilingual posts, placeholders, social network meta tags and configurable apphooks.
 
@@ -68,9 +68,9 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
     :target: https://pypi.python.org/pypi/djangocms-blog
     :alt: Python versions
 
-.. |Status| image:: https://img.shields.io/travis/nephila/djangocms-blog.svg?style=flat-square
-    :target: https://travis-ci.org/nephila/djangocms-blog
-    :alt: Latest Travis CI build status
+.. |GAStatus| image:: https://github.com/nephila/djangocms-blog/workflows/Linting%20-%20Tests/badge.svg
+    :target: https://github.com/nephila/django-app-helper
+    :alt: Latest CI build status
 
 .. |TestCoverage| image:: https://img.shields.io/coveralls/nephila/djangocms-blog/master.svg?style=flat-square
     :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master
