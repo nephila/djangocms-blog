@@ -12,7 +12,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
 from django.utils.translation import get_language, gettext, gettext_lazy as _
@@ -174,7 +174,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.name:
-                self.slug = slugify(force_text(self.name))
+                self.slug = slugify(force_str(self.name))
         self.save_translations()
 
     def get_title(self):
@@ -533,7 +533,7 @@ class LatestPostsPlugin(BasePostPlugin):
     )
 
     def __str__(self):
-        return force_text(_("%s latest articles by tag") % self.latest_posts)
+        return force_str(_("%s latest articles by tag") % self.latest_posts)
 
     def copy_relations(self, oldinstance):
         for tag in oldinstance.tags.all():
@@ -563,7 +563,7 @@ class AuthorEntriesPlugin(BasePostPlugin):
     )
 
     def __str__(self):
-        return force_text(_("%s latest articles by author") % self.latest_posts)
+        return force_str(_("%s latest articles by author") % self.latest_posts)
 
     def copy_relations(self, oldinstance):
         self.authors.set(oldinstance.authors.all())
@@ -588,7 +588,7 @@ class GenericBlogPlugin(BasePostPlugin):
         abstract = False
 
     def __str__(self):
-        return force_text(_("generic blog plugin"))
+        return force_str(_("generic blog plugin"))
 
 
 @receiver(pre_delete, sender=Post)
