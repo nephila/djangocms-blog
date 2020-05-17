@@ -76,7 +76,8 @@ jobs:
       env:
         TOX_ENV: ${{ format('py{0}-django{1}-cms{2}', matrix.python-version, matrix.django, matrix.cms) }}
         COMMAND: coverage run
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_SERVICE_NAME: github
       run: |
         tox -e$TOX_ENV
         .tox/$TOX_ENV/bin/coverage xml
