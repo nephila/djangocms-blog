@@ -40,9 +40,20 @@ def towncrier_check(c):  # NOQA
     """ Check towncrier files. """
     output = io.StringIO()
     c.run("git branch -a --contains HEAD", out_stream=output)
-    branches = [branch.replace("remotes/origin/", "") for branch in output.getvalue().strip("*").split()]
-    towncrier_file = None
+    skipped_branch_prefix = ["pull/", "develop", "master", "HEAD"]
+    # cleanup branch names by removing PR-only names in local, remote and disconnected branches to ensure the current
+    # (i.e. user defined) branch name is used
+    branches = list(
+        filter(
+            lambda x: x and all(not x.startswith(part) for part in skipped_branch_prefix),
+            (branch.replace("remotes/", "").strip("* (") for branch in output.getvalue().split("\n")),
+        )
+    )
+    if not branches:
+        # if no branch name matches, we are in one of the excluded branches above, so we just exit
+        return
     branch = branches[0]
+    towncrier_file = None
     for branch in branches:
         if any(branch.startswith(prefix) for prefix in SPECIAL_BRANCHES):
             sys.exit(0)
