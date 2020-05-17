@@ -4,8 +4,6 @@ from cms.api import create_page
 from django.test import Client
 from django.utils.encoding import force_str
 
-from djangocms_blog.cms_appconfig import BlogConfig
-
 from .base import BaseTest
 from .test_utils.models import CustomUser as User
 
@@ -49,19 +47,6 @@ class AdminTest(BaseTest):
         """
         Adjust advanced settings of a page with blog config create.
         """
-        self.assertEqual(BlogConfig.objects.count(), 2)
-
-        page = create_page("Blog", "blog.html", "en", published=True)
-        self.add_blog_config(page, "Blog", 1)
-        response = self.add_blog_config(page, "Blog", 1)
-        content = force_str(response.content)
-        self.assertNotRegex(content, r"Please correct the error below.")
-        self.assertEqual(BlogConfig.objects.count(), 2)
-
-        response = self.client.get("/en/blog/")
-        content = force_str(response.content)
-        self.assertRegex(content, r"No article found.")
-
         page = create_page("Blog2", "blog.html", "en", published=True)
         response = self.add_blog_config(page, "Blog2", "")
         content = force_str(response.content)
