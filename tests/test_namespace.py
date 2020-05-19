@@ -5,7 +5,6 @@ from django.test import Client
 from django.utils.encoding import force_str
 
 from .base import BaseTest
-from .test_utils.models import CustomUser as User
 
 try:
     from knocker.signals import pause_knocks
@@ -17,12 +16,9 @@ except ImportError:
 
 
 class AdminTest(BaseTest):
-    def setUp(self):
-        User.objects.create_superuser("test_admin", "admin@example.com", "Password123")
-
     def add_blog_config(self, page, namespace, id):
         self.client = Client()
-        self.client.login(username="test_admin", password="Password123")
+        self.client.login(username=self._admin_user_username, password=self._admin_user_password)
         response = self.client.post(
             "/en/admin/cms/page/{}/advanced-settings/?language=en".format(page.pk),
             {

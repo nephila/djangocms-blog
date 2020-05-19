@@ -51,7 +51,7 @@ class BlogCategoryMenu(CMSAttachMenu):
                     self._config[self.instance.application_namespace] = BlogConfig.objects.get(
                         namespace=self.instance.application_namespace
                     )
-                except Exception as e:
+                except BlogConfig.DoesNotExist as e:
                     logger.exception(e)
                     return []
             config = self._config[self.instance.application_namespace]
