@@ -1,3 +1,5 @@
+import logging
+
 from cms.apphook_pool import apphook_pool
 from cms.menu_bases import CMSAttachMenu
 from django.contrib.sites.shortcuts import get_current_site
@@ -10,6 +12,8 @@ from menus.menu_pool import menu_pool
 from .cms_appconfig import BlogConfig
 from .models import BlogCategory, Post
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
+
+logger = logging.getLogger(__name__)
 
 
 class BlogCategoryMenu(CMSAttachMenu):
@@ -43,9 +47,13 @@ class BlogCategoryMenu(CMSAttachMenu):
         config = False
         if self.instance:
             if not self._config.get(self.instance.application_namespace, False):
-                self._config[self.instance.application_namespace] = BlogConfig.objects.get(
-                    namespace=self.instance.application_namespace
-                )
+                try:
+                    self._config[self.instance.application_namespace] = BlogConfig.objects.get(
+                        namespace=self.instance.application_namespace
+                    )
+                except BlogConfig.DoesNotExist as e:
+                    logger.exception(e)
+                    return []
             config = self._config[self.instance.application_namespace]
             if not getattr(request, "toolbar", False) or not request.toolbar.edit_mode_active:
                 if self.instance == self.instance.get_draft_object():
