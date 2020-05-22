@@ -39,15 +39,18 @@ def format(c):  # NOQA
 def towncrier_check(c):  # NOQA
     """ Check towncrier files. """
     output = io.StringIO()
-    c.run("git branch -a --contains HEAD", out_stream=output)
+    c.run("git rev-parse --abbrev-ref HEAD", out_stream=output)
     print(output.getvalue())
-    skipped_branch_prefix = ["pull/", "develop", "master", "HEAD"]
+    skipped_branch_prefix = ["pull/", "develop", "master", "HEAD", "test"]
     # cleanup branch names by removing PR-only names in local, remote and disconnected branches to ensure the current
     # (i.e. user defined) branch name is used
     branches = list(
         filter(
             lambda x: x and all(not x.startswith(part) for part in skipped_branch_prefix),
-            (branch.replace("remotes/", "").strip("* (") for branch in output.getvalue().split("\n")),
+            (
+                branch.replace("remotes/", "").replace("origin/", "").strip("* (")
+                for branch in output.getvalue().split("\n")
+            ),
         )
     )
     if not branches:
