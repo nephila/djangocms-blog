@@ -1,6 +1,6 @@
 from cms.toolbar.items import ButtonList, ModalItem
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
 
@@ -36,7 +36,7 @@ class ToolbarTest(BaseTest):
         # Publish button only appears if current post is unpublished
         right = toolbar.get_right_items()
         buttons = sum([item.buttons for item in right if isinstance(item, ButtonList)], [])
-        self.assertTrue([button for button in buttons if force_text(button.name) == "Publish Blog now"])
+        self.assertTrue([button for button in buttons if force_str(button.name) == "Publish Blog now"])
 
         # Publish button does not appears if current post is published
         posts[0].publish = True
@@ -46,7 +46,7 @@ class ToolbarTest(BaseTest):
         toolbar.post_template_populate()
         right = toolbar.get_right_items()
         buttons = sum([item.buttons for item in right if isinstance(item, ButtonList)], [])
-        self.assertFalse([button for button in buttons if force_text(button.name) == "Publish Blog now"])
+        self.assertFalse([button for button in buttons if force_str(button.name) == "Publish Blog now"])
 
         # Publish button does not appears if other posts but the current one are unpublished
         posts[1].publish = True
@@ -56,4 +56,4 @@ class ToolbarTest(BaseTest):
         toolbar.post_template_populate()
         right = toolbar.get_right_items()
         buttons = sum([item.buttons for item in right if isinstance(item, ButtonList)], [])
-        self.assertFalse([button for button in buttons if force_text(button.name) == "Publish Blog now"])
+        self.assertFalse([button for button in buttons if force_str(button.name) == "Publish Blog now"])
