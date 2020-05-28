@@ -21,7 +21,6 @@ HELPER_SETTINGS = dict(
         "taggit",
         "taggit_autosuggest",
         "aldryn_apphooks_config",
-        "aldryn_search",
         "djangocms_video",
         "sortedm2m",
         "tests.media_app",
@@ -77,6 +76,14 @@ try:
     HELPER_SETTINGS["CHANNEL_LAYERS"] = {
         "default": {"BACKEND": "channels_redis.core.RedisChannelLayer", "CONFIG": {"hosts": [("localhost", 6379)]}},
     }
+except ImportError:
+    pass
+
+
+try:
+    import aldryn_search  # pragma: no cover # NOQA
+
+    HELPER_SETTINGS["INSTALLED_APPS"].append("aldryn_search")
 except ImportError:
     pass
 os.environ["AUTH_USER_MODEL"] = "tests.test_utils.CustomUser"

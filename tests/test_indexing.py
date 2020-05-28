@@ -1,3 +1,5 @@
+from unittest import skipIf
+
 from cms.api import add_plugin
 from haystack.constants import DEFAULT_ALIAS
 from haystack.query import SearchQuerySet
@@ -6,6 +8,11 @@ from djangocms_blog.models import Post
 
 from .base import BaseTest
 
+try:
+    import aldryn_search
+except ImportError:
+    aldryn_search = None
+
 
 class BlogIndexingTests(BaseTest):
     sample_text = "First post first line This is the description keyword1  " "keyword2 category 1 a tag test body"
@@ -13,6 +20,7 @@ class BlogIndexingTests(BaseTest):
     def setUp(self):
         self.get_pages()
 
+    @skipIf(aldryn_search is None, "aldryn-search not installed")
     def test_blog_post_is_indexed_using_prepare(self):
         """This tests the indexing path way used by update_index mgmt command"""
         post = self._get_post(self._post_data[0]["en"])
