@@ -51,6 +51,10 @@ jobs:
         exclude:
           - python-version: 3.5
             django: 30
+        include:
+          - python-version: 3.8
+            django: 22
+            cms: cms-no-search-37
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
