@@ -6,7 +6,7 @@ pep517==0.8.2
 invoke==1.4.1
 tox>=2.0
 wheel==0.34.2
-pysolr
+pysolr==3.9.0
 aldryn-search
 django-taggit-helpers
 django-app-helper>=2.0.0a2
