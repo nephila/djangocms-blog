@@ -2,7 +2,7 @@
 coverage==5.1
 coveralls>=2.0
 wheel==0.34.2
-pep517
+pep517==0.8.2
 invoke
 tox>=2.0
 wheel==0.34.2
