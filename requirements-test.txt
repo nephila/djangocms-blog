@@ -3,7 +3,7 @@ coverage==5.1
 coveralls>=2.0
 wheel==0.34.2
 pep517==0.8.2
-invoke
+invoke==1.4.1
 tox>=2.0
 wheel==0.34.2
 pysolr
