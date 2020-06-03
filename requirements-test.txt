@@ -12,7 +12,7 @@ django-taggit-helpers==0.1.4
 django-app-helper>=2.0.0a2
 sphinx-autobuild==0.7.1
 djangocms-video==2.2.0
-pytest
+pytest==5.4.3
 pytest-django
 pytest-asyncio
 bump2version
