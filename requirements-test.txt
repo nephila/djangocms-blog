@@ -10,7 +10,7 @@ pysolr==3.9.0
 aldryn-search==1.1.0
 django-taggit-helpers==0.1.4
 django-app-helper>=2.0.0a2
-sphinx-autobuild
+sphinx-autobuild==0.7.1
 djangocms-video
 pytest
 pytest-django
