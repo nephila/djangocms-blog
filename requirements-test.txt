@@ -14,6 +14,6 @@ sphinx-autobuild==0.7.1
 djangocms-video==2.2.0
 pytest==5.4.3
 pytest-django==3.9.0
-pytest-asyncio
+pytest-asyncio==0.12.0
 bump2version
 https://github.com/hawkowl/towncrier/archive/master.zip
