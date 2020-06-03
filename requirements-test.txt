@@ -8,7 +8,7 @@ tox>=2.0
 wheel==0.34.2
 pysolr==3.9.0
 aldryn-search==1.1.0
-django-taggit-helpers
+django-taggit-helpers==0.1.4
 django-app-helper>=2.0.0a2
 sphinx-autobuild
 djangocms-video
