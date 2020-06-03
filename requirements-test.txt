@@ -1,5 +1,5 @@
 -r requirements.txt
-coverage
+coverage==5.1
 coveralls>=2.0
 wheel
 pep517
