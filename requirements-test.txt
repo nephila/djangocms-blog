@@ -11,7 +11,7 @@ aldryn-search==1.1.0
 django-taggit-helpers==0.1.4
 django-app-helper>=2.0.0a2
 sphinx-autobuild==0.7.1
-djangocms-video
+djangocms-video==2.2.0
 pytest
 pytest-django
 pytest-asyncio
