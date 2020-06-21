@@ -1,0 +1,1 @@
+Added blog post extensions

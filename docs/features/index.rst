@@ -19,3 +19,4 @@ Features
    channels
    wizard
    cmsplugin_filer
+   extensions
