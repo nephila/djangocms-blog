@@ -7,7 +7,6 @@ invoke
 tox>=2.0
 wheel
 pysolr
-aldryn-search
 django-taggit-helpers
 django-app-helper>=2.0.0a2
 sphinx-autobuild

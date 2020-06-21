@@ -1,0 +1,1 @@
+Skip haystack index creation if aldryn-search is not installed but haystack is

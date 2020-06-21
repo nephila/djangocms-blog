@@ -49,6 +49,8 @@ If you want to enable haystack support, in addition to the above:
 * add ``aldryn_search`` to ``INSTALLED_APPS``
 * configure haystack according to `aldryn-search docs <https://github.com/aldryn/aldryn-search#usage>`_
   and `haystack docs <http://django-haystack.readthedocs.io/en/stable/>`_.
+* if not using ``aldryn_search``, you can define your own ``search_indexes.py`` by skipping ``aldryn_search`` installation and writing
+  your index for blog posts by following haystack documentation.
 
 To enable taggit filtering support in the admin install djangocms-blog with:
 
