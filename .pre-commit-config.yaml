@@ -1,6 +1,6 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-exclude: '(.idea|node_modules|.tox)'
+exclude: "(.idea|node_modules|.tox)"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
@@ -17,7 +17,7 @@ repos:
         args:
           - --remove
   - repo: https://github.com/timothycrosley/isort
-    rev: '4.3.21'
+    rev: "4.3.21"
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
@@ -25,9 +25,27 @@ repos:
     hooks:
       - id: black
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.0a2
+    rev: 3.8.0
     hooks:
       - id: flake8
+        additional_dependencies:
+          - flake8-broken-line
+          - flake8-bugbear
+          - flake8-builtins
+          - flake8-coding
+          - flake8-commas
+          - flake8-comprehensions
+          - flake8-eradicate
+          - flake8-quotes
+          - flake8-tidy-imports
+          - pep8-naming
+  - repo: https://github.com/econchick/interrogate
+    rev: 1.2.0
+    hooks:
+      - id: interrogate
+        args:
+          - "-cpyproject.toml"
+          - "--quiet"
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.2.1
     hooks:
