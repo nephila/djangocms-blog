@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             model_name="authorentriesplugin",
             name="template_folder",
             field=models.CharField(
-                default="plugins",
+                default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
                 verbose_name="Plugin template",
                 max_length=200,
                 help_text="Select plugin template to load for this instance",
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             model_name="genericblogplugin",
             name="template_folder",
             field=models.CharField(
-                default="plugins",
+                default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
                 verbose_name="Plugin template",
                 max_length=200,
                 help_text="Select plugin template to load for this instance",
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             model_name="latestpostsplugin",
             name="template_folder",
             field=models.CharField(
-                default="plugins",
+                default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
                 verbose_name="Plugin template",
                 max_length=200,
                 help_text="Select plugin template to load for this instance",
