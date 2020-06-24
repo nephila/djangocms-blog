@@ -18,16 +18,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='authorentriesplugin',
             name='template_folder',
-            field=models.CharField(default='plugins', verbose_name='Plugin template', max_length=200, help_text='Select plugin template to load for this instance', choices=BLOG_PLUGIN_TEMPLATE_FOLDERS),
+            field=models.CharField(default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0], verbose_name='Plugin template', max_length=200, help_text='Select plugin template to load for this instance', choices=BLOG_PLUGIN_TEMPLATE_FOLDERS),
         ),
         migrations.AddField(
             model_name='genericblogplugin',
             name='template_folder',
-            field=models.CharField(default='plugins', verbose_name='Plugin template', max_length=200, help_text='Select plugin template to load for this instance', choices=BLOG_PLUGIN_TEMPLATE_FOLDERS),
+            field=models.CharField(default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0], verbose_name='Plugin template', max_length=200, help_text='Select plugin template to load for this instance', choices=BLOG_PLUGIN_TEMPLATE_FOLDERS),
         ),
         migrations.AddField(
             model_name='latestpostsplugin',
             name='template_folder',
-            field=models.CharField(default='plugins', verbose_name='Plugin template', max_length=200, help_text='Select plugin template to load for this instance', choices=BLOG_PLUGIN_TEMPLATE_FOLDERS),
+            field=models.CharField(default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0], verbose_name='Plugin template', max_length=200, help_text='Select plugin template to load for this instance', choices=BLOG_PLUGIN_TEMPLATE_FOLDERS),
         ),
     ]
