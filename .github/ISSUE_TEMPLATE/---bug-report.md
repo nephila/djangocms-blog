@@ -17,7 +17,7 @@ Please fill in each section to help maintainers to be helpful and quick to respo
 Describe issue in general terms.
 -->
 
-## Steps to reproduce
+## Steps to reproduce
 
 <!--
 Provide clear steps to reproduce the issue.
