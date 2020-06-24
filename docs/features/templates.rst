@@ -18,17 +18,27 @@ will ignore the bundled one.
 Templates set
 *************
 
-By using **Apphook configuration** you can define a different templates set.
-To use this feature provide a directory name in **Template prefix** field in
-the **Apphook configuration** admin (in *Layout* section): it will be the
-root of your custom templates set.
+You can provide different set of templates for the whole ``djangocms-blog`` application by configuring
+the ``Blog configs`` accordingly.
+
+This require you to customize **all** the templates shipped in ``djangocms_blog/templates/djangocms_blog``, the easiest
+way being copy the **content** of ``djangocms_blog/templates/djangocms_blog`` in another folder in the ``templates``
+folder in our project
+(e.g., something like ``cp -a djangocms_blog/templates/djangocms_blog/* /path/my/project/templates/my_blog``).
+
+To use the new templates set, go to the ``Blog configs`` admin
+(something like ``http://localhost:8000/en/admin/djangocms_blog/blogconfig/1/change``) and enter a directory name in
+**Template prefix** field in the **Apphook configuration** admin (in *Layout* section): it will be the
+root of your custom templates set; following the example above you should enter ``my_blog`` as directory name.
 
 ****************
 Plugin Templates
 ****************
 
-Plugin templates live in the ``plugins`` folder of the folder specified by the **Template prefix**,
-or by default ``djangocms_blog``.
+You can have different layouts for each plugin (i.e.: ``Latest Blog Articles``, ``Author Blog Articles List`` etc), by
+having multiple templates for each plugin.
+Default plugin templates are located in the ``plugins`` folder of the folder specified by the **Template prefix**;
+by default they are located in ``templates/djangocms_blog``.
 
 By defining the setting ``BLOG_PLUGIN_TEMPLATE_FOLDERS`` you can allow multiple sets of
 plugin templates allowing for different views per plugin instance. You could, for example,
