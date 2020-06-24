@@ -18,18 +18,18 @@ will ignore the bundled one.
 Templates set
 *************
 
-You can provide different set of templates for the whole ``djangocms-blog`` application by configuring
+You can provide a different set of templates for the whole ``djangocms-blog`` application by configuring
 the ``Blog configs`` accordingly.
 
-This require you to customize **all** the templates shipped in ``djangocms_blog/templates/djangocms_blog``, the easiest
-way being copy the **content** of ``djangocms_blog/templates/djangocms_blog`` in another folder in the ``templates``
+This would require you to customize **all** the templates shipped in ``djangocms_blog/templates/djangocms_blog``; the easiest
+way would be to copy the **content** of ``djangocms_blog/templates/djangocms_blog`` into another folder in the ``templates``
 folder in our project
 (e.g., something like ``cp -a djangocms_blog/templates/djangocms_blog/* /path/my/project/templates/my_blog``).
 
 To use the new templates set, go to the ``Blog configs`` admin
-(something like ``http://localhost:8000/en/admin/djangocms_blog/blogconfig/1/change``) and enter a directory name in
-**Template prefix** field in the **Apphook configuration** admin (in *Layout* section): it will be the
-root of your custom templates set; following the example above you should enter ``my_blog`` as directory name.
+(something like ``http://localhost:8000/en/admin/djangocms_blog/blogconfig/1/change``) and enter a directory name in the
+**Template prefix** field in the **Apphook configuration** admin (in the *Layout* section): it will be the
+root of your custom templates set; following the example above, you should enter ``my_blog`` as directory name.
 
 ****************
 Plugin Templates
