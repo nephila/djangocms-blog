@@ -345,7 +345,7 @@ class PluginTest10(BaseTest):
             response = page_admin.add_plugin(request)
             template_folder_field = response.context_data["adminform"].form.fields["template_folder"]
             self.assertEqual(len(template_folder_field.choices), 2)
-            self.assertEqual(list(dict(template_folder_field.choices).keys()), ["default", "vertical"])
+            self.assertEqual(sorted(dict(template_folder_field.choices).keys()), sorted(["default", "vertical"]))
 
 
 class PluginTest2(BaseTest):
