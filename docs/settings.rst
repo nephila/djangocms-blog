@@ -100,6 +100,8 @@ Global Settings
 * BLOG_ABSTRACT_CKEDITOR: Configuration for the CKEditor of the abstract field (as per https://github.com/divio/djangocms-text-ckeditor/#customizing-htmlfield-editor)
 * BLOG_POST_TEXT_CKEDITOR: Configuration for the CKEditor of the post content field
 * BLOG_USE_FALLBACK_LANGUAGE_IN_URL: When displaying URL, prefer URL in the fallback language if an article or category is not available in the current language
+* BLOG_WIZARD_CONTENT_PLUGIN: name of the plugin created by wizard for the text content (default: ``TextPlugin``)
+* BLOG_WIZARD_CONTENT_PLUGIN_BODY: name of the plugin field to add wizard text (default: ``body``)
 
 ******************
 Read-only settings
