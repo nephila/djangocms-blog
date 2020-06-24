@@ -31,6 +31,9 @@ To use the new templates set, go to the ``Blog configs`` admin
 **Template prefix** field in the **Apphook configuration** admin (in the *Layout* section): it will be the
 root of your custom templates set; following the example above, you should enter ``my_blog`` as directory name.
 
+For more instruction regarding template override, please read Django documentation: `Overriding templates`_ (for your version of Django).
+
+
 ****************
 Plugin Templates
 ****************
@@ -58,3 +61,6 @@ Example:
     )
 
 Once defined, the plugin admin interface will allow content managers to select which template the plugin will use.
+
+
+.. _overriding templates: https://docs.djangoproject.com/en/dev/howto/overriding-templates/#overriding-templates
