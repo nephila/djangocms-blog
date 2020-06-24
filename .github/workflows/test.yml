@@ -81,7 +81,7 @@ jobs:
         python -m pip install --upgrade pip tox>=3.5
     - name: Test with tox
       env:
-        TOX_ENV: ${{ format('py{0}-django{1}-cms{2}', matrix.python-version, matrix.django, matrix.cms) }}
+        TOX_ENV: ${{ format('py-django{1}-cms{2}', matrix.python-version, matrix.django, matrix.cms) }}
         COMMAND: coverage run
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
