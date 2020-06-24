@@ -62,7 +62,14 @@ class CategoryAdminForm(ConfigFormBase, TranslatableModelForm):
         fields = "__all__"
 
 
-class LatestEntriesForm(forms.ModelForm):
+class BlogPluginForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "template_folder" in self.fields:
+            self.fields["template_folder"].choices = get_setting("PLUGIN_TEMPLATE_FOLDERS")
+
+
+class LatestEntriesForm(BlogPluginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["tags"].widget = TagAutoSuggest("taggit.Tag")
@@ -71,7 +78,7 @@ class LatestEntriesForm(forms.ModelForm):
         css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
 
 
-class AuthorPostsForm(forms.ModelForm):
+class AuthorPostsForm(BlogPluginForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # apply distinct due to django issue #11707

@@ -5,6 +5,7 @@ from cms.api import add_plugin
 from cms.models import Page
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 from django.urls import reverse
 from django.utils.http import urlencode
 from django.utils.timezone import now
@@ -289,6 +290,62 @@ class PluginTest10(BaseTest):
         self.assertIn(self.user, form_authors)
         self.assertNotIn(unpublished_author, form_authors)
         self.assertNotIn(non_author, form_authors)
+
+    def test_plugin_templates_field_single_template(self):
+        pages = self.get_pages()
+        ph = pages[0].placeholders.get(slot="content")
+        plugins = [
+            "BlogLatestEntriesPlugin",
+            "BlogLatestEntriesPluginCached",
+            "BlogAuthorPostsPlugin",
+            "BlogAuthorPostsListPlugin",
+            "BlogTagsPlugin",
+            "BlogArchivePlugin",
+            "BlogCategoryPlugin",
+        ]
+        for plugin in plugins:
+            page_admin = admin.site._registry[Page]
+            parms = {
+                "cms_path": "/en/",
+                "placeholder_id": ph.pk,
+                "plugin_type": plugin,
+                "plugin_language": "en",
+            }
+            path = "/en/?%s" % urlencode(parms)
+            request = self.get_request(pages[0], "en", user=self.user, path=path)
+            response = page_admin.add_plugin(request)
+            with self.assertRaises(KeyError):
+                template_folder_field = response.context_data["adminform"].form.fields["template_folder"]  # noqa: F841
+
+    @override_settings(
+        BLOG_PLUGIN_TEMPLATE_FOLDERS=(("default", "Default template"), ("vertical", "Vertical timeline"),)
+    )
+    def test_plugin_templates_field_multi_template(self):
+        pages = self.get_pages()
+        ph = pages[0].placeholders.get(slot="content")
+        plugins = [
+            "BlogLatestEntriesPlugin",
+            "BlogLatestEntriesPluginCached",
+            "BlogAuthorPostsPlugin",
+            "BlogAuthorPostsListPlugin",
+            "BlogTagsPlugin",
+            "BlogArchivePlugin",
+            "BlogCategoryPlugin",
+        ]
+        for plugin in plugins:
+            page_admin = admin.site._registry[Page]
+            parms = {
+                "cms_path": "/en/",
+                "placeholder_id": ph.pk,
+                "plugin_type": plugin,
+                "plugin_language": "en",
+            }
+            path = "/en/?%s" % urlencode(parms)
+            request = self.get_request(pages[0], "en", user=self.user, path=path)
+            response = page_admin.add_plugin(request)
+            template_folder_field = response.context_data["adminform"].form.fields["template_folder"]
+            self.assertEqual(len(template_folder_field.choices), 2)
+            self.assertEqual(list(dict(template_folder_field.choices).keys()), ["default", "vertical"])
 
 
 class PluginTest2(BaseTest):
