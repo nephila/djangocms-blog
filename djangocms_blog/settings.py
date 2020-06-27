@@ -119,5 +119,7 @@ def get_setting(name):
             settings, "BLOG_PLUGIN_TEMPLATE_FOLDERS", (("plugins", _("Default template")),)
         ),
         "BLOG_USE_FALLBACK_LANGUAGE_IN_URL": getattr(settings, "BLOG_USE_FALLBACK_LANGUAGE_IN_URL", False),
+        "BLOG_WIZARD_CONTENT_PLUGIN": getattr(settings, "BLOG_WIZARD_CONTENT_PLUGIN", "TextPlugin"),
+        "BLOG_WIZARD_CONTENT_PLUGIN_BODY": getattr(settings, "BLOG_WIZARD_CONTENT_PLUGIN_BODY", "body"),
     }
     return default["BLOG_%s" % name]

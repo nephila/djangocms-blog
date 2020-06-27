@@ -1,5 +1,6 @@
 import warnings
 
+from cms.api import add_plugin
 from cms.utils.permissions import get_current_user
 from cms.wizards.wizard_base import Wizard
 from cms.wizards.wizard_pool import AlreadyRegisteredException, wizard_pool
@@ -11,6 +12,7 @@ from .cms_appconfig import BlogConfig
 from .fields import slugify
 from .forms import PostAdminFormBase
 from .models import Post
+from .settings import get_setting
 
 
 class PostWizardForm(PostAdminFormBase):
@@ -51,7 +53,9 @@ class PostWizardForm(PostAdminFormBase):
 
     def save(self, commit=True):
         self.instance._set_default_author(get_current_user())
-        return super().save(commit)
+        instance = super().save(commit)
+        self.add_plugin()
+        return instance
 
     def clean_slug(self):
         """
@@ -69,6 +73,23 @@ class PostWizardForm(PostAdminFormBase):
             slug = "{}-{}".format(source, i)
             i += 1
         return slug
+
+    def add_plugin(self):
+        """
+        Add text field content as text plugin to the blog post.
+        """
+        text = self.cleaned_data.get("post_text", "")
+        app_config = self.cleaned_data.get("app_config", None)
+        plugin_type = get_setting("WIZARD_CONTENT_PLUGIN")
+        plugin_body = get_setting("WIZARD_CONTENT_PLUGIN_BODY")
+        if text and app_config.use_placeholder:
+            opts = {
+                "placeholder": self.instance.content,
+                "plugin_type": plugin_type,
+                "language": self.language_code,
+                plugin_body: text,
+            }
+            add_plugin(**opts)
 
 
 class PostWizard(Wizard):

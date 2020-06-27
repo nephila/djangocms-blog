@@ -1,6 +1,7 @@
 import sys
 
 from django.http import QueryDict
+from djangocms_text_ckeditor.models import Text
 
 from djangocms_blog.models import BlogCategory
 
@@ -48,6 +49,8 @@ class WizardTest(BaseTest):
 
         cat_1 = BlogCategory.objects.create(name="category 1 - blog 1", app_config=self.app_config_1)
         cat_2 = BlogCategory.objects.create(name="category 1 - blog 2", app_config=self.app_config_2)
+        self.app_config_2.app_data.config.use_placeholder = False
+        self.app_config_2.save()
         cats = {
             self.app_config_1.pk: cat_1,
             self.app_config_2.pk: cat_2,
@@ -66,6 +69,7 @@ class WizardTest(BaseTest):
                             "1-title": "title{}".format(index),
                             "1-abstract": "abstract{}".format(index),
                             "1-categories": cats[app_config].pk,
+                            "1-post_text": "Random text",
                         }
                     ),
                     prefix=1,
@@ -75,6 +79,13 @@ class WizardTest(BaseTest):
                 self.assertEqual(form.cleaned_data["app_config"].pk, app_config)
                 instance = form.save()
                 self.assertEqual(instance.author, self.user_staff)
+                self.assertEqual(instance.post_text, "Random text")
+                if form.cleaned_data["app_config"].use_placeholder:
+                    self.assertEqual(instance.content.get_plugins().filter(plugin_type="TextPlugin").count(), 1)
+                    plugin = Text.objects.get(pk=instance.content.get_plugins().get(plugin_type="TextPlugin").pk)
+                    self.assertEqual(plugin.body, "Random text")
+                else:
+                    self.assertEqual(instance.content.get_plugins().filter(plugin_type="TextPlugin").count(), 0)
 
             with self.settings(BLOG_AUTHOR_DEFAULT="normal"):
                 for index, wiz in enumerate(wizs):
@@ -94,6 +105,8 @@ class WizardTest(BaseTest):
                     self.assertEqual(form.cleaned_data["app_config"].pk, app_config)
                     instance = form.save()
                     self.assertEqual(instance.author, self.user_normal)
+        self.app_config_2.app_data.config.use_placeholder = True
+        self.app_config_2.save()
 
     def test_wizard_duplicate_slug(self):
         from cms.utils.permissions import current_user
