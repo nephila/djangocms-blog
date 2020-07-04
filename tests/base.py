@@ -204,7 +204,7 @@ class BaseTest(BaseTestCase):
     def _get_category(self, data, category=None, lang="en"):
         data = deepcopy(data)
         for k, v in data.items():
-            if hasattr(v, "__call__"):
+            if callable(v):
                 data[k] = v()
         if not category:
             with smart_override(lang):

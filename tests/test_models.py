@@ -953,11 +953,11 @@ class ModelsTest(BaseTest):
         self.get_pages()
         post = self._get_post(self._post_data[0]["en"])
 
-        PARLER_FALLBACK = {
+        PARLER_FALLBACK = {  # noqa: N806
             1: ({"code": "en"}, {"code": "it"},),
             "default": {"fallbacks": ["fr", "en"], "hide_untranslated": False},
         }
-        PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)
+        PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)  # noqa: N806
 
         with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
             with override("it"):
@@ -1048,11 +1048,11 @@ class ModelsTest(BaseTest):
 
         # No fallback
         parler.appsettings.PARLER_LANGUAGES["default"]["hide_untranslated"] = True
-        for index, lang in enumerate(parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk]):
+        for index, _lang in enumerate(parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk]):
             parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk][index]["hide_untranslated"] = True
         self.assertEqual(len(Post.objects.filter_by_language("it")), 1)
         parler.appsettings.PARLER_LANGUAGES["default"]["hide_untranslated"] = False
-        for index, lang in enumerate(parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk]):
+        for index, _lang in enumerate(parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk]):
             parler.appsettings.PARLER_LANGUAGES[Site.objects.get_current().pk][index]["hide_untranslated"] = False
 
     def test_tag_cloud(self):
@@ -1175,10 +1175,10 @@ class ModelsTest2(BaseTest):
             self.assertEqual(len(Post.objects.all()), 3)
             with self.settings(**{"SITE_ID": self.site_1.pk}):
                 self.assertEqual(len(Post.objects.all().on_site()), 2)
-                self.assertEqual(set(list(Post.objects.all().on_site())), {post1, post3})
+                self.assertEqual(set(Post.objects.all().on_site()), {post1, post3})
             with self.settings(**{"SITE_ID": self.site_2.pk}):
                 self.assertEqual(len(Post.objects.all().on_site()), 2)
-                self.assertEqual(set(list(Post.objects.all().on_site())), {post2, post3})
+                self.assertEqual(set(Post.objects.all().on_site()), {post2, post3})
 
     def test_str_repr(self):
         self.get_pages()

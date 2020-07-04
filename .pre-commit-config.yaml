@@ -3,7 +3,7 @@
 exclude: "(.idea|node_modules|.tox)"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.5.0
+    rev: v3.1.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -17,7 +17,7 @@ repos:
         args:
           - --remove
   - repo: https://github.com/timothycrosley/isort
-    rev: "4.3.21"
+    rev: "5.0.2"
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
@@ -25,7 +25,7 @@ repos:
     hooks:
       - id: black
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.0
+    rev: 3.8.3
     hooks:
       - id: flake8
         additional_dependencies:
@@ -47,7 +47,7 @@ repos:
           - "-cpyproject.toml"
           - "--quiet"
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.2.1
+    rev: v2.6.2
     hooks:
       - id: pyupgrade
         args:

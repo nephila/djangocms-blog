@@ -35,7 +35,7 @@ class ToolbarTest(BaseTest):
 
         # Publish button only appears if current post is unpublished
         right = toolbar.get_right_items()
-        buttons = sum([item.buttons for item in right if isinstance(item, ButtonList)], [])
+        buttons = sum((item.buttons for item in right if isinstance(item, ButtonList)), [])
         self.assertTrue([button for button in buttons if force_str(button.name) == "Publish Blog now"])
 
         # Publish button does not appears if current post is published
@@ -45,7 +45,7 @@ class ToolbarTest(BaseTest):
         toolbar.populate()
         toolbar.post_template_populate()
         right = toolbar.get_right_items()
-        buttons = sum([item.buttons for item in right if isinstance(item, ButtonList)], [])
+        buttons = sum((item.buttons for item in right if isinstance(item, ButtonList)), [])
         self.assertFalse([button for button in buttons if force_str(button.name) == "Publish Blog now"])
 
         # Publish button does not appears if other posts but the current one are unpublished
@@ -55,5 +55,5 @@ class ToolbarTest(BaseTest):
         toolbar.populate()
         toolbar.post_template_populate()
         right = toolbar.get_right_items()
-        buttons = sum([item.buttons for item in right if isinstance(item, ButtonList)], [])
+        buttons = sum((item.buttons for item in right if isinstance(item, ButtonList)), [])
         self.assertFalse([button for button in buttons if force_str(button.name) == "Publish Blog now"])
