@@ -43,6 +43,7 @@ class WizardTest(BaseTest):
     def test_wizard_init(self):
         from cms.utils.permissions import current_user
         from cms.wizards.wizard_pool import wizard_pool
+
         from djangocms_blog.models import Post
 
         self.get_pages()
@@ -111,6 +112,7 @@ class WizardTest(BaseTest):
     def test_wizard_duplicate_slug(self):
         from cms.utils.permissions import current_user
         from cms.wizards.wizard_pool import wizard_pool
+
         from djangocms_blog.models import Post
 
         self.get_pages()
@@ -160,6 +162,7 @@ class WizardTest(BaseTest):
     def test_wizard_init_categories_check(self):
         from cms.utils.permissions import current_user
         from cms.wizards.wizard_pool import wizard_pool
+
         from djangocms_blog.models import Post
 
         self.get_pages()

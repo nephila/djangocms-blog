@@ -17,7 +17,7 @@ class MenuTest(BaseTest):
     def setUp(self):
         super().setUp()
         self.cats = [self.category_1]
-        for i, lang_data in enumerate(self._categories_data):
+        for _i, lang_data in enumerate(self._categories_data):
             cat = self._get_category(lang_data["en"])
             if "it" in lang_data:
                 cat = self._get_category(lang_data["it"], cat, "it")
@@ -31,8 +31,8 @@ class MenuTest(BaseTest):
         Tests if menu cache is cleared after config deletion
         """
 
-        from menus.models import CacheKey
         from django.core.cache import cache
+        from menus.models import CacheKey
 
         pages = self.get_pages()
         self.get_posts()
@@ -57,8 +57,8 @@ class MenuTest(BaseTest):
         Tests if menu cache is cleared after category deletion
         """
 
-        from menus.models import CacheKey
         from django.core.cache import cache
+        from menus.models import CacheKey
 
         pages = self.get_pages()
         self.get_posts()
@@ -235,7 +235,7 @@ class MenuTest(BaseTest):
         )
         self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
         self.app_config_1.save()
-        for view_cls, kwarg, obj, cat in tests:
+        for view_cls, kwarg, obj, _cat in tests:
             with smart_override("en"):
                 with switch_language(obj, "en"):
                     request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())

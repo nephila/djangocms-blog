@@ -16,7 +16,7 @@ except ImportError:
 
 
 class AdminTest(BaseTest):
-    def add_blog_config(self, page, namespace, id):
+    def add_blog_config(self, page, namespace, config_id):
         self.client = Client()
         self.client.login(username=self._admin_user_username, password=self._admin_user_password)
         response = self.client.post(
@@ -30,7 +30,7 @@ class AdminTest(BaseTest):
                 "navigation_extenders": "",
                 "application_urls": "BlogApp",
                 "application_namespace": namespace,
-                "application_configs": id,
+                "application_configs": config_id,
                 "xframe_options": "0",
                 "_save": "Save",
             },

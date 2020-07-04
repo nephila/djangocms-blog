@@ -149,7 +149,7 @@ class ViewTest(BaseTest):
         pages = self.get_pages()
         self.get_posts()
 
-        PARLER_FALLBACK = {
+        PARLER_FALLBACK = {  # noqa: N806
             1: ({"code": "en"}, {"code": "it"}, {"code": "fr", "hide_untranslated": True},),
             "default": {"fallback": "en", "hide_untranslated": False},
         }
@@ -164,7 +164,7 @@ class ViewTest(BaseTest):
             view_obj.get_context_data(object_list=view_obj.object_list)
             self.assertEqual(view_obj.get_queryset().count(), 3)
 
-            PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)
+            PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)  # noqa: N806
             with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
 
                 view_obj = PostListView()
