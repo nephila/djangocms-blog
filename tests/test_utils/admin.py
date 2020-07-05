@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from djangocms_blog.admin import PostAdmin
-from djangocms_blog.models import Post
 
 from .models import CustomUser, PostExtension
 
@@ -21,10 +20,6 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-admin.site.unregister(Post)
-
-
-@admin.register(Post)
 class CustomPostAdmin(PostAdmin):
     _fieldsets = [
         (None, {"fields": ["title", "subtitle", "slug", "publish", "categories"]}),
@@ -52,7 +47,7 @@ class CustomPostAdmin(PostAdmin):
         "sites": [1, 1, 0],
         "author": [1, 1],
         "enable_liveblog": None,
-        "related": [1, 1, 0],
+        "related": None,
     }
 
 

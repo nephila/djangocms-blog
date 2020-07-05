@@ -32,6 +32,7 @@ from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import MENU_TYPE_NONE, PERMALINK_TYPE_CATEGORY, PERMALINK_TYPE_FULL_DATE, get_setting
 
 from .base import BaseTest
+from .test_utils.admin import CustomPostAdmin
 
 try:
     from knocker.signals import pause_knocks
@@ -478,6 +479,75 @@ class AdminTest(BaseTest):
             self.assertNotContains(response, 'id="id_sites" name="sites"')
             post_admin._sites = None
         self.user.sites.clear()
+
+    def test_custom_admin_fieldsets(self):
+        post_admin = CustomPostAdmin(Post, admin_site=admin.site)
+        request = self.get_page_request(
+            "/", self.user_staff, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
+
+        # Use placeholder
+        self.app_config_1.app_data.config.use_placeholder = True
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("post_text" in fsets[0][1]["fields"])
+
+        self.app_config_1.app_data.config.use_placeholder = False
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue("post_text" in fsets[0][1]["fields"])
+
+        self.app_config_1.app_data.config.use_placeholder = True
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("post_text" in fsets[0][1]["fields"])
+
+        # Related field is always hidden due to the value in CustomPostAdmin._fieldset_extra_fields_position
+        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("related" in fsets[1][1]["fields"][0])
+
+        Post.objects.language("en").create(title="post x", app_config=self.app_config_1)
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("related" in fsets[1][1]["fields"][0])
+
+        self.app_config_1.app_data.config.use_related = False
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("related" in fsets[1][1]["fields"][0])
+
+        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("related" in fsets[1][1]["fields"][0])
+
+        # Use abstract
+        self.app_config_1.app_data.config.use_abstract = True
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue("abstract" in fsets[0][1]["fields"])
+
+        self.app_config_1.app_data.config.use_abstract = False
+        self.app_config_1.save()
+        fsets = post_admin.get_fieldsets(request)
+        self.assertFalse("abstract" in fsets[0][1]["fields"])
+
+        self.app_config_1.app_data.config.use_abstract = True
+        self.app_config_1.app_data.config.default_image_full = self.default_full
+        self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
+        self.app_config_1.save()
+
+        with self.settings(BLOG_MULTISITE=True):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertTrue("sites" in fsets[1][1]["fields"][0])
+        with self.settings(BLOG_MULTISITE=False):
+            fsets = post_admin.get_fieldsets(request)
+            self.assertFalse("sites" in fsets[1][1]["fields"][0])
+
+        request = self.get_page_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        fsets = post_admin.get_fieldsets(request)
+        self.assertTrue("author" in fsets[1][1]["fields"])
 
     def test_admin_queryset(self):
         posts = self.get_posts()

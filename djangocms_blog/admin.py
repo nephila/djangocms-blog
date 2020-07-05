@@ -154,7 +154,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         "post_text": (0, 1),
         "sites": (1, 1, 0),
         "author": (1, 1, 0),
-        "enable_liveblog": (2, 1),
+        "enable_liveblog": (2, 1, 2),
         "related": (1, 1, 0),
     }
     """
