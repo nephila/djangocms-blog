@@ -2,9 +2,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from djangocms_blog.admin import PostAdmin
+from djangocms_blog.models import Post
+
 from .models import CustomUser, PostExtension
 
 
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
@@ -17,7 +21,39 @@ class CustomUserAdmin(UserAdmin):
     )
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.unregister(Post)
+
+
+@admin.register(Post)
+class CustomPostAdmin(PostAdmin):
+    _fieldsets = [
+        (None, {"fields": ["title", "subtitle", "slug", "publish", "categories"]}),
+        (
+            _("Info"),
+            {
+                "fields": [
+                    ["tags"],
+                    ["date_published", "date_published_end", "date_featured"],
+                    "app_config",
+                    "enable_comments",
+                ],
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Images"),
+            {"fields": [["main_image", "main_image_thumbnail", "main_image_full"]], "classes": ("collapse",)},
+        ),
+        (_("SEO"), {"fields": [["meta_description", "meta_title", "meta_keywords"]], "classes": ("collapse",)}),
+    ]
+    _fieldset_extra_fields_position = {
+        "abstract": [0, 1],
+        "post_text": [0, 1],
+        "sites": [1, 1, 0],
+        "author": [1, 1],
+        "enable_liveblog": None,
+        "related": [1, 1, 0],
+    }
 
 
 class PostExtensionInline(admin.TabularInline):

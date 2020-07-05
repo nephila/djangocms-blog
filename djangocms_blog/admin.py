@@ -126,6 +126,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         actions += ["enable_liveblog", "disable_liveblog"]
     _fieldsets = [
         (None, {"fields": ["title", "subtitle", "slug", "publish", ["categories", "app_config"]]}),
+        # left empty for sites, author and related fields
         (None, {"fields": [[]]}),
         (
             _("Info"),
@@ -140,6 +141,30 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         ),
         (_("SEO"), {"fields": [["meta_description", "meta_title", "meta_keywords"]], "classes": ("collapse",)}),
     ]
+    """
+    Default fieldsets structure.
+
+    Follow the normal Django fieldsets syntax.
+
+    When customizing the structure, check the :py:attr:`_fieldset_extra_fields_position` to ensure extra fields
+    position matches.
+    """
+    _fieldset_extra_fields_position = {
+        "abstract": (0, 1),
+        "post_text": (0, 1),
+        "sites": (1, 1, 0),
+        "author": (1, 1, 0),
+        "enable_liveblog": (2, 1),
+        "related": (1, 1, 0),
+    }
+    """
+    Indexes where to append extra fields.
+
+    Key: Supported extra / optional field name
+    Value: None / 2 / 3 item tuple. If you want to hide the field in any case set ``None`` as dictionary value,
+    otherwise use a tuple containing the index of the the "fields" attribute of the selected fieldset row and
+    an optional third value if the target "fields" has subgroups.
+    """
 
     app_config_values = {"default_published": "publish"}
     _sites = None
@@ -361,21 +386,36 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
-            fsets[0][1]["fields"].append("abstract")
+            self._patch_fieldsets(fsets, "abstract")
         if not placeholder:
-            fsets[0][1]["fields"].append("post_text")
+            self._patch_fieldsets(fsets, "post_text")
         if get_setting("MULTISITE") and not self.has_restricted_sites(request):
-            fsets[1][1]["fields"][0].append("sites")
+            self._patch_fieldsets(fsets, "sites")
         if request.user.is_superuser:
-            fsets[1][1]["fields"][0].append("author")
+            self._patch_fieldsets(fsets, "author")
         if apps.is_installed("djangocms_blog.liveblog"):
-            fsets[2][1]["fields"][2].append("enable_liveblog")
+            self._patch_fieldsets(fsets, "enable_liveblog")
         filter_function = get_setting("ADMIN_POST_FIELDSET_FILTER")
         if related_posts:
-            fsets[1][1]["fields"][0].append("related")
+            self._patch_fieldsets(fsets, "related")
         if callable(filter_function):
             fsets = filter_function(fsets, request, obj=obj)
         return fsets
+
+    def _patch_fieldsets(self, fsets, field):
+        """Patch the fieldsets list with additional fields, based on :py:attr:`_fieldset_extra_fields_position`."""
+        positions = self._get_extra_field_position(field)
+        if not positions or len(positions) not in (2, 3) or not all(True for i in positions[:2] if i is not None):
+            return fsets
+        if len(positions) == 2 or positions[2] is None:
+            fsets[positions[0]][positions[1]]["fields"].append(field)
+        elif len(positions) == 3:
+            fsets[positions[0]][positions[1]]["fields"][positions[2]].append(field)
+        return fsets
+
+    def _get_extra_field_position(self, field):
+        """Return the position in the fieldset where to add the given field."""
+        return self._fieldset_extra_fields_position.get(field, (None, None, None))
 
     def get_prepopulated_fields(self, request, obj=None):
         return {"slug": ("title",)}

@@ -11,6 +11,7 @@ Features
    urlconf
    permalinks
    templates
+   admin_customization
    shares
    media
    menu
