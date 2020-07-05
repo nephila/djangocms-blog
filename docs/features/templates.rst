@@ -14,6 +14,8 @@ not defines a ``content`` block, copy in your template directory
 other application templates will use the newly created base template and
 will ignore the bundled one.
 
+.. _templates_set:
+
 *************
 Templates set
 *************
@@ -33,6 +35,7 @@ root of your custom templates set; following the example above, you should enter
 
 For more instruction regarding template override, please read Django documentation: `Overriding templates`_ (for your version of Django).
 
+.. _plugin_templates:
 
 ****************
 Plugin Templates
@@ -46,6 +49,11 @@ by default they are located in ``templates/djangocms_blog``.
 By defining the setting ``BLOG_PLUGIN_TEMPLATE_FOLDERS`` you can allow multiple sets of
 plugin templates allowing for different views per plugin instance. You could, for example,
 have a plugin displaying latest posts as a list, a table or in masonry style.
+
+New templates have the same names as the standard templates in the ``plugins`` folder
+(e.g: ``latest_entries.html``, ``authors.html``, ``tags.html``, ``categories.html``, ``archive.html``).
+
+When using this feature you **must** provide **all** the templates for the available plugins.
 
 To use this feature define ``BLOG_PLUGIN_TEMPLATE_FOLDERS`` as a list of available templates.
 Each item of this list itself is a list of the form ``('[folder_name]', '[verbose name]')``.

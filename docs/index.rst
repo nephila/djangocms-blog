@@ -19,7 +19,8 @@ Contents
 
    installation
    features/index
-   settings
+   autodoc/settings
+   autodoc/index
    development
    contributing
    history
