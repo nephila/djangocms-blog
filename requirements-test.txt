@@ -1,18 +1,10 @@
 -r requirements.txt
 coverage
 coveralls>=2.0
-wheel
-pep517
-invoke
-tox>=2.0
-wheel
 pysolr
 django-taggit-helpers
-django-app-helper>=2.0.0a2
-sphinx-autobuild
+django-app-helper>=2.0.0
 djangocms-video
 pytest
 pytest-django
 pytest-asyncio
-bump2version
-https://github.com/hawkowl/towncrier/archive/master.zip
