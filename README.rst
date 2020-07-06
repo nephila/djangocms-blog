@@ -68,7 +68,7 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
     :target: https://pypi.python.org/pypi/djangocms-blog
     :alt: Python versions
 
-.. |GAStatus| image:: https://github.com/nephila/djangocms-blog/workflows/Linting%20-%20Tests/badge.svg
+.. |GAStatus| image:: https://github.com/nephila/djangocms-blog/workflows/Tox%20tests/badge.svg
     :target: https://github.com/nephila/django-app-helper
     :alt: Latest CI build status
 
