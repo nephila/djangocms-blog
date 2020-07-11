@@ -270,7 +270,11 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     enable_liveblog = models.BooleanField(verbose_name=_("enable liveblog on post"), default=False)
 
     objects = GenericDateTaggedManager()
-    tags = TaggableManager(blank=True, related_name="djangocms_blog_tags")
+    tags = TaggableManager(
+        blank=True,
+        related_name="djangocms_blog_tags",
+        help_text=_("Type a tag and hit tab or start typing and select from autocomplete list."),
+    )
 
     related = SortedManyToManyField("self", verbose_name=_("Related Posts"), blank=True, symmetrical=False)
 
