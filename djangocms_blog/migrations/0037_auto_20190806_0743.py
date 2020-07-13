@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
             name="tags",
             field=taggit_autosuggest.managers.TaggableManager(
                 blank=True,
-                help_text="A comma-separated list of tags.",
+                help_text="Type a tag and hit tab, or start typing and select from autocomplete list.",
                 related_name="djangocms_blog_tags",
                 through="taggit.TaggedItem",
                 to="taggit.Tag",
