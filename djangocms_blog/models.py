@@ -273,7 +273,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     tags = TaggableManager(
         blank=True,
         related_name="djangocms_blog_tags",
-        help_text=_("Type a tag and hit tab or start typing and select from autocomplete list."),
+        help_text=_("Type a tag and hit tab, or start typing and select from autocomplete list."),
     )
 
     related = SortedManyToManyField("self", verbose_name=_("Related Posts"), blank=True, symmetrical=False)
