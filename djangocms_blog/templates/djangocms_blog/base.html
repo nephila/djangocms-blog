@@ -1,7 +1,21 @@
 {% extends CMS_TEMPLATE %}
 
 {% block meta %}
-    {%  if meta %}
+    {% comment %}
+    This is needed if you can't add ``{% include "meta/meta.html" %}`` in the django CMS template attached to the blog
+    page.
+    If you have something like the snippet below in the main template used by the django CMS page, you don't need
+    this block and you can safely remove it when customizing the blog templates
+
+    ...
+    <html>
+        <head>
+        <title>{% block title %}{% page_attribute 'title' %}{% endblock title %}</title>
+        {% include "meta/meta.html" %}
+        ...
+
+    {% endcomment %}
+    {% if meta %}
         {% include "meta/meta.html" %}
     {% endif %}
 {% endblock meta %}

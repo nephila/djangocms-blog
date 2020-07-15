@@ -12,6 +12,7 @@ Features
    permalinks
    templates
    admin_customization
+   meta
    shares
    media
    menu
@@ -19,5 +20,5 @@ Features
    related
    channels
    wizard
-   cmsplugin_filer
    extensions
+   cmsplugin_filer

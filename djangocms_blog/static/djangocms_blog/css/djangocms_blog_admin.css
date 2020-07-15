@@ -24,12 +24,13 @@ form select {
 }
 
 .as-selections.vTextField {
-    width: 300px;
+    width: 100%;
 }
 
 .as-results ul.as-list {
-    margin-left:9em;
-    padding-left:0;
+    margin-left: 0;
+    margin-top: 0;
+    padding-left: 0;
     box-shadow: none !important;
     border: 1px solid #888888 !important;
 }
@@ -38,9 +39,20 @@ form select {
 }
 ul.as-selections.vTextField {
     padding-left: 10px;
-    margin-left:9em;
+    margin-left: 0;
+    margin-bottom: 0;
+}
+
+ul.as-selections {
+    border-top-width: 1px;
 }
 
 ul.as-selections li {
     list-style: none;
+    padding: 0;
+}
+
+ul.as-selections li.as-original {
+    border-top: 0;
+    width: 100%;
 }
