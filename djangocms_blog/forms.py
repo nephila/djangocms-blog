@@ -13,14 +13,13 @@ User = get_user_model()
 
 
 class ConfigFormBase:
-    """
-    This provide the app_config property which returns the currently
-    selected app_config, whether it's an instance attribute or
-    passed in the request
-    """
+    """Base form class for all models depends on app_config."""
 
     @cached_property
     def app_config(self):
+        """
+        Return the currently selected app_config, whether it's an instance attribute or passed in the request
+        """
         if getattr(self.instance, "app_config_id", None):
             return self.instance.app_config
         elif "app_config" in self.initial:
@@ -63,6 +62,8 @@ class CategoryAdminForm(ConfigFormBase, TranslatableModelForm):
 
 
 class BlogPluginForm(forms.ModelForm):
+    """Base plugin form to inject the list of configured template folders from BLOG_PLUGIN_TEMPLATE_FOLDERS."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "template_folder" in self.fields:
@@ -70,6 +71,8 @@ class BlogPluginForm(forms.ModelForm):
 
 
 class LatestEntriesForm(BlogPluginForm):
+    """Custom forms for BlogLatestEntriesPlugin to properly load taggit-autosuggest."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["tags"].widget = TagAutoSuggest("taggit.Tag")
@@ -79,6 +82,8 @@ class LatestEntriesForm(BlogPluginForm):
 
 
 class AuthorPostsForm(BlogPluginForm):
+    """Custom form for BlogAuthorPostsPlugin to apply distinct to the list of authors in plugin changeform."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # apply distinct due to django issue #11707
@@ -87,7 +92,7 @@ class AuthorPostsForm(BlogPluginForm):
 
 class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
     """
-    This provide common methods between the admin and wizard form
+    Common methods between the admin and wizard form
     """
 
     class Meta:

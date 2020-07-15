@@ -87,4 +87,29 @@ This example will result in:
 * ``"app_config"`` field moved to ``"Info"`` fieldset
 
 
+.. _admin_filter_function:
+
+Filter function
+===============
+
+You can add / remove / filter fields at runtime by defining a method on you custom admin and proving its name in :ref:`BLOG_ADMIN_POST_FIELDSET_FILTER <ADMIN_POST_FIELDSET_FILTER>`.
+
+Method must take the following arguments:
+
+* ``fsets``: current fieldsets dictionary
+* ``request``: current admin request
+* ``obj`` (default: ``None``): current post object (if available)
+
+and it must return the modified fieldsets dictionary.
+
+Function example:
+
+.. code-block:: python
+
+    def fieldset_filter_function(fsets, request, obj=None):
+        if request.user.groups.filter(name='Editor').exists():
+            fsets[1][1]['fields'][0].append('author')  # adding 'author' field if user is Editor
+        return fsets
+
+
 .. _django admin fieldset: https://docs.djangoproject.com/en/3.0/ref/contrib/admin/#django.contrib.admin.ModelAdmin.fieldsets
