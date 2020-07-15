@@ -75,14 +75,15 @@ suited for your deployment.
         'filer.thumbnail_processors.scale_and_crop_with_subject_location',
         'easy_thumbnails.processors.filters',
     )
-    META_SITE_PROTOCOL = 'http'
+    META_SITE_PROTOCOL = 'https'  # set 'http' for non ssl enabled websites
     META_USE_SITES = True
 
 * For meta tags support enable the needed types::
 
     META_USE_OG_PROPERTIES=True
     META_USE_TWITTER_PROPERTIES=True
-    META_USE_GOOGLEPLUS_PROPERTIES=True
+    META_USE_GOOGLEPLUS_PROPERTIES=True # django-meta 1.x+
+    META_USE_SCHEMAORG_PROPERTIES=True  # django-meta 2.x+
 
 * Configure parler according to your languages:
 
@@ -146,7 +147,6 @@ Please, refer to each application documentation on details.
 * django-cms: http://django-cms.readthedocs.io/en/release-3.4.x/how_to/install.html
 * django-filer: https://django-filer.readthedocs.io
 * django-meta: https://github.com/nephila/django-meta#installation
-* django-meta-mixin: https://github.com/nephila/django-meta-mixin#installation
 * django-parler: https://django-parler.readthedocs.io/en/latest/quickstart.html#configuration
 * django-taggit-autosuggest: https://bitbucket.org/fabian/django-taggit-autosuggest
 * aldryn-search: https://github.com/aldryn/aldryn-search#usage>
