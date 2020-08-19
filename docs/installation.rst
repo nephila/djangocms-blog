@@ -7,44 +7,125 @@ Installation
 django CMS blog assumes a **completely setup and working django CMS project**.
 See `django CMS installation docs <https://django-cms.readthedocs.io/en/latest/how_to/index.html#set-up>`_ for reference.
 
-Install djangocms-blog:
+* Install djangocms-blog:
 
-.. code-block:: python
+  .. code-block:: python
 
-    pip install djangocms-blog
+      pip install djangocms-blog
 
-Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS:
+* Add ``djangocms_blog`` and its dependencies to INSTALLED_APPS:
 
-.. code-block:: python
+  .. code-block:: python
 
-    INSTALLED_APPS = [
-        ...
-        'filer',
-        'easy_thumbnails',
-        'aldryn_apphooks_config',
-        'parler',
-        'taggit',
-        'taggit_autosuggest',
-        'meta',
-        'sortedm2m',
-        'djangocms_blog',
-        ...
-    ]
+        INSTALLED_APPS = [
+            ...
+            'filer',
+            'easy_thumbnails',
+            'aldryn_apphooks_config',
+            'parler',
+            'taggit',
+            'taggit_autosuggest',
+            'meta',
+            'sortedm2m',
+            'djangocms_blog',
+            ...
+        ]
 
 
-Then apply migrations:
+.. note:: The following are minimal defaults to get the blog running; they may not be
+          suited for your deployment.
 
-.. code-block:: python
+* Add the following settings to your project:
 
-    python manage.py migrate
+  .. code-block:: python
 
-If you want to enable haystack support, in addition to the above:
+        THUMBNAIL_PROCESSORS = (
+            'easy_thumbnails.processors.colorspace',
+            'easy_thumbnails.processors.autocrop',
+            'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+            'easy_thumbnails.processors.filters',
+        )
+        META_SITE_PROTOCOL = 'https'  # set 'http' for non ssl enabled websites
+        META_USE_SITES = True
+
+* For meta tags support enable the needed types::
+
+        META_USE_OG_PROPERTIES=True
+        META_USE_TWITTER_PROPERTIES=True
+        META_USE_GOOGLEPLUS_PROPERTIES=True # django-meta 1.x+
+        META_USE_SCHEMAORG_PROPERTIES=True  # django-meta 2.x+
+
+* Configure parler according to your languages:
+
+  .. code-block:: python
+
+        PARLER_LANGUAGES = {
+            1: (
+                {'code': 'en',},
+                {'code': 'it',},
+                {'code': 'fr',},
+            ),
+            'default': {
+                'fallbacks': ['en', 'it', 'fr'],
+            }
+        }
+
+  .. note:: Since parler 1.6 this can be skipped if the language configuration is the same as ``CMS_LANGUAGES``.
+
+* Add the following to your ``urls.py``:
+
+  .. code-block:: python
+
+        url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+
+* Apply the migrations:
+
+
+***********************
+Modify templates
+***********************
+
+For standard djangocms-blog templates to work to must ensure a ``content`` block is available in the django CMS template
+used by the page djangocms-blog is attached to.
+
+For example, in case the page use the ``base.html`` template, you must ensure that something like the following is
+in the template:
+
+.. code-block:: html+django
+    :name: base.html
+
+    ...
+    {% block content %}
+        {% placeholder "page_content" %}
+    {% endblock content %}
+    ...
+
+Alternative you can override then ``djangocms_blog/base.html`` and extend a different block
+
+
+.. code-block:: html+django
+    :name: djangocms_blog/base.html
+
+    ...
+    {% block my_block %}
+    <div class="app app-blog">
+        {% block content_blog %}{% endblock %}
+    </div>
+    {% endblock my_block %}
+    ...
+
+
+***********************
+Enable haystack support
+***********************
+
+If you want to enable haystack support:
 
 * install djangocms-blog with:
 
-.. code-block:: python
+  .. code-block:: python
 
-    pip install djangocms-blog[search]
+        pip install djangocms-blog[search]
 
 * add ``aldryn_search`` to ``INSTALLED_APPS``
 * configure haystack according to `aldryn-search docs <https://github.com/aldryn/aldryn-search#usage>`_
@@ -52,61 +133,9 @@ If you want to enable haystack support, in addition to the above:
 * if not using ``aldryn_search``, you can define your own ``search_indexes.py`` by skipping ``aldryn_search`` installation and writing
   your index for blog posts by following haystack documentation.
 
-To enable taggit filtering support in the admin install djangocms-blog with:
-
-.. code-block:: python
-
-    pip install djangocms-blog[taggit]
-
-*********************
-Minimal configuration
-*********************
-
-The following are minimal defaults to get the blog running; they may not be
-suited for your deployment.
-
-* Add the following settings to your project:
-
-.. code-block:: python
-
-    THUMBNAIL_PROCESSORS = (
-        'easy_thumbnails.processors.colorspace',
-        'easy_thumbnails.processors.autocrop',
-        'filer.thumbnail_processors.scale_and_crop_with_subject_location',
-        'easy_thumbnails.processors.filters',
-    )
-    META_SITE_PROTOCOL = 'https'  # set 'http' for non ssl enabled websites
-    META_USE_SITES = True
-
-* For meta tags support enable the needed types::
-
-    META_USE_OG_PROPERTIES=True
-    META_USE_TWITTER_PROPERTIES=True
-    META_USE_GOOGLEPLUS_PROPERTIES=True # django-meta 1.x+
-    META_USE_SCHEMAORG_PROPERTIES=True  # django-meta 2.x+
-
-* Configure parler according to your languages:
-
-.. code-block:: python
-
-    PARLER_LANGUAGES = {
-        1: (
-            {'code': 'en',},
-            {'code': 'it',},
-            {'code': 'fr',},
-        ),
-        'default': {
-            'fallbacks': ['en', 'it', 'fr'],
-        }
-    }
-
-.. note:: Since parler 1.6 this can be skipped if the language configuration is the same as ``CMS_LANGUAGES``.
-
-* Add the following to your ``urls.py``:
-
-.. code-block:: python
-
-    url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+*************************
+Attach the blog to a page
+*************************
 
 * To start your blog you need to use `AppHooks from django CMS <http://docs.django-cms.org/en/latest/how_to/apphooks.html>`_
   to add the blog to a django CMS page; this step is not required when using
@@ -118,6 +147,8 @@ suited for your deployment.
   * Eventually customise the Application instance name;
   * Publish the page
   * Restart the project instance to properly load blog urls.
+
+  Check the :ref:`blog-home-page` section to attach the blog on the website home page.
 
 .. warning:: After adding the apphook to the page you **cannot** change the **Instance Namespace**
              field for the defined **AppHokConfig**; if you want to change it, create a new one
