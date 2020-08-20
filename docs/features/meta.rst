@@ -30,7 +30,7 @@ In order to enable its rendering you must follow two steps:
   a. The recommended way is to include in your project base templates:
 
      .. code-block:: html+django
-         :name: my_base.html
+         :name: base_a.html
 
          <html>
          <head>
@@ -42,12 +42,27 @@ In order to enable its rendering you must follow two steps:
      for the blog posts:
 
      .. code-block:: html+django
-         :name: base.html
+         :name: base_b.html
 
          <html>
          <head>
             <title>{% block title %}{% page_attribute 'title' %}{% endblock title %}</title>
             {% block meta %}{% endblock meta %}
+            ...
+
+  c. If you are also using ``djangocms-page-meta`` use this bas base template to make the two packages interoperable:
+
+     .. code-block:: html+django
+         :name: base_c.html
+
+         {% load page_meta_tags %}
+         {% page_meta request.current_page as page_meta %}
+         <html>
+         <head>
+            <title>{% block title %}{% page_attribute 'title' %}{% endblock title %}</title>
+            {% block meta %}
+            {% include 'djangocms_page_meta/meta.html' with meta=page_meta %}
+            {% endblock meta %}
             ...
 
 For complete social meta tags rendering, configure default properties (see ``BLOG_FB``, ``BLOG_TWITTER``, ``BLOG_GPLUS``/``BLOG_SCHEMAORG`` in :ref:`settings`) and apphook ones.
