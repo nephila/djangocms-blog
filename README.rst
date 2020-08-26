@@ -69,7 +69,7 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
     :alt: Python versions
 
 .. |GAStatus| image:: https://github.com/nephila/djangocms-blog/workflows/Tox%20tests/badge.svg
-    :target: https://github.com/nephila/django-app-helper
+    :target: https://github.com/nephila/djangocms-blog
     :alt: Latest CI build status
 
 .. |TestCoverage| image:: https://img.shields.io/coveralls/nephila/djangocms-blog/master.svg?style=flat-square
