@@ -50,7 +50,7 @@ In order to enable its rendering you must follow two steps:
             {% block meta %}{% endblock meta %}
             ...
 
-  c. If you are also using ``djangocms-page-meta`` use this bas base template to make the two packages interoperable:
+  c. If you are also using ``djangocms-page-meta`` use this base template to make the two packages interoperable:
 
      .. code-block:: html+django
          :name: base_c.html
