@@ -7,6 +7,18 @@ Installation
 django CMS blog assumes a **completely setup and working django CMS project**.
 See `django CMS installation docs <https://django-cms.readthedocs.io/en/latest/how_to/index.html#set-up>`_ for reference.
 
+If you are not familiar with django CMS you are **strongly encouraged** to read django CMS documentation before installing django CMS blog, as setting it up and adding blog content require to use django CMS features which are not described in this documentation.
+
+django CMS docs:
+
+- `django CMS tutorial <http://docs.django-cms.org/en/latest/introduction/index.html>`_
+- `django CMS user guide <http://docs.django-cms.org/en/latest/user/index.html>`_
+- `django CMS videos <https://www.youtube.com/channel/UCafBqF_OeeGDgQVte5eCiJg>`_
+
+*********************
+Installation steps
+*********************
+
 Install djangocms-blog:
 
 .. code-block:: python
@@ -137,20 +149,19 @@ suited for your deployment.
 .. _external_applications:
 
 ***********************************
-External applications configuration
+Further configuration
 ***********************************
 
-Dependency applications may need configuration to work properly.
+As django CMS heavily relies on external applications to provide its features, you may also want to check the documentation of external packages.
 
 Please, refer to each application documentation on details.
 
-* django-cms: http://django-cms.readthedocs.io/en/release-3.4.x/how_to/install.html
-* django-filer: https://django-filer.readthedocs.io
-* django-meta: https://github.com/nephila/django-meta#installation
-* django-parler: https://django-parler.readthedocs.io/en/latest/quickstart.html#configuration
-* django-taggit-autosuggest: https://bitbucket.org/fabian/django-taggit-autosuggest
-* aldryn-search: https://github.com/aldryn/aldryn-search#usage>
-* haystack: http://django-haystack.readthedocs.io/en/stable/
+* django-cms (framework and content plugins): http://django-cms.readthedocs.io/en
+* django-filer (image handling): https://django-filer.readthedocs.io
+* django-meta (meta tag handling): https://github.com/nephila/django-meta#installation
+* django-parler (multi language support): https://django-parler.readthedocs.io/en/latest/quickstart.html#configuration
+* aldryn-search (content search): https://github.com/aldryn/aldryn-search#usage>
+* haystack (content search): http://django-haystack.readthedocs.io/en/stable/
 
 .. _auto_setup:
 
