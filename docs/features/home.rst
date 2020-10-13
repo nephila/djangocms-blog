@@ -4,11 +4,24 @@
 Attaching blog to the home page
 ===============================
 
-If you want to attach the blog to the home page you have to adapt settings a bit otherwise the
-"Just slug" permalink will swallow any CMS page you create.
+*********************************
+Add blog apphook to the home page
+*********************************
+
+* Go to the django CMS page admin: http://localhost:8000/admin/cms/page
+* Edit the home page
+* Go to **Advanced settings** and select Blog from the **Application** selector and create an **Application configuration**;
+* Eventually customise the Application instance name;
+* Publish the page
+* Restart the project instance to properly load blog urls.
+
+*******************
+Amend configuration
+*******************
+
+Permalinks must be updated to avoid blog urlconf swallowing django CMS page patters.
 
 To avoid this add the following settings to you project:
-
 
 .. code-block:: python
 
