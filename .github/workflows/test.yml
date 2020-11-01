@@ -9,15 +9,22 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8, 3.7, 3.6, 3.5]
-        django: [30, 22]
-        cms: [37]
+        django: [31, 30, 22]
+        cms: [38, 37]
         exclude:
           - python-version: 3.5
             django: 30
+          - python-version: 3.5
+            django: 31
+          - django: 31
+            cms: 37
         include:
           - python-version: 3.8
             django: 22
             cms: no-search-37
+          - python-version: 3.8
+            django: 31
+            cms: no-search-38
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
