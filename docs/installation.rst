@@ -92,6 +92,11 @@ Installation steps
 
 * Apply the migrations:
 
+  .. code-block:: bash
+
+        python manage.py migrate
+
+* Add the blog application (see :ref:`attach` below).
 
 ***********************
 Modify templates
@@ -145,6 +150,8 @@ If you want to enable haystack support:
 * if not using ``aldryn_search``, you can define your own ``search_indexes.py`` by skipping ``aldryn_search`` installation and writing
   your index for blog posts by following haystack documentation.
 
+.. _attach:
+
 *************************
 Attach the blog to a page
 *************************
@@ -168,7 +175,7 @@ Attach the blog to a page
              new **Application configuration**
 
 * Add and edit blog by creating them in the admin or using the toolbar,
-  and the use the `django CMS frontend editor <http://docs.django-cms.org/en/latest/user/reference/page_admin.html>`_
+  and the use the `django CMS frontend editor`_.
   to edit the blog content:
 
   * Create a new blog entry in django admin backend or from the toolbar
@@ -176,6 +183,11 @@ Attach the blog to a page
   * Edit the post via djangocms frontend by adding / editing plugins
   * Publish the blog post by flagging the "Publish" switch in the blog post
     admin
+
+.. note:: by default djangocms-blog uses django CMS plugins for content, this means you will **not** have a text field
+          in the blog post admin, but you will have to visit the frontend blog page (hit "Visit on site" button on
+          the upper right corner) and add django CMS plugins on the frontend. Check the `tutorial`_ for
+          more details.
 
 .. _external_applications:
 
@@ -220,3 +232,6 @@ This will only work for the current website as detected by
 
 The auto setup is execute once for each server start but it will skip any
 action if a ``BlogConfig`` instance is found.
+
+.. _django cms frontend editor: http://docs.django-cms.org/en/latest/user/reference/page_admin.html
+.. _tutorial: http://docs.django-cms.org/en/latest/user/tutorial/structure-content-modes.html
