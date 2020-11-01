@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name="blogconfig", options={"verbose_name": "blog config", "verbose_name_plural": "blog configs"},
+            name="blogconfig",
+            options={"verbose_name": "blog config", "verbose_name_plural": "blog configs"},
         ),
     ]

@@ -87,7 +87,11 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"verbose_name": "user", "abstract": False, "verbose_name_plural": "users",},
+            options={
+                "verbose_name": "user",
+                "abstract": False,
+                "verbose_name_plural": "users",
+            },
             bases=(models.Model,),
         ),
     ]

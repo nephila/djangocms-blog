@@ -50,7 +50,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"verbose_name": "liveblog entry", "verbose_name_plural": "liveblog entries",},
+            options={
+                "verbose_name": "liveblog entry",
+                "verbose_name_plural": "liveblog entries",
+            },
             bases=("cms.cmsplugin",),
         ),
     ]

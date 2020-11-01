@@ -48,6 +48,13 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.RunPython(migrate_tags, migrate_tags_reverse),
-        migrations.RemoveField(model_name="latestpostsplugin", name="tags",),
-        migrations.RenameField(model_name="latestpostsplugin", old_name="tags_new", new_name="tags",),
+        migrations.RemoveField(
+            model_name="latestpostsplugin",
+            name="tags",
+        ),
+        migrations.RenameField(
+            model_name="latestpostsplugin",
+            old_name="tags_new",
+            new_name="tags",
+        ),
     ]

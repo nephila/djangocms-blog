@@ -46,7 +46,9 @@ class Migration(migrations.Migration):
                 ),
                 ("authors", models.ManyToManyField(to=settings.AUTH_USER_MODEL, verbose_name="Authors")),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
             bases=("cms.cmsplugin",),
         ),
         migrations.CreateModel(
@@ -66,7 +68,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"verbose_name": "blog category", "verbose_name_plural": "blog categories",},
+            options={
+                "verbose_name": "blog category",
+                "verbose_name_plural": "blog categories",
+            },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
@@ -134,7 +139,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
             bases=("cms.cmsplugin",),
         ),
         migrations.CreateModel(
@@ -270,9 +277,11 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.AlterUniqueTogether(
-            name="posttranslation", unique_together={("language_code", "master"), ("language_code", "slug")},
+            name="posttranslation",
+            unique_together={("language_code", "master"), ("language_code", "slug")},
         ),
         migrations.AlterUniqueTogether(
-            name="blogcategorytranslation", unique_together={("language_code", "master"), ("language_code", "slug")},
+            name="blogcategorytranslation",
+            unique_together={("language_code", "master"), ("language_code", "slug")},
         ),
     ]

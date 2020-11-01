@@ -318,7 +318,10 @@ class PluginTest10(BaseTest):
                 template_folder_field = response.context_data["adminform"].form.fields["template_folder"]  # noqa: F841
 
     @override_settings(
-        BLOG_PLUGIN_TEMPLATE_FOLDERS=(("default", "Default template"), ("vertical", "Vertical timeline"),)
+        BLOG_PLUGIN_TEMPLATE_FOLDERS=(
+            ("default", "Default template"),
+            ("vertical", "Vertical timeline"),
+        )
     )
     def test_plugin_templates_field_multi_template(self):
         pages = self.get_pages()

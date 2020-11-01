@@ -25,5 +25,10 @@ urlpatterns = [
 urlpatterns += staticfiles_urlpatterns()
 
 if "server" not in sys.argv:
-    urlpatterns += i18n_patterns(path("blog/", include("djangocms_blog.urls")),)
-urlpatterns += i18n_patterns(path("admin/", admin.site.urls), path("", include("cms.urls")),)
+    urlpatterns += i18n_patterns(
+        path("blog/", include("djangocms_blog.urls")),
+    )
+urlpatterns += i18n_patterns(
+    path("admin/", admin.site.urls),
+    path("", include("cms.urls")),
+)

@@ -32,7 +32,9 @@ class Migration(migrations.Migration):
                 ),
                 ("url", models.URLField(verbose_name="Video URL")),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
             bases=(djangocms_blog.media.base.MediaAttachmentPluginMixin, "cms.cmsplugin"),
         ),
         migrations.CreateModel(
@@ -52,7 +54,9 @@ class Migration(migrations.Migration):
                 ),
                 ("url", models.URLField(verbose_name="video URL")),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
             bases=(djangocms_blog.media.base.MediaAttachmentPluginMixin, "cms.cmsplugin"),
         ),
     ]

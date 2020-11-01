@@ -19,6 +19,8 @@ class Migration(migrations.Migration):
                 field=models.CharField(default=None, max_length=100, unique=True, verbose_name="Instance namespace"),
             ),
             migrations.AlterField(
-                model_name="blogconfig", name="type", field=models.CharField(max_length=100, verbose_name="Type"),
+                model_name="blogconfig",
+                name="type",
+                field=models.CharField(max_length=100, verbose_name="Type"),
             ),
         ]

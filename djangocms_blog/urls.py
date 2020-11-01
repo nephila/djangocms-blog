@@ -16,7 +16,9 @@ def get_urls():
     urls = get_setting("PERMALINK_URLS")
     details = []
     for urlconf in urls.values():
-        details.append(url(urlconf, PostDetailView.as_view(), name="post-detail"),)
+        details.append(
+            url(urlconf, PostDetailView.as_view(), name="post-detail"),
+        )
     return details
 
 

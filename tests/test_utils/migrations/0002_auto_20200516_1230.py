@@ -17,7 +17,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelManagers(
-            name="customuser", managers=[("objects", django.contrib.auth.models.UserManager()),],
+            name="customuser",
+            managers=[
+                ("objects", django.contrib.auth.models.UserManager()),
+            ],
         ),
         migrations.AlterField(
             model_name="customuser",

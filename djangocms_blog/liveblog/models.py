@@ -58,7 +58,11 @@ class LiveblogInterface(models.Model):
         from cms.plugin_rendering import ContentRenderer
 
         renderer = ContentRenderer(request)
-        return renderer.render_plugin(instance=self, context=context, placeholder=self.placeholder,)
+        return renderer.render_plugin(
+            instance=self,
+            context=context,
+            placeholder=self.placeholder,
+        )
 
     def send(self, request):
         """

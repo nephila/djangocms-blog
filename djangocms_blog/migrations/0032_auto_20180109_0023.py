@@ -44,6 +44,8 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AlterField(
-            model_name="posttranslation", name="title", field=models.CharField(max_length=752, verbose_name="title"),
+            model_name="posttranslation",
+            name="title",
+            field=models.CharField(max_length=752, verbose_name="title"),
         ),
     ]
