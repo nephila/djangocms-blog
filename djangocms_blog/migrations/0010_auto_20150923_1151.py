@@ -23,7 +23,9 @@ class Migration(migrations.Migration):
                 ),
                 ("app_data", app_data.fields.AppDataField(editable=False, default="{}")),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
         ),
         migrations.CreateModel(
             name="BlogConfigTranslation",
@@ -74,7 +76,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
             bases=("cms.cmsplugin",),
         ),
         migrations.AlterField(
@@ -132,7 +136,10 @@ class Migration(migrations.Migration):
             ),
             preserve_default=False,
         ),
-        migrations.AlterUniqueTogether(name="blogconfigtranslation", unique_together={("language_code", "master")},),
+        migrations.AlterUniqueTogether(
+            name="blogconfigtranslation",
+            unique_together={("language_code", "master")},
+        ),
         migrations.AlterField(
             model_name="post",
             name="sites",

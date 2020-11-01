@@ -52,12 +52,10 @@ def unregister_extension(klass):
 
 
 def create_post_post_save(model):
-    """ A wrapper for creating create_instance function for a specific model.
-    """
+    """A wrapper for creating create_instance function for a specific model."""
 
     def create_instance(sender, instance, created, **kwargs):
-        """ Create Model instance for every new Post.
-        """
+        """Create Model instance for every new Post."""
         if created:
             model.objects.create(post=instance)
 
@@ -171,15 +169,19 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
     # Bulk actions for post admin
     def make_published(self, request, queryset):
-        """ Bulk action to mark selected posts as published. If
-            the date_published field is empty the current time is
-            saved as date_published.
-            queryset must not be empty (ensured by DjangoCMS).
         """
-        cnt1 = queryset.filter(date_published__isnull=True, publish=False,).update(
-            date_published=timezone.now(), publish=True
-        )
-        cnt2 = queryset.filter(date_published__isnull=False, publish=False,).update(publish=True)
+        Bulk action to mark selected posts as published.
+        If the date_published field is empty the current time is saved as date_published.
+        queryset must not be empty (ensured by django CMS).
+        """
+        cnt1 = queryset.filter(
+            date_published__isnull=True,
+            publish=False,
+        ).update(date_published=timezone.now(), publish=True)
+        cnt2 = queryset.filter(
+            date_published__isnull=False,
+            publish=False,
+        ).update(publish=True)
         messages.add_message(
             request,
             messages.INFO,
@@ -188,8 +190,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         )
 
     def make_unpublished(self, request, queryset):
-        """ Bulk action to mark selected posts as UNpublished.
-            queryset must not be empty (ensured by DjangoCMS).
+        """
+        Bulk action to mark selected posts as unpublished.
+        queryset must not be empty (ensured by django CMS).
         """
         updates = queryset.filter(publish=True).update(publish=False)
         messages.add_message(
@@ -199,8 +202,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         )
 
     def enable_comments(self, request, queryset):
-        """ Bulk action to enable comments for selected posts.
-            queryset must not be empty (ensured by DjangoCMS).
+        """
+        Bulk action to enable comments for selected posts.
+        queryset must not be empty (ensured by django CMS).
         """
         updates = queryset.filter(enable_comments=False).update(enable_comments=True)
         messages.add_message(
@@ -211,8 +215,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         )
 
     def disable_comments(self, request, queryset):
-        """ Bulk action to disable comments for selected posts.
-            queryset must not be empty (ensured by DjangoCMS).
+        """
+        Bulk action to disable comments for selected posts.
+        queryset must not be empty (ensured by django CMS).
         """
         updates = queryset.filter(enable_comments=True).update(enable_comments=False)
         messages.add_message(
@@ -223,8 +228,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         )
 
     def enable_liveblog(self, request, queryset):
-        """ Bulk action to enable comments for selected posts.
-            queryset must not be empty (ensured by DjangoCMS).
+        """
+        Bulk action to enable comments for selected posts.
+        queryset must not be empty (ensured by django CMS).
         """
         updates = queryset.filter(enable_liveblog=False).update(enable_liveblog=True)
         messages.add_message(
@@ -235,8 +241,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         )
 
     def disable_liveblog(self, request, queryset):
-        """ Bulk action to disable comments for selected posts.
-            queryset must not be empty (ensured by DjangoCMS).
+        """
+        Bulk action to disable comments for selected posts.
+        queryset must not be empty (ensured by django CMS).
         """
         updates = queryset.filter(enable_liveblog=True).update(enable_liveblog=False)
         messages.add_message(
@@ -490,7 +497,13 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             ),
             (
                 _("Sitemap"),
-                {"fields": ("config.sitemap_changefreq", "config.sitemap_priority",), "classes": ("collapse",)},
+                {
+                    "fields": (
+                        "config.sitemap_changefreq",
+                        "config.sitemap_priority",
+                    ),
+                    "classes": ("collapse",),
+                },
             ),
             (_("Meta"), {"fields": ("config.object_type",)}),
             (
@@ -510,14 +523,21 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             (
                 "Twitter",
                 {
-                    "fields": ("config.twitter_type", "config.twitter_site", "config.twitter_author",),
+                    "fields": (
+                        "config.twitter_type",
+                        "config.twitter_site",
+                        "config.twitter_author",
+                    ),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
             (
                 "Google+",
                 {
-                    "fields": ("config.gplus_type", "config.gplus_author",),
+                    "fields": (
+                        "config.gplus_type",
+                        "config.gplus_author",
+                    ),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),

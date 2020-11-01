@@ -19,7 +19,9 @@ from .test_utils.routing import application
 
 async def _connect(post):
     path = "liveblog/{namespace}/{lang}/{slug}/".format(
-        namespace=post.app_config.namespace, lang=post.get_current_language(), slug=post.slug,
+        namespace=post.app_config.namespace,
+        lang=post.get_current_language(),
+        slug=post.slug,
     )
     communicator = WebsocketCommunicator(application, path)
     connected, __ = await communicator.connect()

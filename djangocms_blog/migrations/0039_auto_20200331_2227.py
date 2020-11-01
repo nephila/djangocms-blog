@@ -26,6 +26,8 @@ class Migration(migrations.Migration):
             field=models.SlugField(allow_unicode=True, blank=True, max_length=752, verbose_name="slug"),
         ),
         migrations.AlterField(
-            model_name="posttranslation", name="title", field=models.CharField(max_length=752, verbose_name="title"),
+            model_name="posttranslation",
+            name="title",
+            field=models.CharField(max_length=752, verbose_name="title"),
         ),
     ]

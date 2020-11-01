@@ -53,7 +53,11 @@ class Vimeo(MediaAttachmentPluginMixin, CMSPlugin):
             return None
 
     def vimeo_data(self, media_id):
-        response = requests.get("https://vimeo.com/api/v2/video/{media_id}.json".format(media_id=media_id,))
+        response = requests.get(
+            "https://vimeo.com/api/v2/video/{media_id}.json".format(
+                media_id=media_id,
+            )
+        )
         json = response.json()
         data = {}
         if json:

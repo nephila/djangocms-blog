@@ -35,7 +35,8 @@ class PostWizardForm(PostAdminFormBase):
             kwargs["data"] = data
         super().__init__(*args, **kwargs)
         self.fields["app_config"].widget = forms.Select(
-            attrs=self.fields["app_config"].widget.attrs, choices=self.fields["app_config"].widget.choices,
+            attrs=self.fields["app_config"].widget.attrs,
+            choices=self.fields["app_config"].widget.choices,
         )
         self.fields["app_config"].widget.attrs["disabled"] = True
         if "categories" in self.fields:

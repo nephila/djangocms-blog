@@ -150,7 +150,11 @@ class ViewTest(BaseTest):
         self.get_posts()
 
         PARLER_FALLBACK = {  # noqa: N806
-            1: ({"code": "en"}, {"code": "it"}, {"code": "fr", "hide_untranslated": True},),
+            1: (
+                {"code": "en"},
+                {"code": "it"},
+                {"code": "fr", "hide_untranslated": True},
+            ),
             "default": {"fallback": "en", "hide_untranslated": False},
         }
 

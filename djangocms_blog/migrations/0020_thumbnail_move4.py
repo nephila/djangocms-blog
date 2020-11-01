@@ -12,10 +12,19 @@ class Migration(migrations.Migration):
 
         operations = [
             migrations.RemoveField(model_name="post", name="main_image_full"),
-            migrations.RemoveField(model_name="post", name="main_image_thumbnail",),
-            migrations.RenameField(model_name="post", old_name="main_image_full_new", new_name="main_image_full",),
+            migrations.RemoveField(
+                model_name="post",
+                name="main_image_thumbnail",
+            ),
             migrations.RenameField(
-                model_name="post", old_name="main_image_thumbnail_new", new_name="main_image_thumbnail",
+                model_name="post",
+                old_name="main_image_full_new",
+                new_name="main_image_full",
+            ),
+            migrations.RenameField(
+                model_name="post",
+                old_name="main_image_thumbnail_new",
+                new_name="main_image_thumbnail",
             ),
         ]
     else:

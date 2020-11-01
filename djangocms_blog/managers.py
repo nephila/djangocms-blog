@@ -175,7 +175,12 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
                 current_date = blog_dates[0]
             else:
                 current_date = blog_dates[1]
-            dates.append((current_date.year, current_date.month,))
+            dates.append(
+                (
+                    current_date.year,
+                    current_date.month,
+                )
+            )
         date_counter = Counter(dates)
         dates = set(dates)
         dates = sorted(dates, reverse=True)

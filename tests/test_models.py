@@ -48,20 +48,36 @@ class AdminTest(BaseTest):
         super().setUp()
         admin.autodiscover()
         self.default_thumbnail = ThumbnailOption.objects.create(
-            name="Blog thumbnail", width=120, height=120, crop=True, upscale=True,
+            name="Blog thumbnail",
+            width=120,
+            height=120,
+            crop=True,
+            upscale=True,
         )
         self.default_full = ThumbnailOption.objects.create(
-            name="Blog image", width=800, height=200, crop=True, upscale=True,
+            name="Blog image",
+            width=800,
+            height=200,
+            crop=True,
+            upscale=True,
         )
 
     def test_admin_thumbnails(self):
         self.get_pages()
 
         custom_thumbnail = ThumbnailOption.objects.create(
-            name="Custom thumbnail", width=120, height=120, crop=True, upscale=True,
+            name="Custom thumbnail",
+            width=120,
+            height=120,
+            crop=True,
+            upscale=True,
         )
         custom_full = ThumbnailOption.objects.create(
-            name="Custom image", width=800, height=200, crop=True, upscale=True,
+            name="Custom image",
+            width=800,
+            height=200,
+            crop=True,
+            upscale=True,
         )
 
         post_admin = admin.site._registry[Post]
@@ -1024,7 +1040,10 @@ class ModelsTest(BaseTest):
         post = self._get_post(self._post_data[0]["en"])
 
         PARLER_FALLBACK = {  # noqa: N806
-            1: ({"code": "en"}, {"code": "it"},),
+            1: (
+                {"code": "en"},
+                {"code": "it"},
+            ),
             "default": {"fallbacks": ["fr", "en"], "hide_untranslated": False},
         }
         PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)  # noqa: N806
