@@ -8,11 +8,11 @@ django CMS blog application - Support for multilingual posts, placeholders, soci
 
 Supported Django versions:
 
-* Django 2.2, 3.0
+* Django 2.2, 3.0, 3.1
 
 Supported django CMS versions:
 
-* django CMS 3.7+
+* django CMS 3.7, 3.8+
 
 .. warning:: For Django<2.2, django CMS<3.7 versions support, use djangocms-blog 1.1x.
 
