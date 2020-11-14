@@ -842,9 +842,6 @@ class ModelsTest(BaseTest):
     def test_model_attributes(self):
         self.get_pages()
 
-        self.app_config_1.app_data.config.gplus_author = "RandomJoe"
-        self.app_config_1.save()
-
         featured_date = now() + timedelta(days=40)
 
         post = self._get_post(self._post_data[0]["en"])
@@ -870,8 +867,9 @@ class ModelsTest(BaseTest):
         self.assertEqual(meta_en.twitter_site, "")
         self.assertEqual(meta_en.twitter_author, "")
         self.assertEqual(meta_en.twitter_type, "summary")
-        self.assertEqual(meta_en.gplus_author, "RandomJoe")
-        self.assertEqual(meta_en.gplus_type, "Blog")
+        self.assertEqual(meta_en.schemaorg_type, "Blog")
+        self.assertEqual(meta_en.schemaorg_title, post.title)
+        self.assertEqual(meta_en.schemaorg_description, post.meta_description)
         self.assertEqual(meta_en.og_type, "Article")
         self.assertEqual(meta_en.image_width, post.main_image.width)
         self.assertEqual(meta_en.image_height, post.main_image.height)
@@ -892,8 +890,7 @@ class ModelsTest(BaseTest):
         self.assertEqual(meta_cat.twitter_site, "")
         self.assertEqual(meta_cat.twitter_author, "")
         self.assertEqual(meta_cat.twitter_type, "summary")
-        self.assertEqual(meta_cat.gplus_author, "RandomJoe")
-        self.assertEqual(meta_cat.gplus_type, "Blog")
+        self.assertEqual(meta_cat.schemaorg_type, "Blog")
         self.assertEqual(meta_cat.og_type, "Article")
         self.assertEqual(meta_cat.facebook_app_id, None)
         self.assertTrue(meta_cat.url.endswith(category.get_absolute_url()))
