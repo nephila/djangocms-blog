@@ -6,6 +6,63 @@ History
 
 .. towncrier release notes start
 
+1.2.0 (2020-11-14)
+==================
+
+- BREAKING CHANGE: Replace url() function with path() (#645)
+
+Features
+--------
+
+- Add support for django CMS 3.8 / Django 3.1 (#643)
+- Update to modern tooling and port to github actions (#564)
+- Add option to allow fallback language in post/category URLs (#546)
+- Move post slug to top of post admin form (#567)
+- Add blog post extensions (#569)
+- Replace deprecated function calls (#571)
+- Improve tag selection UX/UI (#614)
+- Improve admin customization (#620)
+- Improve documentation (#622)
+- Add rtd config file and refactor test / docs dependencies (#624)
+- Replace G+ metadata with Schema.org (#637)
+- Update pre-commit checks to latest version (#639)
+
+
+Bugfixes
+--------
+
+- Do not let site crash on menu if there is a namespace mismatch (#532)
+- Improve setup documentation (#541)
+- Fix GA on pull request (#575)
+- Fix coveralls failure on pull request in GA (#577)
+- Fix link in PR template (#581)
+- Skip haystack index creation if aldryn-search is not installed but haystack is (#584)
+- Skip towncrier on develop / master branch (#591)
+- Fix missing template folders selection in plugins (#595)
+- Clarify documentation regarding templates customization (#595)
+- Fix extra migration when customizing BLOG_PLUGIN_TEMPLATE_FOLDERS (#597)
+- Set default pytest configuration (#598)
+- Add missing condition for (date_published) <li> on blog_meta template (#603)
+- Fix python version declaration in tox (#606)
+- Fix creating text plugin in wizard (#607)
+- Split linting GA to its own file (#608)
+- Doc improvements for usage with djangocms-page-meta (#613)
+- Update linting (#618)
+- Fix building docs (#632)
+
+
+Improved Documentation
+----------------------
+
+- Improve documentation to enable social meta tags rendering (#613)
+
+
+Misc
+----
+
+- #593
+
+
 1.1.1 (2020-05-15)
 ==================
 
