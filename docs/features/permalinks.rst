@@ -20,10 +20,14 @@ like the following in the project settings:
 .. code-block:: python
 
     BLOG_PERMALINK_URLS = {
-        'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
-        'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
-        'category': r'^post/(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
-        'slug': r'^post/(?P<slug>\w[-\w]*)/$',
+        "full_date": "<int:year>/<int:month>/<int:day>/<slug:slug>/",
+        "short_date: "<int:year>/<int:month>/<slug:slug>/",
+        "category": "<slug:category>/<slug:slug>/",
+        "slug": "<slug:slug>/",
     }
 
 And change ``post/`` with the desired prefix.
+
+.. warning:: Version 1.2 introduce a breaking change as it drops ``url`` function in favour of ``path``.
+             If you have customized the urls as documented above you **must** update the custom urlconf to path-based
+             patterns.

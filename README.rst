@@ -16,6 +16,9 @@ Supported django CMS versions:
 
 .. warning:: For Django<2.2, django CMS<3.7 versions support, use djangocms-blog 1.1x.
 
+.. warning:: Version 1.2 introduce a breaking change for customized ``BLOG_PERMALINK_URLS``.
+             Check the `permalinks`_ documentation for update information.
+
 ************
 Installation
 ************
@@ -53,6 +56,7 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
 
 .. _features documentation: http://djangocms-blog.readthedocs.io/en/latest/features/
 .. _installation documentation: http://djangocms-blog.readthedocs.io/en/latest/installation.html
+.. _permalinks: http://djangocms-blog.readthedocs.io/en/latest/features/permalinks.html
 .. _cmsplugin-filer migration documentation: http://djangocms-blog.readthedocs.io/en/latest/cmsplugin_filer.html
 
 

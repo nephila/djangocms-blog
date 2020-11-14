@@ -35,10 +35,10 @@ Permalinks styles.
 """
 
 PERMALINKS_URLS = {  # noqa
-    PERMALINK_TYPE_FULL_DATE: r"^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$",
-    PERMALINK_TYPE_SHORT_DATE: r"^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$",
-    PERMALINK_TYPE_CATEGORY: r"^(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$",
-    PERMALINK_TYPE_SLUG: r"^(?P<slug>\w[-\w]*)/$",
+    PERMALINK_TYPE_FULL_DATE: "<int:year>/<int:month>/<int:day>/<slug:slug>/",
+    PERMALINK_TYPE_SHORT_DATE: "<int:year>/<int:month>/<slug:slug>/",
+    PERMALINK_TYPE_CATEGORY: "<slug:category>/<slug:slug>/",
+    PERMALINK_TYPE_SLUG: "<slug:slug>/",
 }
 """
 .. _PERMALINKS_URLS:
