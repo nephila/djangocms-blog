@@ -6,9 +6,11 @@
         {% trans "by" %} <a href="{% url 'djangocms_blog:posts-author' post.author.get_username %}">{% if post.author.get_full_name %}{{ post.author.get_full_name }}{% else %}{{ post.author }}{% endif %}</a>
     </li>
     {% endif %}
+    {% if post.date_published %}
     <li>
         {{ post.date_published|date:"DATE_FORMAT" }}
     </li>
+    {% endif %}
     {% if post.date_featured %}
     <li>
         {{ post.date_featured|date:"DATE_FORMAT" }}

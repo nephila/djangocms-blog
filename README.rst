@@ -2,17 +2,22 @@
 djangocms-blog
 ==============
 
-|Gitter| |PyPiVersion| |PyVersion| |Status| |TestCoverage| |CodeClimate| |License|
+|Gitter| |PyPiVersion| |PyVersion| |GAStatus| |TestCoverage| |CodeClimate| |License|
 
 django CMS blog application - Support for multilingual posts, placeholders, social network meta tags and configurable apphooks.
 
 Supported Django versions:
 
-* Django 1.11, 2.2, 3.0
+* Django 2.2, 3.0, 3.1
 
 Supported django CMS versions:
 
-* django CMS 3.5+
+* django CMS 3.7, 3.8+
+
+.. warning:: For Django<2.2, django CMS<3.7 versions support, use djangocms-blog 1.1x.
+
+.. warning:: Version 1.2 introduce a breaking change for customized ``BLOG_PERMALINK_URLS``.
+             Check the `permalinks`_ documentation for update information.
 
 ************
 Installation
@@ -51,6 +56,7 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
 
 .. _features documentation: http://djangocms-blog.readthedocs.io/en/latest/features/
 .. _installation documentation: http://djangocms-blog.readthedocs.io/en/latest/installation.html
+.. _permalinks: http://djangocms-blog.readthedocs.io/en/latest/features/permalinks.html
 .. _cmsplugin-filer migration documentation: http://djangocms-blog.readthedocs.io/en/latest/cmsplugin_filer.html
 
 
@@ -66,9 +72,9 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
     :target: https://pypi.python.org/pypi/djangocms-blog
     :alt: Python versions
 
-.. |Status| image:: https://img.shields.io/travis/nephila/djangocms-blog.svg?style=flat-square
-    :target: https://travis-ci.org/nephila/djangocms-blog
-    :alt: Latest Travis CI build status
+.. |GAStatus| image:: https://github.com/nephila/djangocms-blog/workflows/Tox%20tests/badge.svg
+    :target: https://github.com/nephila/djangocms-blog
+    :alt: Latest CI build status
 
 .. |TestCoverage| image:: https://img.shields.io/coveralls/nephila/djangocms-blog/master.svg?style=flat-square
     :target: https://coveralls.io/r/nephila/djangocms-blog?branch=master

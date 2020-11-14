@@ -11,6 +11,8 @@ Features
    urlconf
    permalinks
    templates
+   admin_customization
+   meta
    shares
    media
    menu
@@ -18,4 +20,5 @@ Features
    related
    channels
    wizard
+   extensions
    cmsplugin_filer

@@ -3,9 +3,9 @@
 <html>
 <head>
     <title>{% block title %}{% page_attribute 'title' %}{% endblock title %}</title>
+    {% include "meta/meta.html" %}
     {% render_block "css" %}
     {% block canonical_url %}{% endblock canonical_url %}
-    {% include "meta/meta.html" %}
     <style type="text/css">
         .nav {
             padding-left: 0;
@@ -24,6 +24,7 @@
         {% show_menu 0 100 100 100 %}
     </ul>
     <h1>{% page_attribute "title" %}</h1>
+    <div>{% placeholder "some_placeholder" %}</div>
     {% block content %}
         {% placeholder "content" %}
     {% endblock content %}

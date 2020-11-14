@@ -1,22 +1,23 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
-from django.conf.urls import url
+from django.urls import path
 
 from djangocms_blog.feeds import FBInstantArticles, LatestEntriesFeed, TagFeed
 from djangocms_blog.settings import get_setting
 from djangocms_blog.views import (
-    AuthorEntriesView, CategoryEntriesView, PostArchiveView, PostDetailView, PostListView,
+    AuthorEntriesView,
+    CategoryEntriesView,
+    PostArchiveView,
+    PostDetailView,
+    PostListView,
     TaggedListView,
 )
 
 
 def get_urls():
-    urls = get_setting('PERMALINK_URLS')
+    urls = get_setting("PERMALINK_URLS")
     details = []
     for urlconf in urls.values():
         details.append(
-            url(urlconf, PostDetailView.as_view(), name='post-detail'),
+            path(urlconf, PostDetailView.as_view(), name="post-detail"),
         )
     return details
 
@@ -24,22 +25,13 @@ def get_urls():
 detail_urls = get_urls()
 
 urlpatterns = [
-    url(r'^latests/$',
-        PostListView.as_view(), name='posts-latest'),
-    url(r'^feed/$',
-        LatestEntriesFeed(), name='posts-latest-feed'),
-    url(r'^feed/fb/$',
-        FBInstantArticles(), name='posts-latest-feed-fb'),
-    url(r'^(?P<year>\d{4})/$',
-        PostArchiveView.as_view(), name='posts-archive'),
-    url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$',
-        PostArchiveView.as_view(), name='posts-archive'),
-    url(r'^author/(?P<username>[\w\.@+-]+)/$',
-        AuthorEntriesView.as_view(), name='posts-author'),
-    url(r'^category/(?P<category>[\w\.@+-]+)/$',
-        CategoryEntriesView.as_view(), name='posts-category'),
-    url(r'^tag/(?P<tag>[-\w]+)/$',
-        TaggedListView.as_view(), name='posts-tagged'),
-    url(r'^tag/(?P<tag>[-\w]+)/feed/$',
-        TagFeed(), name='posts-tagged-feed'),
+    path("latests/", PostListView.as_view(), name="posts-latest"),
+    path("feed/", LatestEntriesFeed(), name="posts-latest-feed"),
+    path("feed/fb/", FBInstantArticles(), name="posts-latest-feed-fb"),
+    path("<int:year>/", PostArchiveView.as_view(), name="posts-archive"),
+    path("<int:year>/<int:month>/", PostArchiveView.as_view(), name="posts-archive"),
+    path("author/<str:username>/", AuthorEntriesView.as_view(), name="posts-author"),
+    path("category/<slug:category>/", CategoryEntriesView.as_view(), name="posts-category"),
+    path("tag/<slug:tag>/", TaggedListView.as_view(), name="posts-tagged"),
+    path("tag/<slug:tag>/feed/", TagFeed(), name="posts-tagged-feed"),
 ] + detail_urls

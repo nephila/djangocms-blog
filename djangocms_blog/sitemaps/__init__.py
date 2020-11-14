@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from cms.utils import get_language_list
 from django.contrib.sitemaps import Sitemap
 from django.urls.exceptions import NoReverseMatch
@@ -11,20 +8,19 @@ from ..settings import get_setting
 
 
 class BlogSitemap(Sitemap):
-
     def __init__(self, *args, **kwargs):
-        super(BlogSitemap, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.url_cache = {}
 
     def priority(self, obj):
         if obj and obj.app_config:
             return obj.app_config.sitemap_priority
-        return get_setting('SITEMAP_PRIORITY_DEFAULT')
+        return get_setting("SITEMAP_PRIORITY_DEFAULT")
 
     def changefreq(self, obj):
         if obj and obj.app_config:
             return obj.app_config.sitemap_changefreq
-        return get_setting('SITEMAP_CHANGEFREQ_DEFAULT')
+        return get_setting("SITEMAP_CHANGEFREQ_DEFAULT")
 
     def location(self, obj):
         with smart_override(obj.get_current_language()):

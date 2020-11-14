@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
+# This file is used on divio cloud only during automatic setup
+from django.conf.urls import include  # pragma: no cover
+from django.urls import path  # pragma: no cover
 
-from django.conf.urls import include, url
-
-urlpatterns = [
-    url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+urlpatterns = [  # pragma: no cover
+    path("taggit_autosuggest/", include("taggit_autosuggest.urls")),
 ]

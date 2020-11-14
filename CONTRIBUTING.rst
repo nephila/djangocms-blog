@@ -1,13 +1,12 @@
-============
+############
 Contributing
-============
+############
 
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
 You can contribute in many ways:
 
-**********************
 Types of Contributions
 **********************
 
@@ -34,15 +33,6 @@ Implement Features
 Look through the GitHub issues for features. Anything tagged with "feature"
 is open to whoever wants to implement it.
 
-Branching model
-~~~~~~~~~~~~~~~
-
-When planning a code cotnribution, these is the project branching model:
-
-* new features goes to develop
-* bugfixes for releases goes to release/Y.Z.x branches
-* master is just a snapshot of the latest stable release and should not be targeted
-
 Write Documentation
 ===================
 
@@ -66,18 +56,20 @@ If you are proposing a feature:
 Get Started!
 ************
 
-Ready to contribute? Here's how to set up `djangocms-blog` for local development.
+Ready to contribute? Here's how to set up ``djangocms-blog`` for local development.
 
-1. Fork the `djangocms-blog` repo on GitHub.
+1. Fork the ``djangocms-blog`` repo on GitHub.
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/djangocms-blog.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper
+   installed, this is how you set up your fork for local development::
 
     $ mkvirtualenv djangocms-blog
     $ cd djangocms-blog/
-    $ python setup.py develop
+    $ pip install -r requirements-test.txt
+    $ pip install -e .
 
 4. Create a branch for local development::
 
@@ -90,7 +82,7 @@ tests, including testing other Python versions with tox::
 
     $ tox
 
-To get tox, just pip install them into your virtualenv.
+To get tox, pip install it into your virtualenv.
 
 6. Commit your changes and push your branch to GitHub::
 
@@ -100,24 +92,80 @@ To get tox, just pip install them into your virtualenv.
 
 7. Submit a pull request through the GitHub website.
 
-***********************
+Development tips
+----------------
+
+This project allows you to use `pre-commit <https://pre-commit.com/>`_ to ensure an easy compliance
+to the project code styles.
+
+If you want to use it, install it globally (for example with ``pip3 install --user precommit``,
+but check `installation instruction <https://pre-commit.com/#install>`.
+When first cloning the project ensure you install the git hooks by running ``pre-commit install``.
+
+From now on every commit will be checked against our code style.
+
+Check also the available tox environments with ``tox -l``: the ones not marked with a python version number are tools
+to help you work on the project buy checking / formatting code style, running docs etc.
+
+Testing tips
+----------------
+You can test your project using any specific combination of python, django and django cms.
+
+For example ``tox -epy3.7-django30-cms37`` runs the tests on python 3.7, Django 3.0 and django CMS 3.7.
+
+As the project uses `pytest <https://pytest.org/>`_ as test runner, you can pass any pytest option by setting the
+``PYTEST_ARGS`` environment variable, usually by prepending to the ``tox`` command. Example::
+
+    PYTEST_ARGS=" -s  tests/test_plugins.py::PluginTest -p no:warnings" tox -epy3.7-django30-cms37
+
+
 Pull Request Guidelines
-***********************
+=======================
 
 Before you submit a pull request, check that it meets these guidelines:
 
-1. The pull request should include tests.
-2. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
-3. The pull request should work for Python 2.7, 3.4, 3.5 and 3.6. Check
-   https://travis-ci.org/nephila/djangocms-blog/pull_requests
-   and make sure that the tests pass for all supported Python versions.
+#. Pull request must be named with the following naming scheme:
 
-****
-Tips
-****
+   ``<type>/(<optional-task-type>-)<number>-description``
 
-To run a subset of tests::
+   See below for available types.
 
-	$ python cms_helper.py test tests.test_views
+#. The pull request should include tests.
+#. If the pull request adds functionality, the docs should be updated.
+   Documentation must be added in ``docs`` directory, and must include usage
+   information for the end user.
+   In case of public API method, add extended docstrings with full parameters
+   description and usage example.
+#. Add a changes file in ``changes`` directory describing the contribution in
+   one line. It will be added automatically to the history file upon release.
+   File must be named as ``<issue-number>.<type>`` with type being:
+
+   * ``.feature``: For new features.
+   * ``.bugfix``: For bug fixes.
+   * ``.doc``: For documentation improvement.
+   * ``.removal``: For deprecation or removal of public API.
+   * ``.misc``: For general issues.
+
+   Check `towncrier`_ documentation for more details.
+
+#. The pull request should work for all python / django / django CMS versions
+   declared in tox.ini.
+   Check the CI and make sure that the tests pass for all supported versions.
+
+Release a version
+=================
+
+#. Update authors file
+#. Merge ``develop`` on ``master`` branch
+#. Bump release via task: ``inv tag-release (major|minor|patch)``
+#. Update changelog via towncrier: ``towncrier --yes``
+#. Commit changelog with ``git commit --amend`` to merge with bumpversion commit
+#. Create tag ``git tag <version>``
+#. Push tag to github
+#. Publish the release from the tags page
+#. If pipeline succeeds, push ``master``
+#. Merge ``master`` back on ``develop``
+#. Bump developement version via task: ``inv tag-dev -l (major|minor|patch)``
+#. Push ``develop``
+
+.. _towncrier: https://pypi.org/project/towncrier/#news-fragments

@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
-
-class MediaAttachmentPluginMixin(object):
+class MediaAttachmentPluginMixin:
     """
     Base class for media-enabled plugins.
 
@@ -12,11 +8,12 @@ class MediaAttachmentPluginMixin(object):
     * media_url: property that provides the media public URL
     * _media_autoconfiguration: configuration dictionary (see documentation for details)
     """
+
     _media_autoconfiguration = {
-        'params': [],
-        'thumb_url': '',
-        'main_url': '',
-        'callable': None,
+        "params": [],
+        "thumb_url": "",
+        "main_url": "",
+        "callable": None,
     }
     """
     Configuration dictionary. **All** the keys are required:
@@ -58,16 +55,16 @@ class MediaAttachmentPluginMixin(object):
         :rtype: dict
         """
         if not self._cached_params:
-            for pattern in self._media_autoconfiguration['params']:
+            for pattern in self._media_autoconfiguration["params"]:
                 match = pattern.match(self.media_url)
                 if match:
-                    if self._media_autoconfiguration['callable']:
-                        self._cached_params = getattr(
-                            self, self._media_autoconfiguration['callable']
-                        )(**match.groupdict())
+                    if self._media_autoconfiguration["callable"]:
+                        self._cached_params = getattr(self, self._media_autoconfiguration["callable"])(
+                            **match.groupdict()
+                        )
                     else:
                         self._cached_params = match.groupdict()
-                        self._cached_params['url'] = self.media_url
+                        self._cached_params["url"] = self.media_url
         return self._cached_params
 
     @property
@@ -91,8 +88,8 @@ class MediaAttachmentPluginMixin(object):
         :rtype: str
         """
         try:
-            return self.media_params['media_id']
-        except KeyError:
+            return self.media_params["media_id"]
+        except KeyError:  # pragma: no cover
             return None
 
     def get_main_image(self):
@@ -101,7 +98,7 @@ class MediaAttachmentPluginMixin(object):
 
         :rtype: str
         """
-        return self._media_autoconfiguration['main_url'] % self.media_params
+        return self._media_autoconfiguration["main_url"] % self.media_params
 
     def get_thumb_image(self):
         """
@@ -109,4 +106,4 @@ class MediaAttachmentPluginMixin(object):
 
         :rtype: str
         """
-        return self._media_autoconfiguration['thumb_url'] % self.media_params
+        return self._media_autoconfiguration["thumb_url"] % self.media_params

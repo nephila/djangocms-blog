@@ -19,7 +19,8 @@ Contents
 
    installation
    features/index
-   settings
+   autodoc/settings
+   autodoc/index
    development
    contributing
    history
@@ -31,4 +32,3 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`search`
-

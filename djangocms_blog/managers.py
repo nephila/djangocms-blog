@@ -1,19 +1,13 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 from collections import Counter
 
-from aldryn_apphooks_config.managers.parler import (
-    AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset,
-)
+from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.timezone import now
 
 
-class TaggedFilterItem(object):
-
+class TaggedFilterItem:
     def tagged(self, other_model=None, queryset=None):
         """
         Restituisce una queryset di elementi del model taggati,
@@ -28,21 +22,24 @@ class TaggedFilterItem(object):
         o queryset passati come argomento
         """
         from taggit.models import TaggedItem
-        filter = None
+
+        filters = None
         if queryset is not None:
-            filter = set()
+            filters = set()
             for item in queryset.all():
-                filter.update(item.tags.all())
-            filter = set([tag.id for tag in filter])
+                filters.update(item.tags.all())
+            filters = {tag.id for tag in filters}
         elif other_model is not None:
-            filter = set(TaggedItem.objects.filter(
-                content_type__model=other_model.__name__.lower()
-            ).values_list('tag_id', flat=True))
-        tags = set(TaggedItem.objects.filter(
-            content_type__model=self.model.__name__.lower()
-        ).values_list('tag_id', flat=True))
-        if filter is not None:
-            tags = tags.intersection(filter)
+            filters = set(
+                TaggedItem.objects.filter(content_type__model=other_model.__name__.lower()).values_list(
+                    "tag_id", flat=True
+                )
+            )
+        tags = set(
+            TaggedItem.objects.filter(content_type__model=self.model.__name__.lower()).values_list("tag_id", flat=True)
+        )
+        if filters is not None:
+            tags = tags.intersection(filters)
         return list(tags)
 
     def tag_list(self, other_model=None, queryset=None):
@@ -51,29 +48,32 @@ class TaggedFilterItem(object):
         al model o queryset passati come argomento
         """
         from taggit.models import Tag
+
         return Tag.objects.filter(id__in=self._taglist(other_model, queryset))
 
     def tag_list_slug(self, other_model=None, queryset=None):
         queryset = self.tag_list(other_model, queryset)
-        return queryset.values('slug')
+        return queryset.values("slug")
 
     def tag_cloud(self, other_model=None, queryset=None, published=True, on_site=False):
         from taggit.models import TaggedItem
+
         if on_site:
             queryset = queryset.on_site()
         tag_ids = self._taglist(other_model, queryset)
         kwargs = {}
         if published:
             kwargs = {
-                'object_id__in': self.model.objects.published(),
-                'content_type': ContentType.objects.get_for_model(self.model),
+                "object_id__in": self.model.objects.published(),
+                "content_type": ContentType.objects.get_for_model(self.model),
             }
-        kwargs['tag_id__in'] = tag_ids
-        counted_tags = dict(TaggedItem.objects
-                                      .filter(**kwargs)
-                                      .values('tag')
-                                      .annotate(count=models.Count('tag'))
-                                      .values_list('tag', 'count'))
+        kwargs["tag_id__in"] = tag_ids
+        counted_tags = dict(
+            TaggedItem.objects.filter(**kwargs)
+            .values("tag")
+            .annotate(count=models.Count("tag"))
+            .values_list("tag", "count")
+        )
         tags = TaggedItem.tag_model().objects.filter(pk__in=counted_tags.keys())
         for tag in tags:
             tag.count = counted_tags[tag.pk]
@@ -81,22 +81,20 @@ class TaggedFilterItem(object):
 
 
 class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
-    start_date_field = 'date_published'
-    fallback_date_field = 'date_modified'
-    end_date_field = 'date_published_end'
-    publish_field = 'publish'
+    start_date_field = "date_published"
+    fallback_date_field = "date_modified"
+    end_date_field = "date_published_end"
+    publish_field = "publish"
 
     def on_site(self, site=None):
         if not site:
             site = Site.objects.get_current()
-        return self.filter(models.Q(sites__isnull=True) |
-                           models.Q(sites=site.pk))
+        return self.filter(models.Q(sites__isnull=True) | models.Q(sites=site.pk))
 
     def published(self, current_site=True):
         queryset = self.published_future(current_site)
         if self.start_date_field:
-            return queryset.filter(
-                **{'%s__lte' % self.start_date_field: now()})
+            return queryset.filter(**{"%s__lte" % self.start_date_field: now()})
         else:
             return queryset
 
@@ -106,9 +104,8 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         else:
             queryset = self
         if self.end_date_field:
-            qfilter = (
-                models.Q(**{'%s__gte' % self.end_date_field: now()}) |
-                models.Q(**{'%s__isnull' % self.end_date_field: True})
+            qfilter = models.Q(**{"%s__gte" % self.end_date_field: now()}) | models.Q(
+                **{"%s__isnull" % self.end_date_field: True}
             )
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
@@ -119,9 +116,7 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         else:
             queryset = self
         if self.end_date_field:
-            qfilter = (
-                models.Q(**{'%s__lte' % self.end_date_field: now()})
-            )
+            qfilter = models.Q(**{"%s__lte" % self.end_date_field: now()})
             queryset = queryset.filter(qfilter)
         return queryset.filter(**{self.publish_field: True})
 
@@ -144,7 +139,7 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
     queryset_class = GenericDateQuerySet
 
     def get_queryset(self, *args, **kwargs):
-        return super(GenericDateTaggedManager, self).get_queryset(*args, **kwargs)
+        return super().get_queryset(*args, **kwargs)
 
     def published(self, current_site=True):
         return self.get_queryset().published(current_site)
@@ -180,9 +175,16 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
                 current_date = blog_dates[0]
             else:
                 current_date = blog_dates[1]
-            dates.append((current_date.year, current_date.month,))
+            dates.append(
+                (
+                    current_date.year,
+                    current_date.month,
+                )
+            )
         date_counter = Counter(dates)
         dates = set(dates)
         dates = sorted(dates, reverse=True)
-        return [{'date': now().replace(year=year, month=month, day=1),
-                 'count': date_counter[year, month]} for year, month in dates]
+        return [
+            {"date": now().replace(year=year, month=month, day=1), "count": date_counter[year, month]}
+            for year, month in dates
+        ]

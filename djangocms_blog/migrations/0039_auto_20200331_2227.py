@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('djangocms_blog', '0038_post_media'),
+        ("djangocms_blog", "0038_post_media"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='blogcategorytranslation',
-            name='name',
-            field=models.CharField(max_length=752, verbose_name='name'),
+            model_name="blogcategorytranslation",
+            name="name",
+            field=models.CharField(max_length=752, verbose_name="name"),
         ),
         migrations.AlterField(
-            model_name='blogcategorytranslation',
-            name='slug',
-            field=models.SlugField(blank=True, max_length=752, verbose_name='slug'),
+            model_name="blogcategorytranslation",
+            name="slug",
+            field=models.SlugField(blank=True, max_length=752, verbose_name="slug"),
         ),
         migrations.AlterField(
-            model_name='posttranslation',
-            name='slug',
-            field=models.SlugField(allow_unicode=True, blank=True, max_length=752, verbose_name='slug'),
+            model_name="posttranslation",
+            name="slug",
+            field=models.SlugField(allow_unicode=True, blank=True, max_length=752, verbose_name="slug"),
         ),
         migrations.AlterField(
-            model_name='posttranslation',
-            name='title',
-            field=models.CharField(max_length=752, verbose_name='title'),
+            model_name="posttranslation",
+            name="title",
+            field=models.CharField(max_length=752, verbose_name="title"),
         ),
     ]

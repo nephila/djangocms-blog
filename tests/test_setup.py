@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import sys
 
 from cms.api import create_page, create_title
@@ -20,20 +17,19 @@ except ImportError:
 
 @override_settings(BLOG_AUTO_SETUP=True)
 class SetupTest(BaseTest):
-
     @classmethod
     def setUpClass(cls):
         # Skipping initialization to start with clean database
         super(BaseTest, cls).setUpClass()
 
     def setUp(self):
-        super(SetupTest, self).setUp()
+        super().setUp()
         from cms.apphook_pool import apphook_pool
 
         delete = [
-            'djangocms_blog',
-            'djangocms_blog.cms_app',
-            'djangocms_blog.cms_apps',
+            "djangocms_blog",
+            "djangocms_blog.cms_app",
+            "djangocms_blog.cms_apps",
         ]
         for module in delete:
             if module in sys.modules:
@@ -59,7 +55,7 @@ class SetupTest(BaseTest):
         # Tests starts with no page and no config
         self.assertFalse(Page.objects.exists())
         self.assertFalse(BlogConfig.objects.exists())
-        set_home = hasattr(Page, 'set_as_homepage')
+        set_home = hasattr(Page, "set_as_homepage")
 
         langs = get_language_list()
         home = None
@@ -67,15 +63,12 @@ class SetupTest(BaseTest):
             with override(lang):
                 if not home:
                     home = create_page(
-                        'a new home', language=lang,
-                        template='blog.html', in_navigation=True, published=True
+                        "a new home", language=lang, template="blog.html", in_navigation=True, published=True
                     )
                     if set_home:
                         home.set_as_homepage()
                 else:
-                    create_title(
-                        language=lang, title='a new home', page=home
-                    )
+                    create_title(language=lang, title="a new home", page=home)
                     home.publish(lang)
 
         # importing cms_app triggers the auto setup
@@ -87,4 +80,4 @@ class SetupTest(BaseTest):
 
         home = Page.objects.get_home()
         for lang in langs:
-            self.assertEqual(home.get_title(lang), 'a new home')
+            self.assertEqual(home.get_title(lang), "a new home")
