@@ -250,25 +250,25 @@ BLOG_TWITTER_AUTHOR = "get_author_twitter"
 Twitter account of the post author.
 """
 
-BLOG_GPLUS_TYPE = "Blog"
+BLOG_SCHEMAORG_TYPE = "Blog"
 """
-.. _GPLUS_TYPE:
+.. _SCHEMAORG_TYPE:
 
 Schema.org type for the post object.
 """
 
-BLOG_GPLUS_TYPES = meta_settings.GPLUS_TYPES
+BLOG_SCHEMAORG_TYPES = meta_settings.SCHEMAORG_TYPES
 """
-.. _GPLUS_TYPES:
+.. _SCHEMAORG_TYPES:
 
 Choices of available Schema.org types.
 
-Default from ``GPLUS_TYPES`` defined in `django-meta settings`_.
+Default from ``SCHEMAORG_TYPES`` defined in `django-meta settings`_.
 """
 
-BLOG_GPLUS_AUTHOR = "get_author_gplus"
+BLOG_SCHEMAORG_AUTHOR = "get_author_schemaorg"
 """
-.. _GPLUS_AUTHOR:
+.. _SCHEMAORG_AUTHOR:
 
 Google+ account of the post author (deprecated).
 """

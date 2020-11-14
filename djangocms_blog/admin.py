@@ -532,7 +532,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 },
             ),
             (
-                "Google+",
+                "Schema.org",
                 {
                     "fields": (
                         "config.gplus_type",

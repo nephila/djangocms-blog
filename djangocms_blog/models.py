@@ -73,6 +73,7 @@ class BlogMetaMixin(ModelMeta):
         Retrieves django-meta attributes from apphook config instance
         :param param: django-meta attribute passed as key
         """
+        print(param, getattr(self.app_config, param))
         return self._get_meta_value(param, getattr(self.app_config, param)) or ""
 
     def get_locale(self):
@@ -111,7 +112,8 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         "description": "get_description",
         "og_description": "get_description",
         "twitter_description": "get_description",
-        "gplus_description": "get_description",
+        "schemaorg_description": "get_description",
+        "schemaorg_type": "get_meta_attribute",
         "locale": "get_locale",
         "object_type": "get_meta_attribute",
         "og_type": "get_meta_attribute",
@@ -123,8 +125,6 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         "twitter_type": "get_meta_attribute",
         "twitter_site": "get_meta_attribute",
         "twitter_author": "get_meta_attribute",
-        "gplus_type": "get_meta_attribute",
-        "gplus_author": "get_meta_attribute",
         "url": "get_absolute_url",
     }
 
@@ -284,7 +284,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         "keywords": "get_keywords",
         "og_description": "get_description",
         "twitter_description": "get_description",
-        "gplus_description": "get_description",
+        "schemaorg_description": "get_description",
         "locale": "get_locale",
         "image": "get_image_full_url",
         "image_width": "get_image_width",
@@ -299,8 +299,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         "twitter_type": "get_meta_attribute",
         "twitter_site": "get_meta_attribute",
         "twitter_author": "get_meta_attribute",
-        "gplus_type": "get_meta_attribute",
-        "gplus_author": "get_meta_attribute",
+        "schemaorg_type": "get_meta_attribute",
         "published_time": "date_published",
         "modified_time": "date_modified",
         "expiration_time": "date_published_end",

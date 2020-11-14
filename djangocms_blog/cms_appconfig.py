@@ -27,6 +27,11 @@ class BlogConfig(TranslatableModel, AppHookConfig):
     def get_app_title(self):
         return getattr(self, "app_title", _("untitled"))
 
+    @property
+    def schemaorg_type(self):
+        """Compatibility shim to fetch data from legacy gplus_type field."""
+        return self.gplus_type
+
 
 class BlogConfigForm(AppDataForm):
     """
@@ -176,13 +181,16 @@ class BlogConfigForm(AppDataForm):
     twitter_author = forms.CharField(
         max_length=200, label=_("Twitter author handle"), required=False, initial=get_setting("TWITTER_AUTHOR")
     )
-    #: Schema.org object type (default: :ref:`GPLUS_TYPE <GPLUS_TYPE>`)
+    #: Schema.org object type (default: :ref:`SCHEMAORG_TYPE <SCHEMAORG_TYPE>`)
     gplus_type = forms.ChoiceField(
-        label=_("Google+ type"), required=False, choices=get_setting("GPLUS_TYPES"), initial=get_setting("GPLUS_TYPE")
+        label=_("Schema.org type"),
+        required=False,
+        choices=get_setting("SCHEMAORG_TYPES"),
+        initial=get_setting("SCHEMAORG_TYPE"),
     )
-    #: Google+ author name abstract field (default: :ref:`GPLUS_AUTHOR <GPLUS_AUTHOR>`)
+    #: Schema.org author name abstract field (default: :ref:`SCHEMAORG_AUTHOR <SCHEMAORG_AUTHOR>`)
     gplus_author = forms.CharField(
-        max_length=200, label=_("Google+ author name"), required=False, initial=get_setting("GPLUS_AUTHOR")
+        max_length=200, label=_("Schema.org author name"), required=False, initial=get_setting("SCHEMAORG_AUTHOR")
     )
     #: Send notifications on post update. Require channels integration
     send_knock_create = forms.BooleanField(
