@@ -1,5 +1,7 @@
-from django.conf.urls import include, url
+# This file is used on divio cloud only during automatic setup
+from django.conf.urls import include  # pragma: no cover
+from django.urls import path  # pragma: no cover
 
-urlpatterns = [
-    url(r"^taggit_autosuggest/", include("taggit_autosuggest.urls")),
+urlpatterns = [  # pragma: no cover
+    path("taggit_autosuggest/", include("taggit_autosuggest.urls")),
 ]

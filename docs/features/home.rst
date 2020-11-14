@@ -31,12 +31,16 @@ To avoid this add the following settings to you project:
         ('category', _('Category')),
     )
     BLOG_PERMALINK_URLS = {
-        'full_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/(?P<slug>\w[-\w]*)/$',
-        'short_date': r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<slug>\w[-\w]*)/$',
-        'category': r'^(?P<category>\w[-\w]*)/(?P<slug>\w[-\w]*)/$',
+        "full_date": "<int:year>/<int:month>/<int:day>/<slug:slug>/",
+        "short_date: "<int:year>/<int:month>/<slug:slug>/",
+        "category": "<slug:category>/<slug:slug>/",
     }
 
 Notice that the last permalink type is no longer present.
 
 Then, pick any of the three remaining permalink types in the layout section of the apphooks config
 linked ot the home page (at http://yoursite.com/admin/djangocms_blog/blogconfig/).'
+
+.. warning:: Version 1.2 introduce a breaking change as it drops ``url`` function in favour of ``path``.
+             If you have customized the urls as documented above you **must** update the custom urlconf to path-based
+             patterns.

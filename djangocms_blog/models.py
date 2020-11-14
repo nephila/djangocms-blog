@@ -362,19 +362,21 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             else:
                 current_date = self.date_created
             urlconf = get_setting("PERMALINK_URLS")[self.app_config.url_patterns]
-            if "<year>" in urlconf:
+            if "<int:year>" in urlconf:
                 kwargs["year"] = current_date.year
-            if "<month>" in urlconf:
+            if "<int:month>" in urlconf:
                 kwargs["month"] = "%02d" % current_date.month
-            if "<day>" in urlconf:
+            if "<int:day>" in urlconf:
                 kwargs["day"] = "%02d" % current_date.day
-            if "<slug>" in urlconf:
+            if "<slug:slug>" in urlconf:
                 kwargs["slug"] = self.safe_translation_getter("slug", language_code=lang, any_language=True)  # NOQA
-            if "<category>" in urlconf:
+            if "<slug:category>" in urlconf:
                 kwargs["category"] = category.safe_translation_getter(
                     "slug", language_code=lang, any_language=True
                 )  # NOQA
-            return reverse("%s:post-detail" % self.app_config.namespace, kwargs=kwargs)
+            return reverse(
+                "%s:post-detail" % self.app_config.namespace, kwargs=kwargs, current_app=self.app_config.namespace
+            )
 
     def get_title(self):
         title = self.safe_translation_getter("meta_title", any_language=True)
