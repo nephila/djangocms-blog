@@ -11,7 +11,7 @@ from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models import signals
 from django.http import HttpResponseRedirect
-from django.urls import path, reverse
+from django.urls import re_path, reverse
 from django.utils import timezone
 from django.utils.translation import get_language_from_request, gettext_lazy as _, ngettext as __
 from parler.admin import TranslatableAdmin
@@ -282,7 +282,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         Customize the modeladmin urls
         """
         urls = [
-            path(
+            re_path(
                 "publish/<int:pk>/$",
                 self.admin_site.admin_view(self.publish_post),
                 name="djangocms_blog_publish_article",
