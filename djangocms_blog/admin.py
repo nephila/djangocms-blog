@@ -283,7 +283,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         """
         urls = [
             path(
-                "publish/<int:pk>/$",
+                "publish/<int:pk>/",
                 self.admin_site.admin_view(self.publish_post),
                 name="djangocms_blog_publish_article",
             ),
