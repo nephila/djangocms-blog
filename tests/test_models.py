@@ -697,9 +697,9 @@ class AdminTest(BaseTest):
             post.save()
             self.client.force_login(self.user)
             response = self.client.post(reverse("admin:djangocms_blog_publish_article", args=(post.pk,)))
+            post.refresh_from_db()
             self.assertEqual(response.status_code, 302)
             self.assertEqual(response["Location"], post.get_absolute_url())
-            post.refresh_from_db()
             self.assertTrue(post.publish)
 
     def test_admin_site(self):
