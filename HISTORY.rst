@@ -6,6 +6,15 @@ History
 
 .. towncrier release notes start
 
+1.2.1 (2020-11-16)
+==================
+
+Bugfixes
+--------
+
+- Fix admin urlconf not matching path syntax (#648)
+
+
 1.2.0 (2020-11-14)
 ==================
 
