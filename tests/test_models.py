@@ -688,6 +688,20 @@ class AdminTest(BaseTest):
                     modified_post = Post.objects.language("en").get(pk=post.pk)
                     self.assertEqual(modified_post.safe_translation_getter("post_text"), data["post_text"])
 
+    def test_admin_publish_post_view(self):
+        self.get_pages()
+        post = self._get_post(self._post_data[0]["en"])
+
+        with pause_knocks(post):
+            post.publish = False
+            post.save()
+            self.client.force_login(self.user)
+            response = self.client.post(reverse("admin:djangocms_blog_publish_article", args=(post.pk,)))
+            post.refresh_from_db()
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(response["Location"], post.get_absolute_url())
+            self.assertTrue(post.publish)
+
     def test_admin_site(self):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]["en"])

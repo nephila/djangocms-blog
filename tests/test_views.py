@@ -1,11 +1,13 @@
 import os.path
 
 from aldryn_apphooks_config.utils import get_app_instance
+from app_helper.utils import captured_output
 from cms.api import add_plugin
 from cms.toolbar.items import ModalItem
 from cms.utils.apphook_reload import reload_urlconf
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.http import Http404
 from django.test import override_settings
 from django.urls import reverse
@@ -39,8 +41,21 @@ class CustomUrlViewTest(BaseTest):
         self.get_request(pages[1], "en", AnonymousUser())
         self.assertEqual(reverse("sample_app:posts-latest"), "/en/page-two/latests/")
 
+    @override_settings(BLOG_URLCONF="tests.test_utils.blog_urls")
+    def test_check_custom_urlconf(self):
+        """No django check fails with custom urlconf."""
+        with captured_output() as (out, err):
+            call_command("check", fail_level="DEBUG")
+        self.assertEqual(out.getvalue().strip(), "System check identified no issues (0 silenced).")
+
 
 class ViewTest(BaseTest):
+    def test_check_plain_urlconf(self):
+        """No django check fails with plain urlconf."""
+        with captured_output() as (out, err):
+            call_command("check", fail_level="DEBUG")
+        self.assertEqual(out.getvalue().strip(), "System check identified no issues (0 silenced).")
+
     def test_post_list_view_base_urlconf(self):
         pages = self.get_pages()
         self.get_posts()

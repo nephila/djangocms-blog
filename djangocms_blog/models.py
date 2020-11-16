@@ -40,7 +40,7 @@ thumbnail_model = "{}.{}".format(ThumbnailOption._meta.app_label, ThumbnailOptio
 
 try:
     from knocker.mixins import KnockerModel
-except ImportError:
+except ImportError:  # pragma: no cover
 
     class KnockerModel:
         """
@@ -73,7 +73,6 @@ class BlogMetaMixin(ModelMeta):
         Retrieves django-meta attributes from apphook config instance
         :param param: django-meta attribute passed as key
         """
-        print(param, getattr(self.app_config, param))
         return self._get_meta_value(param, getattr(self.app_config, param)) or ""
 
     def get_locale(self):
