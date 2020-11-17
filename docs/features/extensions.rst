@@ -8,6 +8,7 @@ Post Extensions
 Posts can be extended to attach arbitrary fields to a post instance.
 
 E.g. one want's to have in a template a field or placeholder related to a post.
+
 .. code-block:: python
 
     {{ post.extension.some_field }}
@@ -15,6 +16,7 @@ E.g. one want's to have in a template a field or placeholder related to a post.
 
 
 Define the models in your models.py
+
 .. code-block:: python
 
     from cms.models import CMSPlugin, PlaceholderField
@@ -31,6 +33,7 @@ Define the models in your models.py
 
 
 Define a inline in your admin.py
+
 .. code-block:: python
 
     from .models import PostExtension
@@ -46,6 +49,7 @@ Define a inline in your admin.py
 
 
 Register the extension in djangocms_blog
+
 .. code-block:: python
 
     import djangocms_blog.admin as blog_admin
