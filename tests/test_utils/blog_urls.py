@@ -31,7 +31,7 @@ urlpatterns = [
     path("<int:year>/", PostArchiveView.as_view(), name="posts-archive"),
     path("<int:year>/<int:month>/", PostArchiveView.as_view(), name="posts-archive"),
     path("author/<str:username>/", AuthorEntriesView.as_view(), name="posts-author"),
-    path("category/<slug:category>/", CategoryEntriesView.as_view(), name="posts-category"),
+    path("category/<str:category>/", CategoryEntriesView.as_view(), name="posts-category"),
     path("tag/<slug:tag>/", TaggedListView.as_view(), name="posts-tagged"),
     path("tag/<slug:tag>/feed/", TagFeed(), name="posts-tagged-feed"),
 ] + detail_urls

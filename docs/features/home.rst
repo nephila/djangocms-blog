@@ -31,9 +31,9 @@ To avoid this add the following settings to you project:
         ('category', _('Category')),
     )
     BLOG_PERMALINK_URLS = {
-        "full_date": "<int:year>/<int:month>/<int:day>/<slug:slug>/",
-        "short_date: "<int:year>/<int:month>/<slug:slug>/",
-        "category": "<slug:category>/<slug:slug>/",
+        "full_date": "<int:year>/<int:month>/<int:day>/<str:slug>/",
+        "short_date: "<int:year>/<int:month>/<str:slug>/",
+        "category": "<str:category>/<str:slug>/",
     }
 
 Notice that the last permalink type is no longer present.

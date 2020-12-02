@@ -17,6 +17,7 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.encoding import force_str
 from django.utils.html import strip_tags
+from django.utils.http import urlquote
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from filer.models import ThumbnailOption
@@ -853,6 +854,10 @@ class ModelsTest(BaseTest):
         post = Post.objects.language("en").create(title="I am a title")
         self.assertEqual(post.slug, "i-am-a-title")
 
+        # Test unicode chars in slugs
+        post = Post.objects.language("fr").create(title="Accentué")
+        self.assertEqual(post.slug, "accentué")
+
     def test_model_attributes(self):
         self.get_pages()
 
@@ -1031,6 +1036,39 @@ class ModelsTest(BaseTest):
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*/%s/$" % post.slug, post.get_absolute_url()))
+
+        # Unicode chars in slugs
+        post = Post.objects.language("fr").create(title="Accentué")
+        category = BlogCategory.objects.create(name="Catégorie 2", app_config=self.app_config_1)
+        category.set_current_language("fr", initialize=True)
+        post.categories.add(category)
+
+        # full date
+        self.app_config_1.app_data.config.url_patterns = "full_date"
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r".*\d{4}/\d{2}/\d{2}/%s/$" % urlquote(post.slug), post.get_absolute_url()))
+
+        # short date
+        self.app_config_1.app_data.config.url_patterns = "short_date"
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r".*\d{4}/\d{2}/%s/$" % urlquote(post.slug), post.get_absolute_url()))
+
+        # category
+        self.app_config_1.app_data.config.url_patterns = "category"
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+
+        self.assertTrue(
+            re.match(r".*{}/{}/$".format(urlquote(post.categories.first().slug), urlquote(post.slug)), post.get_absolute_url())
+        )
+
+        # slug only
+        self.app_config_1.app_data.config.url_patterns = "category"
+        self.app_config_1.save()
+        post.app_config = self.app_config_1
+        self.assertTrue(re.match(r".*/%s/$" % urlquote(post.slug), post.get_absolute_url()))
 
     def test_url_language(self):
         self.get_pages()
