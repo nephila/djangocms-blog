@@ -35,11 +35,12 @@ Permalinks styles.
 """
 
 PERMALINKS_URLS = {  # noqa
-    PERMALINK_TYPE_FULL_DATE: "<int:year>/<int:month>/<int:day>/<slug:slug>/",
-    PERMALINK_TYPE_SHORT_DATE: "<int:year>/<int:month>/<slug:slug>/",
-    PERMALINK_TYPE_CATEGORY: "<slug:category>/<slug:slug>/",
-    PERMALINK_TYPE_SLUG: "<slug:slug>/",
+    PERMALINK_TYPE_FULL_DATE: "<int:year>/<int:month>/<int:day>/<str:slug>/",
+    PERMALINK_TYPE_SHORT_DATE: "<int:year>/<int:month>/<str:slug>/",
+    PERMALINK_TYPE_CATEGORY: "<str:category>/<str:slug>/",
+    PERMALINK_TYPE_SLUG: "<str:slug>/",
 }
+
 """
 .. _PERMALINKS_URLS:
 
