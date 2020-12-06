@@ -11,6 +11,9 @@ jobs:
         python-version: [3.9, 3.8, 3.7, 3.6]
         django: [31, 30, 22]
         cms: [38, 37]
+        exclude:
+          - django: 31
+            cms: 37
         include:
           - python-version: 3.8
             django: 22
