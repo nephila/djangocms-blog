@@ -12,13 +12,14 @@
         "sortedm2m"
     ],
     "settings": {
-        "META_SITE_PROTOCOL": "http",
+        "META_SITE_PROTOCOL": "https",
         "META_USE_SITES": true,
         "META_USE_OG_PROPERTIES": true,
         "META_USE_TWITTER_PROPERTIES": true,
-        "META_USE_GOOGLEPLUS_PROPERTIES": true
+        "META_USE_SCHEMAORG_PROPERTIES": true
     },
     "urls": [
-        "djangocms_blog.taggit_urls"
-    ]
+        ["", "djangocms_blog.taggit_urls"]
+    ],
+    "message": "Installation completed, check documentation https://djangocms-blog.readthedocs.io/en/latest/installation.html#modify-templates for further information"
 }

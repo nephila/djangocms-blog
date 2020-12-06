@@ -48,7 +48,7 @@ HELPER_SETTINGS = dict(
     META_SITE_DOMAIN="example.com",
     META_USE_OG_PROPERTIES=True,
     META_USE_TWITTER_PROPERTIES=True,
-    META_USE_GOOGLEPLUS_PROPERTIES=True,
+    META_USE_SCHEMAORG_PROPERTIES=True,
     THUMBNAIL_PROCESSORS=(
         "easy_thumbnails.processors.colorspace",
         "easy_thumbnails.processors.autocrop",
