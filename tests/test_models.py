@@ -1061,7 +1061,10 @@ class ModelsTest(BaseTest):
         post.app_config = self.app_config_1
 
         self.assertTrue(
-            re.match(r".*{}/{}/$".format(urlquote(post.categories.first().slug), urlquote(post.slug)), post.get_absolute_url())
+            re.match(
+                r".*{}/{}/$".format(urlquote(post.categories.first().slug), urlquote(post.slug)),
+                post.get_absolute_url(),
+            )
         )
 
         # slug only
