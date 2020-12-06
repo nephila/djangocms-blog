@@ -2,8 +2,6 @@ from unittest import skipIf
 
 from cms.api import add_plugin
 from django.test import override_settings
-from haystack.constants import DEFAULT_ALIAS
-from haystack.query import SearchQuerySet
 
 from djangocms_blog.models import Post
 
@@ -14,6 +12,13 @@ try:
 except ImportError:
     aldryn_search = None
 
+try:
+    import haystack
+    from haystack.constants import DEFAULT_ALIAS
+    from haystack.query import SearchQuerySet
+except ImportError:
+    haystack = None
+
 
 class BlogIndexingTests(BaseTest):
     sample_text = "First post first line This is the description keyword1  keyword2 category 1 a tag test body"
@@ -22,6 +27,7 @@ class BlogIndexingTests(BaseTest):
         self.get_pages()
 
     @skipIf(aldryn_search is None, "aldryn-search not installed")
+    @skipIf(haystack is None, "haystack not installed")
     def test_blog_post_is_indexed_using_prepare(self):
         """This tests the indexing path way used by update_index mgmt command"""
         post = self._get_post(self._post_data[0]["en"])
@@ -41,6 +47,7 @@ class BlogIndexingTests(BaseTest):
         self.assertEqual(post.date_published, indexed["pub_date"])
 
     @skipIf(aldryn_search is None, "aldryn-search not installed")
+    @skipIf(haystack is None, "haystack not installed")
     @override_settings(BLOG_USE_PLACEHOLDER=False)
     def test_blog_post_is_indexed_using_prepare_no_placeholder(self):
         """This tests the indexing path way used by update_index mgmt command when not using placeholder content"""
@@ -62,6 +69,7 @@ class BlogIndexingTests(BaseTest):
         self.assertEqual(post.get_absolute_url(), indexed["url"])
         self.assertEqual(post.date_published, indexed["pub_date"])
 
+    @skipIf(haystack is None, "haystack not installed")
     def test_searchqueryset(self):
         posts = self.get_posts()
         all_results = SearchQuerySet().models(Post)

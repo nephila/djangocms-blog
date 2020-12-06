@@ -6,8 +6,6 @@ from app_helper.base_test import BaseTestCase
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
-from haystack import connections
-from haystack.constants import DEFAULT_ALIAS
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override
 
@@ -257,6 +255,9 @@ class BaseTest(BaseTestCase):
         return posts
 
     def get_post_index(self):
+        from haystack import connections
+        from haystack.constants import DEFAULT_ALIAS
+
         search_conn = connections[DEFAULT_ALIAS]
         unified_index = search_conn.get_unified_index()
         index = unified_index.get_index(Post)
