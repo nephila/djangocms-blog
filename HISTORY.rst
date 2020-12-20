@@ -6,6 +6,27 @@ History
 
 .. towncrier release notes start
 
+1.2.2 (2020-12-20)
+==================
+
+Features
+--------
+
+- Add support for Python 3.9 (#657)
+
+
+Bugfixes
+--------
+
+- Handle unicode chars in reverse of Post and Category models, using Django path() method instead of url() (#653)
+
+
+Improved Documentation
+----------------------
+
+- Update docs to clarify how to add content (#636)
+
+
 1.2.1 (2020-11-16)
 ==================
 

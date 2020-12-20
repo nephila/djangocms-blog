@@ -1,1 +1,0 @@
-Handle unicode chars in reverse of Post and Category models, using Django path() method instead of url()
