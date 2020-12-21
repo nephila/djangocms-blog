@@ -6,6 +6,17 @@ History
 
 .. towncrier release notes start
 
+1.2.3 (2020-12-21)
+==================
+
+Features
+--------
+
+- Improve django-app-enabler support (#660)
+- Update translations
+- Update django-app-enabler information
+
+
 1.2.2 (2020-12-20)
 ==================
 
