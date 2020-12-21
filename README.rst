@@ -31,6 +31,7 @@ Features
 
 See `features documentation`_  for all the features details
 
+* Support for `django-app-enabler`_ autoconfiguration.
 * Placeholder content editing
 * Frontend editing using django CMS frontend editor
 * Multilingual support using django-parler
@@ -58,6 +59,7 @@ See DjangoPackages for an updated list https://www.djangopackages.com/packages/p
 .. _installation documentation: http://djangocms-blog.readthedocs.io/en/latest/installation.html
 .. _permalinks: http://djangocms-blog.readthedocs.io/en/latest/features/permalinks.html
 .. _cmsplugin-filer migration documentation: http://djangocms-blog.readthedocs.io/en/latest/cmsplugin_filer.html
+.. _django-app-enabler: https://github.com/nephila/django-app-enabler
 
 
 .. |Gitter| image:: https://img.shields.io/badge/GITTER-join%20chat-brightgreen.svg?style=flat-square
