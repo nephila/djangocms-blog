@@ -1,4 +1,4 @@
--r requirements.txt
+-e .[docs]
 coverage
 coveralls>=2.0
 pysolr

@@ -12,6 +12,8 @@ Contributors
 
 * Adam Chainz
 * alex
+* Alexander Pitkin
+* Benjamin PIERRE
 * Bryan Marty
 * Carlo Ascani
 * Christoph Reimers
@@ -27,14 +29,17 @@ Contributors
 * G3RB3N
 * Georgiy Kutsurua
 * German Ilyin
+* Jaakko Moisio
 * Jens Diemer
 * Kamil Gałuszka
 * kynsi
 * Lee Solway
 * Leonardo Cavallucci
 * M.Ravi
+* Marc Antwertinger
 * Marco Federighi
 * Mark
+* Max Muth
 * Max Vyaznikov
 * Mike Liu
 * MotleyTech
@@ -49,5 +54,7 @@ Contributors
 * Stefan Wehrmeyer
 * Sylvain Fankhauser
 * Tadas Dailyda
+* W. Bomar
+* wfehr
 * Wiktor Matuszewski
 * Zan Anderle
