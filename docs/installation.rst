@@ -15,9 +15,30 @@ django CMS docs:
 - `django CMS user guide <http://docs.django-cms.org/en/latest/user/index.html>`_
 - `django CMS videos <https://www.youtube.com/channel/UCafBqF_OeeGDgQVte5eCiJg>`_
 
+
+**************************
+django-app-enabler support
+**************************
+
+`django-app-enabler`_ is supported.
+
+You can either
+
+* Installation & configuration: ``python -mapp_enabler install djangocms-blog``
+* Autoconfiguration: ``python -mapp_enabler enable djangocms_blog``
+
+You can further customise the blog configuration, you can start by checking:
+
+- :ref:`modify_templates`
+- :ref:`haystack`
+- :ref:`attach`
+- :ref:`external_applications`
+
 *********************
 Installation steps
 *********************
+
+.. note:: The steps in this section are applied automatically by ``django-app-enabler``, if you use it.
 
 * Install djangocms-blog:
 
@@ -98,6 +119,8 @@ Installation steps
 
 * Add the blog application (see :ref:`attach` below).
 
+.. _modify_templates:
+
 ***********************
 Modify templates
 ***********************
@@ -131,6 +154,7 @@ Alternative you can override then ``djangocms_blog/base.html`` and extend a diff
     {% endblock my_block %}
     ...
 
+.. _haystack:
 
 ***********************
 Enable haystack support
@@ -235,3 +259,4 @@ action if a ``BlogConfig`` instance is found.
 
 .. _django cms frontend editor: http://docs.django-cms.org/en/latest/user/reference/page_admin.html
 .. _tutorial: http://docs.django-cms.org/en/latest/user/tutorial/structure-content-modes.html
+.. _django-app-enabler: https://github.com/nephila/django-app-enabler

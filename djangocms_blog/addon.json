@@ -16,7 +16,13 @@
         "META_USE_SITES": true,
         "META_USE_OG_PROPERTIES": true,
         "META_USE_TWITTER_PROPERTIES": true,
-        "META_USE_SCHEMAORG_PROPERTIES": true
+        "META_USE_SCHEMAORG_PROPERTIES": true,
+        "THUMBNAIL_PROCESSORS": [
+            "easy_thumbnails.processors.colorspace",
+            "easy_thumbnails.processors.autocrop",
+            "filer.thumbnail_processors.scale_and_crop_with_subject_location",
+            "easy_thumbnails.processors.filters"
+        ]
     },
     "urls": [
         ["", "djangocms_blog.taggit_urls"]
