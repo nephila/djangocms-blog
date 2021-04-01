@@ -1,12 +1,9 @@
-from django.apps import apps
-from django.conf import settings
-
 from cms.app_base import CMSAppConfig
 
 from .models import Post
-from .views import PostDetailView
+from .rendering import render_post_content
 
 
-class AliasCMSConfig(CMSAppConfig):
+class BlogCMSConfig(CMSAppConfig):
     cms_enabled = True
-    cms_toolbar_enabled_models = [(Post, PostDetailView)]
+    cms_toolbar_enabled_models = [(Post, render_post_content)]
