@@ -734,4 +734,4 @@ msgstr "от"
 
 #: templates/djangocms_blog/post_list.html:35
 msgid "next"
-msgstr "следващ"
+msgstr "следващa"
