@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         migrations.swappable_dependency(ACTUAL_FILER_IMAGE_MODEL),
-        ("cms", "__first__"),
+        ("cms", "__latest__"),
         ("taggit", "__first__"),
         ("filer", "0003_thumbnailoption"),
     ]
