@@ -205,6 +205,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
     publish = models.BooleanField(_("publish"), default=False)
+    include_in_rss = models.BooleanField(_("include in RSS feed"), default=True)
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory", verbose_name=_("category"), related_name="blog_posts", blank=True
     )
