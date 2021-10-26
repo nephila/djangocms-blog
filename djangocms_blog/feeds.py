@@ -1,6 +1,7 @@
 from html import unescape
 
 from aldryn_apphooks_config.utils import get_app_instance
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.syndication.views import Feed
 from django.core.cache import cache
@@ -63,6 +64,19 @@ class LatestEntriesFeed(Feed):
 
     def item_author_url(self, item):
         return item.get_author_url()
+
+    def item_enclosure_url(self, item):
+        if not item.rss_image:
+            return None
+        return settings.META_SITE_PROTOCOL + "://" + Site.objects.get_current().domain + item.rss_image.url
+
+    def item_enclosure_length(self, item):
+        return 0
+
+    def item_enclosure_mime_type(self, item):
+        if not item.rss_image:
+            return None
+        return item.rss_image.mime_type
 
 
 class TagFeed(LatestEntriesFeed):

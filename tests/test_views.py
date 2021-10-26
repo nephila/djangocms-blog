@@ -7,12 +7,14 @@ from cms.toolbar.items import ModalItem
 from cms.utils.apphook_reload import reload_urlconf
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files import File
 from django.core.management import call_command
 from django.http import Http404
 from django.test import override_settings
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from filer.models import Image
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
@@ -409,6 +411,33 @@ class TaggedItemViewTest(BaseTest):
                 self.assertContains(xml, posts[0].get_absolute_url())
                 self.assertContains(xml, "Blog articles on example.com")
                 self.assertContains(xml, "Admin User</dc:creator>")
+                self.assertNotContains(xml, '<enclosure length="0" type="image/jpeg" url="')
+                self.assertNotContains(xml, 'image.jpeg"></enclosure>')
+
+        filename = "image.jpeg"
+        filepath = "tests/images/image.jpeg"
+        with open(filepath, "rb") as f:
+            file_obj = File(f, name=filename)
+            posts[0].rss_image = Image.objects.create(
+                owner=self.user, original_filename=filename, file=file_obj, mime_type="image/jpeg"
+            )
+        posts[0].save()
+
+        with smart_override("en"):
+            with switch_language(posts[0], "en"):
+
+                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+
+                feed = LatestEntriesFeed()
+                feed.namespace, feed.config = get_app_instance(request)
+                self.assertEqual(list(feed.items()), [posts[0]])
+                self.reload_urlconf()
+                xml = feed(request)
+                self.assertContains(xml, posts[0].get_absolute_url())
+                self.assertContains(xml, "Blog articles on example.com")
+                self.assertContains(xml, "Admin User</dc:creator>")
+                self.assertContains(xml, '<enclosure length="0" type="image/jpeg" url="')
+                self.assertContains(xml, 'image.jpeg"></enclosure>')
 
         with smart_override("it"):
             with switch_language(posts[0], "it"):

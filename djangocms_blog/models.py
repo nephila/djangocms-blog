@@ -231,6 +231,13 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         blank=True,
         null=True,
     )
+    rss_image = FilerImageField(
+        verbose_name=_("rss image"),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="djangocms_blog_post_rss_image",
+    )
     enable_comments = models.BooleanField(
         verbose_name=_("enable comments on post"), default=get_setting("ENABLE_COMMENTS")
     )
