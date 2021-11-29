@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.db import models
+from django.db.models import F
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -96,12 +97,37 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     date_created = models.DateTimeField(_("created at"), auto_now_add=True)
     date_modified = models.DateTimeField(_("modified at"), auto_now=True)
     app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
+    priority = models.IntegerField(_("priority"), blank=True, null=True)
+    main_image = FilerImageField(
+        verbose_name=_("main image"),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="djangocms_category_image",
+    )
+    main_image_thumbnail = models.ForeignKey(
+        thumbnail_model,
+        verbose_name=_("main image thumbnail"),
+        related_name="djangocms_category_thumbnail",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    main_image_full = models.ForeignKey(
+        thumbnail_model,
+        verbose_name=_("main image full"),
+        related_name="djangocms_category_full",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     translations = TranslatedFields(
         name=models.CharField(_("name"), max_length=752),
         slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True),
         meta_description=models.TextField(verbose_name=_("category meta description"), blank=True, default=""),
         meta={"unique_together": (("language_code", "slug"),)},
+        abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
     )
 
     objects = AppHookConfigTranslatableManager()
@@ -130,6 +156,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     class Meta:
         verbose_name = _("blog category")
         verbose_name_plural = _("blog categories")
+        ordering = (F("priority").asc(nulls_last=True), )
 
     def descendants(self):
         children = []
@@ -204,6 +231,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     date_published = models.DateTimeField(_("published since"), null=True, blank=True)
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
+    pinned = models.IntegerField(_("pinning priority"), blank=True, null=True,
+                                 help_text=_("Leave blank for regular order by date"))
     publish = models.BooleanField(_("publish"), default=False)
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory", verbose_name=_("category"), related_name="blog_posts", blank=True
@@ -309,7 +338,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     class Meta:
         verbose_name = _("blog article")
         verbose_name_plural = _("blog articles")
-        ordering = ("-date_published", "-date_created")
+        ordering = (F("pinned").asc(nulls_last=True), "-date_published", "-date_created")
         get_latest_by = "date_published"
 
     def __str__(self):

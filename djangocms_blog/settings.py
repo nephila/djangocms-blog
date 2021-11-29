@@ -97,6 +97,16 @@ BLOG_URLCONF = "djangocms_blog.urls"
 Standard Apphook URLConf.
 """
 
+BLOG_URLCONF = (
+    (BLOG_URLCONF, _("Blog: Blog list at root url of blog")),
+    ("djangocms_blog.urls_hub", _("Content hub: Category list at root url of blog")),
+)
+"""
+.. _URLOPTIONS:
+
+List of alternative URL configurations which can be set per app hook.
+"""
+
 BLOG_PAGINATION = 10
 """
 .. _PAGINATION:
@@ -587,6 +597,14 @@ BLOG_WIZARD_CONTENT_PLUGIN_BODY = "body"
 .. _WIZARD_CONTENT_PLUGIN_BODY:
 
 Name of the plugin field to add wizard text.
+"""
+
+BLOG_STRUCTURE = 0
+"""
+.. _STRUCTURE:
+
+Default structure of blog: 0 for a list of posts ordered by publication date. 1 for a set of categories ordered by
+priority.
 """
 
 params = {param: value for param, value in locals().items() if param.startswith("BLOG_")}

@@ -28,7 +28,10 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     }
 
     def get_urls(self, page=None, language=None, **kwargs):
-        return [get_setting("URLCONF")]
+        urlconf = get_setting("URLCONF")
+        if page is None or not page.application_namespace or isinstance(urlconf, str):
+            return [urlconf]  # Single urlconf
+        return [self.app_config.objects.get(namespace=page.application_namespace).urlconf]
 
     @property
     def urls(self):
