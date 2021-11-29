@@ -99,7 +99,7 @@ class BlogConfigForm(AppDataForm):
         choices=(
             [(get_setting("URLCONF"), "---")] if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")
         ),
-     )
+    )
     #: Set author by default (default: :ref:`AUTHOR_DEFAULT <AUTHOR_DEFAULT>`)
     set_author = forms.BooleanField(
         label=_("Set author"),
@@ -225,8 +225,8 @@ class BlogConfigForm(AppDataForm):
         super().__init__(*args, **kwargs)
         """Remove urlconf from form if no apphook-based url config is enabled"""
         if isinstance(get_setting("URLCONF"), str):
-            self.fields['urlconf'].widget = forms.HiddenInput()
-            self.fields['urlconf'].label = ""  # Admin otherwise displays label for hidden field
+            self.fields["urlconf"].widget = forms.HiddenInput()
+            self.fields["urlconf"].label = ""  # Admin otherwise displays label for hidden field
 
 
 setup_config(BlogConfigForm, BlogConfig)
