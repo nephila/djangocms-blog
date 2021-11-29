@@ -31,7 +31,8 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
         urlconf = get_setting("URLCONF")
         if page is None or not page.application_namespace or isinstance(urlconf, str):
             return [urlconf]  # Single urlconf
-        return [self.app_config.objects.get(namespace=page.application_namespace).urlconf]
+        return [getattr(self.app_config.objects.get(namespace=page.application_namespace), "urlconf",
+                        get_setting("URLCONF")[0][0])]  # Default if no urlconf is configured
 
     @property
     def urls(self):

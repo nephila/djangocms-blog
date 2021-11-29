@@ -93,9 +93,12 @@ class BlogConfigForm(AppDataForm):
     )
     #: Adjust urlconf (default: :ref:`USE_RELATED <USE_RELATED>`)
     urlconf = forms.ChoiceField(
-        label=_("URL config"), required=False, initial=get_setting("URLCONF"),
-        choices=([(get_setting("URLCONF"), "---")] if isinstance(get_setting("URLCONF"), str)
-                 else get_setting("URLCONF")),
+        label=_("URL config"),
+        required=False,
+        initial=get_setting("URLCONF") if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")[0][0],
+        choices=(
+            [(get_setting("URLCONF"), "---")] if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")
+        ),
      )
     #: Set author by default (default: :ref:`AUTHOR_DEFAULT <AUTHOR_DEFAULT>`)
     set_author = forms.BooleanField(
@@ -217,6 +220,13 @@ class BlogConfigForm(AppDataForm):
         initial=False,
         help_text=_("Emits a desktop notification -if enabled- when editing a published post"),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        """Remove urlconf from form if no apphook-based url config is enabled"""
+        if isinstance(get_setting("URLCONF"), str):
+            self.fields['urlconf'].widget = forms.HiddenInput()
+            self.fields['urlconf'].label = ""  # Admin otherwise displays label for hidden field
 
 
 setup_config(BlogConfigForm, BlogConfig)
