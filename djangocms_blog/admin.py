@@ -96,12 +96,12 @@ class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, Translat
     ]
     fieldsets = (
         (None, {
-            "fields": ('parent', 'app_config', 'name',  'meta_description')
+            "fields": ("parent", "app_config", "name", "meta_description")
         }),
         (
             _("Info"),
             {
-                "fields": ('abstract', 'priority',),
+                "fields": ("abstract", "priority",),
                 "classes": ("collapse",),
             },
         ),
