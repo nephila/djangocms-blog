@@ -84,12 +84,14 @@ class BlogConfigForm(AppDataForm):
     )
     #: Enable related posts (default: :ref:`USE_RELATED <USE_RELATED>`)
     use_related = forms.ChoiceField(
-        label=_("Enable related posts"), required=False, initial=get_setting("USE_RELATED"),
+        label=_("Enable related posts"),
+        required=False,
+        initial=int(get_setting("USE_RELATED")),
         choices=(
             (0, _("No")),
             (1, _("Yes, from this blog config")),
             (2, _("Yes, from this site")),
-        )
+        ),
     )
     #: Adjust urlconf (default: :ref:`USE_RELATED <USE_RELATED>`)
     urlconf = forms.ChoiceField(
