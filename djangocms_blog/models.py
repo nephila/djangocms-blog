@@ -171,6 +171,10 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         return self.blog_posts.namespace(self.app_config.namespace)
 
     @cached_property
+    def pinned_posts(self):
+        return self.linked_posts.filter(pinned__gt=0)
+
+    @cached_property
     def count(self):
         return self.linked_posts.published().count()
 
@@ -232,7 +236,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
     pinned = models.IntegerField(_("pinning priority"), blank=True, null=True,
-                                 help_text=_("Leave blank for regular order by date"))
+                                 help_text=_("Pinned posts are shown in ascending order before unpinned ones. "
+                                             "Leave blank for regular order by date."))
     publish = models.BooleanField(_("publish"), default=False)
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory", verbose_name=_("category"), related_name="blog_posts", blank=True
