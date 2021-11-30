@@ -401,14 +401,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
         fsets = deepcopy(self._fieldsets)
         related_posts = []
-        if config:
-            abstract = bool(config.use_abstract)
-            placeholder = bool(config.use_placeholder)
-            related = bool(config.use_related)
-        else:
-            abstract = get_setting("USE_ABSTRACT")
-            placeholder = get_setting("USE_PLACEHOLDER")
-            related = get_setting("USE_RELATED")
+        abstract = bool(getattr(config, "use_abstract", get_setting("USE_ABSTRACT")))
+        placeholder = bool(getattr(config, "use_placeholder", get_setting("USE_PLACEHOLDER")))
+        related = bool(getattr(config, "use_related", get_setting("USE_RELATED")))
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
