@@ -115,6 +115,7 @@ class CategoryListView(AppConfigMixin, ViewUrlMixin, TranslatableSlugMixin, List
     def get_queryset(self):
         language = get_language()
         queryset = self.model._default_manager.namespace(self.namespace).active_translations(language_code=language)
+        queryset = queryset.filter(parent__isnull=True)  # Only top-level categories
         setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         return queryset
 

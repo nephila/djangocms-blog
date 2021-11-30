@@ -90,19 +90,12 @@ Easy-thumbnail alias configuration for the post main image when shown on the pos
 it's a dictionary with ``size``, ``crop`` and ``upscale`` keys.
 """
 
-BLOG_URLCONF = "djangocms_blog.urls"
-"""
-.. _URLCONF:
-
-Standard Apphook URLConf.
-"""
-
 BLOG_URLCONF = (
-    (BLOG_URLCONF, _("Blog: Blog list at root url of blog")),
+    ("djangocms_blog.urls", _("Blog: Blog list at root url of blog")),
     ("djangocms_blog.urls_hub", _("Content hub: Category list at root url of blog")),
 )
 """
-.. _URLOPTIONS:
+.. _URLCONF:
 
 List of alternative URL configurations which can be set per app hook.
 """

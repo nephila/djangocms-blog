@@ -1,9 +1,13 @@
 
 .. _blog-custom-urlconf:
 
-########################
+################
+Customizing URLs
+################
+
+************************
 Provide a custom URLConf
-########################
+************************
 
 It's possible to completely customize the urlconf by setting ``BLOG_URLCONF`` to the dotted path of
 the new urlconf.
@@ -20,10 +24,11 @@ saving it to a new file ``my_project.blog_urls.py`` and editing it according to 
 The default URLConf ``djangocms_blog/urls.py`` is based on post lists that can be filtered by
 authors, categories, tags. Clicking an a post gives the post details.
 
+.. _blog-apphook-urlconf:
 
-######################################
+**************************************
 Allow to configure URLConf per apphook
-######################################
+**************************************
 
 For some projects it makes sense to have different apphooks with different URLConf. Say, you have a
 classic blog that reports current events. The classical blog list ordered by publication date

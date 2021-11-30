@@ -88,7 +88,7 @@ class BlogMetaMixin(ModelMeta):
 
 class BlogCategory(BlogMetaMixin, TranslatableModel):
     """
-    Blog category
+    Blog category allows to structure content in a hierarchy of categories.
     """
 
     parent = models.ForeignKey(
@@ -168,10 +168,12 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     @cached_property
     def linked_posts(self):
+        """returns all linked posts in the same appconfig namespace"""
         return self.blog_posts.namespace(self.app_config.namespace)
 
     @cached_property
     def pinned_posts(self):
+        """returns all linked posts which have a pinned value of at least 1"""
         return self.linked_posts.filter(pinned__gt=0)
 
     @cached_property

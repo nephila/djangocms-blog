@@ -9,6 +9,7 @@ Features
 
    home
    urlconf
+   content_hub
    permalinks
    templates
    admin_customization
