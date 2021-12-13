@@ -124,7 +124,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     translations = TranslatedFields(
         name=models.CharField(_("name"), max_length=752),
-        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True),
+        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True, allow_unicode=True),
         meta_description=models.TextField(verbose_name=_("category meta description"), blank=True, default=""),
         meta={"unique_together": (("language_code", "slug"),)},
         abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
