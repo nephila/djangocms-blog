@@ -121,6 +121,13 @@ BLOG_POSTS_LIST_TRUNCWORDS_COUNT = 100
 Default number of words shown for abstract in the post list.
 """
 
+BLOG_ALLOW_UNICODE_SLUGS = True
+"""
+.. _ALLOW_UNICODE_SLUGS:
+
+Typically slugs can contain unicode characters. Set to False to only allow ASCII-based slugs.
+"""
+
 BLOG_META_DESCRIPTION_LENGTH = 320
 """
 .. _META_DESCRIPTION_LENGTH:
