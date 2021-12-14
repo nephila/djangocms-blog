@@ -11,7 +11,7 @@ from .settings import get_setting
 @apphook_pool.register
 class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     name = _("Blog")
-    _urls = [get_setting("URLCONF")]
+    _urls = [get_setting("URLCONF") if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")[0][0]]
     app_name = "djangocms_blog"
     app_config = BlogConfig
     _menus = [BlogCategoryMenu]
