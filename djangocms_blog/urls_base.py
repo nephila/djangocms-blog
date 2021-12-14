@@ -26,8 +26,8 @@ def get_urls(post_list_path, category_path):
         path("tag/<slug:tag>/", TaggedListView.as_view(), name="posts-tagged"),
         path("tag/<slug:tag>/feed/", TagFeed(), name="posts-tagged-feed"),
     ]
-    urls = get_setting("PERMALINK_URLS")
-    for urlconf in urls.values():
+    permalink_urls = get_setting("PERMALINK_URLS")
+    for urlconf in permalink_urls.values():
         urls.append(
             path(urlconf, PostDetailView.as_view(), name="post-detail"),
         )
