@@ -402,7 +402,7 @@ class AdminTest(BaseTest):
         self.assertFalse("post_text" in fsets[0][1]["fields"])
 
         # Use related posts
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.app_data.config.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
@@ -411,12 +411,13 @@ class AdminTest(BaseTest):
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = False
+        self.app_config_1.app_data.config.use_related = 0
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
+        print("###", "related" in fsets[1][1]["fields"][0], fsets)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.app_data.config.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("related" in fsets[1][1]["fields"][0])
@@ -520,7 +521,7 @@ class AdminTest(BaseTest):
         self.assertFalse("post_text" in fsets[0][1]["fields"])
 
         # Related field is always hidden due to the value in CustomPostAdmin._fieldset_extra_fields_position
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.app_data.config.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
@@ -529,12 +530,12 @@ class AdminTest(BaseTest):
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = False
+        self.app_config_1.app_data.config.use_related = 0
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.app_data.config.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])

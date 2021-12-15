@@ -403,7 +403,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         related_posts = []
         abstract = bool(getattr(config, "use_abstract", get_setting("USE_ABSTRACT")))
         placeholder = bool(getattr(config, "use_placeholder", get_setting("USE_PLACEHOLDER")))
-        related = bool(getattr(config, "use_related", get_setting("USE_RELATED")))
+        related = getattr(config, "use_related", get_setting("USE_RELATED"))
+        related = bool(int(related)) if isinstance(related, str) and related.isnumeric() else bool(related)
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
