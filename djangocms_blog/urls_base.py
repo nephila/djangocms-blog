@@ -29,6 +29,6 @@ def get_urls(post_list_path, category_path):
     permalink_urls = get_setting("PERMALINK_URLS")
     for urlconf in permalink_urls.values():
         urls.append(
-            path(urlconf, PostDetailView.as_view(), name="post-detail"),
+            path(post_list_path + urlconf, PostDetailView.as_view(), name="post-detail"),
         )
     return urls
