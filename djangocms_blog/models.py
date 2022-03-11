@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
-from django.utils.html import escape, strip_tags
+from django.utils.html import strip_tags
 from django.utils.translation import get_language, gettext, gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
@@ -182,7 +182,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     def get_description(self):
         description = self.safe_translation_getter("meta_description", any_language=True)
-        return escape(strip_tags(description)).strip()
+        return strip_tags(description).strip()
 
 
 class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
@@ -394,7 +394,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         description = self.safe_translation_getter("meta_description", any_language=True)
         if not description:
             description = self.safe_translation_getter("abstract", any_language=True)
-        return escape(strip_tags(description)).strip()
+        return strip_tags(description).strip()
 
     def get_image_full_url(self):
         if self.main_image:
