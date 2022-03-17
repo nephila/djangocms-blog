@@ -77,6 +77,8 @@ Global Settings
   (default: ``Blog``)
 * BLOG_AUTO_APP_TITLE: Title of the ``BlogConfig`` instance created by
   **Auto setup**; (default: ``Blog``)
+* BLOG_AUTO_NAMESPACE: Instance namespace of the ``BlogConfig`` instance created by
+  **Auto setup**; (default: ``Blog``)
 * BLOG_SITEMAP_PRIORITY_DEFAULT: Default priority for sitemap items; (default: ``0.5``)
 * BLOG_SITEMAP_CHANGEFREQ: List for available changefreqs for sitemap items; (default: **always**,
   **hourly**, **daily**, **weekly**, **monthly**, **yearly**, **never**)
