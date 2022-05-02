@@ -5,4 +5,5 @@ app_name = "djangocms_blog"
 urlpatterns = get_urls(
     post_list_path="posts/",
     category_path="",
+    category_list_path="category/"
 )
