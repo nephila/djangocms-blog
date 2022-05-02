@@ -111,7 +111,7 @@ class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
         qs = Post.objects
         if self.app_config:
             qs = qs.active_translations()
-            if self.app_config.use_related == "1":
+            if self.app_config.get("use_related", "0") == "1":
                 qs = qs.namespace(self.app_config.namespace)
         return qs
 
