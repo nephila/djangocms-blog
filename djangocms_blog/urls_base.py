@@ -13,18 +13,12 @@ from .views import (
 )
 
 
-def get_urls(post_list_path, category_path):
+def get_urls(post_list_path, category_path, category_list_path):
     urls = (
         [
             path(post_list_path, PostListView.as_view(), name="posts-latest"),
             path(category_path, CategoryListView.as_view(), name="categories-all"),
-        ]
-        + [
-            path(category_path + "<str:category>/", CategoryEntriesView.as_view(), name="posts-category"),
-        ]
-        if category_path
-        else []
-        + [
+            path(category_list_path + "<str:category>/", CategoryEntriesView.as_view(), name="posts-category"),
             path("feed/", LatestEntriesFeed(), name="posts-latest-feed"),
             path("feed/fb/", FBInstantArticles(), name="posts-latest-feed-fb"),
             path("<int:year>/", PostArchiveView.as_view(), name="posts-archive"),

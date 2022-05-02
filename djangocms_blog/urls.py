@@ -4,5 +4,6 @@ from .urls_base import get_urls
 app_name = "djangocms_blog"
 urlpatterns = get_urls(
     post_list_path="",
-    category_path="category/"
+    category_path="category/",
+    category_list_path = "category/"
 )
