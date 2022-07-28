@@ -11,6 +11,7 @@ def gettext(s):
 
 HELPER_SETTINGS = dict(
     ROOT_URLCONF="tests.test_utils.urls",
+    SECRET_KEY="CHANGEME",
     INSTALLED_APPS=[
         "filer",
         "parler",

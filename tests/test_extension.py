@@ -21,19 +21,19 @@ class AddExtensionTest(BaseTest):
 
     def test_register_placeholder_extension_twice(self):
         djangocms_blog.admin.register_extension(PostPlaceholderExtension)
-        with self.assertRaises(Exception):
+        with self.assertRaises(RuntimeError):
             djangocms_blog.admin.register_extension(PostPlaceholderExtension)
         djangocms_blog.admin.unregister_extension(PostPlaceholderExtension)
-        with self.assertRaises(Exception):
+        with self.assertRaises(RuntimeError):
             djangocms_blog.admin.unregister_extension(PostPlaceholderExtension)
 
     def test_register_other(self):
         class X:
             pass
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(RuntimeError):
             djangocms_blog.admin.register_extension(X)
-        with self.assertRaises(Exception):
+        with self.assertRaises(RuntimeError):
             djangocms_blog.admin.register_extension(X)
 
     def test_placeholder_object_auto_created(self):

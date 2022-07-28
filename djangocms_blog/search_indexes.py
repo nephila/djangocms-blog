@@ -77,6 +77,5 @@ try:
 
                 return " ".join(text_bits)
 
-
 except ImportError:
     pass

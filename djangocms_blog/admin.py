@@ -30,11 +30,11 @@ def register_extension(klass):
         return
     if issubclass(klass, models.Model):
         if klass in signal_dict:
-            raise Exception("Can not register {} twice.".format(klass))
+            raise RuntimeError("Can not register {} twice.".format(klass))
         signal_dict[klass] = create_post_post_save(klass)
         signals.post_save.connect(signal_dict[klass], sender=Post, weak=False)
         return
-    raise Exception("Can not register {} type. You can only register a Model or a TabularInline.".format(klass))
+    raise RuntimeError("Can not register {} type. You can only register a Model or a TabularInline.".format(klass))
 
 
 def unregister_extension(klass):
@@ -43,11 +43,11 @@ def unregister_extension(klass):
         return
     if issubclass(klass, models.Model):
         if klass not in signal_dict:
-            raise Exception("Can not unregister {}. No signal found for this class.".format(klass))
+            raise RuntimeError("Can not unregister {}. No signal found for this class.".format(klass))
         signals.post_save.disconnect(signal_dict[klass], sender=Post)
         del signal_dict[klass]
         return
-    raise Exception("Can not unregister {} type. You can only unregister a Model or a TabularInline.".format(klass))
+    raise RuntimeError("Can not unregister {} type. You can only unregister a Model or a TabularInline.".format(klass))
 
 
 def create_post_post_save(model):

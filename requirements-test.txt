@@ -1,7 +1,6 @@
 -e .[docs]
 coverage
 coveralls>=2.0
-pysolr
 django-taggit-helpers
 django-app-helper>=2.0.0
 djangocms-video
