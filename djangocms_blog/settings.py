@@ -34,6 +34,14 @@ PERMALINKS = (  # noqa
 Permalinks styles.
 """
 
+BLOG_UNICODE_SLUGS = True
+"""
+.. _UNICODE_SLUGS:
+
+Allow unicode chars in auto-generated slugs.
+"""
+
+
 PERMALINKS_URLS = {  # noqa
     PERMALINK_TYPE_FULL_DATE: "<int:year>/<int:month>/<int:day>/<str:slug>/",
     PERMALINK_TYPE_SHORT_DATE: "<int:year>/<int:month>/<str:slug>/",

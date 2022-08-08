@@ -248,7 +248,9 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_("title"), max_length=752),
-        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True, allow_unicode=True),
+        slug=models.SlugField(
+            _("slug"), max_length=752, blank=True, db_index=True, allow_unicode=get_setting("UNICODE_SLUGS")
+        ),
         subtitle=models.CharField(verbose_name=_("subtitle"), max_length=767, blank=True, default=""),
         abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
         meta_description=models.TextField(verbose_name=_("post meta description"), blank=True, default=""),
