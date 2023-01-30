@@ -2,7 +2,7 @@ import hashlib
 
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
-from cms.models import CMSPlugin, PlaceholderField
+from cms.models import CMSPlugin, Placeholder, PlaceholderRelationField
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -312,9 +312,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         post_text=HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR"),
         meta={"unique_together": (("language_code", "slug"),)},
     )
-    media = PlaceholderField("media", related_name="media")
-    content = PlaceholderField("post_content", related_name="post_content")
-    liveblog = PlaceholderField("live_blog", related_name="live_blog")
+    placeholders = PlaceholderRelationField()
     enable_liveblog = models.BooleanField(verbose_name=_("enable liveblog on post"), default=False)
 
     objects = GenericDateTaggedManager()
@@ -364,6 +362,26 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     def __str__(self):
         default = gettext("Post (no translation)")
         return self.safe_translation_getter("title", any_language=True, default=default)
+
+    def _get_placeholder_from_slotname(self, slotname):
+        try:
+            return self.placeholders.get(slot=slotname)
+        except Placeholder.DoesNotExist:
+            from cms.utils.placeholder import rescan_placeholders_for_obj
+            rescan_placeholders_for_obj(self)
+            return self.placeholders.get(slot=slotname)
+
+    @cached_property
+    def media(self):
+        return self._get_placeholder_from_slotname("media")
+
+    @cached_property
+    def content(self):
+        return self._get_placeholder_from_slotname("content")
+
+    @cached_property
+    def liveblog(self):
+        return self._get_placeholder_from_slotname("liveblog")
 
     @property
     def guid(self, language=None):
@@ -490,6 +508,10 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             return self.main_image_full.as_dict
         else:
             return get_setting("IMAGE_FULL_SIZE")
+
+    def get_template(self):
+        # Used for the cms structure endpoint
+        return 'djangocms_blog/post_structure.html'
 
     @property
     def is_published(self):
