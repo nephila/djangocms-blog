@@ -31,11 +31,11 @@ def register_extension(klass):
         return
     if issubclass(klass, models.Model):
         if klass in signal_dict:
-            raise Exception("Can not register {} twice.".format(klass))
+            raise Exception(f"Can not register {klass} twice.")
         signal_dict[klass] = create_post_post_save(klass)
         signals.post_save.connect(signal_dict[klass], sender=Post, weak=False)
         return
-    raise Exception("Can not register {} type. You can only register a Model or a TabularInline.".format(klass))
+    raise Exception(f"Can not register {klass} type. You can only register a Model or a TabularInline.")
 
 
 def unregister_extension(klass):
@@ -44,11 +44,11 @@ def unregister_extension(klass):
         return
     if issubclass(klass, models.Model):
         if klass not in signal_dict:
-            raise Exception("Can not unregister {}. No signal found for this class.".format(klass))
+            raise Exception(f"Can not unregister {klass}. No signal found for this class.")
         signals.post_save.disconnect(signal_dict[klass], sender=Post)
         del signal_dict[klass]
         return
-    raise Exception("Can not unregister {} type. You can only unregister a Model or a TabularInline.".format(klass))
+    raise Exception(f"Can not unregister {klass} type. You can only unregister a Model or a TabularInline.")
 
 
 def create_post_post_save(model):
@@ -86,6 +86,7 @@ class SiteListFilter(admin.SimpleListFilter):
             raise admin.options.IncorrectLookupParameters(e)
 
 
+@admin.register(BlogCategory)
 class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
     list_display = [
@@ -125,6 +126,7 @@ class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, Translat
         css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
 
 
+@admin.register(Post)
 class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     form = PostAdminForm
     list_display = ["title", "author", "date_published", "app_config", "all_languages_column", "date_published_end"]
@@ -188,6 +190,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     _sites = None
 
     # Bulk actions for post admin
+    @admin.action(
+        description=_("Publish selection")
+    )
     def make_published(self, request, queryset):
         """
         Bulk action to mark selected posts as published.
@@ -209,6 +214,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             % {"updates": cnt1 + cnt2},
         )
 
+    @admin.action(
+        description=_("Unpublish selection")
+    )
     def make_unpublished(self, request, queryset):
         """
         Bulk action to mark selected posts as unpublished.
@@ -221,6 +229,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             __("%(updates)d entry unpublished.", "%(updates)d entries unpublished.", updates) % {"updates": updates},
         )
 
+    @admin.action(
+        description=_("Enable comments for selection")
+    )
     def enable_comments(self, request, queryset):
         """
         Bulk action to enable comments for selected posts.
@@ -234,6 +245,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             % {"updates": updates},
         )
 
+    @admin.action(
+        description=_("Disable comments for selection ")
+    )
     def disable_comments(self, request, queryset):
         """
         Bulk action to disable comments for selected posts.
@@ -247,6 +261,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             % {"updates": updates},
         )
 
+    @admin.action(
+        description=_("Enable liveblog for selection")
+    )
     def enable_liveblog(self, request, queryset):
         """
         Bulk action to enable comments for selected posts.
@@ -260,6 +277,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             % {"updates": updates},
         )
 
+    @admin.action(
+        description=_("Disable liveblog for selection ")
+    )
     def disable_liveblog(self, request, queryset):
         """
         Bulk action to disable comments for selected posts.
@@ -274,12 +294,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         )
 
     # Make bulk action menu entries localizable
-    make_published.short_description = _("Publish selection")
-    make_unpublished.short_description = _("Unpublish selection")
-    enable_comments.short_description = _("Enable comments for selection")
-    disable_comments.short_description = _("Disable comments for selection ")
-    enable_liveblog.short_description = _("Enable liveblog for selection")
-    disable_liveblog.short_description = _("Disable liveblog for selection ")
 
     def get_list_filter(self, request):
         filters = ["app_config", "publish", "date_published"]
@@ -340,7 +354,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             return HttpResponseRedirect(post.get_absolute_url(language))
         except Exception:
             try:
-                return HttpResponseRedirect(request.META["HTTP_REFERER"])
+                return HttpResponseRedirect(request.headers["referer"])
             except KeyError:
                 return HttpResponseRedirect(reverse("djangocms_blog:posts-latest"))
 
@@ -473,6 +487,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
 
 
+@admin.register(BlogConfig)
 class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
     @property
     def declared_fieldsets(self):
@@ -580,6 +595,3 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
         return super().save_model(request, obj, form, change)
 
 
-admin.site.register(BlogCategory, BlogCategoryAdmin)
-admin.site.register(Post, PostAdmin)
-admin.site.register(BlogConfig, BlogConfigAdmin)

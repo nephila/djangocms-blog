@@ -37,7 +37,7 @@ BLOG_PLUGIN_TEMPLATE_FOLDERS = get_setting("PLUGIN_TEMPLATE_FOLDERS")
 BLOG_ALLOW_UNICODE_SLUGS = get_setting("ALLOW_UNICODE_SLUGS")
 
 
-thumbnail_model = "{}.{}".format(ThumbnailOption._meta.app_label, ThumbnailOption.__name__)
+thumbnail_model = f"{ThumbnailOption._meta.app_label}.{ThumbnailOption.__name__}"
 
 
 try:
@@ -533,7 +533,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         return (new or updated) and signal_type in ("post_save", "post_delete")
 
     def get_cache_key(self, language, prefix):
-        return "djangocms-blog:{2}:{0}:{1}".format(language, self.guid, prefix)
+        return f"djangocms-blog:{prefix}:{language}:{self.guid}"
 
     @property
     def liveblog_group(self):

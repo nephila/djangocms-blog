@@ -47,7 +47,7 @@ class AddExtensionTest(BaseTest):
     def test_add_plugin_to_placeholder(self):
         djangocms_blog.admin.register_extension(PostPlaceholderExtension)
         pages = self.get_pages()
-        ph = pages[0].placeholders.get(slot="some_placeholder")
+        ph = pages[0].get_placeholders(language="en").get(slot="some_placeholder")
         plugin = add_plugin(ph, "TextPlugin", language="en", body="<p>test</p>")
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         self.assertTrue(rendered.find("<p>test</p>") > -1)

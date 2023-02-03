@@ -33,7 +33,7 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
 
     def get_view_url(self):
         if not self.view_url_name:
-            raise ImproperlyConfigured("Missing `view_url_name` attribute on {}".format(self.__class__.__name__))
+            raise ImproperlyConfigured(f"Missing `view_url_name` attribute on {self.__class__.__name__}")
 
         url = reverse(self.view_url_name, args=self.args, kwargs=self.kwargs, current_app=self.namespace)
         return self.request.build_absolute_uri(url)
@@ -41,8 +41,9 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
     def get_queryset(self):
         language = get_language()
         queryset = self.model._default_manager.namespace(self.namespace).active_translations(language_code=language)
-        if not getattr(self.request, "toolbar", None) or not self.request.toolbar.edit_mode_active:
-            queryset = queryset.published()
+        if not getattr(self.request, "toolbar", None):
+            if not self.request.toolbar.preview_mode_active and not self.request.toolbar.edit_mode_active:
+                queryset = queryset.published()
         setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         return self.optimize(queryset.on_site())
 

@@ -20,7 +20,7 @@ def clean(c):
     patterns.append("docs/_build")
     patterns.append("**/*.pyc")
     for pattern in patterns:
-        c.run("rm -rf {}".format(pattern))
+        c.run(f"rm -rf {pattern}")
 
 
 @task

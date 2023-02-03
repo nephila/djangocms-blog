@@ -25,7 +25,7 @@ class PluginTest(BaseTest):
         posts[0].tags.add("tag 1")
         posts[0].publish = True
         posts[0].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = pages[0].get_placeholders(language="en").get(slot="content")
 
         plugin = add_plugin(ph, "BlogLatestEntriesPluginCached", language="en", app_config=self.app_config_1)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
@@ -58,7 +58,7 @@ class PluginTest(BaseTest):
         posts[0].tags.add("tag 1")
         posts[0].publish = True
         posts[0].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = pages[0].get_placeholders(language="en").get(slot="content")
 
         plugin = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
         tag = Tag.objects.get(slug="tag-1")
@@ -136,7 +136,7 @@ class PluginTest(BaseTest):
         posts[1].tags.add("test tag", "another tag")
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = pages[0].get_placeholders(language="en").get(slot="content")
         plugin = add_plugin(ph, "BlogTagsPlugin", language="en", app_config=self.app_config_1)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         for tag in Tag.objects.all():
@@ -155,7 +155,7 @@ class PluginTest(BaseTest):
         posts[0].save()
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = pages[0].get_placeholders(language="en").get(slot="content")
         plugin = add_plugin(ph, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
         plugin_class = plugin.get_plugin_class_instance()
 
@@ -201,7 +201,7 @@ class PluginTest(BaseTest):
         self.get_posts()
         pages = self.get_pages()
 
-        ph = pages[0].placeholders.get(slot="content")
+        ph = pages[0].get_placeholders(language="en").get(slot="content")
         plugin = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
 
         context = self.get_plugin_context(pages[0], "en", plugin)
@@ -226,7 +226,7 @@ class PluginTest10(BaseTest):
         posts[0].save()
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = pages[0].get_placeholders(language="en").get(slot="content")
         plugin = add_plugin(ph, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
 
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)

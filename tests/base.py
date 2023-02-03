@@ -2,7 +2,6 @@ import json
 import os
 from copy import deepcopy
 
-from app_helper.base_test import BaseTestCase
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
@@ -12,6 +11,7 @@ from parler.utils.context import smart_override
 from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.cms_menus import BlogCategoryMenu, BlogNavModifier
 from djangocms_blog.models import BlogCategory, Post, ThumbnailOption
+from tests.base_test import BaseTestCase
 
 User = get_user_model()
 
@@ -31,31 +31,31 @@ class BaseTest(BaseTestCase):
 
     _pages_data = (
         {
-            "en": {"title": "page one", "template": "blog.html", "publish": True},
-            "fr": {"title": "page un", "publish": True},
-            "it": {"title": "pagina uno", "publish": True},
+            "en": {"title": "page one", "template": "blog.html", "publish": False},
+            "fr": {"title": "page un", "publish": False},
+            "it": {"title": "pagina uno", "publish": False},
         },
         {
             "en": {
                 "title": "page two",
                 "template": "blog.html",
-                "publish": True,
+                "publish": False,
                 "apphook": "BlogApp",
                 "apphook_namespace": "sample_app",
             },
-            "fr": {"title": "page deux", "publish": True},
-            "it": {"title": "pagina due", "publish": True},
+            "fr": {"title": "page deux", "publish": False},
+            "it": {"title": "pagina due", "publish": False},
         },
         {
             "en": {
                 "title": "page three",
                 "template": "blog.html",
-                "publish": True,
+                "publish": False,
                 "apphook": "BlogApp",
                 "apphook_namespace": "sample_app2",
             },
-            "fr": {"title": "page trois", "publish": True},
-            "it": {"title": "pagina tre", "publish": True},
+            "fr": {"title": "page trois", "publish": False},
+            "it": {"title": "pagina tre", "publish": False},
         },
     )
 

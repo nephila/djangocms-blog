@@ -65,6 +65,7 @@ HELPER_SETTINGS = dict(
     BLOG_AUTO_SETUP=False,
     ALLOWED_HOSTS=["*"],
     TEST_RUNNER="app_helper.pytest_runner.PytestTestRunner",
+    CMS_CONFIRM_VERSION4=True,
 )
 
 try:

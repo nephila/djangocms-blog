@@ -6,8 +6,7 @@ from unittest import SkipTest
 
 import parler
 from cms.api import add_plugin
-from cms.utils.copy_plugins import copy_plugins_to
-from cms.utils.plugins import downcast_plugins
+from cms.utils.plugins import downcast_plugins, copy_plugins_to_placeholder
 from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
@@ -1274,7 +1273,7 @@ class ModelsTest2(BaseTest):
         plugin.tags.add(tag1)
         plugin.tags.add(tag2)
         plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
-        copy_plugins_to(plugins, post2.content)
+        copy_plugins_to_placeholder(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].tags.all()), {tag1, tag2})
         self.assertEqual(set(new[0].tags.all()), set(plugin.tags.all()))

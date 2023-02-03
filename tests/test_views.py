@@ -1,7 +1,7 @@
 import os.path
 
 from aldryn_apphooks_config.utils import get_app_instance
-from app_helper.utils import captured_output
+from .utils import captured_output
 from cms.api import add_plugin
 from cms.toolbar.items import ModalItem
 from cms.utils.apphook_reload import reload_urlconf

@@ -86,10 +86,10 @@ class BlogCategoryMenu(CMSAttachMenu):
                 if categories_menu:
                     category = post.categories.first()
                     if category:
-                        parent = "{}-{}".format(category.__class__.__name__, category.pk)
-                        post_id = ("{}-{}".format(post.__class__.__name__, post.pk),)
+                        parent = f"{category.__class__.__name__}-{category.pk}"
+                        post_id = (f"{post.__class__.__name__}-{post.pk}",)
                 else:
-                    post_id = ("{}-{}".format(post.__class__.__name__, post.pk),)
+                    post_id = (f"{post.__class__.__name__}-{post.pk}",)
                 if post_id:
                     node = NavigationNode(post.get_title(), post.get_absolute_url(language), post_id, parent)
                     nodes.append(node)
@@ -113,8 +113,8 @@ class BlogCategoryMenu(CMSAttachMenu):
                     node = NavigationNode(
                         category.name,
                         category.get_absolute_url(),
-                        "{}-{}".format(category.__class__.__name__, category.pk),
-                        ("{}-{}".format(category.__class__.__name__, category.parent.id) if category.parent else None),
+                        f"{category.__class__.__name__}-{category.pk}",
+                        (f"{category.__class__.__name__}-{category.parent.id}" if category.parent else None),
                     )
                     nodes.append(node)
                     added_categories.append(category.pk)
@@ -168,7 +168,7 @@ class BlogNavModifier(Modifier):
             return nodes
 
         for node in nodes:
-            if "{}-{}".format(category.__class__.__name__, category.pk) == node.id:
+            if f"{category.__class__.__name__}-{category.pk}" == node.id:
                 node.selected = True
         return nodes
 

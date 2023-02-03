@@ -1,6 +1,6 @@
 import sys
 
-from cms.api import create_page, create_title
+from cms.api import create_page, create_page_content as create_title
 from cms.models import Page
 from cms.utils import get_language_list
 from django.utils.translation import override

@@ -108,7 +108,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 request = self.get_page_request(
-                    pages[1].get_draft_object(), self.user, pages[1].get_draft_object().get_absolute_url(lang)
+                    pages[1], self.user, pages[1].get_absolute_url(lang)
                 )
                 nodes = self.get_nodes(menu_pool, request)
                 nodes_url = [node.get_absolute_url() for node in nodes]
