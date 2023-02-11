@@ -33,7 +33,6 @@ def backwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cms", "0004_auto_20140924_1038"),
         ("djangocms_blog", "0013_auto_20160201_2235"),

@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cms", "__first__"),
         ("djangocms_blog", "0020_thumbnail_move4"),

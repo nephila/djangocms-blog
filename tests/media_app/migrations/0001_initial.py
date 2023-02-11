@@ -7,7 +7,6 @@ import djangocms_blog.media.base
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

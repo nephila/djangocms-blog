@@ -38,7 +38,6 @@ class SetupTest(BaseTest):
         apphook_pool.clear()
 
     def test_setup_from_url(self):
-
         # Tests starts with no page and no config
         self.assertFalse(Page.objects.exists())
         self.assertFalse(BlogConfig.objects.exists())
@@ -51,7 +50,6 @@ class SetupTest(BaseTest):
         self.assertEqual(BlogConfig.objects.count(), 1)
 
     def test_setup_filled(self):
-
         # Tests starts with no page and no config
         self.assertFalse(Page.objects.exists())
         self.assertFalse(BlogConfig.objects.exists())

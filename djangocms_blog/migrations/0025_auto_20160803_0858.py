@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0024_auto_20160706_1524"),
     ]

@@ -185,7 +185,6 @@ class ViewTest(BaseTest):
 
             PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)  # noqa: N806
             with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
-
                 view_obj = PostListView()
                 request = self.get_page_request(pages[1], self.user, lang="fr", edit=True)
                 view_obj.request = request
@@ -398,7 +397,6 @@ class TaggedItemViewTest(BaseTest):
 
         with smart_override("en"):
             with switch_language(posts[0], "en"):
-
                 request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
 
                 feed = LatestEntriesFeed()
