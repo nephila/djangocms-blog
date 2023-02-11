@@ -8,9 +8,11 @@ class LiveblogConsumer(JsonWebsocketConsumer):
         apphook = kwargs.get("apphook")
         lang = kwargs.get("lang")
         slug = kwargs.get("post")
+        print("GET")
         try:
             return Post.objects.namespace(apphook).language(lang).active_translations(slug=slug).get()
-        except Post.DoesNotExist:
+        except Post.DoesNotExist as e:
+            print("NOT", e)
             return
 
     def websocket_connect(self, message):
@@ -22,7 +24,12 @@ class LiveblogConsumer(JsonWebsocketConsumer):
         Connect users to the group of the post according to the URL parameters
         """
         post = self._get_post(self.scope["url_route"]["kwargs"])
+        print(self.scope, post)
         if post:
             return [post.liveblog_group]
         else:
             return []
+
+    def send_json(self, content, close=False):
+        print(f"C {content}, {close}")
+        return super().send_json(content, close)

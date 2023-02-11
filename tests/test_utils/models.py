@@ -23,5 +23,4 @@ class PostPlaceholderExtension(models.Model):
     some_placeholder = PlaceholderField("some_placeholder", related_name="some_placeholder")
 
     def delete(self):
-        print("delete")
         super().delete()

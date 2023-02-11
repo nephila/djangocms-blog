@@ -50,8 +50,11 @@ class LiveblogInterface(models.Model):
     @property
     def liveblog_group(self):
         post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
-        if post:
-            return post.liveblog_group
+        try:
+            if post:
+                return post.liveblog_group
+        except Exception as e:
+            print("GROUP", e)
 
     def render(self, request):
         context = Context({"request": request})
@@ -78,7 +81,12 @@ class LiveblogInterface(models.Model):
                 "type": "send.json",
             }
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
+            print(channel_layer, notification)
+            try:
+                x = async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
+                print("SENT", x)
+            except Exception as e:
+                print("SEND", e)
 
 
 class Liveblog(LiveblogInterface, AbstractText):

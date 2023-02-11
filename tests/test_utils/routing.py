@@ -7,8 +7,6 @@ from djangocms_blog.liveblog.routing import channel_routing as djangocms_blog_ro
 
 application = ProtocolTypeRouter(
     {
-        "websocket": AuthMiddlewareStack(
-            URLRouter([path("knocker/", knocker_routing), path("liveblog/", djangocms_blog_routing)])
-        ),
+        "websocket": AuthMiddlewareStack(URLRouter([path("liveblog/", djangocms_blog_routing)])),
     }
 )
