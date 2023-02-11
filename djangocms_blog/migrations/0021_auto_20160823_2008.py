@@ -5,7 +5,6 @@ from djangocms_blog.models import thumbnail_model
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0020_thumbnail_move4"),
     ]

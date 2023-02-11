@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cms", "__first__"),
         ("djangocms_blog", "0009_latestpostsplugin_tags_new"),

@@ -4,7 +4,6 @@ from djangocms_blog.models import thumbnail_model
 
 
 class Migration(migrations.Migration):
-
     if "cmsplugin_filer" not in thumbnail_model:
         dependencies = [
             ("djangocms_blog", "0019_thumbnail_move3"),

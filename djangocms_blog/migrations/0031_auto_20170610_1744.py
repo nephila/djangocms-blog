@@ -6,7 +6,6 @@ from sortedm2m.operations import AlterSortedManyToManyField
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0030_auto_20170509_1831"),
     ]
