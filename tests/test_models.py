@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from copy import deepcopy
 from datetime import timedelta
 from unittest import SkipTest
+from urllib.parse import quote
 
 import parler
 from cms.api import add_plugin
@@ -17,7 +18,6 @@ from django.test import override_settings
 from django.urls import reverse
 from django.utils.encoding import force_str
 from django.utils.html import strip_tags
-from django.utils.http import urlquote
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
 from filer.models import ThumbnailOption
@@ -1049,13 +1049,13 @@ class ModelsTest(BaseTest):
         self.app_config_1.app_data.config.url_patterns = "full_date"
         self.app_config_1.save()
         post.app_config = self.app_config_1
-        self.assertTrue(re.match(r".*\d{4}/\d{2}/\d{2}/%s/$" % urlquote(post.slug), post.get_absolute_url()))
+        self.assertTrue(re.match(r".*\d{4}/\d{2}/\d{2}/%s/$" % quote(post.slug), post.get_absolute_url()))
 
         # short date
         self.app_config_1.app_data.config.url_patterns = "short_date"
         self.app_config_1.save()
         post.app_config = self.app_config_1
-        self.assertTrue(re.match(r".*\d{4}/\d{2}/%s/$" % urlquote(post.slug), post.get_absolute_url()))
+        self.assertTrue(re.match(r".*\d{4}/\d{2}/%s/$" % quote(post.slug), post.get_absolute_url()))
 
         # category
         self.app_config_1.app_data.config.url_patterns = "category"
@@ -1064,7 +1064,7 @@ class ModelsTest(BaseTest):
 
         self.assertTrue(
             re.match(
-                r".*{}/{}/$".format(urlquote(post.categories.first().slug), urlquote(post.slug)),
+                r".*{}/{}/$".format(quote(post.categories.first().slug), quote(post.slug)),
                 post.get_absolute_url(),
             )
         )
@@ -1073,7 +1073,7 @@ class ModelsTest(BaseTest):
         self.app_config_1.app_data.config.url_patterns = "category"
         self.app_config_1.save()
         post.app_config = self.app_config_1
-        self.assertTrue(re.match(r".*/%s/$" % urlquote(post.slug), post.get_absolute_url()))
+        self.assertTrue(re.match(r".*/%s/$" % quote(post.slug), post.get_absolute_url()))
 
     def test_url_language(self):
         self.get_pages()
