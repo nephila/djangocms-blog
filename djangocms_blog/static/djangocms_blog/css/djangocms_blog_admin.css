@@ -56,3 +56,14 @@ ul.as-selections li.as-original {
     border-top: 0;
     width: 100%;
 }
+
+body:not(.djangocms-admin-style) #page_form_lang_tabs input[type="button"].selected {
+    background-color: var(--button-bg);
+    color: var(--button-fg)
+}
+
+body:not(.djangocms-admin-style) #page_form_lang_tabs input[type="button"] {
+    background-color: var(--darkened-bg);
+    border: 1px solid var(--button-bg);
+    color: var(--body-fg)
+}

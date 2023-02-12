@@ -10,7 +10,7 @@ from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
 from .cms_appconfig import BlogConfig
-from .models import BlogCategory, Post
+from .models import BlogCategory, PostContent
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
 
 logger = logging.getLogger(__name__)
@@ -70,28 +70,28 @@ class BlogCategoryMenu(CMSAttachMenu):
 
         used_categories = []
         if posts_menu:
-            posts = Post.objects
+            post_contents = PostContent.objects.filter(language=language)
             if hasattr(self, "instance") and self.instance:
-                posts = posts.namespace(self.instance.application_namespace).on_site()
-            posts = (
-                posts.active_translations(language)
+                post_contents = post_contents.filter(post__app_config__namespace=self.instance.application_namespace).on_site()
+            post_contents = (
+                post_contents
                 .distinct()
-                .select_related("app_config")
-                .prefetch_related("translations", "categories")
+                .select_related("post", "post__app_config")
+                .prefetch_related("post__categories")
             )
-            for post in posts:
-                post_id = None
+            for post_content in post_contents:
+                postcontent_id = None
                 parent = None
-                used_categories.extend(post.categories.values_list("pk", flat=True))
+                used_categories.extend(post_content.post.categories.values_list("pk", flat=True))
                 if categories_menu:
-                    category = post.categories.first()
+                    category = post_content.post.categories.first()
                     if category:
                         parent = f"{category.__class__.__name__}-{category.pk}"
-                        post_id = (f"{post.__class__.__name__}-{post.pk}",)
+                        postcontent_id = (f"{post_content.__class__.__name__}-{post_content.pk}",)
                 else:
-                    post_id = (f"{post.__class__.__name__}-{post.pk}",)
-                if post_id:
-                    node = NavigationNode(post.get_title(), post.get_absolute_url(language), post_id, parent)
+                    postcontent_id = (f"{post_content.__class__.__name__}-{post_content.pk}",)
+                if postcontent_id:
+                    node = NavigationNode(post_content.title, post_content.get_absolute_url(language), post_id, parent)
                     nodes.append(node)
 
         if categories_menu:

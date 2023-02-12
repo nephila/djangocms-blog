@@ -1,4 +1,5 @@
 from html import unescape
+from io import BytesIO
 
 from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.sites.models import Site
@@ -12,7 +13,6 @@ from django.utils.safestring import mark_safe
 from django.utils.text import normalize_newlines
 from django.utils.translation import get_language_from_request, gettext as _
 from lxml import etree
-from io import BytesIO
 
 from djangocms_blog.settings import get_setting
 from djangocms_blog.views import PostDetailView

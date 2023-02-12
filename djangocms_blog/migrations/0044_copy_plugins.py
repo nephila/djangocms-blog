@@ -3,7 +3,6 @@ from django.db import migrations
 
 from djangocms_blog.models import Post, PostContent
 
-
 User = get_user_model()
 
 
@@ -18,9 +17,10 @@ def move_plugins_to_blog_content(apps, schema_editor):
         migration_user = None
 
     for post in Post.objects.all():
-        if post.postcontent_set.empty():
+        if not post.postcontent_set.exists():
             # Not yet migrated
             for translation in post.translations.all():
+                print(f"Copying {translation.language_code} to post content...")
                 content = PostContent(
                     language=translation.language_code,
                     title=translation.title,
@@ -45,16 +45,21 @@ def move_plugins_to_blog_content(apps, schema_editor):
                     )
                 translation.delete()
                 # Move plugins to post content placeholders
-                media_plugins = post.media.get_plugins().filter(language=translation.language_code)
-                content_plugins = post.conent.get_plugins().filter(language=translation.language_code)
-                live_plugins = post.liveblog.get_plugin().filter(language=translation.language_code)
-                media_plugins.update(placeholder=content.media)
-                content_plugins.update(placeholder=content.content)
-                live_plugins.update(placeholder=content.liveblog)
+                if post.media:
+                    media_plugins = post.media.get_plugins().filter(language=translation.language_code)
+                    media_plugins.update(placeholder=content.media)
+                if post.content:
+                    print("Moving content plugins...")
+                    content_plugins = post.conent.get_plugins().filter(language=translation.language_code)
+                    content_plugins.update(placeholder=content.content)
+                if post.liveblog:
+                    live_plugins = post.liveblog.get_plugin().filter(language=translation.language_code)
+                    live_plugins.update(placeholder=content.liveblog)
 
 
 def move_plugins_back_to_blog(apps, schema_editor):
     """ Adds instances for the new model.ATTENTION: All fields of the model must have a valid default value!"""
+    raise NotImplementedError()
 
 
 class Migration(migrations.Migration):

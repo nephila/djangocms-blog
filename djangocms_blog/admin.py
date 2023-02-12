@@ -1,26 +1,36 @@
+import json
 from copy import deepcopy
 
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from cms.models import CMSPlugin, ValidationError
 from cms.toolbar.utils import get_object_preview_url
+from cms.utils import get_language_from_request
+from cms.utils.i18n import get_language_tuple, is_valid_site_language, get_language_list
+from cms.utils.urlutils import admin_reverse, static_with_version
 from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import InlineModelAdmin
 from django.contrib.sites.models import Site
 from django.db import models
-from django.db.models import signals
+from django.db.models import Prefetch, signals
 from django.http import HttpResponseRedirect
-from django.urls import path, reverse
-from django.utils import timezone
-from django.utils.translation import get_language_from_request, gettext_lazy as _, ngettext as __
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.urls import NoReverseMatch, path, reverse
+from django.utils.html import format_html_join
+from django.utils.http import urlencode
+from django.utils.translation import get_language, gettext_lazy as _, ngettext as __
 from parler.admin import TranslatableAdmin
+
+from djangocms_blog.forms import PostAdminForm
 
 from .cms_appconfig import BlogConfig
 from .forms import CategoryAdminForm, PostAdminForm
-from .models import BlogCategory, Post
+from .models import BlogCategory, Post, PostContent
 from .settings import get_setting
+from .utils import is_versioning_enabled
 
 signal_dict = {}
 
@@ -126,27 +136,48 @@ class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, Translat
         css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
 
 
+class LanguageFilter(admin.SimpleListFilter):
+    parameter_name = "language"
+    title = _("language")
+
+    def lookups(self, request, model_admin):
+        return get_language_tuple()
+
+    def queryset(self, request, queryset):
+        return queryset
+
+    def choices(self, changelist):
+        for lookup, title in self.lookup_choices:
+            yield {
+                'selected': self.value() == str(lookup),
+                'query_string': changelist.get_query_string({self.parameter_name: lookup}),
+                'display': title,
+            }
+
+
 @admin.register(Post)
-class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookConfig, TranslatableAdmin):
+class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookConfig, admin.ModelAdmin):
     form = PostAdminForm
-    list_display = ["title", "author", "date_published", "app_config", "all_languages_column", "date_published_end"]
-    search_fields = ("translations__title",)
+    inlines = []
+    list_display = ["title", "author",  "app_config", "date_published", "featured"]
+    list_display_links = None
+    search_fields = ("postcontent"),
+    readonly_fields = ("date_created", "date_modified")
     date_hierarchy = "date_published"
-    raw_id_fields = ["author"]
+    # raw_id_fields = ["author"]
     frontend_editable_fields = ("title", "abstract", "post_text")
     enhance_exclude = ("main_image", "tags")
     actions = [
-        "make_published",
-        "make_unpublished",
         "enable_comments",
         "disable_comments",
     ]
-    inlines = []
+
     if apps.is_installed("djangocms_blog.liveblog"):
         actions += ["enable_liveblog", "disable_liveblog"]
+
     _fieldsets = [
-        (None, {"fields": ["title", "subtitle", "slug", ["publish", "pinned"], ["categories", "app_config"]]}),
-        # left empty for sites, author and related fields
+        (None, {"fields": [ ["title"], ["subtitle"], ["slug"], ["categories", "app_config"], "language"]}),
+         # left empty for sites, author and related fields
         (None, {"fields": [[]]}),
         (
             _("Info"),
@@ -159,7 +190,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             _("Images"),
             {"fields": [["main_image", "main_image_thumbnail", "main_image_full"]], "classes": ("collapse",)},
         ),
-        (_("SEO"), {"fields": [["meta_description", "meta_title", "meta_keywords"]], "classes": ("collapse",)}),
+        (
+            _("SEO"),
+            {
+                "fields": ["meta_title", "meta_keywords", "meta_description"],
+                "classes": ("collapse",),
+            }
+        ),
+        (None, {"fields": (("date_created", "date_modified"),)})
     ]
     """
     Default fieldsets structure.
@@ -188,46 +226,179 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
     app_config_values = {"default_published": "publish"}
     _sites = None
+    _post_content_type = None
+    _language_cache = {}
 
-    # Bulk actions for post admin
-    @admin.action(
-        description=_("Publish selection")
-    )
-    def make_published(self, request, queryset):
-        """
-        Bulk action to mark selected posts as published.
-        If the date_published field is empty the current time is saved as date_published.
-        queryset must not be empty (ensured by django CMS).
-        """
-        cnt1 = queryset.filter(
-            date_published__isnull=True,
-            publish=False,
-        ).update(date_published=timezone.now(), publish=True)
-        cnt2 = queryset.filter(
-            date_published__isnull=False,
-            publish=False,
-        ).update(publish=True)
-        messages.add_message(
-            request,
-            messages.INFO,
-            __("%(updates)d entry published.", "%(updates)d entries published.", cnt1 + cnt2)
-            % {"updates": cnt1 + cnt2},
-        )
+    def get_language(self):
+        return get_language()
 
-    @admin.action(
-        description=_("Unpublish selection")
-    )
-    def make_unpublished(self, request, queryset):
-        """
-        Bulk action to mark selected posts as unpublished.
-        queryset must not be empty (ensured by django CMS).
-        """
-        updates = queryset.filter(publish=True).update(publish=False)
-        messages.add_message(
-            request,
-            messages.INFO,
-            __("%(updates)d entry unpublished.", "%(updates)d entries unpublished.", updates) % {"updates": updates},
-        )
+    def get_language_selector(self):
+        return get_language_tuple()
+
+    def get_changelist_instance(self, request):
+        """Set language property and remove language from changelist_filter_params"""
+        if request.method == "GET":
+            request.GET = request.GET.copy()
+            self.language = request.GET.pop("language", [self.get_language()])[0]
+            if self.language not in get_language_list():
+                self.language = self.get_language()
+            self._content_cache = {}  # Language-specific cache needs to be cleared when language is changed
+        instance = super().get_changelist_instance(request)
+        if request.method == "GET" and "language" in instance.params:
+            del instance.params["language"]
+        return instance
+
+    def get_list_display(self, request):
+        return (*self.list_display, *self._get_status_indicator(request), self._get_actions(request),)
+
+    def get_content_obj_for_grouper(self, obj):
+        """Get latest postcontent object for post and cache it."""
+        if not obj in self._content_cache:
+            self._content_cache[obj] = obj.postcontent_set(manager="admin_manager")\
+                .filter(language=self.language)\
+                .latest_content()\
+                .first()
+        return self._content_cache[obj]
+
+    def title(self, obj):
+        content_obj = self.get_content_obj_for_grouper(obj)
+        if content_obj:
+            return content_obj.title
+        return _("Empty")
+
+    def get_search_results(self, request, queryset, search_term):
+        # qs, distinct = super().get_search_results(request, queryset, search_term)
+        content_title = PostContent.admin_manager.filter(title__icontains=search_term).values("post_id").latest_content()
+        return queryset.filter(pk__in=content_title), True
+
+    def _get_actions(self, request):
+        def view_action(obj):
+            content_obj = self.get_content_obj_for_grouper(obj)
+            view_url = self.endpoint_url("cms_placeholder_render_object_preview", content_obj) if content_obj else None
+            edit_url = f'{reverse("admin:djangocms_blog_post_change", args=(obj.pk,))}' \
+                       f'?{urlencode(dict(language=self.language))}'
+            return format_html_join(
+                "",
+                "{}",
+                (
+                    (render_to_string(
+                        "djangocms_blog/admin/icons.html",
+                        {
+                            "url": view_url or "",
+                            "icon": "view",
+                            "action": "get",
+                            "disabled": not view_url,
+                            "target": "_top",
+                            "title": _("View") if view_url else "",
+                        }
+                    ),),
+                    (render_to_string(
+                        "djangocms_blog/admin/icons.html",
+                        {
+                            "url": edit_url,
+                            "icon": "settings" if content_obj else "plus",
+                            "action": "get",
+                            "title": _("Post settings") if view_url else _("Add language"),
+                        }
+                    ),),
+                )
+            )
+
+        view_action.short_description = _("Actions")
+        return view_action
+
+    def _get_status_indicator(self, request):
+        """Gets the status indicator action if djangocms_versioning is enabled"""
+        if is_versioning_enabled():
+            from djangocms_versioning.indicators import (
+                content_indicator,
+                content_indicator_menu,
+                indicator_description,
+            )
+
+            def indicator(obj):
+                post_content = self.get_content_obj_for_grouper(obj)
+
+                status = content_indicator(post_content)
+                menu = content_indicator_menu(request, status, post_content._version) if status else None
+                return render_to_string(
+                    "admin/djangocms_versioning/indicator.html",
+                    {
+                        "state": status or "empty",
+                        "description": indicator_description.get(status, _("Empty")),
+                        "menu_template": "admin/cms/page/tree/indicator_menu.html",
+                        "menu": json.dumps(render_to_string("admin/cms/page/tree/indicator_menu.html",
+                                                          dict(indicator_menu_items=menu))) if menu else None,
+                    }
+                )
+            indicator.short_description = _("Status")
+            return indicator,  # Must be interable of length one
+        return ()
+
+    @staticmethod
+    def endpoint_url(admin, obj):
+        if PostAdmin._post_content_type is None:
+            # Use class as cache
+            from django.contrib.contenttypes.models import ContentType
+
+            PostAdmin._post_content_type = ContentType.objects.get_for_model(obj.__class__).pk
+        try:
+            return admin_reverse(admin, args=[PostAdmin._post_content_type, obj.pk])
+        except NoReverseMatch:
+            return ""
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Adds the language from the request to the form class"""
+        form_class = super().get_form(request, obj, **kwargs)
+        form_class.language = get_language_from_request(request)
+        return form_class
+
+    def get_extra_context(self, request, object_id=None):
+        """Provide the language to edit"""
+        language = get_language_from_request(request)
+        if object_id:
+            # Instance provided? Get corresponding postconent
+            instance = get_object_or_404(self.model, pk=object_id)
+            qs = instance.postcontent_set(manager="admin_manager")
+            filled_languages = qs.values_list("language", flat=True).distinct()
+            content_instance = qs.filter(language=language).latest_content().first()
+        else:
+            content_instance = None
+            filled_languages = []
+
+        context = {
+            "language_tabs": get_language_tuple(),
+            "changed_message": _("Content for the current language has been changed. Click \"Cancel\" to "
+                                 "return to the form and save changes. Click \"OK\" to discard changes."),
+            "language": language,
+            "filled_language": filled_languages,
+            "content_instance": content_instance,
+        }
+        return context
+
+    def get_preserved_filters(self, request):
+        """Always preserve language get parameter!"""
+        preserved_filters = super().get_preserved_filters(request)
+        if "_changelist_filters" in preserved_filters:
+            # changelist needs to add filters to _changelist_filters
+            preserved_filters += f"%26language%3D{self.language}"
+        elif request.GET.get("language", None)  and "language=" not in preserved_filters:
+            # change and add views
+            preserved_filters += "&language=" + request.GET.get("language")
+        print(f"{preserved_filters=}")
+        return preserved_filters
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        return super().change_view(request, object_id, form_url, {
+            **(extra_context or {}),
+            **self.get_extra_context(request, object_id),
+        })
+
+    def add_view(self, request, form_url='', extra_context=None):
+        return super().add_view(request, form_url, {
+            **(extra_context or {}),
+            **self.get_extra_context(request, None),
+        })
 
     @admin.action(
         description=_("Enable comments for selection")
@@ -296,7 +467,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     # Make bulk action menu entries localizable
 
     def get_list_filter(self, request):
-        filters = ["app_config", "publish", "date_published"]
+        filters = ["categories", "app_config", ]
         if get_setting("MULTISITE"):
             filters.append(SiteListFilter)
         try:
@@ -312,51 +483,57 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
                 pass
         return filters
 
-    def get_urls(self):
-        """
-        Customize the modeladmin urls
-        """
-        urls = [
-            path(
-                "publish/<int:pk>/",
-                self.admin_site.admin_view(self.publish_post),
-                name="djangocms_blog_publish_article",
-            ),
-        ]
-        urls.extend(super().get_urls())
-        return urls
+    def lookup_allowed(self, lookup, value):
+        return super().lookup_allowed(lookup,value) or any((
+            lookup.startswith("post__categories"),
+            lookup.startswith("post__app_config"),
+        ))
 
-    def post_add_plugin(self, request, obj1, obj2=None):
-        if isinstance(obj1, CMSPlugin):
-            plugin = obj1
-        elif isinstance(obj2, CMSPlugin):
-            plugin = obj2
-        if plugin.plugin_type in get_setting("LIVEBLOG_PLUGINS"):
-            plugin = plugin.move(plugin.get_siblings().first(), "first-sibling")
-        if isinstance(obj1, CMSPlugin):
-            return super().post_add_plugin(request, plugin)
-        elif isinstance(obj2, CMSPlugin):
-            return super().post_add_plugin(request, obj1, plugin)
+    # def get_urls(self):
+    #     """
+    #     Customize the modeladmin urls
+    #     """
+    #     urls = [
+    #         path(
+    #             "publish/<int:pk>/",
+    #             self.admin_site.admin_view(self.publish_post),
+    #             name="djangocms_blog_publish_article",
+    #         ),
+    #     ]
+    #     urls.extend(super().get_urls())
+    #     return urls
 
-    def publish_post(self, request, pk):
-        """
-        Admin view to publish a single post
+    # def post_add_plugin(self, request, obj1, obj2=None):
+    #     if isinstance(obj1, CMSPlugin):
+    #         plugin = obj1
+    #     elif isinstance(obj2, CMSPlugin):
+    #         plugin = obj2
+    #     if plugin.plugin_type in get_setting("LIVEBLOG_PLUGINS"):
+    #         plugin = plugin.move(plugin.get_siblings().first(), "first-sibling")
+    #     if isinstance(obj1, CMSPlugin):
+    #         return super().post_add_plugin(request, plugin)
+    #     elif isinstance(obj2, CMSPlugin):
+    #         return super().post_add_plugin(request, obj1, plugin)
 
-        :param request: request
-        :param pk: primary key of the post to publish
-        :return: Redirect to the post itself (if found) or fallback urls
-        """
-        language = get_language_from_request(request, check_path=True)
-        try:
-            post = Post.objects.get(pk=int(pk))
-            post.publish = True
-            post.save()
-            return HttpResponseRedirect(post.get_absolute_url(language))
-        except Exception:
-            try:
-                return HttpResponseRedirect(request.headers["referer"])
-            except KeyError:
-                return HttpResponseRedirect(reverse("djangocms_blog:posts-latest"))
+    # def publish_post(self, request, pk):
+    #     """
+    #     Admin view to publish a single post
+    #
+    #     :param request: request
+    #     :param pk: primary key of the post to publish
+    #     :return: Redirect to the post itself (if found) or fallback urls
+    #     """
+    #     language = get_language_from_request(request, check_path=True)
+    #     try:
+    #         post = Post.objects.get(pk=int(pk))
+    #         post.publish = True
+    #         post.save()
+    #         return HttpResponseRedirect(post.get_absolute_url(language))
+    #     except Exception:
+    #         try:
+    #             return HttpResponseRedirect(request.headers["referer"])
+    #         except KeyError:
+    #             return HttpResponseRedirect(reverse("djangocms_blog:posts-latest"))
 
     def has_restricted_sites(self, request):
         """
@@ -395,7 +572,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
     def _get_available_posts(self, config):
         if config:
-            return self.model.objects.namespace(config.namespace).active_translations().exists()
+            return self.model.objects.filter(app_config__namespace=config.namespace).all()
         return []
 
     def get_fieldsets(self, request, obj=None):
@@ -423,11 +600,13 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
-            self._patch_fieldsets(fsets, "abstract")
+            # self._patch_fieldsets(fsets, "abstract")
+            pass
         if not placeholder:
             self._patch_fieldsets(fsets, "post_text")
         if get_setting("MULTISITE") and not self.has_restricted_sites(request):
-            self._patch_fieldsets(fsets, "sites")
+            # self._patch_fieldsets(fsets, "sites")
+            pass
         if request.user.is_superuser:
             self._patch_fieldsets(fsets, "author")
         if apps.is_installed("djangocms_blog.liveblog"):
@@ -458,8 +637,23 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         return {"slug": ("title",)}
 
     def save_model(self, request, obj, form, change):
-        obj._set_default_author(request.user)
-        super().save_model(request, obj, form, change)
+        super().save_model(request, obj or form.instance, form, change)
+        content_dict = {
+            field: form.cleaned_data[field] for field in form._postcontent_fields
+        }
+        if form.content_instance is None or form.content_instance.pk is None:
+            PostContent.objects.with_user(request.user).create(
+                post=form.instance,
+                language=form.language,
+                **content_dict,
+            )
+        else:
+            print(f"   Updating content for {form.language=}")
+            for key, value in content_dict.items():
+                setattr(form.content_instance, key, value)
+            form.content_instance.save()
+        # obj.post._set_default_author(request.user)
+        # obj.post.save()
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -467,7 +661,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         if sites.exists():
             pks = list(sites.all().values_list("pk", flat=True))
             qs = qs.filter(sites__in=pks)
-        return qs.distinct()
+        return qs.distinct().prefetch_related(Prefetch('postcontent_set', queryset=PostContent.admin_manager.all()))
 
     def save_related(self, request, form, formsets, change):
         if self.get_restricted_sites(request).exists():
@@ -481,10 +675,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         super().save_related(request, form, formsets, change)
 
     def view_on_site(self, obj):
-        return get_object_preview_url(obj, obj.language_code)
+        return get_object_preview_url(obj)
 
     class Media:
-        css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
+        js = ("admin/js/jquery.init.js", "djangocms_versioning/js/indicators.js", "djangocms_blog/js/language-selector.js")
+        css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),
+                       static_with_version("cms/css/cms.pagetree.css"),
+                       "djangocms_versioning/css/actions.css",
+                       )}
 
 
 @admin.register(BlogConfig)

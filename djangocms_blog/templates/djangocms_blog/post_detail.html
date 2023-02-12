@@ -6,10 +6,11 @@
 
 {% block content_blog %}{% spaceless %}
 <article id="post-{{ post.slug }}" class="post-item post-detail">
+  {{ post.content }}
     <header>
-        <h2>{% render_model post "title" %}</h2>
+        <h2>{{ post.title }}{#  render_model post "title" #}</h2>
         {% if post.subtitle %}
-            <h3>{% render_model post "subtitle" %}</h3>
+            <h3>{# render_model post "subtitle" #}</h3>
         {% endif %}
         {% block blog_meta %}
             {% include "djangocms_blog/includes/blog_meta.html" %}

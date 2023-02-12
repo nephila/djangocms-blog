@@ -2,21 +2,23 @@ import hashlib
 
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
-from cms.models import CMSPlugin, Placeholder, PlaceholderRelationField, PlaceholderField
+from cms.models import CMSPlugin, Placeholder, PlaceholderField, PlaceholderRelationField
+from cms.utils.placeholder import rescan_placeholders_for_obj
 from django.conf import settings as dj_settings
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from django.urls import reverse
-from django.utils import timezone
+from django.urls import NoReverseMatch, reverse
+from django.utils import timezone, translation
 from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
-from django.utils.translation import get_language, gettext, gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _, get_language
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from filer.models import ThumbnailOption
@@ -30,6 +32,7 @@ from .cms_appconfig import BlogConfig
 from .fields import slugify
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
+from .utils import is_versioning_enabled
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
 BLOG_CURRENT_NAMESPACE = get_setting("CURRENT_NAMESPACE")
@@ -56,7 +59,7 @@ def _get_language(instance, language):
     available_languages = instance.get_available_languages()
     if language and language in available_languages:
         return language
-    language = get_language()
+    language = translation.get_language()
     if language and language in available_languages:
         return language
     language = instance.get_current_language()
@@ -69,16 +72,13 @@ def _get_language(instance, language):
     return language
 
 
-class BlogMetaMixin(ModelMeta):
+class BlogMetaMixin:
     def get_meta_attribute(self, param):
         """
         Retrieves django-meta attributes from apphook config instance
         :param param: django-meta attribute passed as key
         """
         return self._get_meta_value(param, getattr(self.app_config, param)) or ""
-
-    def get_locale(self):
-        return self.get_current_language()
 
     def get_full_url(self):
         """
@@ -87,7 +87,7 @@ class BlogMetaMixin(ModelMeta):
         return self.build_absolute_uri(self.get_absolute_url())
 
 
-class BlogCategory(BlogMetaMixin, TranslatableModel):
+class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
     """
     Blog category allows to structure content in a hierarchy of categories.
     """
@@ -225,7 +225,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         return escape(strip_tags(description)).strip()
 
 
-class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
+class Post(KnockerModel, models.Model):
     """
     Blog post
     """
@@ -289,35 +289,8 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     )
     app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
 
-    translations = TranslatedFields(
-        title=models.CharField(_("title"), max_length=752),
-        slug=models.SlugField(
-            _("slug"),
-            max_length=752,
-            blank=True,
-            db_index=True,
-            allow_unicode=BLOG_ALLOW_UNICODE_SLUGS,
-        ),
-        subtitle=models.CharField(verbose_name=_("subtitle"), max_length=767, blank=True, default=""),
-        abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
-        meta_description=models.TextField(verbose_name=_("post meta description"), blank=True, default=""),
-        meta_keywords=models.TextField(verbose_name=_("post meta keywords"), blank=True, default=""),
-        meta_title=models.CharField(
-            verbose_name=_("post meta title"),
-            help_text=_("used in title tag and social sharing"),
-            max_length=2000,
-            blank=True,
-            default="",
-        ),
-        post_text=HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR"),
-        meta={"unique_together": (("language_code", "slug"),)},
-    )
-    media = PlaceholderField("media", related_name="media")
-    content = PlaceholderField("post_content", related_name="post_content")
-    liveblog = PlaceholderField("live_blog", related_name="live_blog")
     enable_liveblog = models.BooleanField(verbose_name=_("enable liveblog on post"), default=False)
 
-    objects = GenericDateTaggedManager()
     tags = TaggableManager(
         blank=True,
         related_name="djangocms_blog_tags",
@@ -361,15 +334,57 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         ordering = (F("pinned").asc(nulls_last=True), "-date_published", "-date_created")
         get_latest_by = "date_published"
 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._content_cache = {}
+        self._language_cache = None
+
     def __str__(self):
         default = gettext("Post (no translation)")
         return self.safe_translation_getter("title", any_language=True, default=default)
+
+    @admin.display(boolean=True)
+    def featured(self):
+        return bool(self.pinned)
+
+    def get_content(self, language=None, show_draft_content=False):
+        if not language:
+            language = translation.get_language()
+
+        try:
+            return self._content_cache[language]
+        except KeyError:
+            qs = self.postcontent_set(manager="admin_manager" if show_draft_content else "objects").prefetch_related(
+                'placeholders',
+                'post__categories',
+            ).filter(language=language)
+
+            self._content_cache[language] = qs.first()
+            return self._content_cache[language]
+
+    def safe_translation_getter(self, field, default=None, language_code=None, any_language=False):
+        """
+        Fetch a content property, and return a default value
+        when both the translation and fallback language are missing.
+
+        When ``any_language=True`` is used, the function also looks
+        into other languages to find a suitable value. This feature can be useful
+        for "title" attributes for example, to make sure there is at least something being displayed.
+        Also consider using ``field = TranslatedField(any_language=True)`` in the model itself,
+        to make this behavior the default for the given field.
+        """
+
+        content_obj = self.get_content(language_code, show_draft_content=True)
+        if content_obj is None and any_language and self.get_available_languages():
+            content_obj = self.get_content(self.get_available_languages()[0], show_draft_content=True)
+        return getattr(content_obj, field, default)
 
 
     @property
     def guid(self, language=None):
         if not language:
-            language = self.get_current_language()
+            language = get_language()
         base_string = "-{0}-{2}-{1}-".format(
             language,
             self.app_config.namespace,
@@ -385,25 +400,20 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     def save(self, *args, **kwargs):
         """
-        Handle some auto configuration during save
+        Handle some autoconfiguration during save
         """
         if self.publish and self.date_published is None:
             self.date_published = timezone.now()
-        if not self.slug and self.title:
-            self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-    def save_translation(self, translation, *args, **kwargs):
-        """
-        Handle some auto configuration during save
-        """
-        if not translation.slug and translation.title:
-            translation.slug = slugify(translation.title)
-        super().save_translation(translation, *args, **kwargs)
+    def get_available_languages(self):
+        if not(self._language_cache):
+            self._language_cache = list(self.postcontent_set.all().values_list("language", flat=True))
+        return self._language_cache
 
-    def get_absolute_url(self, lang=None):
-        lang = _get_language(self, lang)
-        with switch_language(self, lang):
+    def get_absolute_url(self, language=None):
+        lang = language or translation.get_language()
+        with translation.override(lang):
             category = self.categories.first()
             kwargs = {}
             if self.date_published:
@@ -423,14 +433,17 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                 kwargs["category"] = category.safe_translation_getter(
                     "slug", language_code=lang, any_language=True
                 )  # NOQA
-            return reverse(
-                "%s:post-detail" % self.app_config.namespace, kwargs=kwargs, current_app=self.app_config.namespace
-            )
+            try:
+                return reverse(
+                    "%s:post-detail" % self.app_config.namespace, kwargs=kwargs, current_app=self.app_config.namespace
+                )
+            except NoReverseMatch:
+                return ""
 
-    def get_title(self):
-        title = self.safe_translation_getter("meta_title", any_language=True)
+    def get_title(self, language=None):
+        title = self.safe_translation_getter("meta_title", language_code=language, any_language=True)
         if not title:
-            title = self.safe_translation_getter("title", any_language=True)
+            title = self.safe_translation_getter("title", language_code=language, any_language=True) or _("No title")
         return title.strip()
 
     def get_keywords(self):
@@ -492,10 +505,6 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         else:
             return get_setting("IMAGE_FULL_SIZE")
 
-    def get_template(self):
-        # Used for the cms structure endpoint
-        return 'djangocms_blog/post_structure.html'
-
     @property
     def is_published(self):
         """
@@ -521,16 +530,13 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     @property
     def liveblog_group(self):
         return "liveblog-{apphook}-{lang}-{post}".format(
-            lang=self.get_current_language(),
+            lang=translation.get_language(),
             apphook=self.app_config.namespace,
             post=self.safe_translation_getter("slug", any_language=True),
         )
 
 
-class PostContent(BlogMetaMixin, models.Model):
-    class Meta:
-        unique_together = (("language", "slug"),)
-
+class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     language = models.CharField(_("language"), max_length=15, db_index=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     title = models.CharField(_("title"), max_length=752)
@@ -555,6 +561,33 @@ class PostContent(BlogMetaMixin, models.Model):
     post_text = HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR")
     placeholders = PlaceholderRelationField()
 
+    def get_placeholders(self):
+        print("XXX get_placeholders called XXX")
+        rescan_placeholders_for_obj(self)
+        return [placeholder.slot for placeholder in self.placeholders.all()]
+
+    objects = GenericDateTaggedManager()
+    admin_manager = GenericDateTaggedManager()
+
+    @property
+    def author(self):
+        return self.post.author
+
+    @property
+    def date_published(self):
+        return self.post.date_published
+
+    @property
+    def date_published_end(self):
+        return self.post.date_published_end
+
+    @property
+    def app_config(self):
+        return self.post.app_config
+
+    def categories(self):
+        return self.post.categories
+
     def _get_placeholder_from_slotname(self, slotname):
         try:
             return self.placeholders.get(slot=slotname)
@@ -575,6 +608,23 @@ class PostContent(BlogMetaMixin, models.Model):
     def liveblog(self):
         return self._get_placeholder_from_slotname("liveblog")
 
+    def save(self, *args, **kwargs):
+        """
+        Handle some auto configuration during save
+        """
+        if not self.slug and self.title:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self, language=None):
+        return self.post.get_absolute_url(language=language)
+
+    def get_template(self):
+        # Used for the cms structure endpoint
+        return 'djangocms_blog/post_structure.html'
+
+    def __str__(self):
+        return self.title or _("Untitled")
 
 class BasePostPlugin(CMSPlugin):
     app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"), blank=True)
@@ -603,7 +653,7 @@ class BasePostPlugin(CMSPlugin):
         )
 
     def post_queryset(self, request=None, published_only=True):
-        language = get_language()
+        language = translation.get_language()
         posts = Post.objects
         if self.app_config:
             posts = posts.namespace(self.app_config.namespace)

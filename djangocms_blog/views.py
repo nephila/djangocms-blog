@@ -12,14 +12,53 @@ from django.utils.translation import get_language
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
-from .models import BlogCategory, Post
+from .models import BlogCategory, Post, PostContent
 from .settings import get_setting
 
 User = get_user_model()
 
 
-class BaseBlogView(AppConfigMixin, ViewUrlMixin):
-    model = Post
+class PostDetailView(AppConfigMixin, DetailView):
+    model = PostContent
+    context_object_name = "post_content"
+    base_template_name = "post_detail.html"
+    slug_field = "slug"
+    view_url_name = "djangocms_blog:post-detail"
+    instant_article = False
+
+    def liveblog_enabled(self):
+        return self.object.post.enable_liveblog and apps.is_installed("djangocms_blog.liveblog")
+
+    def get_template_names(self):
+        if self.instant_article:
+            template_path = (self.config and self.config.template_prefix) or "djangocms_blog"
+            return os.path.join(template_path, "post_instant_article.html")
+        else:
+            template_path = (self.config and self.config.template_prefix) or "djangocms_blog"
+            return os.path.join(template_path, self.base_template_name)
+
+    def get_object(self):
+        obj = super().get_object()
+        try:
+            self.request.toolbar.set_object(obj)
+        except AttributeError:
+            pass
+        return obj
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["post"] = context["post_content"]  # Temporary to allow for easier transition from v3 to v4
+        context["meta"] = self.get_object().as_meta()
+        context["instant_article"] = self.instant_article
+        context["use_placeholder"] = get_setting("USE_PLACEHOLDER")
+        setattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.get_object())
+        return context
+
+
+class BaseBlogListView(AppConfigMixin):
+    context_object_name = "post_list"
+    base_template_name = "post_list.html"
+    model = PostContent
 
     def optimize(self, qs):
         """
@@ -27,8 +66,8 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         :param qs: queryset to optimize
         :return: optimized queryset
         """
-        return qs.select_related("app_config").prefetch_related(
-            "translations", "categories", "categories__translations", "categories__app_config"
+        return qs.select_related("post__app_config").prefetch_related(
+            "post__categories", "post__categories__translations", "post__categories__app_config"
         )
 
     def get_view_url(self):
@@ -40,10 +79,11 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
 
     def get_queryset(self):
         language = get_language()
-        queryset = self.model._default_manager.namespace(self.namespace).active_translations(language_code=language)
-        if not getattr(self.request, "toolbar", None):
-            if not self.request.toolbar.preview_mode_active and not self.request.toolbar.edit_mode_active:
-                queryset = queryset.published()
+        if hasattr(self.request, "toolbar") and (self.request.toolbar.edit_mode_active or self.request.toolbar.preview_mode_active):
+            queryset = self.model.admin_manager
+        else:
+            queryset = self.model._default_manager.published()
+        queryset = queryset.filter(language=language, post__app_config__namespace=self.namespace)
         setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         return self.optimize(queryset.on_site())
 
@@ -52,10 +92,6 @@ class BaseBlogView(AppConfigMixin, ViewUrlMixin):
         return os.path.join(template_path, self.base_template_name)
 
 
-class BaseBlogListView(BaseBlogView):
-    context_object_name = "post_list"
-    base_template_name = "post_list.html"
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["TRUNCWORDS_COUNT"] = get_setting("POSTS_LIST_TRUNCWORDS_COUNT")
@@ -63,44 +99,6 @@ class BaseBlogListView(BaseBlogView):
 
     def get_paginate_by(self, queryset):
         return (self.config and self.config.paginate_by) or get_setting("PAGINATION")
-
-
-class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
-    context_object_name = "post"
-    base_template_name = "post_detail.html"
-    slug_field = "slug"
-    view_url_name = "djangocms_blog:post-detail"
-    instant_article = False
-
-    def liveblog_enabled(self):
-        return self.object.enable_liveblog and apps.is_installed("djangocms_blog.liveblog")
-
-    def get_template_names(self):
-        if self.instant_article:
-            template_path = (self.config and self.config.template_prefix) or "djangocms_blog"
-            return os.path.join(template_path, "post_instant_article.html")
-        else:
-            return super().get_template_names()
-
-    def get_queryset(self):
-        queryset = self.model._default_manager.all()
-        if not getattr(self.request, "toolbar", None) or not self.request.toolbar.edit_mode_active:
-            queryset = queryset.published()
-        return self.optimize(queryset)
-
-    def get(self, *args, **kwargs):
-        # submit object to cms to get corrent language switcher and selected category behavior
-        if hasattr(self.request, "toolbar"):
-            self.request.toolbar.set_object(self.get_object())
-        return super().get(*args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["meta"] = self.get_object().as_meta()
-        context["instant_article"] = self.instant_article
-        context["use_placeholder"] = get_setting("USE_PLACEHOLDER")
-        setattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.get_object())
-        return context
 
 
 class PostListView(BaseBlogListView, ListView):
@@ -167,7 +165,7 @@ class AuthorEntriesView(BaseBlogListView, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         if "username" in self.kwargs:
-            qs = qs.filter(**{"author__%s" % User.USERNAME_FIELD: self.kwargs["username"]})
+            qs = qs.filter(**{"post__author__%s" % User.USERNAME_FIELD: self.kwargs["username"]})
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):

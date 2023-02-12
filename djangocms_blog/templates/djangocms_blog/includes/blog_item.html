@@ -2,7 +2,7 @@
 
 <article id="post-{{ post.slug }}" class="post-item">
     <header>
-        <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+        <h3><a href="{% absolute_url post %}">{{ post.title }}</a></h3>
         {% if post.subtitle %}
             <h4>{{ post.subtitle }}</h4>
         {% endif %}
@@ -29,6 +29,6 @@
         {% endif %}
     </div>
     <footer class="read-more">
-        <a href="{{ post.get_absolute_url }}">{% trans "read more" %} &raquo;</a>
+        <a href="{% absolute_url post %}">{% trans "read more" %} &raquo;</a>
     </footer>
 </article>

@@ -14,7 +14,7 @@ class TaggedFilterItem:
         o con gli stessi tag di un model o un queryset
         """
         tags = self._taglist(other_model, queryset)
-        return self.get_queryset().filter(tags__in=tags).distinct()
+        return self.get_queryset().filter(post__tags__in=tags).distinct()
 
     def _taglist(self, other_model=None, queryset=None):
         """
@@ -89,12 +89,12 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
     def on_site(self, site=None):
         if not site:
             site = Site.objects.get_current()
-        return self.filter(models.Q(sites__isnull=True) | models.Q(sites=site.pk))
+        return self.filter(models.Q(post__sites__isnull=True) | models.Q(post__sites=site.pk))
 
     def published(self, current_site=True):
         queryset = self.published_future(current_site)
         if self.start_date_field:
-            return queryset.filter(**{"%s__lte" % self.start_date_field: now()})
+            return queryset.filter(**{"post__%s__lte" % self.start_date_field: now()})
         else:
             return queryset
 
@@ -104,11 +104,11 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         else:
             queryset = self
         if self.end_date_field:
-            qfilter = models.Q(**{"%s__gte" % self.end_date_field: now()}) | models.Q(
-                **{"%s__isnull" % self.end_date_field: True}
+            qfilter = models.Q(**{"post__%s__gte" % self.end_date_field: now()}) | models.Q(
+                **{"post__%s__isnull" % self.end_date_field: True}
             )
             queryset = queryset.filter(qfilter)
-        return queryset.filter(**{self.publish_field: True})
+        return queryset.filter(**{f"post__{self.publish_field}": True})
 
     def archived(self, current_site=True):
         if current_site:
@@ -116,21 +116,21 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         else:
             queryset = self
         if self.end_date_field:
-            qfilter = models.Q(**{"%s__lte" % self.end_date_field: now()})
+            qfilter = models.Q(**{"site__%s__lte" % self.end_date_field: now()})
             queryset = queryset.filter(qfilter)
-        return queryset.filter(**{self.publish_field: True})
+        return queryset.filter(**{f"post__{self.publish_field}": True})
 
     def available(self, current_site=True):
         if current_site:
-            return self.on_site().filter(**{self.publish_field: True})
+            return self.on_site().filter(**{f"post__{self.publish_field}": True})
         else:
-            return self.filter(**{self.publish_field: True})
+            return self.filter(**{f"post__{self.publish_field}": True})
 
     def filter_by_language(self, language, current_site=True):
         if current_site:
-            return self.active_translations(language_code=language).on_site()
+            return self.filter(language=language).on_site()
         else:
-            return self.active_translations(language_code=language)
+            return self.filter(language=language)
 
 
 class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):
