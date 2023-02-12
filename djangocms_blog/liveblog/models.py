@@ -50,6 +50,7 @@ class LiveblogInterface(models.Model):
     @property
     def liveblog_group(self):
         post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
+        print("POST GROUPO", post)
         try:
             if post:
                 return post.liveblog_group
@@ -81,8 +82,9 @@ class LiveblogInterface(models.Model):
                 "type": "send.json",
             }
             channel_layer = get_channel_layer()
+            group = self.liveblog_group
             try:
-                async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
+                async_to_sync(channel_layer.group_send)(group, notification)
             except Exception:
                 pass
 

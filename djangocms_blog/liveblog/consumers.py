@@ -28,5 +28,4 @@ class LiveblogConsumer(JsonWebsocketConsumer):
             return []
 
     def send_json(self, content, close=False):
-        print(f"C {content}, {close}")
         return super().send_json(content, close)

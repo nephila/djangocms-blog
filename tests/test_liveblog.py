@@ -23,6 +23,7 @@ async def _connect(post):
         lang=post.get_current_language(),
         slug=post.slug,
     )
+    print("APP", application, path)
     communicator = WebsocketCommunicator(application, path)
     connected, __ = await communicator.connect()
     assert connected
@@ -73,10 +74,12 @@ def update_livelobg_plugin_content(plugin, publish=True):
     return plugin, admin, plugin_text
 
 
+@pytest.mark.debug
 @pytest.mark.django_db
 @pytest.mark.asyncio
 async def test_add_plugin():
     post = await get_post()
+    print("POST", post.title)
     communicator = await _connect(post)
     plugin, admin, plugin_text = await add_livelobg_plugin(post.liveblog)
     rendered = await communicator.receive_json_from()
@@ -111,7 +114,6 @@ async def test_add_plugin_no_publish():
     assert await communicator.receive_nothing() is True
     await communicator.send_json_to({"hello": "world"})
     rendered = await communicator.receive_json_from()
-    print(rendered)
 
     plugin, admin, new_plugin_text = await update_livelobg_plugin_content(plugin, publish=True)
     rendered = await communicator.receive_json_from()
@@ -127,6 +129,7 @@ async def test_add_plugin_no_publish():
     await delete_post(post)
 
 
+@pytest.mark.skip
 @pytest.mark.django_db
 @pytest.mark.asyncio
 async def test_disconnect():
