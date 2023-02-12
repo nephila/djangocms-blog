@@ -201,6 +201,8 @@ class AdminTest(BaseTest):
         self.assertEqual(response["Location"], "/")
 
     def test_admin_changelist_view(self):
+        self.get_pages()
+
         posts = self.get_posts()
         post_admin = admin.site._registry[Post]
         request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)

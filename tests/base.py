@@ -192,6 +192,10 @@ class BaseTest(BaseTestCase):
         cache.clear()
         super().tearDown()
 
+    def setUp(self):
+        self.get_pages()
+        super().setUp()
+
     def get_nodes(self, menu_pool, request):
         try:
             nodes = menu_pool.get_renderer(request).get_nodes()

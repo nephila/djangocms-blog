@@ -81,12 +81,10 @@ class LiveblogInterface(models.Model):
                 "type": "send.json",
             }
             channel_layer = get_channel_layer()
-            print(channel_layer, notification)
             try:
-                x = async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
-                print("SENT", x)
-            except Exception as e:
-                print("SEND", e)
+                async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
+            except Exception:
+                pass
 
 
 class Liveblog(LiveblogInterface, AbstractText):
