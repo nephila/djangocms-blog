@@ -3,6 +3,7 @@ from copy import deepcopy
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from cms.models import CMSPlugin, ValidationError
+from cms.toolbar.utils import get_object_preview_url
 from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
@@ -448,6 +449,9 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             else:
                 form.instance.sites.add(*self.get_restricted_sites(request).all().values_list("pk", flat=True))
         super().save_related(request, form, formsets, change)
+
+    def view_on_site(self, obj):
+        return get_object_preview_url(obj, obj.language_code)
 
     class Media:
         css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
