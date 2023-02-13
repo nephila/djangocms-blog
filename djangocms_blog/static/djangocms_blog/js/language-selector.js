@@ -13,6 +13,7 @@
     });
     $('.changelist-form-container div.language-selector').prependTo('.changelist-form-container #toolbar');
     $('form#changelist-search').css('float', 'right');
+    $('#toolbar').css('min-height', $('#toolbar div.language-selector select').height());
     $('#toolbar.actions-visible').css('float', 'unset');
 
     $('.js-language-tabs').each(function (i, e) {

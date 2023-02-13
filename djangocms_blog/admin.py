@@ -6,12 +6,13 @@ from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAd
 from cms.models import CMSPlugin, ValidationError
 from cms.toolbar.utils import get_object_preview_url
 from cms.utils import get_language_from_request
-from cms.utils.i18n import get_language_tuple, is_valid_site_language, get_language_list
+from cms.utils.i18n import get_language_list, get_language_tuple, is_valid_site_language
 from cms.utils.urlutils import admin_reverse, static_with_version
 from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.options import InlineModelAdmin
+from django.contrib.admin.views.main import ChangeList
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models import Prefetch, signals
@@ -33,6 +34,17 @@ from .settings import get_setting
 from .utils import is_versioning_enabled
 
 signal_dict = {}
+
+try:
+    from djangocms_versioning.indicators import IndicatorMixin
+except ModuleNotFoundError:
+    class IndicatorMixin:
+        def indicator(self, obj):
+            pass
+
+        def get_list_display(self, request):
+            # remove "indicator" entry
+            return [item for item in super().get_list_display(request) if item != "indicator"]
 
 
 def register_extension(klass):
@@ -136,35 +148,119 @@ class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, Translat
         css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
 
 
-class LanguageFilter(admin.SimpleListFilter):
-    parameter_name = "language"
-    title = _("language")
+# class LanguageFilter(admin.SimpleListFilter):
+#     parameter_name = "language"
+#     title = _("language")
+#
+#     def lookups(self, request, model_admin):
+#         return get_language_tuple()
+#
+#     def queryset(self, request, queryset):
+#         return queryset
+#
+#     def choices(self, changelist):
+#         for lookup, title in self.lookup_choices:
+#             yield {
+#                 'selected': self.value() == str(lookup),
+#                 'query_string': changelist.get_query_string({self.parameter_name: lookup}),
+#                 'display': title,
+#             }
 
-    def lookups(self, request, model_admin):
+class BlogChangeList(ChangeList):
+    """Subclass ChangeList to disregard language get parameter as filter"""
+    def get_filters_params(self, params=None):
+        lookup_params = super().get_filters_params(params)
+        if "language" in lookup_params:
+            del lookup_params["language"]
+        return lookup_params
+
+
+class LanguageGrouperMixin:
+
+    def __init__(self, *args, **kwargs):
+        self._content_cache = {}
+        super().__init__(*args, **kwargs)
+
+    def get_language(self):
+        return get_language()
+
+    def get_language_selector(self):
         return get_language_tuple()
 
-    def queryset(self, request, queryset):
-        return queryset
+    def get_changelist(self, request, **kwargs):
+        """Allow for language as a non-filter parameter"""
+        return BlogChangeList
 
-    def choices(self, changelist):
-        for lookup, title in self.lookup_choices:
-            yield {
-                'selected': self.value() == str(lookup),
-                'query_string': changelist.get_query_string({self.parameter_name: lookup}),
-                'display': title,
-            }
+    def get_language_from_request(self, request):
+        if request.method == "GET":
+            language = request.GET.get("language", self.get_language())
+            if language not in get_language_list():
+                language = self.get_language()
+            if not hasattr(self, "language") or language != self.language:
+                self.language = language
+                self._content_cache = {}  # Language-specific cache needs to be cleared when language is changed
+
+    def get_changelist_instance(self, request):
+        """Set language property"""
+        self.get_language_from_request(request)
+        return super().get_changelist_instance(request)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        """Set language property"""
+        self.get_language_from_request(request)
+        return super().change_view(request, object_id, form_url, extra_context)
+
+    def add_view(self, request, form_url='', extra_context=None):
+        """Add view with extra context"""
+        self.get_language_from_request(request)
+        return super().add_view(request, form_url, extra_context)
+
+    def get_content_obj_for_grouper(self, obj):
+        """Get the latest content object for post and cache it."""
+        if obj is None:
+            return None
+        if not obj in self._content_cache:
+            assert self.language
+            self._content_cache[obj] = obj.postcontent_set(manager="admin_manager")\
+                .filter(language=self.language)\
+                .latest_content()\
+                .first()
+        return self._content_cache[obj]
+
+    def get_preserved_filters(self, request):
+        """Always preserve language get parameter!"""
+        preserved_filters = super().get_preserved_filters(request)
+        # Language from property (changelist view) or request (change/add view)
+        language = self.language if hasattr(self, "langauge") else get_language_from_request(request)
+        if "language" not in preserved_filters:
+            preserved_filters += f"%26language%3D{language}"
+        elif preserved_filters == "":
+            preserved_filters = f"_changelist_filters=language%3D{language}"
+        return preserved_filters
+
+    def view_on_site(self, obj):
+        content_obj = self.get_content_obj_for_grouper(obj)
+        return get_object_preview_url(content_obj) if content_obj else None
+
 
 
 @admin.register(Post)
-class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookConfig, admin.ModelAdmin):
+class PostAdmin(
+    PlaceholderAdminMixin,
+    FrontendEditableAdminMixin,
+    ModelAppHookConfig,
+    IndicatorMixin,
+    LanguageGrouperMixin,
+    admin.ModelAdmin,
+):
     form = PostAdminForm
     inlines = []
-    list_display = ["title", "author",  "app_config", "date_published", "featured"]
-    list_display_links = None
-    search_fields = ("postcontent"),
+    list_display = ("title", "author",  "app_config", "indicator")
+    list_display_links = ("title",)
+    search_fields = ("author__first_name",)
     readonly_fields = ("date_created", "date_modified")
     date_hierarchy = "date_published"
-    # raw_id_fields = ["author"]
+    autocomplete_fields = ["author"]
     frontend_editable_fields = ("title", "abstract", "post_text")
     enhance_exclude = ("main_image", "tags")
     actions = [
@@ -229,36 +325,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     _post_content_type = None
     _language_cache = {}
 
-    def get_language(self):
-        return get_language()
-
-    def get_language_selector(self):
-        return get_language_tuple()
-
-    def get_changelist_instance(self, request):
-        """Set language property and remove language from changelist_filter_params"""
-        if request.method == "GET":
-            request.GET = request.GET.copy()
-            self.language = request.GET.pop("language", [self.get_language()])[0]
-            if self.language not in get_language_list():
-                self.language = self.get_language()
-            self._content_cache = {}  # Language-specific cache needs to be cleared when language is changed
-        instance = super().get_changelist_instance(request)
-        if request.method == "GET" and "language" in instance.params:
-            del instance.params["language"]
-        return instance
-
     def get_list_display(self, request):
-        return (*self.list_display, *self._get_status_indicator(request), self._get_actions(request),)
-
-    def get_content_obj_for_grouper(self, obj):
-        """Get latest postcontent object for post and cache it."""
-        if not obj in self._content_cache:
-            self._content_cache[obj] = obj.postcontent_set(manager="admin_manager")\
-                .filter(language=self.language)\
-                .latest_content()\
-                .first()
-        return self._content_cache[obj]
+        return (*super().get_list_display(request), self._get_actions(request),)
 
     def title(self, obj):
         content_obj = self.get_content_obj_for_grouper(obj)
@@ -289,7 +357,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
                             "action": "get",
                             "disabled": not view_url,
                             "target": "_top",
-                            "title": _("View") if view_url else "",
+                            "title": _("Preview") if view_url else "",
                         }
                     ),),
                     (render_to_string(
@@ -303,37 +371,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
                     ),),
                 )
             )
-
         view_action.short_description = _("Actions")
         return view_action
-
-    def _get_status_indicator(self, request):
-        """Gets the status indicator action if djangocms_versioning is enabled"""
-        if is_versioning_enabled():
-            from djangocms_versioning.indicators import (
-                content_indicator,
-                content_indicator_menu,
-                indicator_description,
-            )
-
-            def indicator(obj):
-                post_content = self.get_content_obj_for_grouper(obj)
-
-                status = content_indicator(post_content)
-                menu = content_indicator_menu(request, status, post_content._version) if status else None
-                return render_to_string(
-                    "admin/djangocms_versioning/indicator.html",
-                    {
-                        "state": status or "empty",
-                        "description": indicator_description.get(status, _("Empty")),
-                        "menu_template": "admin/cms/page/tree/indicator_menu.html",
-                        "menu": json.dumps(render_to_string("admin/cms/page/tree/indicator_menu.html",
-                                                          dict(indicator_menu_items=menu))) if menu else None,
-                    }
-                )
-            indicator.short_description = _("Status")
-            return indicator,  # Must be interable of length one
-        return ()
 
     @staticmethod
     def endpoint_url(admin, obj):
@@ -353,6 +392,24 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         form_class.language = get_language_from_request(request)
         return form_class
 
+    def get_readonly_fields(self, request, obj=None):
+        # First, get read-only fields for grouper
+        fields = super().get_readonly_fields(request, obj)
+        content_obj = self.get_content_obj_for_grouper(obj)
+        if not self.can_change(request, content_obj):
+            # Only allow content object fields to be edited if user can change them
+            fields += tuple(self.form._meta.labels)  # <= _postcontent_fields
+        return fields
+
+    def can_change(self, request, content_obj):
+        """Returns True if user can change content_obj"""
+        if content_obj and is_versioning_enabled():
+            from djangocms_versioning.models import Version
+
+            version = Version.objects.get_for_content(content_obj)
+            return version.check_modify.as_bool(request.user)
+        return True
+
     def get_extra_context(self, request, object_id=None):
         """Provide the language to edit"""
         language = get_language_from_request(request)
@@ -362,39 +419,34 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             qs = instance.postcontent_set(manager="admin_manager")
             filled_languages = qs.values_list("language", flat=True).distinct()
             content_instance = qs.filter(language=language).latest_content().first()
+            title = _("%(object_name)s Properties") % dict(object_name=instance.app_config.object_name)
         else:
             content_instance = None
             filled_languages = []
+            title = _("Add new %(object_name)s") % dict(object_name=Post._meta.verbose_name)
 
-        context = {
-            "language_tabs": get_language_tuple(),
+        language_tuple = get_language_tuple()
+        extra_context = {
+            "language_tabs": language_tuple,
             "changed_message": _("Content for the current language has been changed. Click \"Cancel\" to "
                                  "return to the form and save changes. Click \"OK\" to discard changes."),
             "language": language,
             "filled_language": filled_languages,
             "content_instance": content_instance,
+            "title": title,
+            "subtitle": content_instance.title if content_instance else _("Add %(language)s") % dict(language=dict(language_tuple).get(language, "")),
         }
-        return context
-
-    def get_preserved_filters(self, request):
-        """Always preserve language get parameter!"""
-        preserved_filters = super().get_preserved_filters(request)
-        if "_changelist_filters" in preserved_filters:
-            # changelist needs to add filters to _changelist_filters
-            preserved_filters += f"%26language%3D{self.language}"
-        elif request.GET.get("language", None)  and "language=" not in preserved_filters:
-            # change and add views
-            preserved_filters += "&language=" + request.GET.get("language")
-        print(f"{preserved_filters=}")
-        return preserved_filters
+        return extra_context
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
+        """Change view with extra context"""
         return super().change_view(request, object_id, form_url, {
             **(extra_context or {}),
             **self.get_extra_context(request, object_id),
         })
 
     def add_view(self, request, form_url='', extra_context=None):
+        """Add view with extra context"""
         return super().add_view(request, form_url, {
             **(extra_context or {}),
             **self.get_extra_context(request, None),
@@ -634,12 +686,15 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         return self._fieldset_extra_fields_position.get(field, (None, None, None))
 
     def get_prepopulated_fields(self, request, obj=None):
-        return {"slug": ("title",)}
+        content_obj = self.get_content_obj_for_grouper(obj)
+        if self.can_change(request, content_obj):
+            return {"slug": ("title",)}
+        return {}
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj or form.instance, form, change)
         content_dict = {
-            field: form.cleaned_data[field] for field in form._postcontent_fields
+            field: form.cleaned_data[field] for field in form._postcontent_fields if field in form.cleaned_data
         }
         if form.content_instance is None or form.content_instance.pk is None:
             PostContent.objects.with_user(request.user).create(
@@ -673,9 +728,6 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             else:
                 form.instance.sites.add(*self.get_restricted_sites(request).all().values_list("pk", flat=True))
         super().save_related(request, form, formsets, change)
-
-    def view_on_site(self, obj):
-        return get_object_preview_url(obj)
 
     class Media:
         js = ("admin/js/jquery.init.js", "djangocms_versioning/js/indicators.js", "djangocms_blog/js/language-selector.js")

@@ -1,15 +1,13 @@
-from functools import cached_property
-
-from cms.cms_toolbars import ADMIN_MENU_IDENTIFIER, ADMINISTRATION_BREAK, SHORTCUTS_BREAK
+from cms.cms_toolbars import ADMIN_MENU_IDENTIFIER, ADMINISTRATION_BREAK
 from cms.toolbar.items import Break, ButtonList
 from cms.toolbar_base import CMSToolbar
 from cms.toolbar_pool import toolbar_pool
-from django.urls import reverse
+from cms.utils.urlutils import admin_reverse
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _, override
 from djangocms_versioning.constants import PUBLISHED
 
-from .models import PostContent, Post
+from .models import Post, PostContent
 from .settings import get_setting
 from .utils import is_versioning_enabled
 
@@ -53,35 +51,48 @@ class BlogToolbar(CMSToolbar):
 
     def add_blog_to_admin_menu(self):
         admin_menu = self.toolbar.get_or_create_menu(ADMIN_MENU_IDENTIFIER)
-        print(f"--> {admin_menu}")
-        url = reverse("admin:djangocms_blog_post_changelist")
+        url = admin_reverse("djangocms_blog_post_changelist")
         admin_menu.add_sideframe_item(
             Post._meta.verbose_name_plural.capitalize(),
             url=url,
-            position=self.get_insert_position_for_admin_object(admin_menu, Post._meta.verbose_name_plural.capitalize()),
+            position=self.get_insert_position_for_admin_object(
+                admin_menu,
+                Post._meta.verbose_name_plural.capitalize(),
+            ),
         )
 
     def populate(self):
         self.add_blog_to_admin_menu()
+        print(f"--> TOOLBAR {self.is_current_app=} {self.toolbar.get_object()=} {self.request.djangocms_post_current_config=}")
+        # Add on apphook urls and endpoint urls
         is_current_app = self.is_current_app or isinstance(self.toolbar.get_object(), PostContent)
         if (
             not is_current_app and not get_setting("ENABLE_THROUGH_TOOLBAR_MENU")
         ) or not self.request.user.has_perm("djangocms_blog.add_post"):
             return  # pragma: no cover
-        admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
-        with override(self.current_lang):
-            url = reverse("admin:djangocms_blog_post_add")
-            admin_menu.add_modal_item(_("Create post"), url=url)
-            current_config = getattr(self.request, get_setting("CURRENT_NAMESPACE"), None)
-            if current_config:
-                url = reverse("admin:djangocms_blog_blogconfig_change", args=(current_config.pk,))
-                admin_menu.add_modal_item(_("Edit configuration"), url=url)
 
-            current_post = getattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), None)
+        current_config = getattr(self.request, get_setting("CURRENT_NAMESPACE"), self.toolbar.get_object().post.app_config)
+        current_post = (
+            getattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.toolbar.get_object())
+        )
+        with override(self.current_lang):
+            admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
+            object_dict = (
+                dict(object_name=current_config.object_name) if current_config else
+                dict(object_name=Post._meta.verbose_name.capitalize())
+            )
             if current_post and self.request.user.has_perm("djangocms_blog.change_post"):  # pragma: no cover  # NOQA
                 admin_menu.add_modal_item(
-                    _("Edit Post"), reverse("admin:djangocms_blog_post_change", args=(current_post.pk,)),
+                    _("%(object_name)s Properties") % object_dict,
+                    admin_reverse("djangocms_blog_post_change", args=(current_post.post.pk,)),
                 )
+            url = admin_reverse("djangocms_blog_post_add")
+            admin_menu.add_modal_item(
+                _("Create %(object_name)s") % object_dict, url=url,
+            )
+            if current_config:
+                url = admin_reverse("djangocms_blog_blogconfig_change", args=(current_config.pk,))
+                admin_menu.add_modal_item(_("Edit configuration"), url=url)
         self.add_view_published_button()  # Takes the user the published post version
 
     def post_template_populate(self):

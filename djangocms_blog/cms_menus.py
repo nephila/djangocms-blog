@@ -10,7 +10,7 @@ from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
 from .cms_appconfig import BlogConfig
-from .models import BlogCategory, PostContent
+from .models import BlogCategory, Post, PostContent
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
 
 logger = logging.getLogger(__name__)
@@ -91,7 +91,7 @@ class BlogCategoryMenu(CMSAttachMenu):
                 else:
                     postcontent_id = (f"{post_content.__class__.__name__}-{post_content.pk}",)
                 if postcontent_id:
-                    node = NavigationNode(post_content.title, post_content.get_absolute_url(language), post_id, parent)
+                    node = NavigationNode(post_content.title, post_content.get_absolute_url(language), postcontent_id, parent)
                     nodes.append(node)
 
         if categories_menu:

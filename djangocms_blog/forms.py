@@ -10,9 +10,10 @@ from django.urls import Resolver404, reverse
 from django.utils.functional import cached_property
 from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
-from djangocms_blog import models
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
+
+from djangocms_blog import models
 
 from .fields import LanguageSelector
 from .models import BlogCategory, BlogConfig, Post, PostContent
@@ -114,37 +115,37 @@ class AuthorPostsForm(BlogPluginForm):
         self.fields["authors"].queryset = User.objects.filter(djangocms_blog_post_author__publish=True).distinct()
 
 
-class PostAdminBaseForm(ConfigFormBase, forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
-        original_attrs = self.base_fields["meta_description"].widget.attrs
-        if "cols" in original_attrs:
-            del original_attrs["cols"]
-        if "rows" in original_attrs:
-            del original_attrs["rows"]
-        original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
-        self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
-        self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
-        super().__init__(*args, **kwargs)
-        if "categories" in self.fields:
-            if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
-                self.fields["categories"].required = True
-            self.fields["categories"].queryset = self.available_categories
-        if "related" in self.fields:
-            self.fields["related"].queryset = self.available_related_posts
-
-        if "app_config" in self.fields:
-            # Don't allow app_configs to be added here. The correct way to add an
-            # apphook-config is to create an apphook on a cms Page.
-            self.fields["app_config"].widget.can_add_related = False
-
-        if self.app_config:
-            if not self.initial.get("main_image_full", ""):
-                self.initial["main_image_full"] = self.app_config.app_data["config"].get("default_image_full")
-            if not self.initial.get("main_image_thumbnail", ""):
-                self.initial["main_image_thumbnail"] = self.app_config.app_data["config"].get(
-                    "default_image_thumbnail"
-                )
+# class PostAdminBaseForm(ConfigFormBase, forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
+#         original_attrs = self.base_fields["meta_description"].widget.attrs
+#         if "cols" in original_attrs:
+#             del original_attrs["cols"]
+#         if "rows" in original_attrs:
+#             del original_attrs["rows"]
+#         original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
+#         self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
+#         self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
+#         super().__init__(*args, **kwargs)
+#         if "categories" in self.fields:
+#             if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
+#                 self.fields["categories"].required = True
+#             self.fields["categories"].queryset = self.available_categories
+#         if "related" in self.fields:
+#             self.fields["related"].queryset = self.available_related_posts
+#
+#         if "app_config" in self.fields:
+#             # Don't allow app_configs to be added here. The correct way to add an
+#             # apphook-config is to create an apphook on a cms Page.
+#             self.fields["app_config"].widget.can_add_related = False
+#
+#         if self.app_config:
+#             if not self.initial.get("main_image_full", ""):
+#                 self.initial["main_image_full"] = self.app_config.app_data["config"].get("default_image_full")
+#             if not self.initial.get("main_image_thumbnail", ""):
+#                 self.initial["main_image_thumbnail"] = self.app_config.app_data["config"].get(
+#                     "default_image_thumbnail"
+#                 )
 
 
 class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
@@ -155,7 +156,19 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
     class Meta:
         model = Post
         fields = "__all__"
-        # exclude = ("date_created", "date_modified")
+        labels = {
+            # For and only for the fields from post content we need labels
+            "slug": _("slug"),
+            "title": _("title"),
+            "subtitle": _("subtitle"),
+            "meta_description": _("meta_description"),
+            "meta_keywords": _("meta_keywords"),
+            "meta_title": _("meta_title"),
+        }
+
+    @property
+    def _postcontent_fields(self):
+        return tuple(self._meta.labels.keys())
 
     title = forms.CharField(**_get_options_from_model(models.PostContent, "title"))
     subtitle = forms.CharField(**_get_options_from_model(models.PostContent, "subtitle"))
@@ -171,15 +184,6 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
     meta_keywords = forms.CharField(**_get_options_from_model(models.PostContent, "meta_keywords"))
     meta_title = forms.CharField(**_get_options_from_model(models.PostContent, "meta_title"))
     language = forms.CharField(widget=forms.HiddenInput)
-
-    _postcontent_fields = [
-        "slug",
-        "title",
-        "subtitle",
-        "meta_description",
-        "meta_keywords",
-        "meta_title",
-    ]
 
     @cached_property
     def available_categories(self):
@@ -218,7 +222,8 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
         super().__init__(*args, **kwargs)
         language_dict = get_language_dict()
         for field in self._postcontent_fields:
-            self.fields[field].label += f" ({language_dict[self.language]})"
+            if field in self.fields:
+                self.fields[field].label += f" ({language_dict[self.language]})"
 
     def clean(self):
         if self.cleaned_data.get("language", None) not in get_language_dict():
@@ -231,15 +236,18 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
 
 class PostAdminForm(PostAdminFormBase):
     def __init__(self, *args, **kwargs):
-        self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
-        original_attrs = self.base_fields["meta_description"].widget.attrs
-        if "cols" in original_attrs:
-            del original_attrs["cols"]
-        if "rows" in original_attrs:
-            del original_attrs["rows"]
-        original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
-        self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
-        self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
+        if "meta_description" in self.base_fields:
+            # Not available for published fields
+            self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
+            original_attrs = self.base_fields["meta_description"].widget.attrs
+            if "cols" in original_attrs:
+                del original_attrs["cols"]
+            if "rows" in original_attrs:
+                del original_attrs["rows"]
+            original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
+            self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
+        if "meta_title" in self.base_fields:
+            self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
         super().__init__(*args, **kwargs)
         if "categories" in self.fields:
             if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:

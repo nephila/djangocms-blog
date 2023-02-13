@@ -1,6 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% block object-tools %}
-  {{ block.super }}
+{% block field_sets %}
   {% block language-tabs %}
     {% if language_tabs %}
       <div id="page_form_lang_tabs" class="js-language-tabs" data-message="{{ changed_message|escape }}">
@@ -13,4 +12,10 @@
       </div>
     {% endif %}
   {% endblock %}
+  {% if content_instance.versions.first.state != "draft" %}
+    <div class="errornote">
+      <p><i>Some fields cannot be changed since they refer to a published version of this post.</i></p>
+    </div>
+  {% endif %}
+  {{ block.super }}
 {% endblock %}

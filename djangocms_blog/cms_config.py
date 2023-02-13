@@ -4,7 +4,7 @@ from django.apps import apps
 from django.conf import settings
 
 from .models import PostContent
-from .rendering import render_post_content
+from .views import ToolbarDetailView
 
 djangocms_versioning_installed = apps.is_installed("djangocms_versioning")
 
@@ -49,7 +49,7 @@ def copy_placeholder_content(original_content):
 
 class BlogCMSConfig(CMSAppConfig):
     cms_enabled = True
-    cms_toolbar_enabled_models = [(PostContent, render_post_content)]
+    cms_toolbar_enabled_models = [(PostContent, ToolbarDetailView.as_view())]
     djangocms_versioning_enabled = getattr(
         settings, 'VERSIONING_BLOG_MODELS_ENABLED', True) and djangocms_versioning_installed
 

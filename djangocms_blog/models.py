@@ -18,7 +18,8 @@ from django.utils import timezone, translation
 from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
-from django.utils.translation import gettext, gettext_lazy as _, get_language
+from django.utils.timezone import now
+from django.utils.translation import get_language, gettext, gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
 from filer.models import ThumbnailOption
@@ -346,22 +347,28 @@ class Post(KnockerModel, models.Model):
 
     @admin.display(boolean=True)
     def featured(self):
-        return bool(self.pinned)
+        return bool(self.pinned) or self.date_featured >= now()
 
     def get_content(self, language=None, show_draft_content=False):
         if not language:
             language = translation.get_language()
 
+        key = f"{language}_{'latest' if show_draft_content else 'public'}"
+
         try:
-            return self._content_cache[language]
+            return self._content_cache[key]
         except KeyError:
-            qs = self.postcontent_set(manager="admin_manager" if show_draft_content else "objects").prefetch_related(
+            if show_draft_content:
+                qs = self.postcontent_set(manager="admin_manager").current_content()
+            else:
+                qs = self.postcontent_set
+            qs = qs.prefetch_related(
                 'placeholders',
                 'post__categories',
             ).filter(language=language)
 
-            self._content_cache[language] = qs.first()
-            return self._content_cache[language]
+            self._content_cache[key] = qs.first()
+            return self._content_cache[key]
 
     def safe_translation_getter(self, field, default=None, language_code=None, any_language=False):
         """
@@ -537,8 +544,16 @@ class Post(KnockerModel, models.Model):
 
 
 class PostContent(BlogMetaMixin, ModelMeta, models.Model):
-    language = models.CharField(_("language"), max_length=15, db_index=True)
+    class Meta:
+        verbose_name = _("article content")
+        verbose_name_plural = _("article contents")
+        ordering = (F("post__pinned").asc(nulls_last=True), "-post__date_published", "-post__date_created")
+        get_latest_by = "date_published"
+
+    # Gruping fields
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    language = models.CharField(_("language"), max_length=15, db_index=True)
+    # Content fields (by post and language
     title = models.CharField(_("title"), max_length=752)
     slug = models.SlugField(
         _("slug"),

@@ -26,6 +26,12 @@ class PostDetailView(AppConfigMixin, DetailView):
     view_url_name = "djangocms_blog:post-detail"
     instant_article = False
 
+    def get(self, request, *args, **kwargs):
+        """Make toolbar object's apphook config available"""
+        if hasattr(request, "toolbar") and self.config is None:
+            self.config = getattr(request.toolbar.get_object().post, "app_config", None)
+        return super().get(request, *args, **kwargs)
+
     def liveblog_enabled(self):
         return self.object.post.enable_liveblog and apps.is_installed("djangocms_blog.liveblog")
 
@@ -40,19 +46,30 @@ class PostDetailView(AppConfigMixin, DetailView):
     def get_object(self):
         obj = super().get_object()
         try:
+            # Add to toolbar if not in endpoint
             self.request.toolbar.set_object(obj)
         except AttributeError:
             pass
+        setattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), obj)
         return obj
 
     def get_context_data(self, **kwargs):
+        setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         context = super().get_context_data(**kwargs)
         context["post"] = context["post_content"]  # Temporary to allow for easier transition from v3 to v4
         context["meta"] = self.get_object().as_meta()
         context["instant_article"] = self.instant_article
         context["use_placeholder"] = get_setting("USE_PLACEHOLDER")
-        setattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.get_object())
         return context
+
+
+class ToolbarDetailView(PostDetailView):
+    """Mimics DetailView but takes content object from render function"""
+    def get_object(self):
+        content_object = self.args[0]
+        self.request.current_app = content_object.post.app_config.namespace
+        setattr(self.request, get_setting("CURRENT_NAMESPACE"), content_object.post.app_config)
+        return content_object
 
 
 class BaseBlogListView(AppConfigMixin):
@@ -80,9 +97,9 @@ class BaseBlogListView(AppConfigMixin):
     def get_queryset(self):
         language = get_language()
         if hasattr(self.request, "toolbar") and (self.request.toolbar.edit_mode_active or self.request.toolbar.preview_mode_active):
-            queryset = self.model.admin_manager
+            queryset = self.model.admin_manager.latest_content()
         else:
-            queryset = self.model._default_manager.published()
+            queryset = self.model.objects.published()
         queryset = queryset.filter(language=language, post__app_config__namespace=self.namespace)
         setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         return self.optimize(queryset.on_site())

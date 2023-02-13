@@ -3,6 +3,6 @@
 <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label=breadcrumb_opts.app_label %}">{{ breadcrumb_opts.app_config.verbose_name }}</a>
 &rsaquo; <a href="{% url "admin:djangocms_blog_post_changelist" %}">{% translate "Blog articles" %}</a>
-&rsaquo; <a href="{% url "admin:djangocms_blog_post_change" latest_content.post.pk|admin_urlquote %}">{{ latest_content|truncatewords:"18" }}</a>
+{%  if latest_content.post %}&rsaquo; <a href="{% url "admin:djangocms_blog_post_change" latest_content.post.pk|admin_urlquote %}">{{ latest_content|truncatewords:"18" }}</a>{% endif %}
 &rsaquo; {% translate 'Versions' %}
 </div>
