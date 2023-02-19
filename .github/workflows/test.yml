@@ -10,7 +10,7 @@ jobs:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
         django: [41, 32]
-        cms: [311, 39]
+        cms: [no-search-311, no-search-39]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
