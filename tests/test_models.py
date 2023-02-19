@@ -13,6 +13,7 @@ from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
+from django.core.handlers.base import BaseHandler
 from django.http import QueryDict
 from django.test import override_settings
 from django.urls import reverse
@@ -384,6 +385,7 @@ class AdminTest(BaseTest):
         )
 
     def test_admin_fieldsets(self):
+        handler = BaseHandler()
         post_admin = admin.site._registry[Post]
         request = self.get_page_request(
             "/", self.user_staff, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
@@ -456,7 +458,7 @@ class AdminTest(BaseTest):
             request = self.get_request(
                 "/", "en", user=self.user, path=r"/en/blog/?app_config=%s" % self.app_config_1.pk
             )
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.add_view(request)
@@ -491,7 +493,7 @@ class AdminTest(BaseTest):
             request = self.get_request(
                 "/", "en", user=self.user, path=r"/en/blog/?app_config=%s" % self.app_config_1.pk
             )
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             post_admin._sites = None
@@ -593,6 +595,7 @@ class AdminTest(BaseTest):
     def test_admin_auto_author(self):
         pages = self.get_pages()
         data = deepcopy(self._post_data[0]["en"])
+        handler = BaseHandler()
 
         with self.login_user_context(self.user):
             self.app_config_1.app_data.config.set_author = True
@@ -604,7 +607,7 @@ class AdminTest(BaseTest):
             request = self.post_request(
                 pages[0], "en", user=self.user, data=data, path=r"/en/blog/?app_config=%s" % self.app_config_1.pk
             )
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.add_view(request)
@@ -622,7 +625,7 @@ class AdminTest(BaseTest):
             request = self.post_request(
                 pages[0], "en", user=self.user, data=data, path=r"/en/blog/?app_config=%s" % self.app_config_1.pk
             )
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.add_view(request)
@@ -641,7 +644,7 @@ class AdminTest(BaseTest):
                 request = self.post_request(
                     pages[0], "en", user=self.user, data=data, path=r"/en/blog/?app_config=%s" % self.app_config_1.pk
                 )
-                msg_mid = MessageMiddleware()
+                msg_mid = MessageMiddleware(handler)
                 msg_mid.process_request(request)
                 post_admin = admin.site._registry[Post]
                 response = post_admin.add_view(request)
@@ -677,6 +680,7 @@ class AdminTest(BaseTest):
     def test_admin_post_text(self):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]["en"])
+        handler = BaseHandler()
 
         with pause_knocks(post):
             with self.login_user_context(self.user):
@@ -685,7 +689,7 @@ class AdminTest(BaseTest):
                     request = self.post_request(
                         pages[0], "en", user=self.user, data=data, path="/en/?edit_fields=post_text"
                     )
-                    msg_mid = MessageMiddleware()
+                    msg_mid = MessageMiddleware(handler)
                     msg_mid.process_request(request)
                     post_admin = admin.site._registry[Post]
                     response = post_admin.edit_field(request, post.pk, "en")
@@ -710,6 +714,7 @@ class AdminTest(BaseTest):
     def test_admin_site(self):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]["en"])
+        handler = BaseHandler()
 
         # no restrictions, sites are assigned
         with self.login_user_context(self.user):
@@ -720,7 +725,7 @@ class AdminTest(BaseTest):
             }
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
             self.assertEqual(post.sites.count(), 0)
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             response = post_admin.change_view(request, str(post.pk))
@@ -744,7 +749,7 @@ class AdminTest(BaseTest):
             }
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
             self.assertEqual(post.sites.count(), 2)
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             post_admin._sites = None
@@ -766,7 +771,7 @@ class AdminTest(BaseTest):
             data = {"sites": [self.site_3.pk], "title": "some title", "app_config": self.app_config_1.pk}
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
             self.assertEqual(post.sites.count(), 3)
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             post_admin._sites = None
@@ -788,7 +793,7 @@ class AdminTest(BaseTest):
             data = {"sites": [], "title": "some title", "app_config": self.app_config_1.pk}
             request = self.post_request(pages[0], "en", user=self.user, data=data, path="/en/")
             self.assertEqual(post.sites.count(), 2)
-            msg_mid = MessageMiddleware()
+            msg_mid = MessageMiddleware(handler)
             msg_mid.process_request(request)
             post_admin = admin.site._registry[Post]
             post_admin._sites = None
@@ -805,6 +810,7 @@ class AdminTest(BaseTest):
         Tests that after changing apphook config menu structure the menu content is different: new
         value is taken immediately into account
         """
+        handler = BaseHandler()
         self._reload_menus()
 
         pages = self.get_pages()
@@ -820,7 +826,7 @@ class AdminTest(BaseTest):
                 data["config-sitemap_changefreq"] = "weekly"
                 data["config-sitemap_priority"] = "0.5"
                 request = self.post_request(pages[0], "en", user=self.user, data=data)
-                msg_mid = MessageMiddleware()
+                msg_mid = MessageMiddleware(handler)
                 msg_mid.process_request(request)
                 config_admin = admin.site._registry[BlogConfig]
                 config_admin.change_view(request, str(self.app_config_1.pk))
@@ -1348,7 +1354,10 @@ class ModelsTest2(BaseTest):
         plugin = add_plugin(post1.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
         self.assertEqual(force_str(plugin.__str__()), "generic blog plugin")
 
+        # create fake empty post - assign a random pk to trick ORM / parler to think the object has been saved
+        # due to how safe_translation_getter works
         no_translation_post = Post()
+        no_translation_post.pk = 1000000
         no_translation_default_title = "Post (no translation)"
         self.assertEqual(force_str(no_translation_post), no_translation_default_title)
 

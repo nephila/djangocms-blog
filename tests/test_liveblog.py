@@ -23,7 +23,6 @@ async def _connect(post):
         lang=post.get_current_language(),
         slug=post.slug,
     )
-    print("APP", application, path)
     communicator = WebsocketCommunicator(application, path)
     connected, __ = await communicator.connect()
     assert connected
@@ -79,7 +78,6 @@ def update_livelobg_plugin_content(plugin, publish=True):
 @pytest.mark.asyncio
 async def test_add_plugin():
     post = await get_post()
-    print("POST", post.title)
     communicator = await _connect(post)
     plugin, admin, plugin_text = await add_livelobg_plugin(post.liveblog)
     rendered = await communicator.receive_json_from()
