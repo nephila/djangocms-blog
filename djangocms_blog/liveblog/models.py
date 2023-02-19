@@ -50,12 +50,8 @@ class LiveblogInterface(models.Model):
     @property
     def liveblog_group(self):
         post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
-        print("POST GROUPO", post)
-        try:
-            if post:
-                return post.liveblog_group
-        except Exception as e:
-            print("GROUP", e)
+        if post:
+            return post.liveblog_group
 
     def render(self, request):
         context = Context({"request": request})
