@@ -196,6 +196,8 @@ class AdminTest(BaseTest):
 
         # unless a referer is set
         request.META["HTTP_REFERER"] = "/"
+        # reset headers cached property
+        del request.headers
         response = post_admin.publish_post(request, "1000000")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "/")
