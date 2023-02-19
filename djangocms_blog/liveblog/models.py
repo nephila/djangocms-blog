@@ -79,10 +79,7 @@ class LiveblogInterface(models.Model):
             }
             channel_layer = get_channel_layer()
             group = self.liveblog_group
-            try:
-                async_to_sync(channel_layer.group_send)(group, notification)
-            except Exception:
-                pass
+            async_to_sync(channel_layer.group_send)(group, notification)
 
 
 class Liveblog(LiveblogInterface, AbstractText):
