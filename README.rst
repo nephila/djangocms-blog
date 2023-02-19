@@ -8,16 +8,11 @@ django CMS blog application - Support for multilingual posts, placeholders, soci
 
 Supported Django versions:
 
-* Django 2.2, 3.0, 3.1
+* Django 3.2, 4.0, 4.1
 
 Supported django CMS versions:
 
-* django CMS 3.7, 3.8+
-
-.. warning:: For Django<2.2, django CMS<3.7 versions support, use djangocms-blog 1.1x.
-
-.. warning:: Version 1.2 introduce a breaking change for customized ``BLOG_PERMALINK_URLS``.
-             Check the `permalinks`_ documentation for update information.
+* django CMS 3.9, 3.11+
 
 ************
 Installation
@@ -45,7 +40,6 @@ See `features documentation`_  for all the features details
 * Auto Apphook setup
 * Django sitemap framework
 * django CMS Wizard integration
-* Haystack index
 * Desktop notifications
 * Liveblog
 
