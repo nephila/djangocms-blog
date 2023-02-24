@@ -63,7 +63,6 @@ class BlogToolbar(CMSToolbar):
 
     def populate(self):
         self.add_blog_to_admin_menu()
-        print(f"--> TOOLBAR {self.is_current_app=} {self.toolbar.get_object()=} {self.request.djangocms_post_current_config=}")
         # Add on apphook urls and endpoint urls
         is_current_app = self.is_current_app or isinstance(self.toolbar.get_object(), PostContent)
         if (
@@ -71,10 +70,11 @@ class BlogToolbar(CMSToolbar):
         ) or not self.request.user.has_perm("djangocms_blog.add_post"):
             return  # pragma: no cover
 
-        current_config = getattr(self.request, get_setting("CURRENT_NAMESPACE"), self.toolbar.get_object().post.app_config)
         current_post = (
             getattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.toolbar.get_object())
         )
+        current_config = getattr(self.request, get_setting("CURRENT_NAMESPACE"),
+                                 current_post.app_config if current_post else None)
         with override(self.current_lang):
             admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
             object_dict = (

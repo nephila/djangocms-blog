@@ -36,10 +36,10 @@ from .utils import is_versioning_enabled
 signal_dict = {}
 
 try:
-    from djangocms_versioning.indicators import IndicatorMixin
+    from djangocms_versioning.admin import StateIndicatorMixin
 except ModuleNotFoundError:
-    class IndicatorMixin:
-        def indicator(self, obj):
+    class StateIndicatorMixin:
+        def state_indicator(self, obj):
             pass
 
         def get_list_display(self, request):
@@ -249,13 +249,13 @@ class PostAdmin(
     PlaceholderAdminMixin,
     FrontendEditableAdminMixin,
     ModelAppHookConfig,
-    IndicatorMixin,
+    StateIndicatorMixin,
     LanguageGrouperMixin,
     admin.ModelAdmin,
 ):
     form = PostAdminForm
     inlines = []
-    list_display = ("title", "author",  "app_config", "indicator")
+    list_display = ("title", "author",  "app_config", "state_indicator")
     list_display_links = ("title",)
     search_fields = ("author__first_name",)
     readonly_fields = ("date_created", "date_modified")
