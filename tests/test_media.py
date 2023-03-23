@@ -53,7 +53,9 @@ class MediaTest(BaseTest):
         context = {"request": self.request("/")}
         images = media_images(context, self.post, main=False)
         self.assertEqual(3, len(images))
-        self.assertEqual(images, src_thumbs)
+        self.assertEqual(images[0], src_thumbs[0])
+        self.assertIn("73266401", images[1])  # _vimeo request changes image url
+        self.assertEqual(images[2], src_thumbs[2])
 
     @patch("tests.media_app.models.requests.get")
     def test_media_images(self, get_request):

@@ -106,6 +106,15 @@ class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
             return qs.namespace(self.app_config.namespace).active_translations()
         return qs
 
+    @cached_property
+    def available_related_posts(self):
+        qs = Post.objects
+        if self.app_config:
+            qs = qs.active_translations()
+            if self.app_config.get("use_related", "0") == "1":
+                qs = qs.namespace(self.app_config.namespace)
+        return qs
+
     def _post_clean_translation(self, translation):
         # This is a quickfix for https://github.com/django-parler/django-parler/issues/236
         # which needs to be fixed in parler
@@ -131,6 +140,8 @@ class PostAdminForm(PostAdminFormBase):
             if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
                 self.fields["categories"].required = True
             self.fields["categories"].queryset = self.available_categories
+        if "related" in self.fields:
+            self.fields["related"].queryset = self.available_related_posts
 
         if "app_config" in self.fields:
             # Don't allow app_configs to be added here. The correct way to add an

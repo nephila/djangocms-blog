@@ -11,7 +11,7 @@ from .settings import get_setting
 @apphook_pool.register
 class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     name = _("Blog")
-    _urls = [get_setting("URLCONF")]
+    _urls = [get_setting("URLCONF") if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")[0][0]]
     app_name = "djangocms_blog"
     app_config = BlogConfig
     _menus = [BlogCategoryMenu]
@@ -28,7 +28,11 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     }
 
     def get_urls(self, page=None, language=None, **kwargs):
-        return [get_setting("URLCONF")]
+        urlconf = get_setting("URLCONF")
+        if page is None or not page.application_namespace or isinstance(urlconf, str):
+            return [urlconf]  # Single urlconf
+        return [getattr(self.app_config.objects.get(namespace=page.application_namespace), "urlconf",
+                        get_setting("URLCONF")[0][0])]  # Default if no urlconf is configured
 
     @property
     def urls(self):

@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.db import models
+from django.db.models import F
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
@@ -33,6 +34,7 @@ from .settings import get_setting
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
 BLOG_CURRENT_NAMESPACE = get_setting("CURRENT_NAMESPACE")
 BLOG_PLUGIN_TEMPLATE_FOLDERS = get_setting("PLUGIN_TEMPLATE_FOLDERS")
+BLOG_ALLOW_UNICODE_SLUGS = get_setting("ALLOW_UNICODE_SLUGS")
 
 
 thumbnail_model = "{}.{}".format(ThumbnailOption._meta.app_label, ThumbnailOption.__name__)
@@ -87,7 +89,7 @@ class BlogMetaMixin(ModelMeta):
 
 class BlogCategory(BlogMetaMixin, TranslatableModel):
     """
-    Blog category
+    Blog category allows to structure content in a hierarchy of categories.
     """
 
     parent = models.ForeignKey(
@@ -96,12 +98,43 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     date_created = models.DateTimeField(_("created at"), auto_now_add=True)
     date_modified = models.DateTimeField(_("modified at"), auto_now=True)
     app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
+    priority = models.IntegerField(_("priority"), blank=True, null=True)
+    main_image = FilerImageField(
+        verbose_name=_("main image"),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="djangocms_category_image",
+    )
+    main_image_thumbnail = models.ForeignKey(
+        thumbnail_model,
+        verbose_name=_("main image thumbnail"),
+        related_name="djangocms_category_thumbnail",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    main_image_full = models.ForeignKey(
+        thumbnail_model,
+        verbose_name=_("main image full"),
+        related_name="djangocms_category_full",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     translations = TranslatedFields(
         name=models.CharField(_("name"), max_length=752),
-        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True),
+        slug=models.SlugField(
+            _("slug"),
+            max_length=752,
+            blank=True,
+            db_index=True,
+            allow_unicode=BLOG_ALLOW_UNICODE_SLUGS,
+        ),
         meta_description=models.TextField(verbose_name=_("category meta description"), blank=True, default=""),
         meta={"unique_together": (("language_code", "slug"),)},
+        abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
     )
 
     objects = AppHookConfigTranslatableManager()
@@ -130,6 +163,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     class Meta:
         verbose_name = _("blog category")
         verbose_name_plural = _("blog categories")
+        ordering = (F("priority").asc(nulls_last=True), )
 
     def descendants(self):
         children = []
@@ -141,7 +175,13 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     @cached_property
     def linked_posts(self):
+        """returns all linked posts in the same appconfig namespace"""
         return self.blog_posts.namespace(self.app_config.namespace)
+
+    @cached_property
+    def pinned_posts(self):
+        """returns all linked posts which have a pinned value of at least 1"""
+        return self.linked_posts.filter(pinned__gt=0)
 
     @cached_property
     def count(self):
@@ -204,6 +244,9 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     date_published = models.DateTimeField(_("published since"), null=True, blank=True)
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
+    pinned = models.IntegerField(_("pinning priority"), blank=True, null=True,
+                                 help_text=_("Pinned posts are shown in ascending order before unpinned ones. "
+                                             "Leave blank for regular order by date."))
     publish = models.BooleanField(_("publish"), default=False)
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory", verbose_name=_("category"), related_name="blog_posts", blank=True
@@ -248,7 +291,13 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_("title"), max_length=752),
-        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True, allow_unicode=True),
+        slug=models.SlugField(
+            _("slug"),
+            max_length=752,
+            blank=True,
+            db_index=True,
+            allow_unicode=BLOG_ALLOW_UNICODE_SLUGS,
+        ),
         subtitle=models.CharField(verbose_name=_("subtitle"), max_length=767, blank=True, default=""),
         abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
         meta_description=models.TextField(verbose_name=_("post meta description"), blank=True, default=""),
@@ -309,7 +358,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     class Meta:
         verbose_name = _("blog article")
         verbose_name_plural = _("blog articles")
-        ordering = ("-date_published", "-date_created")
+        ordering = (F("pinned").asc(nulls_last=True), "-date_published", "-date_created")
         get_latest_by = "date_published"
 
     def __str__(self):

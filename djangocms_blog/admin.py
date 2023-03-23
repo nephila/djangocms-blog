@@ -85,14 +85,34 @@ class SiteListFilter(admin.SimpleListFilter):
             raise admin.options.IncorrectLookupParameters(e)
 
 
-class BlogCategoryAdmin(ModelAppHookConfig, TranslatableAdmin):
+class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
     list_display = [
         "name",
         "parent",
         "app_config",
         "all_languages_column",
+        "priority",
     ]
+    fieldsets = (
+        (None, {
+            "fields": ("parent", "app_config", "name", "meta_description")
+        }),
+        (
+            _("Info"),
+            {
+                "fields": ("abstract", "priority",),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Images"),
+            {
+                "fields": ("main_image", "main_image_thumbnail", "main_image_full"),
+                "classes": ("collapse",),
+            },
+        ),
+    )
 
     def get_prepopulated_fields(self, request, obj=None):
         app_config_default = self._app_config_select(request, obj)
@@ -122,7 +142,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     if apps.is_installed("djangocms_blog.liveblog"):
         actions += ["enable_liveblog", "disable_liveblog"]
     _fieldsets = [
-        (None, {"fields": ["title", "subtitle", "slug", "publish", ["categories", "app_config"]]}),
+        (None, {"fields": ["title", "subtitle", "slug", ["publish", "pinned"], ["categories", "app_config"]]}),
         # left empty for sites, author and related fields
         (None, {"fields": [[]]}),
         (
@@ -381,14 +401,10 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
         fsets = deepcopy(self._fieldsets)
         related_posts = []
-        if config:
-            abstract = bool(config.use_abstract)
-            placeholder = bool(config.use_placeholder)
-            related = bool(config.use_related)
-        else:
-            abstract = get_setting("USE_ABSTRACT")
-            placeholder = get_setting("USE_PLACEHOLDER")
-            related = get_setting("USE_RELATED")
+        abstract = bool(getattr(config, "use_abstract", get_setting("USE_ABSTRACT")))
+        placeholder = bool(getattr(config, "use_placeholder", get_setting("USE_PLACEHOLDER")))
+        related = getattr(config, "use_related", get_setting("USE_RELATED"))
+        related = bool(int(related)) if isinstance(related, str) and related.isnumeric() else bool(related)
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
@@ -480,6 +496,7 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 _("Layout"),
                 {
                     "fields": (
+                        "config.urlconf",
                         "config.paginate_by",
                         "config.url_patterns",
                         "config.template_prefix",
@@ -550,6 +567,12 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             from menus.menu_pool import menu_pool
 
             menu_pool.clear(all=True)
+        """
+        Reload urls when changing url config
+        """
+        if "config.urlconf" in form.changed_data:
+            from cms.signals.apphook import trigger_restart
+            trigger_restart()
         return super().save_model(request, obj, form, change)
 
 

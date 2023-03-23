@@ -1,0 +1,27 @@
+{% load djangocms_blog i18n easy_thumbnails_tags cms_tags %}
+
+<section id="category-{{ post.slug }}" class="category-item">
+    <div class="category-header">
+        <h3>{% render_model category "name" %}</h3>
+    </div>
+    {% if image and category.main_image %}
+    <div class="category-visual">
+        {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %}
+        <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
+    </div>
+    {% endif %}
+    <div class="category-lead">
+        {% if not TRUNCWORDS_COUNT %}
+            {% render_model category "abstract" "" "" "safe" %}
+        {% else %}
+            {% render_model category "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
+        {% endif %}
+    </div>
+    <div class="category-post-list">
+        {% for post in category.blog_posts.all %}
+            <div class="category-post-item">
+                <a href="{{ post.get_absolute_url }}">{% render_model post "title" %}</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
