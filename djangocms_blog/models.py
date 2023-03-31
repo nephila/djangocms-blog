@@ -17,6 +17,7 @@ from django.utils.functional import cached_property
 from django.utils.html import escape, strip_tags
 from django.utils.translation import get_language, gettext, gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
+from easy_thumbnails.files import get_thumbnailer
 from filer.fields.image import FilerImageField
 from filer.models import ThumbnailOption
 from meta.models import ModelMeta
@@ -398,7 +399,9 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     def get_image_full_url(self):
         if self.main_image:
-            return self.build_absolute_uri(self.main_image.url)
+            options = get_setting("META_IMAGE_SIZE")
+            thumbnail_url = get_thumbnailer(self.main_image).get_thumbnail(options).url
+            return self.build_absolute_uri(thumbnail_url)
         return ""
 
     def get_image_width(self):
