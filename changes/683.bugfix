@@ -1,0 +1,2 @@
+Remove .distinct() from the queryset returned by PostAdmin.get_queryset because Django 3.2+ complains about it ("Cannot
+call delete() after .distinct().")

@@ -436,7 +436,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         if sites.exists():
             pks = list(sites.all().values_list("pk", flat=True))
             qs = qs.filter(sites__in=pks)
-        return qs.distinct()
+        return qs
 
     def save_related(self, request, form, formsets, change):
         if self.get_restricted_sites(request).exists():
