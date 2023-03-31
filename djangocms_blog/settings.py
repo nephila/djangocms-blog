@@ -98,6 +98,14 @@ Easy-thumbnail alias configuration for the post main image when shown on the pos
 it's a dictionary with ``size``, ``crop`` and ``upscale`` keys.
 """
 
+BLOG_META_IMAGE_SIZE = {"size": (1600, 1600), "crop": False, "upscale": False}
+"""
+.. _META_IMAGE_SIZE:
+
+Easy-thumbnail alias configuration for the post meta image;
+it's a dictionary with ``size``, ``crop`` and ``upscale`` keys.
+"""
+
 BLOG_URLCONF = "djangocms_blog.urls"
 """
 .. _URLCONF:
