@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("cms", "__first__"),
+        ("cms", "0020_old_tree_cleanup"),
         ("djangocms_blog", "0009_latestpostsplugin_tags_new"),
     ]
 

@@ -9,10 +9,12 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
-        django: [41, 32]
+        django: [42, 41, 32]
         cms: [311, 39]
         exclude:
           - django: 41
+            cms: 39
+          - django: 42
             cms: 39
     steps:
     - uses: actions/checkout@v3
@@ -48,12 +50,6 @@ jobs:
         tox -e$TOX_ENV
         .tox/$TOX_ENV/bin/coverage xml
         .tox/$TOX_ENV/bin/coveralls
-    - uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        flags: unittests
-        files: ./coverage.xml
-        fail_ci_if_error: false
     services:
       redis:
         image: redis
