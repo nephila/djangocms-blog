@@ -18,7 +18,7 @@ urlpatterns = [
     path("media/<str:path>", serve, {"document_root": settings.MEDIA_ROOT, "show_indexes": True}),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     path("taggit_autosuggest/", include("taggit_autosuggest.urls")),
-    path("itemap.xml", sitemap, {"sitemaps": {"cmspages": CMSSitemap, "blog": BlogSitemap}}),
+    path("sitemap.xml", sitemap, {"sitemaps": {"cmspages": CMSSitemap, "blog": BlogSitemap}}),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
