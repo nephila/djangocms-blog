@@ -11,7 +11,8 @@ class Migration(migrations.Migration):
             model_name="post",
             name="sites",
             field=models.ManyToManyField(
-                help_text="Select sites in which to show the post. If none is set it will be visible in all the configured sites.",
+                help_text="Select sites in which to show the post. If none is set it will "
+                "be visible in all the configured sites.",
                 to="sites.Site",
                 null=True,
                 verbose_name="Site(s)",

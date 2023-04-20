@@ -4,8 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 119
-target-version = ["py36"]
-include = 'djangocms_blog/*py'
+target-version = ["py310"]
 
 [tool.towncrier]
 package = "djangocms_blog"

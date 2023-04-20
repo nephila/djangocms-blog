@@ -144,7 +144,8 @@ class Migration(migrations.Migration):
             name="sites",
             field=models.ManyToManyField(
                 to="sites.Site",
-                help_text="Select sites in which to show the post. If none is set it will be visible in all the configured sites.",
+                help_text="Select sites in which to show the post. "
+                "If none is set it will be visible in all the configured sites.",
                 blank=True,
                 verbose_name="Site(s)",
             ),
