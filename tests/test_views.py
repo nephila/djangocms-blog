@@ -423,6 +423,21 @@ class TaggedItemViewTest(BaseTest):
                 feed.config = self.app_config_1
                 self.assertEqual(list(feed.items("tag-2")), [posts[0]])
 
+        with smart_override("en"):
+            with switch_language(posts[0], "en"):
+                posts[0].include_in_rss = False
+                posts[0].save()
+
+                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+
+                feed = LatestEntriesFeed()
+                feed.namespace, feed.config = get_app_instance(request)
+                self.assertEqual(len(list(feed.items())), 0)
+                self.reload_urlconf()
+
+                posts[0].include_in_rss = True
+                posts[0].save()
+
 
 class SitemapViewTest(BaseTest):
     def test_sitemap(self):
