@@ -1,6 +1,6 @@
 from cms.models import Page
 from cms.utils.i18n import get_language_list
-from django.db import migrations, models
+from django.db import migrations
 
 
 def forwards(apps, schema_editor):
@@ -17,9 +17,7 @@ def forwards(apps, schema_editor):
         if not BlogConfigTranslation.objects.exists():
             for lang in get_language_list():
                 title = page.get_title(lang)
-                translation = BlogConfigTranslation.objects.create(
-                    language_code=lang, master_id=config.pk, app_title=title
-                )
+                BlogConfigTranslation.objects.create(language_code=lang, master_id=config.pk, app_title=title)
     if config:
         for model in (Post, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, AuthorEntriesPlugin):
             for item in model.objects.filter(app_config__isnull=True):

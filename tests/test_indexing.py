@@ -25,6 +25,7 @@ class BlogIndexingTests(BaseTest):
 
     def setUp(self):
         self.get_pages()
+        super().setUp()
 
     @skipIf(aldryn_search is None, "aldryn-search not installed")
     @skipIf(haystack is None, "haystack not installed")

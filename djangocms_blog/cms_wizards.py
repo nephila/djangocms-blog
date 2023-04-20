@@ -115,7 +115,8 @@ for config in BlogConfig.objects.all().order_by("namespace"):
             raise
         else:
             warnings.warn(
-                "Wizard {} cannot be registered. Please make sure that "
-                "BlogConfig.namespace {} and BlogConfig.app_title {} are"
-                "unique together".format(seed, config.namespace, config.app_title)
+                f"Wizard {seed} cannot be registered. Please make sure that "
+                f"BlogConfig.namespace {config.namespace} and BlogConfig.app_title {config.app_title} are"
+                "unique together",
+                stacklevel=2,
             )

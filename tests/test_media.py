@@ -42,7 +42,12 @@ class MediaTest(BaseTest):
         self.assertIn(self.media_text, plugins)
         self.assertNotIn(self.general_text, plugins)
 
-    def test_djangocms_video_plugins(self):
+    @patch("tests.media_app.models.Vimeo.vimeo_data")
+    def test_djangocms_video_plugins(self, vimeo_data):
+        vimeo_data.return_value = {
+            "main_url": "https://i.vimeocdn.com/video/73266401_200x150.jpg",
+            "thumb_url": "https://i.vimeocdn.com/video/73266401_200x150.jpg",
+        }
         filer_image = self.create_filer_image_object()
         src_thumbs = [
             "https://img.youtube.com/vi/szbGc7ymFhQ/hqdefault.jpg",

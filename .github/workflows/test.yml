@@ -8,34 +8,29 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9, 3.8, 3.7]
-        django: [31, 30, 22]
-        cms: [38, 37]
+        python-version: ["3.11", "3.10", "3.9"]
+        django: [42, 41, 32]
+        cms: [311, 39]
         exclude:
-          - django: 31
-            cms: 37
-        include:
-          - python-version: 3.8
-            django: 22
-            cms: no-search-37
-          - python-version: 3.8
-            django: 31
-            cms: no-search-38
+          - django: 41
+            cms: 39
+          - django: 42
+            cms: 39
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ matrix.toxenv }}
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.toxenv }}
     - name: Cache tox
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: .tox
         key: ${{ runner.os }}-tox-${{ format('{{py{0}-django{1}-cms{2}}}', matrix.python-version, matrix.django, matrix.cms) }}-${{ hashFiles('setup.cfg') }}

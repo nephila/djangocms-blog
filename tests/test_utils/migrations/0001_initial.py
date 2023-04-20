@@ -34,7 +34,8 @@ class Migration(migrations.Migration):
                         validators=[
                             django.core.validators.RegexValidator(
                                 "^[\\w.@+-]+$",
-                                "Enter a valid username. This value may contain only letters, numbers and @/./+/-/_ characters.",
+                                "Enter a valid username. This value may contain only letters, "
+                                "numbers and @/./+/-/_ characters.",
                                 "invalid",
                             )
                         ],
@@ -57,7 +58,8 @@ class Migration(migrations.Migration):
                     "is_active",
                     models.BooleanField(
                         verbose_name="active",
-                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        help_text="Designates whether this user should be treated as active. "
+                        "Unselect this instead of deleting accounts.",
                         default=True,
                     ),
                 ),
@@ -65,7 +67,8 @@ class Migration(migrations.Migration):
                 (
                     "groups",
                     models.ManyToManyField(
-                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        help_text="The groups this user belongs to. A user will get all "
+                        "permissions granted to each of their groups.",
                         related_query_name="user",
                         related_name="user_set",
                         verbose_name="groups",

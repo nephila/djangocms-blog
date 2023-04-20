@@ -26,7 +26,7 @@ def clean(c):
 @task
 def lint(c):
     """Run linting tox environments."""
-    c.run("tox -epep8,isort,black,pypi-description")
+    c.run("tox -eruff,isort,black,pypi-description")
 
 
 @task  # NOQA
@@ -39,8 +39,8 @@ def format(c):  # NOQA
 def towncrier_check(c):  # NOQA
     """Check towncrier files."""
     output = io.StringIO()
-    c.run("git branch --contains HEAD", out_stream=output)
-    skipped_branch_prefix = ["pull/", "develop", "master", "HEAD"]
+    c.run("git branch -a --contains HEAD", out_stream=output)
+    skipped_branch_prefix = ["pull/", "release/", "develop", "master", "HEAD"]
     # cleanup branch names by removing PR-only names in local, remote and disconnected branches to ensure the current
     # (i.e. user defined) branch name is used
     branches = list(
@@ -52,10 +52,8 @@ def towncrier_check(c):  # NOQA
             ),
         )
     )
-    print("Candidate branches", ", ".join(output.getvalue().split("\n")))
     if not branches:
         # if no branch name matches, we are in one of the excluded branches above, so we just exit
-        print("Skip check, branch excluded by configuration")
         return
     branch = branches[0]
     towncrier_file = None
@@ -109,15 +107,19 @@ def coverage(c):
 
 
 @task
-def tag_release(c, level):
+def tag_release(c, level, new_version=""):
     """Tag release version."""
-    c.run("bumpversion --list %s --no-tag" % level)
+    if new_version:
+        new_version = f" --new-version {new_version}"
+    c.run(f"bumpversion --list {level} --no-tag{new_version}")
 
 
 @task
-def tag_dev(c, level="patch"):
+def tag_dev(c, level="patch", new_version=""):
     """Tag development version."""
-    c.run("bumpversion --list %s --message='Bump develop version [ci skip]' --no-tag" % level)
+    if new_version:
+        new_version = f" --new-version {new_version}"
+    c.run(f"bumpversion --list {level} --message='Bump develop version [ci skip]' --no-tag{new_version}")
 
 
 @task(pre=[clean])

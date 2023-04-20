@@ -1,6 +1,6 @@
 import taggit_autosuggest.managers
 from django.contrib.contenttypes.models import ContentType
-from django.db import migrations, models
+from django.db import migrations
 
 
 def migrate_tags(apps, schema_editor):
@@ -18,7 +18,7 @@ def migrate_tags(apps, schema_editor):
 
 def migrate_tags_reverse(apps, schema_editor):
     LatestPostsPlugin = apps.get_model("djangocms_blog", "LatestPostsPlugin")
-    Tag = apps.get_model("taggit", "Tag")
+    apps.get_model("taggit", "Tag")
     TaggedItem = apps.get_model("taggit", "TaggedItem")
     plugin_content_type = ContentType.objects.get_for_model(LatestPostsPlugin)
     for tagged in TaggedItem.objects.filter(content_type_id=plugin_content_type.pk):

@@ -1,6 +1,4 @@
-from django.db import migrations, models
-
-from djangocms_blog.models import thumbnail_model
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
