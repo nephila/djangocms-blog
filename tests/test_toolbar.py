@@ -27,6 +27,11 @@ class ToolbarTest(BaseTest):
         toolbar.get_left_items()
         blog_menu = toolbar.menus["djangocms_blog"]
         self.assertEqual(len(blog_menu.find_items(ModalItem, url=reverse("admin:djangocms_blog_post_changelist"))), 1)
+        self.assertEqual(
+            len(blog_menu.find_items(ModalItem, url=reverse("admin:djangocms_blog_blogcategory_changelist"))),
+            1,
+        )
+        self.assertEqual(len(blog_menu.find_items(ModalItem, url=reverse("admin:taggit_tag_changelist"))), 1)
         self.assertEqual(len(blog_menu.find_items(ModalItem, url=reverse("admin:djangocms_blog_post_add"))), 1)
         self.assertEqual(
             len(blog_menu.find_items(ModalItem, url=reverse("admin:djangocms_blog_post_change", args=(posts[0].pk,)))),

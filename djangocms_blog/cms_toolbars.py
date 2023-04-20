@@ -18,6 +18,13 @@ class BlogToolbar(CMSToolbar):
         with override(self.current_lang):
             url = reverse("admin:djangocms_blog_post_changelist")
             admin_menu.add_modal_item(_("Post list"), url=url)
+
+            url = reverse("admin:djangocms_blog_blogcategory_changelist")
+            admin_menu.add_modal_item(_("Category list"), url=url)
+
+            url = reverse("admin:taggit_tag_changelist")
+            admin_menu.add_modal_item(_("Tag list"), url=url)
+
             url = reverse("admin:djangocms_blog_post_add")
             admin_menu.add_modal_item(_("Add post"), url=url)
             current_config = getattr(self.request, get_setting("CURRENT_NAMESPACE"), None)
