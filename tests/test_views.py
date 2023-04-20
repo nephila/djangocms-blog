@@ -121,7 +121,7 @@ class ViewTest(BaseTest):
             self.assertContains(response, context["post_list"][0].get_absolute_url())
             blog_menu = request.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
 
-            self.assertEqual(len(blog_menu.items), 3)
+            self.assertEqual(len(blog_menu.items), 5)
             self.assertEqual(
                 len(blog_menu.find_items(ModalItem, url=reverse("admin:djangocms_blog_post_changelist"))), 1
             )
