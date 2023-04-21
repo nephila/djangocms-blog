@@ -1,11 +1,10 @@
 import cms.models.fields
-from django.db import migrations, models
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("cms", "__first__"),
+        ("cms", "0020_old_tree_cleanup"),
         ("djangocms_blog", "0020_thumbnail_move4"),
     ]
 

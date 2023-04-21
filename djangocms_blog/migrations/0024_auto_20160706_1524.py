@@ -6,7 +6,6 @@ BLOG_PLUGIN_TEMPLATE_FOLDERS = get_setting("PLUGIN_TEMPLATE_FOLDERS")
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0023_auto_20160626_1539"),
     ]

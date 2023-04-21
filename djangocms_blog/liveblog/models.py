@@ -78,7 +78,8 @@ class LiveblogInterface(models.Model):
                 "type": "send.json",
             }
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(self.liveblog_group, notification)
+            group = self.liveblog_group
+            async_to_sync(channel_layer.group_send)(group, notification)
 
 
 class Liveblog(LiveblogInterface, AbstractText):

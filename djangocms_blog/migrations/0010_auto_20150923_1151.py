@@ -5,9 +5,8 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("cms", "__first__"),
+        ("cms", "0020_old_tree_cleanup"),
         ("djangocms_blog", "0009_latestpostsplugin_tags_new"),
     ]
 
@@ -145,7 +144,8 @@ class Migration(migrations.Migration):
             name="sites",
             field=models.ManyToManyField(
                 to="sites.Site",
-                help_text="Select sites in which to show the post. If none is set it will be visible in all the configured sites.",
+                help_text="Select sites in which to show the post. "
+                "If none is set it will be visible in all the configured sites.",
                 blank=True,
                 verbose_name="Site(s)",
             ),

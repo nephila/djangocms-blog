@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
-from django.utils.html import escape, strip_tags
+from django.utils.html import strip_tags
 from django.utils.translation import get_language, gettext, gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
 from filer.fields.image import FilerImageField
@@ -182,7 +182,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     def get_description(self):
         description = self.safe_translation_getter("meta_description", any_language=True)
-        return escape(strip_tags(description)).strip()
+        return strip_tags(description).strip()
 
 
 class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
@@ -205,6 +205,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
     publish = models.BooleanField(_("publish"), default=False)
+    include_in_rss = models.BooleanField(_("include in RSS feed"), default=True)
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory", verbose_name=_("category"), related_name="blog_posts", blank=True
     )
@@ -248,7 +249,9 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(_("title"), max_length=752),
-        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True, allow_unicode=True),
+        slug=models.SlugField(
+            _("slug"), max_length=752, blank=True, db_index=True, allow_unicode=get_setting("UNICODE_SLUGS")
+        ),
         subtitle=models.CharField(verbose_name=_("subtitle"), max_length=767, blank=True, default=""),
         abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
         meta_description=models.TextField(verbose_name=_("post meta description"), blank=True, default=""),
@@ -394,7 +397,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         description = self.safe_translation_getter("meta_description", any_language=True)
         if not description:
             description = self.safe_translation_getter("abstract", any_language=True)
-        return escape(strip_tags(description)).strip()
+        return strip_tags(description).strip()
 
     def get_image_full_url(self):
         if self.main_image:

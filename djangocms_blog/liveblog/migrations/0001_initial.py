@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cms", "0013_urlconfrevision"),
         ("filer", "0003_thumbnailoption"),

@@ -121,7 +121,7 @@ class ViewTest(BaseTest):
             self.assertContains(response, context["post_list"][0].get_absolute_url())
             blog_menu = request.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
 
-            self.assertEqual(len(blog_menu.items), 3)
+            self.assertEqual(len(blog_menu.items), 5)
             self.assertEqual(
                 len(blog_menu.find_items(ModalItem, url=reverse("admin:djangocms_blog_post_changelist"))), 1
             )
@@ -185,7 +185,6 @@ class ViewTest(BaseTest):
 
             PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)  # noqa: N806
             with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
-
                 view_obj = PostListView()
                 request = self.get_page_request(pages[1], self.user, lang="fr", edit=True)
                 view_obj.request = request
@@ -398,7 +397,6 @@ class TaggedItemViewTest(BaseTest):
 
         with smart_override("en"):
             with switch_language(posts[0], "en"):
-
                 request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
 
                 feed = LatestEntriesFeed()
@@ -424,6 +422,21 @@ class TaggedItemViewTest(BaseTest):
                 feed.namespace = self.app_config_1.namespace
                 feed.config = self.app_config_1
                 self.assertEqual(list(feed.items("tag-2")), [posts[0]])
+
+        with smart_override("en"):
+            with switch_language(posts[0], "en"):
+                posts[0].include_in_rss = False
+                posts[0].save()
+
+                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+
+                feed = LatestEntriesFeed()
+                feed.namespace, feed.config = get_app_instance(request)
+                self.assertEqual(len(list(feed.items())), 0)
+                self.reload_urlconf()
+
+                posts[0].include_in_rss = True
+                posts[0].save()
 
 
 class SitemapViewTest(BaseTest):

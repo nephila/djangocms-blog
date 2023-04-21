@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("cms", "0022_auto_20180620_1551"),
         ("djangocms_blog", "0039_auto_20200331_2227"),

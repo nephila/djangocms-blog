@@ -1,4 +1,5 @@
 from html import unescape
+from io import BytesIO
 
 from aldryn_apphooks_config.utils import get_app_instance
 from django.contrib.sites.models import Site
@@ -12,7 +13,6 @@ from django.utils.safestring import mark_safe
 from django.utils.text import normalize_newlines
 from django.utils.translation import get_language_from_request, gettext as _
 from lxml import etree
-from six import BytesIO
 
 from djangocms_blog.settings import get_setting
 from djangocms_blog.views import PostDetailView
@@ -39,7 +39,11 @@ class LatestEntriesFeed(Feed):
         return _("Blog articles on %(site_name)s") % {"site_name": Site.objects.get_current().name}
 
     def items(self, obj=None):
-        return Post.objects.namespace(self.namespace).published().order_by("-date_published")[: self.feed_items_number]
+        return (
+            Post.objects.namespace(self.namespace)
+            .published_on_rss()
+            .order_by("-date_published")[: self.feed_items_number]
+        )
 
     def item_title(self, item):
         return mark_safe(item.safe_translation_getter("title"))
