@@ -6,7 +6,6 @@ from djangocms_blog.settings import get_setting
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0010_auto_20150923_1151"),
     ]

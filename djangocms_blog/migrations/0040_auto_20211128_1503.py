@@ -10,9 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-#        ('filer', '0014_folder_permission_choices'),
-#        migrations.swappable_dependency(settings.FILER_IMAGE_MODEL),
-        ('djangocms_blog', '0039_auto_20200331_2227'),
+        ('djangocms_blog', '0040_post_include_in_rss'),
     ]
 
     operations = [

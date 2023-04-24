@@ -21,7 +21,7 @@ like the following in the project settings:
 
     BLOG_PERMALINK_URLS = {
         "full_date": "<int:year>/<int:month>/<int:day>/<str:slug>/",
-        "short_date: "<int:year>/<int:month>/<str:slug>/",
+        "short_date": "<int:year>/<int:month>/<str:slug>/",
         "category": "<str:category>/<str:slug>/",
         "slug": "<str:slug>/",
     }

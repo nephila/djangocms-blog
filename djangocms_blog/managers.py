@@ -98,6 +98,10 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
         else:
             return queryset
 
+    def published_on_rss(self, current_site=True):
+        queryset = self.published_future(current_site)
+        return queryset.exclude(include_in_rss=False)
+
     def published_future(self, current_site=True):
         if current_site:
             queryset = self.on_site()
@@ -143,6 +147,9 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
 
     def published(self, current_site=True):
         return self.get_queryset().published(current_site)
+
+    def published_on_rss(self, current_site=True):
+        return self.get_queryset().published_on_rss(current_site)
 
     def available(self, current_site=True):
         return self.get_queryset().available(current_site)

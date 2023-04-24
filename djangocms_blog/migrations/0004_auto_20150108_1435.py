@@ -9,7 +9,6 @@ ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or "filer.Image"
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(ACTUAL_FILER_IMAGE_MODEL),
         ("djangocms_blog", "0003_auto_20141201_2252"),

@@ -1,9 +1,8 @@
 import djangocms_text_ckeditor.fields
-from django.db import migrations, models
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0005_auto_20150212_1118"),
     ]

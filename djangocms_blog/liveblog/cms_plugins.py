@@ -7,6 +7,7 @@ from djangocms_blog.settings import get_setting
 from .models import Liveblog
 
 
+@plugin_pool.register_plugin
 class LiveblogPlugin(TextPlugin):
     module = get_setting("PLUGIN_MODULE_NAME")
     name = _("Liveblog item")
@@ -24,6 +25,3 @@ class LiveblogPlugin(TextPlugin):
         instance.content = context["body"]
         context["instance"] = instance
         return context
-
-
-plugin_pool.register_plugin(LiveblogPlugin)

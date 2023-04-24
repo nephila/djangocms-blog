@@ -124,3 +124,15 @@ except:  # pragma: no cover
     warnings.warn(
         "Wizards not yet registered"
     )
+    try:
+        wizard_pool.register(post_wizard)
+    except AlreadyRegisteredException:  # pragma: no cover
+        if settings.DEBUG:
+            raise
+        else:
+            warnings.warn(
+                f"Wizard {seed} cannot be registered. Please make sure that "
+                f"BlogConfig.namespace {config.namespace} and BlogConfig.app_title {config.app_title} are"
+                "unique together",
+                stacklevel=2,
+            )

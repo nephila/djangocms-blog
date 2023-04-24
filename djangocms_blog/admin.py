@@ -908,5 +908,3 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             from cms.signals.apphook import trigger_restart
             trigger_restart()
         return super().save_model(request, obj, form, change)
-
-

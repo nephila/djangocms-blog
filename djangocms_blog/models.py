@@ -17,7 +17,7 @@ from django.urls import NoReverseMatch, reverse
 from django.utils import timezone, translation
 from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
-from django.utils.html import escape, strip_tags
+from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, gettext, gettext_lazy as _
 from djangocms_text_ckeditor.fields import HTMLField
@@ -223,7 +223,7 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
 
     def get_description(self):
         description = self.safe_translation_getter("meta_description", any_language=True)
-        return escape(strip_tags(description)).strip()
+        return strip_tags(description).strip()
 
 
 class Post(KnockerModel, models.Model):
@@ -249,6 +249,7 @@ class Post(KnockerModel, models.Model):
                                  help_text=_("Pinned posts are shown in ascending order before unpinned ones. "
                                              "Leave blank for regular order by date."))
     publish = models.BooleanField(_("publish"), default=False)
+    include_in_rss = models.BooleanField(_("include in RSS feed"), default=True)
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory", verbose_name=_("category"), related_name="blog_posts", blank=True
     )
@@ -464,7 +465,7 @@ class Post(KnockerModel, models.Model):
         description = self.safe_translation_getter("meta_description", any_language=True)
         if not description:
             description = self.safe_translation_getter("abstract", any_language=True)
-        return escape(strip_tags(description)).strip()
+        return strip_tags(description).strip()
 
     def get_image_full_url(self):
         if self.main_image:

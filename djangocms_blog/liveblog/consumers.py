@@ -26,3 +26,6 @@ class LiveblogConsumer(JsonWebsocketConsumer):
             return [post.liveblog_group]
         else:
             return []
+
+    def send_json(self, content, close=False):
+        return super().send_json(content, close)
