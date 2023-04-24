@@ -64,9 +64,6 @@ class Migration(migrations.Migration):
                 ('post_text', djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text')),
                 ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='djangocms_blog.post')),
             ],
-            options={
-                'unique_together': {('language', 'slug')},
-            },
             bases=(djangocms_blog.models.BlogMetaMixin, models.Model),
         ),
     ]

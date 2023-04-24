@@ -12,7 +12,7 @@
       </div>
     {% endif %}
   {% endblock %}
-  {% if content_instance.versions.first.state != "draft" %}
+  {% if content_instance.versions.first and content_instance.versions.first.state != "draft" %}
     <div class="errornote">
       <p><i>Some fields cannot be changed since they refer to a published version of this post.</i></p>
     </div>

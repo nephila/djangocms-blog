@@ -84,7 +84,7 @@ class BlogToolbar(CMSToolbar):
             if current_post and self.request.user.has_perm("djangocms_blog.change_post"):  # pragma: no cover  # NOQA
                 admin_menu.add_modal_item(
                     _("%(object_name)s Properties") % object_dict,
-                    admin_reverse("djangocms_blog_post_change", args=(current_post.post.pk,)),
+                    admin_reverse("djangocms_blog_postcontent_change", args=(current_post.pk,)),
                 )
             url = admin_reverse("djangocms_blog_post_add")
             admin_menu.add_modal_item(

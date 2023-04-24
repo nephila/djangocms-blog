@@ -14,15 +14,17 @@ from django.contrib import admin, messages
 from django.contrib.admin.options import InlineModelAdmin
 from django.contrib.admin.views.main import ChangeList
 from django.contrib.sites.models import Site
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Prefetch, signals
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import NoReverseMatch, path, reverse
 from django.utils.html import format_html_join
 from django.utils.http import urlencode
 from django.utils.translation import get_language, gettext_lazy as _, ngettext as __
+from django.views.generic import RedirectView
 from parler.admin import TranslatableAdmin
 
 from djangocms_blog.forms import PostAdminForm
@@ -82,6 +84,13 @@ def create_post_post_save(model):
             model.objects.create(post=instance)
 
     return create_instance
+
+
+def admin_get_object_or_404(model, **kwargs):
+    try:
+        return model.admin_manager.get(**kwargs)
+    except ObjectDoesNotExist:
+        raise Http404
 
 
 class SiteListFilter(admin.SimpleListFilter):
@@ -166,7 +175,7 @@ class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, Translat
 #                 'display': title,
 #             }
 
-class BlogChangeList(ChangeList):
+class GrouperChangeList(ChangeList):
     """Subclass ChangeList to disregard language get parameter as filter"""
     def get_filters_params(self, params=None):
         lookup_params = super().get_filters_params(params)
@@ -175,8 +184,8 @@ class BlogChangeList(ChangeList):
         return lookup_params
 
 
-class LanguageGrouperMixin:
-
+class GrouperLanguageAdminMixin:
+    """Allows to switch grouper admin view by language"""
     def __init__(self, *args, **kwargs):
         self._content_cache = {}
         super().__init__(*args, **kwargs)
@@ -189,7 +198,36 @@ class LanguageGrouperMixin:
 
     def get_changelist(self, request, **kwargs):
         """Allow for language as a non-filter parameter"""
-        return BlogChangeList
+        return GrouperChangeList
+
+    def get_changelist_instancex(self, request):
+        """
+        Return a `ChangeList` instance based on `request`. May raise
+        `IncorrectLookupParameters`.
+        """
+        list_display = self.get_list_display(request)
+        list_display_links = self.get_list_display_links(request, list_display)
+        # Add the action checkboxes if any actions are available.
+        if self.get_actions(request):
+            list_display = ["action_checkbox", *list_display]
+        sortable_by = self.get_sortable_by(request)
+        ChangeList = self.get_changelist(request)
+        return ChangeList(
+            request,
+            self.groupermodel,
+            list_display,
+            list_display_links,
+            self.get_list_filter(request),
+            self.date_hierarchy,
+            self.get_search_fields(request),
+            self.get_list_select_related(request),
+            self.list_per_page,
+            self.list_max_show_all,
+            self.list_editable,
+            self,
+            sortable_by,
+            self.search_help_text,
+        )
 
     def get_language_from_request(self, request):
         if request.method == "GET":
@@ -243,14 +281,13 @@ class LanguageGrouperMixin:
         return get_object_preview_url(content_obj) if content_obj else None
 
 
-
 @admin.register(Post)
 class PostAdmin(
     PlaceholderAdminMixin,
     FrontendEditableAdminMixin,
     ModelAppHookConfig,
     StateIndicatorMixin,
-    LanguageGrouperMixin,
+    GrouperLanguageAdminMixin,
     admin.ModelAdmin,
 ):
     form = PostAdminForm
@@ -410,15 +447,19 @@ class PostAdmin(
             return version.check_modify.as_bool(request.user)
         return True
 
-    def get_extra_context(self, request, object_id=None):
+    def get_extra_context(self, request, obj=None):
         """Provide the language to edit"""
         language = get_language_from_request(request)
-        if object_id:
-            # Instance provided? Get corresponding postconent
-            instance = get_object_or_404(self.model, pk=object_id)
-            qs = instance.postcontent_set(manager="admin_manager")
+        if obj:  # Instance provided -> change view?
+            if isinstance(obj, self.model):  # Grouper?
+                instance = obj
+                qs = instance.postcontent_set(manager="admin_manager")
+                content_instance = qs.filter(language=language).latest_content().first()
+            else:  # Content
+                content_instance = obj
+                instance = content_instance.post
+                qs = instance.postcontent_set(manager="admin_manager")
             filled_languages = qs.values_list("language", flat=True).distinct()
-            content_instance = qs.filter(language=language).latest_content().first()
             title = _("%(object_name)s Properties") % dict(object_name=instance.app_config.object_name)
         else:
             content_instance = None
@@ -440,10 +481,20 @@ class PostAdmin(
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         """Change view with extra context"""
+        obj = get_object_or_404(self.model, pk=object_id)
         return super().change_view(request, object_id, form_url, {
             **(extra_context or {}),
-            **self.get_extra_context(request, object_id),
+            **self.get_extra_context(request, obj),
         })
+
+    def change_content_view(self, request, object_id):
+        obj = admin_get_object_or_404(PostContent, pk=object_id)
+        return self.change_view(
+            request,
+            str(obj.post.pk),
+            form_url="",
+            extra_context=self.get_extra_context(request, obj),
+        )
 
     def add_view(self, request, form_url='', extra_context=None):
         """Add view with extra context"""
@@ -451,6 +502,11 @@ class PostAdmin(
             **(extra_context or {}),
             **self.get_extra_context(request, None),
         })
+
+    def add_content_view(self, request):
+        raise NotImplementedError
+        return self.add_view(request, form_url="", extra_context=self.get_extra_context(request, None))
+
 
     @admin.action(
         description=_("Enable comments for selection")
@@ -541,19 +597,29 @@ class PostAdmin(
             lookup.startswith("post__app_config"),
         ))
 
-    # def get_urls(self):
-    #     """
-    #     Customize the modeladmin urls
-    #     """
-    #     urls = [
-    #         path(
-    #             "publish/<int:pk>/",
-    #             self.admin_site.admin_view(self.publish_post),
-    #             name="djangocms_blog_publish_article",
-    #         ),
-    #     ]
-    #     urls.extend(super().get_urls())
-    #     return urls
+    def get_urls(self):
+        """
+        Customize the modeladmin urls
+        """
+        urls = [
+            path(
+                "add_content/",
+                self.admin_site.admin_view(self.add_content_view),
+                name="djangocms_blog_postcontent_add",
+            ),
+            path(
+                "content/<object_id>/",
+                self.admin_site.admin_view(self.change_content_view),
+                name="djangocms_blog_postcontent_change",
+            ),
+            path(
+                "content/",
+                RedirectView.as_view(pattern_name="djangocms_blog_post_changelist"),
+                name="djangocms_blog_postcontent_changelist",
+            ),
+        ]
+        urls.extend(super().get_urls())
+        return urls
 
     # def post_add_plugin(self, request, obj1, obj2=None):
     #     if isinstance(obj1, CMSPlugin):
@@ -703,7 +769,6 @@ class PostAdmin(
                 **content_dict,
             )
         else:
-            print(f"   Updating content for {form.language=}")
             for key, value in content_dict.items():
                 setattr(form.content_instance, key, value)
             form.content_instance.save()

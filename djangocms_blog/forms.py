@@ -161,6 +161,7 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
             "slug": _("slug"),
             "title": _("title"),
             "subtitle": _("subtitle"),
+            "post_text": _("text"),
             "meta_description": _("meta_description"),
             "meta_keywords": _("meta_keywords"),
             "meta_title": _("meta_title"),
