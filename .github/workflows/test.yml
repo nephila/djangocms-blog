@@ -6,6 +6,7 @@ jobs:
   test:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.continue-on-error }}
     strategy:
       matrix:
         python-version: ["3.11", "3.10", "3.9"]
@@ -39,7 +40,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install gettext
-        python -m pip install --upgrade pip tox>=3.5
+        python -m pip install --upgrade pip setuptools tox>4
     - name: Test with tox
       env:
         TOX_ENV: ${{ format('py-django{1}-cms{2}', matrix.python-version, matrix.django, matrix.cms) }}
@@ -50,14 +51,9 @@ jobs:
         tox -e$TOX_ENV
         .tox/$TOX_ENV/bin/coverage xml
         .tox/$TOX_ENV/bin/coveralls
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         flags: unittests
-        file: ./coverage.xml
+        files: ./coverage.xml
         fail_ci_if_error: false
-    services:
-      redis:
-        image: redis
-        ports:
-          - 6379:6379
