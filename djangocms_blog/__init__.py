@@ -1,3 +1,3 @@
 __author__ = "Iacopo Spalletti"
 __email__ = "i.spalletti@nephila.it"
-__version__ = "2.0.0.b1"
+__version__ = "2.0.0.b2"
