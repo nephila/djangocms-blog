@@ -438,6 +438,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         if sites.exists():
             pks = list(sites.all().values_list("pk", flat=True))
             qs = qs.filter(sites__in=pks)
+        # can't use distinct here because it prevents deleting records, but we need a unique list of posts because
+        # filters can cause duplicates
         return super().get_queryset(request).filter(pk__in=qs.values_list("pk", flat=True))
 
     def save_related(self, request, form, formsets, change):
