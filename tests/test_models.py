@@ -203,6 +203,25 @@ class AdminTest(BaseTest):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "/")
 
+    def test_admin_post_delete(self):
+        self.get_pages()
+
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+
+        post = self._get_post(self._post_data[0]["en"])
+        post = self._get_post(self._post_data[0]["it"], post, "it")
+
+        post_admin.delete_model(request, post)
+
+    def test_admin_post_delete_queryset(self):
+        self.get_pages()
+
+        post_admin = admin.site._registry[Post]
+        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+
+        post_admin.delete_queryset(request, post_admin.get_queryset(request))
+
     def test_admin_changelist_view(self):
         self.get_pages()
 
