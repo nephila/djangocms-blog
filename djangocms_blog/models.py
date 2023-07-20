@@ -402,17 +402,25 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     def get_image_full_url(self):
         if self.main_image:
-            options = get_setting("META_IMAGE_SIZE")
-            thumbnail_url = get_thumbnailer(self.main_image).get_thumbnail(options).url
-            return self.build_absolute_uri(thumbnail_url)
+            thumbnail_options = get_setting("META_IMAGE_SIZE")
+            if thumbnail_options:
+                thumbnail_url = get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).url
+                return self.build_absolute_uri(thumbnail_url)
+            return self.build_absolute_uri(self.main_image.url)
         return ""
 
     def get_image_width(self):
         if self.main_image:
+            thumbnail_options = get_setting("META_IMAGE_SIZE")
+            if thumbnail_options:
+                return get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).width
             return self.main_image.width
 
     def get_image_height(self):
         if self.main_image:
+            thumbnail_options = get_setting("META_IMAGE_SIZE")
+            if thumbnail_options:
+                return get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).height
             return self.main_image.height
 
     def get_tags(self):
