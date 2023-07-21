@@ -21,6 +21,7 @@ from django.utils.encoding import force_str
 from django.utils.html import strip_tags
 from django.utils.timezone import now
 from django.utils.translation import get_language, override
+from easy_thumbnails.files import get_thumbnailer
 from filer.models import ThumbnailOption
 from menus.menu_pool import menu_pool
 from parler.tests.utils import override_parler_settings
@@ -1030,6 +1031,34 @@ class ModelsTest(BaseTest):
         post.date_published_end = now() + timedelta(minutes=1)
         post.save()
         self.assertFalse(post.is_published)
+
+    def test_model_meta_image_setting(self):
+        post = self._get_post(self._post_data[0]["en"])
+        post.main_image = self.create_filer_image_object()
+        post.save()
+
+        post.set_current_language("en")
+        meta_en = post.as_meta()
+        self.assertEqual(meta_en.image, post.build_absolute_uri(post.main_image.url))
+        self.assertEqual(meta_en.image_width, post.main_image.width)
+        self.assertEqual(meta_en.image_height, post.main_image.height)
+
+        with override_settings(BLOG_META_IMAGE_SIZE={"size": (1200, 630), "crop": True, "upscale": False}):
+            meta_en = post.as_meta()
+            self.assertEqual(
+                meta_en.image,
+                post.build_absolute_uri(
+                    get_thumbnailer(post.main_image).get_thumbnail(get_setting("META_IMAGE_SIZE")).url
+                ),
+            )
+            self.assertEqual(
+                meta_en.image_width,
+                get_thumbnailer(post.main_image).get_thumbnail(get_setting("META_IMAGE_SIZE")).width,
+            )
+            self.assertEqual(
+                meta_en.image_height,
+                get_thumbnailer(post.main_image).get_thumbnail(get_setting("META_IMAGE_SIZE")).height,
+            )
 
     def test_urls(self):
         self.get_pages()
