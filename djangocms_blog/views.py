@@ -85,7 +85,7 @@ class PostDetailView(TranslatableSlugMixin, BaseBlogView, DetailView):
         queryset = self.model._default_manager.all()
         if not getattr(self.request, "toolbar", None) or not self.request.toolbar.edit_mode_active:
             queryset = queryset.published()
-        return self.optimize(queryset)
+        return self.optimize(queryset.on_site())
 
     def get(self, *args, **kwargs):
         # submit object to cms to get corrent language switcher and selected category behavior
