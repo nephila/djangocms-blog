@@ -232,6 +232,70 @@ class ViewTest(BaseTest):
                 self.assertEqual(context["post"].language_code, "it")
                 self.assertTrue(context["meta"])
 
+    def test_post_detail_on_different_site(self):
+        pages = self.get_pages()
+        post1 = self._get_post(
+            {
+                "title": "First post",
+                "abstract": "<p>first line</p>",
+                "description": "This is the description",
+                "keywords": "keyword1, keyword2",
+                "app_config": "sample_app",
+            },
+            sites=(self.site_1,),
+        )
+        post2 = self._get_post(
+            {
+                "title": "Second post",
+                "abstract": "<p>second post first line</p>",
+                "description": "Second post description",
+                "keywords": "keyword3, keyword4",
+                "app_config": "sample_app",
+            },
+            sites=(self.site_2,),
+        )
+
+        post1.publish = True
+        post1.save()
+        post2.publish = True
+        post2.save()
+
+        with smart_override("en"):
+            request = self.get_page_request(pages[1], AnonymousUser(), lang="en", edit=False)
+            view_obj = PostDetailView()
+            view_obj.request = request
+            view_obj.namespace, view_obj.config = get_app_instance(request)
+
+            with self.assertRaises(Http404):
+                view_obj.kwargs = {"slug": post2.slug}
+                view_obj.get_object()
+
+            self.assertEqual(view_obj.get_queryset().count(), 1)
+
+            view_obj.kwargs = {"slug": post1.slug}
+            self.assertTrue(view_obj.get_object())
+
+            with self.settings(**{"SITE_ID": self.site_2.pk}):
+                request = self.get_page_request(pages[1], AnonymousUser(), lang="en", edit=False)
+                view_obj = PostDetailView()
+                view_obj.request = request
+                view_obj.namespace, view_obj.config = get_app_instance(request)
+
+                with self.assertRaises(Http404):
+                    view_obj.kwargs = {"slug": post1.slug}
+                    view_obj.get_object()
+
+                self.assertEqual(view_obj.get_queryset().count(), 1)
+
+                view_obj.kwargs = {"slug": post2.slug}
+                self.assertTrue(view_obj.get_object())
+
+                post1.sites.add(self.site_2)
+                post1.save()
+                view_obj.kwargs = {"slug": post1.slug}
+                self.assertTrue(view_obj.get_object())
+                self.assertEqual(view_obj.get_queryset().count(), 2)
+
     def test_post_archive_view(self):
         pages = self.get_pages()
         posts = self.get_posts()
