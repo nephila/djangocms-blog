@@ -1,7 +1,6 @@
-import json
+import copy
 from copy import deepcopy
 
-from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
 from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
 from cms.models import CMSPlugin, ValidationError
 from cms.toolbar.utils import get_object_preview_url
@@ -17,7 +16,7 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Prefetch, signals
-from django.http import HttpResponseRedirect, Http404
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import NoReverseMatch, path, reverse
@@ -27,19 +26,18 @@ from django.utils.translation import get_language, gettext_lazy as _, ngettext a
 from django.views.generic import RedirectView
 from parler.admin import TranslatableAdmin
 
-from djangocms_blog.forms import PostAdminForm
 
-from .cms_appconfig import BlogConfig
 from .forms import CategoryAdminForm, PostAdminForm
-from .models import BlogCategory, Post, PostContent
+from .models import BlogConfig, BlogCategory, Post, PostContent
 from .settings import get_setting
 from .utils import is_versioning_enabled
 
 signal_dict = {}
 
-try:
+if is_versioning_enabled():
     from djangocms_versioning.admin import StateIndicatorMixin
-except ModuleNotFoundError:
+else:
+    # Declare stubs
     class StateIndicatorMixin:
         def state_indicator(self, obj):
             pass
@@ -115,6 +113,132 @@ class SiteListFilter(admin.SimpleListFilter):
             raise admin.options.IncorrectLookupParameters(e)
         except ValidationError as e:  # pragma: no cover
             raise admin.options.IncorrectLookupParameters(e)
+
+
+class ModelAppHookConfig:
+    app_config_selection_title = _("Select app config")
+    app_config_selection_desc = _("Select the app config for the new object")
+    app_config_values = {}
+
+    def _app_config_select(self, request, obj):
+        """
+        Return the select value for apphook configs
+
+        :param request: request object
+        :param obj: current object
+        :return: False if no preselected value is available (more than one or no apphook
+                 config is present), apphook config instance if exactly one apphook
+                 config is defined or apphook config defined in the request or in the current
+                 object, False otherwise
+        """
+        if not obj and not request.GET.get("app_config", False):
+            if BlogConfig.objects.count() == 1:
+                return BlogConfig.objects.first()
+            return None
+        elif obj and getattr(obj, "app_config", False):
+            return getattr(obj, "app_config")
+        elif request.GET.get("app_config", False):
+            return BlogConfig.objects.get(pk=int(request.GET.get("app_config", False)))
+        return False
+
+    def _set_config_defaults(self, request, form, obj=None):
+        """
+        Cycle through app_config_values and sets the form value according to the
+        options in the current apphook config.
+
+        self.app_config_values is a dictionary containing config options as keys, form fields as
+        values::
+
+            app_config_values = {
+                'apphook_config': 'form_field',
+                ...
+            }
+
+        :param request: request object
+        :param form: model form for the current model
+        :param obj: current object
+        :return: form with defaults set
+        """
+        for config_option, field in self.app_config_values.items():
+            if field in form.base_fields:
+                form.base_fields[field].initial = self.get_config_data(request, obj, config_option)
+        return form
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        If the apphook config must be selected first, returns a fieldset with just the
+         app config field and help text
+        :param request:
+        :param obj:
+        :return:
+        """
+        app_config_default = self._app_config_select(request, obj)
+        if app_config_default is None and request.method == "GET":
+            return (
+                (
+                    _(self.app_config_selection_title),
+                    {
+                        "fields": ("app_config",),
+                        "description": _(self.app_config_selection_desc),
+                    },
+                ),
+            )
+        else:
+            return super().get_fieldsets(request, obj)
+
+    def get_config_data(self, request, obj, name):
+        """
+        Method that retrieves a configuration option for a specific AppHookConfig instance
+
+        :param request: the request object
+        :param obj: the model instance
+        :param name: name of the config option as defined in the config form
+
+        :return value: config value or None if no app config is found
+        """
+        return_value = None
+        config = None
+        if obj:
+            try:
+                config = getattr(obj, "app_config", False)
+            except ObjectDoesNotExist:  # pragma: no cover
+                pass
+        if not config and "app_config" in request.GET:
+            try:
+                config = BlogConfig.objects.get(pk=request.GET["app_config"])
+            except BlogConfig.DoesNotExist:  # pragma: no cover
+                pass
+        if config:
+            return_value = getattr(config, name)
+        return return_value
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Provides a flexible way to get the right form according to the context
+
+        For the add view it checks whether the app_config is set; if not, a special form
+        to select the namespace is shown, which is reloaded after namespace selection.
+        If only one namespace exists, the current is selected and the normal form
+        is used.
+        """
+        form = super().get_form(request, obj, **kwargs)
+        if "app_config" not in form.base_fields:
+            return form
+        app_config_default = self._app_config_select(request, obj)
+        if app_config_default:
+            form.base_fields["app_config"].initial = app_config_default
+            get = copy.copy(request.GET)  # Make a copy to modify
+            get["app_config"] = app_config_default.pk
+            request.GET = get
+        elif app_config_default is None and request.method == "GET":
+
+            class InitialForm(form):
+                class Meta(form.Meta):
+                    fields = ("app_config",)
+
+            form = InitialForm
+        form = self._set_config_defaults(request, form, obj)
+        return form
 
 
 @admin.register(BlogCategory)
@@ -280,15 +404,14 @@ class GrouperLanguageAdminMixin:
         content_obj = self.get_content_obj_for_grouper(obj)
         return get_object_preview_url(content_obj) if content_obj else None
 
+from cms.admin.utils import GrouperModelAdmin
 
 @admin.register(Post)
 class PostAdmin(
     PlaceholderAdminMixin,
     FrontendEditableAdminMixin,
     ModelAppHookConfig,
-    StateIndicatorMixin,
-    GrouperLanguageAdminMixin,
-    admin.ModelAdmin,
+    GrouperModelAdmin,
 ):
     form = PostAdminForm
     inlines = []
@@ -803,7 +926,7 @@ class PostAdmin(
 
 
 @admin.register(BlogConfig)
-class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
+class BlogConfigAdmin(TranslatableAdmin):
     @property
     def declared_fieldsets(self):
         return self.get_fieldsets(None)
@@ -813,16 +936,18 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
         Fieldsets configuration
         """
         return [
-            (None, {"fields": ("type", "namespace", "app_title", "object_name")}),
+            (None, {"fields": (
+                "namespace",
+                ("app_title", "object_name"),
+            )}),
             (
                 _("Generic"),
                 {
                     "fields": (
-                        "config.default_published",
-                        "config.use_placeholder",
-                        "config.use_abstract",
-                        "config.set_author",
-                        "config.use_related",
+                        ("use_placeholder",
+                        "use_abstract",
+                        "set_author"),
+                        "use_related",
                     )
                 },
             ),
@@ -830,43 +955,40 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 _("Layout"),
                 {
                     "fields": (
-                        "config.urlconf",
-                        "config.paginate_by",
-                        "config.url_patterns",
-                        "config.template_prefix",
-                        "config.menu_structure",
-                        "config.menu_empty_categories",
-                        ("config.default_image_full", "config.default_image_thumbnail"),
+                        "paginate_by",
+                        ("urlconf", "url_patterns"),
+                        ("menu_structure", "menu_empty_categories"),
+                        "template_prefix",
+                        ("default_image_full", "default_image_thumbnail"),
                     ),
                     "classes": ("collapse",),
                 },
             ),
             (
                 _("Notifications"),
-                {"fields": ("config.send_knock_create", "config.send_knock_update"), "classes": ("collapse",)},
+                {"fields": ("send_knock_create", "send_knock_update"), "classes": ("collapse",)},
             ),
             (
                 _("Sitemap"),
                 {
                     "fields": (
-                        "config.sitemap_changefreq",
-                        "config.sitemap_priority",
+                        "sitemap_changefreq",
+                        "sitemap_priority",
                     ),
                     "classes": ("collapse",),
                 },
             ),
-            (_("Meta"), {"fields": ("config.object_type",)}),
+            (_("Meta"), {"fields": ("object_type",)}),
             (
                 "Open Graph",
                 {
                     "fields": (
-                        "config.og_type",
-                        "config.og_app_id",
-                        "config.og_profile_id",
-                        "config.og_publisher",
-                        "config.og_author_url",
-                        "config.og_author",
+                        "og_type",
+                        ("og_app_id", "og_profile_id"),
+                        "og_publisher",
+                        ("og_author_url", "og_author"),
                     ),
+                    "classes": ("collapse",),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
@@ -874,10 +996,11 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 "Twitter",
                 {
                     "fields": (
-                        "config.twitter_type",
-                        "config.twitter_site",
-                        "config.twitter_author",
+                        "twitter_type",
+                        "twitter_site",
+                        "twitter_author",
                     ),
+                    "classes": ("collapse",),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
@@ -885,13 +1008,20 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 "Schema.org",
                 {
                     "fields": (
-                        "config.gplus_type",
-                        "config.gplus_author",
+                        "gplus_type",
+                        "gplus_author",
                     ),
+                    "classes": ("collapse",),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
         ]
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.pk:
+            return tuple(self.readonly_fields) + ("namespace",)
+        else:
+            return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
         """

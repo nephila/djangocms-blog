@@ -1,6 +1,5 @@
 from collections import Counter
 
-from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import models
@@ -80,7 +79,7 @@ class TaggedFilterItem:
         return sorted(tags, key=lambda x: -x.count)
 
 
-class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
+class GenericDateQuerySet(models.QuerySet):
     start_date_field = "date_published"
     fallback_date_field = "date_modified"
     end_date_field = "date_published_end"
@@ -137,7 +136,7 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
             return self.filter(language=language)
 
 
-class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):
+class GenericDateTaggedManager(TaggedFilterItem, models.Manager):
     use_for_related_fields = True
 
     queryset_class = GenericDateQuerySet

@@ -69,5 +69,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(move_plugins_to_blog_content, move_plugins_back_to_blog),
+        migrations.RunPython(move_plugins_to_blog_content, move_plugins_back_to_blog, elidable=True),
     ]

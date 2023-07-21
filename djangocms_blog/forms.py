@@ -197,7 +197,7 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
     def available_related_posts(self):
         qs = Post.objects
         if self.app_config:
-            if self.app_config.get("use_related", "0") == "1":
+            if self.app_config.use_related == "1":
                 qs = qs.filter(app_config__namespace=self.app_config.namespace)
         return qs
 
@@ -251,7 +251,7 @@ class PostAdminForm(PostAdminFormBase):
             self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
         super().__init__(*args, **kwargs)
         if "categories" in self.fields:
-            if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
+            if getattr(self.app_config, "url_patterns", "") == PERMALINK_TYPE_CATEGORY:
                 self.fields["categories"].required = True
             self.fields["categories"].queryset = self.available_categories
         if "related" in self.fields:
@@ -264,8 +264,6 @@ class PostAdminForm(PostAdminFormBase):
 
         if self.app_config:
             if not self.initial.get("main_image_full", ""):
-                self.initial["main_image_full"] = self.app_config.app_data["config"].get("default_image_full")
+                self.initial["main_image_full"] = self.app_config.default_image_full
             if not self.initial.get("main_image_thumbnail", ""):
-                self.initial["main_image_thumbnail"] = self.app_config.app_data["config"].get(
-                    "default_image_thumbnail"
-                )
+                self.initial["main_image_thumbnail"] = self.app_config.default_image_thumbnail

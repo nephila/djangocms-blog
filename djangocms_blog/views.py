@@ -1,24 +1,41 @@
 import os.path
 
-from aldryn_apphooks_config.mixins import AppConfigMixin
+from cms.apphook_pool import apphook_pool
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, resolve, Resolver404
 from django.utils.timezone import now
-from django.utils.translation import get_language
+from django.utils.translation import get_language, get_language_from_request, override
 from django.views.generic import DetailView, ListView
 from parler.views import TranslatableSlugMixin, ViewUrlMixin
 
+from .cms_appconfig import get_app_instance
 from .models import BlogCategory, Post, PostContent
 from .settings import get_setting
 
 User = get_user_model()
 
 
-class PostDetailView(AppConfigMixin, DetailView):
+class BlogConfigMixin:
+    def dispatch(self, request, *args, **kwargs):
+        """Detect current namespace and config instance. Add both to the view object and
+        make namespace avilable to the request."""
+
+        self.namespace, self.config = get_app_instance(request)
+        request.current_app = self.namespace
+        return super().dispatch(request, *args, **kwargs)
+
+    def render_to_response(self, context, **response_kwargs):
+        """Make current app available to the template"""
+        if "current_app" in response_kwargs:  # pragma: no cover
+            response_kwargs["current_app"] = self.namespace
+        return super().render_to_response(context, **response_kwargs)
+
+
+class PostDetailView(BlogConfigMixin, DetailView):
     model = PostContent
     context_object_name = "post_content"
     base_template_name = "post_detail.html"
@@ -72,11 +89,7 @@ class ToolbarDetailView(PostDetailView):
         return content_object
 
 
-class BaseBlogListView(AppConfigMixin):
-    context_object_name = "post_list"
-    base_template_name = "post_list.html"
-    model = PostContent
-
+class BaseConfigListViewMixin(BlogConfigMixin):
     def optimize(self, qs):
         """
         Apply select_related / prefetch_related to optimize the view queries
@@ -118,11 +131,11 @@ class BaseBlogListView(AppConfigMixin):
         return (self.config and self.config.paginate_by) or get_setting("PAGINATION")
 
 
-class PostListView(BaseBlogListView, ListView):
+class PostListView(BaseConfigListViewMixin, ListView):
     view_url_name = "djangocms_blog:posts-latest"
 
 
-class CategoryListView(AppConfigMixin, ViewUrlMixin, TranslatableSlugMixin, ListView):
+class CategoryListView(BlogConfigMixin, ViewUrlMixin, TranslatableSlugMixin, ListView):
     model = BlogCategory
     context_object_name = "category_list"
     base_template_name = "category_list.html"
@@ -140,7 +153,10 @@ class CategoryListView(AppConfigMixin, ViewUrlMixin, TranslatableSlugMixin, List
         return os.path.join(template_path, self.base_template_name)
 
 
-class PostArchiveView(BaseBlogListView, ListView):
+class PostArchiveView(BaseConfigListViewMixin, ListView):
+    model = PostContent
+    context_object_name = "post_list"
+    base_template_name = "post_list.html"
     date_field = "date_published"
     allow_empty = True
     allow_future = True
@@ -163,7 +179,10 @@ class PostArchiveView(BaseBlogListView, ListView):
         return context
 
 
-class TaggedListView(BaseBlogListView, ListView):
+class TaggedListView(BaseConfigListViewMixin, ListView):
+    model = PostContent
+    context_object_name = "post_list"
+    base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-tagged"
 
     def get_queryset(self):
@@ -176,7 +195,10 @@ class TaggedListView(BaseBlogListView, ListView):
         return context
 
 
-class AuthorEntriesView(BaseBlogListView, ListView):
+class AuthorEntriesView(BaseConfigListViewMixin, ListView):
+    model = PostContent
+    context_object_name = "post_list"
+    base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-author"
 
     def get_queryset(self):
@@ -191,8 +213,11 @@ class AuthorEntriesView(BaseBlogListView, ListView):
         return context
 
 
-class CategoryEntriesView(BaseBlogListView, ListView):
+class CategoryEntriesView(BaseConfigListViewMixin, ListView):
     _category = None
+    model = PostContent
+    context_object_name = "post_list"
+    base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-category"
 
     @property

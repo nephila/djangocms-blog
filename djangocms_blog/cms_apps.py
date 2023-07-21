@@ -1,15 +1,17 @@
-from aldryn_apphooks_config.app_base import CMSConfigApp
+from cms.app_base import CMSApp
 from cms.apphook_pool import apphook_pool
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from djangocms_apphook_setup.base import AutoCMSAppMixin
+# from djangocms_apphook_setup.base import AutoCMSAppMixin
 
-from .cms_appconfig import BlogConfig
+from .models import BlogConfig
 from .cms_menus import BlogCategoryMenu
 from .settings import get_setting
 
 
 @apphook_pool.register
-class BlogApp(AutoCMSAppMixin, CMSConfigApp):
+class BlogApp(CMSApp):
     name = _("Blog")
     _urls = [get_setting("URLCONF") if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")[0][0]]
     app_name = "djangocms_blog"
@@ -42,5 +44,22 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     def menus(self):
         return self._menus
 
+    def get_configs(self):
+        return self.app_config.objects.all()
 
-BlogApp.setup()
+    def get_config(self, namespace):
+        try:
+            return self.app_config.objects.get(namespace=namespace)
+        except ObjectDoesNotExist:
+            return None
+
+    def get_config_add_url(self):
+        try:
+            return reverse("admin:{}_{}_add".format(self.app_config._meta.app_label, self.app_config._meta.model_name))
+        except AttributeError:  # pragma: no cover
+            return reverse(
+                "admin:{}_{}_add".format(self.app_config._meta.app_label, self.app_config._meta.module_name)
+            )
+
+
+# BlogApp.setup()

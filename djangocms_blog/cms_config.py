@@ -1,5 +1,5 @@
 from cms.app_base import CMSAppConfig
-from cms.models import Placeholder
+from cms.models import Placeholder, PlaceholderRelationField
 from django.apps import apps
 from django.conf import settings
 
@@ -26,23 +26,26 @@ def copy_placeholder_content(original_content):
     # Use original manager to not create a new Version object here
     new_content = ContentModel._original_manager.create(**content_fields)
 
-    # Copy placeholders
-    new_placeholders = []
-    for placeholder in original_content.placeholders.all():
-        placeholder_fields = {
-            field.name: getattr(placeholder, field.name)
-            for field in Placeholder._meta.fields
-            # don't copy primary key because we're creating a new obj
-            # and handle the source field later
-            if field.name not in [Placeholder._meta.pk.name, 'source']
-        }
-        if placeholder.source:
-            placeholder_fields['source'] = new_content
-        new_placeholder = Placeholder.objects.create(**placeholder_fields)
-        # Copy plugins
-        placeholder.copy_plugins(new_placeholder)
-        new_placeholders.append(new_placeholder)
-    new_content.placeholders.add(*new_placeholders)
+    for field in ContentModel._meta.private_fields:
+        # Copy PlaceholderRelationFields
+        if isinstance(field, PlaceholderRelationField):
+            # Copy placeholders
+            new_placeholders = []
+            for placeholder in getattr(original_content, field.name).all():
+                placeholder_fields = {
+                    field.name: getattr(placeholder, field.name)
+                    for field in Placeholder._meta.fields
+                    # don't copy primary key because we're creating a new obj
+                    # and handle the source field later
+                    if field.name not in [Placeholder._meta.pk.name, 'source']
+                }
+                if placeholder.source:
+                    placeholder_fields['source'] = new_content
+                new_placeholder = Placeholder.objects.create(**placeholder_fields)
+                # Copy plugins
+                placeholder.copy_plugins(new_placeholder)
+                new_placeholders.append(new_placeholder)
+            new_content.placeholders.add(*new_placeholders)
 
     return new_content
 

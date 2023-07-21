@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
             ),
             preserve_default=True,
         ),
-        migrations.RunPython(migrate_tags, migrate_tags_reverse),
+        migrations.RunPython(migrate_tags, migrate_tags_reverse, elidable=True),
         migrations.RemoveField(
             model_name="latestpostsplugin",
             name="tags",

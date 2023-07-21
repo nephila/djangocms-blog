@@ -1,7 +1,5 @@
 import hashlib
 
-from aldryn_apphooks_config.fields import AppHookConfigField
-from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
 from cms.models import CMSPlugin, Placeholder, PlaceholderField, PlaceholderRelationField
 from cms.utils.placeholder import rescan_placeholders_for_obj
 from django.conf import settings as dj_settings
@@ -33,7 +31,7 @@ from .cms_appconfig import BlogConfig
 from .fields import slugify
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
-from .utils import is_versioning_enabled
+
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
 BLOG_CURRENT_NAMESPACE = get_setting("CURRENT_NAMESPACE")
@@ -98,7 +96,13 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
     )
     date_created = models.DateTimeField(_("created at"), auto_now_add=True)
     date_modified = models.DateTimeField(_("modified at"), auto_now=True)
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
+    app_config = models.ForeignKey(
+        BlogConfig,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("app. config"),
+        help_text=_("When selecting a value, the form is reloaded to get the updated default"),
+    )
     priority = models.IntegerField(_("priority"), blank=True, null=True)
     main_image = FilerImageField(
         verbose_name=_("main image"),
@@ -137,8 +141,6 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
         meta={"unique_together": (("language_code", "slug"),)},
         abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
     )
-
-    objects = AppHookConfigTranslatableManager()
 
     _metadata = {
         "title": "get_title",
@@ -289,7 +291,13 @@ class Post(KnockerModel, models.Model):
             "visible in all the configured sites."
         ),
     )
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
+    app_config = models.ForeignKey(
+        BlogConfig,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("app. config"),
+        help_text=_("When selecting a value, the form is reloaded to get the updated default"),
+    )
 
     enable_liveblog = models.BooleanField(verbose_name=_("enable liveblog on post"), default=False)
 
@@ -642,8 +650,15 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     def __str__(self):
         return self.title or _("Untitled")
 
+
 class BasePostPlugin(CMSPlugin):
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"), blank=True)
+    app_config = models.ForeignKey(
+        BlogConfig,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("app. config"),
+        help_text=_("When selecting a value, the form is reloaded to get the updated default"),
+    )
     current_site = models.BooleanField(
         _("current site"), default=True, help_text=_("Select items from the current site only")
     )

@@ -9,8 +9,7 @@ from django.utils.translation import get_language_from_request, gettext_lazy as 
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
-from .cms_appconfig import BlogConfig
-from .models import BlogCategory, Post, PostContent
+from .models import BlogConfig, BlogCategory, Post, PostContent
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
 
 logger = logging.getLogger(__name__)
