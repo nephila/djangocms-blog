@@ -1,7 +1,7 @@
 import hashlib
 
 from cms.models import CMSPlugin, Placeholder, PlaceholderField, PlaceholderRelationField
-from cms.utils.placeholder import rescan_placeholders_for_obj
+from cms.utils.placeholder import get_placeholder_from_slot
 from django.conf import settings as dj_settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -179,7 +179,7 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
     @cached_property
     def linked_posts(self):
         """returns all linked posts in the same appconfig namespace"""
-        return self.blog_posts.namespace(self.app_config.namespace)
+        return self.blog_posts.filter(app_config=self.app_config)
 
     @cached_property
     def pinned_posts(self):
@@ -585,11 +585,6 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     post_text = HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR")
     placeholders = PlaceholderRelationField()
 
-    def get_placeholders(self):
-        print("XXX get_placeholders called XXX")
-        rescan_placeholders_for_obj(self)
-        return [placeholder.slot for placeholder in self.placeholders.all()]
-
     objects = GenericDateTaggedManager()
     admin_manager = GenericDateTaggedManager()
 
@@ -612,29 +607,21 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     def categories(self):
         return self.post.categories
 
-    def _get_placeholder_from_slotname(self, slotname):
-        try:
-            return self.placeholders.get(slot=slotname)
-        except Placeholder.DoesNotExist:
-            from cms.utils.placeholder import rescan_placeholders_for_obj
-            rescan_placeholders_for_obj(self)
-            return self.placeholders.get(slot=slotname)
-
     @cached_property
     def media(self):
-        return self._get_placeholder_from_slotname("media")
+        return get_placeholder_from_slot("media")
 
     @cached_property
     def content(self):
-        return self._get_placeholder_from_slotname("content")
+        return get_placeholder_from_slot("content")
 
     @cached_property
     def liveblog(self):
-        return self._get_placeholder_from_slotname("liveblog")
+        return get_placeholder_from_slot("liveblog")
 
     def save(self, *args, **kwargs):
         """
-        Handle some auto configuration during save
+        Handle some auto-configuration during save
         """
         if not self.slug and self.title:
             self.slug = slugify(self.title)

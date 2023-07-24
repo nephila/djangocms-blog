@@ -9,7 +9,11 @@ class LiveblogConsumer(JsonWebsocketConsumer):
         lang = kwargs.get("lang")
         slug = kwargs.get("post")
         try:
-            return Post.objects.namespace(apphook).language(lang).active_translations(slug=slug).get()
+            return Post.objects\
+                .filter(app_config__namespace=apphook)\
+                .language(lang)\
+                .active_translations(slug=slug)\
+                .get()
         except Post.DoesNotExist:
             return
 

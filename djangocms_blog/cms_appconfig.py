@@ -278,3 +278,4 @@ def get_app_instance(request):
                 config = app.get_config(namespace)
         except Resolver404:
             pass
+    return namespace, config

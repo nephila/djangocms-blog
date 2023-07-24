@@ -22,21 +22,6 @@ from .settings import PERMALINK_TYPE_CATEGORY, get_setting
 User = get_user_model()
 
 
-def _get_options_from_model(model, fieldname):
-    opt_keys = ("max_length", )
-    for field in model._meta.fields:
-        if field.name == fieldname:
-            return {
-                **{key: getattr(field, key) for key in opt_keys if hasattr(field, key)},
-                **dict(
-                    required=not field.blank,
-                    label=field.verbose_name,
-                    help_text=field.help_text,
-                )
-            }
-    raise ImproperlyConfigured(f"Field '{fieldname} not found in model {model}")
-
-
 class ConfigFormBase:
     """Base form class for all models depends on app_config."""
 
@@ -72,7 +57,7 @@ class CategoryAdminForm(ConfigFormBase, TranslatableModelForm):
                 qs = qs.exclude(pk__in=[self.instance.pk] + [child.pk for child in self.instance.descendants()])
             config = None
             if getattr(self.instance, "app_config_id", None):
-                qs = qs.namespace(self.instance.app_config.namespace)
+                qs = qs.filter(app_config__namespace=self.instance.app_config.namespace)
             elif "app_config" in self.initial:
                 config = BlogConfig.objects.get(pk=self.initial["app_config"])
             elif self.data.get("app_config", None):
@@ -156,35 +141,6 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
     class Meta:
         model = Post
         fields = "__all__"
-        labels = {
-            # For and only for the fields from post content we need labels
-            "slug": _("slug"),
-            "title": _("title"),
-            "subtitle": _("subtitle"),
-            "post_text": _("text"),
-            "meta_description": _("meta_description"),
-            "meta_keywords": _("meta_keywords"),
-            "meta_title": _("meta_title"),
-        }
-
-    @property
-    def _postcontent_fields(self):
-        return tuple(self._meta.labels.keys())
-
-    title = forms.CharField(**_get_options_from_model(models.PostContent, "title"))
-    subtitle = forms.CharField(**_get_options_from_model(models.PostContent, "subtitle"))
-    slug = forms.CharField(
-        validators = [validators.validate_unicode_slug],
-        **_get_options_from_model(models.PostContent, "slug"),
-    )
-
-    meta_description = forms.CharField(
-        **_get_options_from_model(models.PostContent, "meta_description"),
-        widget=forms.Textarea,
-    )
-    meta_keywords = forms.CharField(**_get_options_from_model(models.PostContent, "meta_keywords"))
-    meta_title = forms.CharField(**_get_options_from_model(models.PostContent, "meta_title"))
-    language = forms.CharField(widget=forms.HiddenInput)
 
     @cached_property
     def available_categories(self):
@@ -201,38 +157,6 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
                 qs = qs.filter(app_config__namespace=self.app_config.namespace)
         return qs
 
-    def __init__(self, *args, **kwargs):
-        """Identify language and fetch corresponding latest content object"""
-        assert hasattr(self, "language") and self.language
-        kwargs["initial"] = {
-            "language": self.language,
-            **kwargs.get("initial", {}),
-        }
-        self.content_instance = kwargs.get("content_instance", None)
-        if "instance" in kwargs and kwargs["instance"]:
-            # Instance provided? Get corresponding content object
-            self.content_instance = kwargs["instance"].postcontent_set(manager="admin_manager") \
-                .filter(language=self.language).latest_content().first()
-        else:
-            self.content_instance = None
-        if self.content_instance is not None:
-            kwargs["initial"] = {
-                **{field: getattr(self.content_instance, field) for field in self._postcontent_fields},
-                **kwargs.get("initial", {})
-            }
-        super().__init__(*args, **kwargs)
-        language_dict = get_language_dict()
-        for field in self._postcontent_fields:
-            if field in self.fields:
-                self.fields[field].label += f" ({language_dict[self.language]})"
-
-    def clean(self):
-        if self.cleaned_data.get("language", None) not in get_language_dict():
-            raise ValidationError(
-                _("Invalid language %(value)s. This form cannot be processed. Try changing languages."),
-                params=dict(value=self.cleaned_data.get("language", _("<unspecified>"))),
-                code="invalid-language",
-            )
 
 
 class PostAdminForm(PostAdminFormBase):

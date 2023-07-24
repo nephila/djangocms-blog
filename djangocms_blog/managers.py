@@ -91,6 +91,7 @@ class GenericDateQuerySet(models.QuerySet):
         return self.filter(models.Q(post__sites__isnull=True) | models.Q(post__sites=site.pk))
 
     def published(self, current_site=True):
+        assert False, "published not supported"
         queryset = self.published_future(current_site)
         if self.start_date_field:
             return queryset.filter(**{"post__%s__lte" % self.start_date_field: now()})
@@ -98,10 +99,12 @@ class GenericDateQuerySet(models.QuerySet):
             return queryset
 
     def published_on_rss(self, current_site=True):
+        assert False, "published_on_rss not supported"
         queryset = self.published_future(current_site)
         return queryset.exclude(include_in_rss=False)
 
     def published_future(self, current_site=True):
+        assert False, "published_future not supported"
         if current_site:
             queryset = self.on_site()
         else:
@@ -114,6 +117,7 @@ class GenericDateQuerySet(models.QuerySet):
         return queryset.filter(**{f"post__{self.publish_field}": True})
 
     def archived(self, current_site=True):
+        assert False, "archived not supported"
         if current_site:
             queryset = self.on_site()
         else:
@@ -142,7 +146,7 @@ class GenericDateTaggedManager(TaggedFilterItem, models.Manager):
     queryset_class = GenericDateQuerySet
 
     def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs)
+        return self.queryset_class(model=self.model, using=self._db, hints=self._hints)
 
     def published(self, current_site=True):
         return self.get_queryset().published(current_site)
@@ -167,7 +171,7 @@ class GenericDateTaggedManager(TaggedFilterItem, models.Manager):
 
     def get_months(self, queryset=None, current_site=True):
         """
-        Get months with aggregate count (how much posts is in the month).
+        Get months with aggregate count (how many posts is in the month).
         Results are ordered by date.
         """
         if queryset is None:

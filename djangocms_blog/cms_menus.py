@@ -71,7 +71,9 @@ class BlogCategoryMenu(CMSAttachMenu):
         if posts_menu:
             post_contents = PostContent.objects.filter(language=language)
             if hasattr(self, "instance") and self.instance:
-                post_contents = post_contents.filter(post__app_config__namespace=self.instance.application_namespace).on_site()
+                post_contents = post_contents\
+                    .filter(post__app_config__namespace=self.instance.application_namespace)\
+                    .on_site()
             post_contents = (
                 post_contents
                 .distinct()
@@ -96,7 +98,7 @@ class BlogCategoryMenu(CMSAttachMenu):
         if categories_menu:
             categories = BlogCategory.objects
             if config:
-                categories = categories.namespace(self.instance.application_namespace)
+                categories = categories.filter(app_config__namespace=self.instance.application_namespace)
             if config and not config.menu_empty_categories:
                 categories = categories.active_translations(language).filter(pk__in=used_categories).distinct()
             else:
