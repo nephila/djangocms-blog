@@ -63,7 +63,7 @@ class CategoryAdminForm(ConfigFormBase, TranslatableModelForm):
             elif self.data.get("app_config", None):
                 config = BlogConfig.objects.get(pk=self.data["app_config"])
             if config:
-                qs = qs.namespace(config.namespace)
+                qs = qs.filter(app_config__namespace=config.namespace)
             self.fields["parent"].queryset = qs
 
     class Meta:
