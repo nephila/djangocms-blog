@@ -1,1 +1,0 @@
-Add default_auto_field to BlogAppConfig

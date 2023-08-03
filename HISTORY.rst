@@ -6,6 +6,31 @@ History
 
 .. towncrier release notes start
 
+2.0.0 (2023-08-03)
+==================
+
+Features
+--------
+
+- Add include in rss field to post, to be able to exclude blog items from rss feed. (#663)
+- Add a CMS toolbar item for category and tag list (#676)
+- Add optional BLOG_UNICODE_SLUGS setting that disable unicode in blog posts slugs. (#707)
+- Improve meta image size handling (#718)
+- Port to django 3.2/4.1 - django CMS 3.11 (#720)
+- Add default_auto_field to BlogAppConfig (#737)
+
+
+Bugfixes
+--------
+
+- Fix distinct preventing post delete from admin (#683)
+- See description here: https://github.com/nephila/djangocms-blog/issues/699 (#699)
+- Add classname for categories and tags that uses slug, not empty "count". (#710)
+- Fix pre-commit flake8 repo url (#715)
+- Fix template urls not respecting namespaces (#723)
+- Do not show a post detail published on another site (#724)
+
+
 1.2.3 (2020-12-21)
 ==================
 
