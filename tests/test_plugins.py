@@ -70,7 +70,7 @@ class PluginTest(BaseTest):
             self.assertTrue(rendered.find("cms-plugin-djangocms_blog-post-abstract-%s" % posts[0].pk) > -1)
         except AssertionError:
             self.assertTrue(rendered.find("cms_plugin-djangocms_blog-post-abstract-%s" % posts[0].pk) > -1)
-        self.assertTrue(rendered.find(reverse("djangocms_blog:posts-tagged", kwargs={"tag": tag.slug})) > -1)
+        self.assertTrue(rendered.find(reverse("sample_app:posts-tagged", kwargs={"tag": tag.slug})) > -1)
         self.assertTrue(rendered.find("<p>first line</p>") > -1)
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
@@ -89,9 +89,7 @@ class PluginTest(BaseTest):
             self.assertTrue(rendered.find("cms-plugin-djangocms_blog-post-abstract-%s" % posts[1].pk) > -1)
         except AssertionError:
             self.assertTrue(rendered.find("cms_plugin-djangocms_blog-post-abstract-%s" % posts[1].pk) > -1)
-        self.assertTrue(
-            rendered.find(reverse("djangocms_blog:posts-category", kwargs={"category": category_2.slug})) > -1
-        )
+        self.assertTrue(rendered.find(reverse("sample_app:posts-category", kwargs={"category": category_2.slug})) > -1)
         self.assertTrue(rendered.find("<p>second post first line</p>") > -1)
         self.assertTrue(rendered.find('<article id="post-second-post"') > -1)
         self.assertTrue(rendered.find(posts[1].get_absolute_url()) > -1)
@@ -141,7 +139,7 @@ class PluginTest(BaseTest):
         plugin = add_plugin(ph, "BlogTagsPlugin", language="en", app_config=self.app_config_1)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         for tag in Tag.objects.all():
-            self.assertTrue(rendered.find(reverse("djangocms_blog:posts-tagged", kwargs={"tag": tag.slug})) > -1)
+            self.assertTrue(rendered.find(reverse("sample_app:posts-tagged", kwargs={"tag": tag.slug})) > -1)
             if tag.slug == "test-tag":
                 rf = r"\s+{}\s+<span>\(\s+{} articles".format(tag.name, 2)
             else:
@@ -235,17 +233,17 @@ class PluginTest10(BaseTest):
 
         plugin.authors.add(self.user)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
-        self.assertTrue(rendered.find("/en/blog/author/admin/") > -1)
+        self.assertTrue(rendered.find("/en/page-two/author/admin/") > -1)
         self.assertTrue(rendered.find("2 articles") > -1)
 
         plugin.authors.add(self.user_staff)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
-        self.assertTrue(rendered.find("/en/blog/author/staff/") > -1)
+        self.assertTrue(rendered.find("/en/page-two/author/staff/") > -1)
         self.assertTrue(rendered.find("0 articles") > -1)
 
         plugin.authors.add(self.user_normal)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
-        self.assertTrue(rendered.find("/en/blog/author/normal/") > -1)
+        self.assertTrue(rendered.find("/en/page-two/author/normal/") > -1)
         self.assertTrue(rendered.find("0 articles") > -1)
 
         # Checking copy relations
@@ -400,3 +398,44 @@ class PluginTest2(BaseTest):
         self.app_config_1.save()
         context = plugin_class.render(context, plugin, ph)
         self.assertEqual(list(context["categories"]), [self.category_1, new_category, empty_category])
+
+
+class PluginTestNamespace(BaseTest):
+    def test_plugin_latest_namespace(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        self.category_1.set_current_language("en")
+        category_2 = BlogCategory.objects.create(name="category 2", app_config=self.app_config_2)
+        category_2.set_current_language("en")
+        ph = pages[0].placeholders.get(slot="content")
+        plugin = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
+        plugin.categories.add(self.category_1)
+        plugin.save()
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
+        self.assertTrue(
+            rendered.find(reverse("sample_app:posts-category", kwargs={"category": self.category_1.slug})) > -1
+        )
+        self.assertFalse(
+            rendered.find(reverse("sample_app2:posts-category", kwargs={"category": category_2.slug})) > -1
+        )
+        plugin.categories.add(category_2)
+        plugin.save()
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
+        self.assertTrue(
+            rendered.find(reverse("sample_app:posts-category", kwargs={"category": self.category_1.slug})) > -1
+        )
+        self.assertFalse(
+            rendered.find(reverse("sample_app2:posts-category", kwargs={"category": category_2.slug})) > -1
+        )
+        plugin.app_config = self.app_config_2
+        plugin.save()
+        posts[3].categories.remove(self.category_1)
+        posts[3].categories.add(category_2)
+        posts[3].save()
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
+        self.assertFalse(
+            rendered.find(reverse("sample_app:posts-category", kwargs={"category": self.category_1.slug})) > -1
+        )
+        self.assertTrue(
+            rendered.find(reverse("sample_app2:posts-category", kwargs={"category": category_2.slug})) > -1
+        )
