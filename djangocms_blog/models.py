@@ -601,6 +601,20 @@ class AuthorEntriesPlugin(BasePostPlugin):
         return authors
 
 
+class FeaturedPostsPlugin(BasePostPlugin):
+    posts = SortedManyToManyField(Post, verbose_name=_("Featured posts"))
+
+    def __str__(self):
+        return _("Featured posts")
+
+    def copy_relations(self, oldinstance):
+        self.posts.set(oldinstance.posts.all())
+
+    def get_posts(self, request, published_only=True):
+        posts = self.post_queryset(request, published_only)
+        return posts
+
+
 class GenericBlogPlugin(BasePostPlugin):
     class Meta:
         abstract = False

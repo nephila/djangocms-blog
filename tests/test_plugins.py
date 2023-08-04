@@ -126,6 +126,62 @@ class PluginTest(BaseTest):
         self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
         self.assertTrue(rendered.find('<article id="post-different-appconfig"') > -1)
 
+    def test_plugin_featured_cached(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        ph = pages[0].placeholders.get(slot="content")
+
+        plugin = add_plugin(ph, "BlogFeaturedPostsPluginCached", language="en", app_config=self.app_config_1)
+        plugin.posts.add(posts[0])
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
+        try:
+            self.assertTrue(rendered.find("cms-plugin-djangocms_blog-post-abstract-%s" % posts[0].pk) > -1)
+        except AssertionError:
+            self.assertTrue(rendered.find("cms_plugin-djangocms_blog-post-abstract-%s" % posts[0].pk) > -1)
+        self.assertTrue(rendered.find("<p>first line</p>") > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+
+        plugin_nocache = add_plugin(ph, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
+        plugin_nocache.posts.add(posts[0])
+        # FIXME: Investigate the correct number of queries expected here
+        with self.assertNumQueries(FuzzyInt(14, 15)):
+            self.render_plugin(pages[0], "en", plugin_nocache)
+
+        with self.assertNumQueries(FuzzyInt(14, 15)):
+            self.render_plugin(pages[0], "en", plugin)
+
+        with self.assertNumQueries(FuzzyInt(14, 15)):
+            rendered = self.render_plugin(pages[0], "en", plugin)
+
+        self.assertTrue(rendered.find("<p>first line</p>") > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+
+    def test_plugin_featured(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[1].publish = True
+        posts[1].save()
+        ph = pages[0].placeholders.get(slot="content")
+
+        plugin = add_plugin(ph, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
+        plugin.posts.add(posts[0], posts[1])
+
+        rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
+        try:
+            self.assertTrue(rendered.find("cms-plugin-djangocms_blog-post-abstract-%s" % posts[0].pk) > -1)
+            self.assertTrue(rendered.find("cms-plugin-djangocms_blog-post-abstract-%s" % posts[1].pk) > -1)
+        except AssertionError:
+            self.assertTrue(rendered.find("cms_plugin-djangocms_blog-post-abstract-%s" % posts[0].pk) > -1)
+            self.assertTrue(rendered.find("cms_plugin-djangocms_blog-post-abstract-%s" % posts[1].pk) > -1)
+        self.assertTrue(rendered.find("<p>first line</p>") > -1)
+        self.assertTrue(rendered.find("<p>second post first line</p>") > -1)
+        self.assertTrue(rendered.find('<article id="post-first-post"') > -1)
+        self.assertTrue(rendered.find('<article id="post-second-post"') > -1)
+        self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
+        self.assertTrue(rendered.find(posts[1].get_absolute_url()) > -1)
+
     def test_plugin_tags(self):
         pages = self.get_pages()
         posts = self.get_posts()
@@ -301,6 +357,8 @@ class PluginTest10(BaseTest):
             "BlogTagsPlugin",
             "BlogArchivePlugin",
             "BlogCategoryPlugin",
+            "BlogFeaturedPostsPlugin",
+            "BlogFeaturedPostsPluginCached",
         ]
         for plugin in plugins:
             page_admin = admin.site._registry[Page]
@@ -333,6 +391,8 @@ class PluginTest10(BaseTest):
             "BlogTagsPlugin",
             "BlogArchivePlugin",
             "BlogCategoryPlugin",
+            "BlogFeaturedPostsPlugin",
+            "BlogFeaturedPostsPluginCached",
         ]
         for plugin in plugins:
             page_admin = admin.site._registry[Page]
