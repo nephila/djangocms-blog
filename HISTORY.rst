@@ -6,6 +6,15 @@ History
 
 .. towncrier release notes start
 
+2.0.1 (2023-08-07)
+==================
+
+Features
+--------
+
+- Add BlogFeaturedPostsPlugin to show selected posts (#428)
+
+
 2.0.0 (2023-08-03)
 ==================
 
