@@ -538,6 +538,20 @@ BLOG_ARCHIVE_PLUGIN_NAME = _("Archive")
 Name of the plugin showing the blog archive index.
 """
 
+BLOG_FEATURED_POSTS_PLUGIN_NAME = _("Featured Posts")
+"""
+.. _FEATURED_POSTS_PLUGIN_NAME:
+
+Name of the plugin showing the selected posts.
+"""
+
+BLOG_FEATURED_POSTS_PLUGIN_NAME_CACHED = _("Featured Posts - Cache")
+"""
+.. _FEATURED_POSTS_PLUGIN_NAME_CACHED:
+
+Name of the plugin showing the selected posts (cached version).
+"""
+
 BLOG_FEED_CACHE_TIMEOUT = 3600
 """
 .. _FEED_CACHE_TIMEOUT:

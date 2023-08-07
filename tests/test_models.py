@@ -1355,6 +1355,30 @@ class ModelsTest2(BaseTest):
         self.assertEqual(len(plugin.get_posts(request)), 2)
         self.assertEqual(plugin.get_authors(request)[0].count, 2)
 
+    def test_plugin_featured_posts(self):
+        post1 = self._get_post(self._post_data[0]["en"])
+        post1.publish = True
+        post1.save()
+        post2 = self._get_post(self._post_data[1]["en"])
+        request = self.get_page_request("/", AnonymousUser(), r"/en/blog/", edit=False)
+        plugin = add_plugin(post1.content, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
+        plugin.posts.add(post1, post2)
+        self.assertEqual(len(plugin.get_posts(request)), 1)
+
+        post2.publish = True
+        post2.save()
+        self.assertEqual(len(plugin.get_posts(request)), 2)
+
+    def test_copy_plugin_featured_post(self):
+        post1 = self._get_post(self._post_data[0]["en"])
+        post2 = self._get_post(self._post_data[1]["en"])
+        plugin = add_plugin(post1.content, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
+        plugin.posts.add(post1, post2)
+        plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        copy_plugins_to(plugins, post2.content)
+        new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
+        self.assertEqual(set(new[0].posts.all()), {post1, post2})
+
     def test_copy_plugin_author(self):
         post1 = self._get_post(self._post_data[0]["en"])
         post2 = self._get_post(self._post_data[1]["en"])
@@ -1401,6 +1425,9 @@ class ModelsTest2(BaseTest):
 
         plugin = add_plugin(post1.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
         self.assertEqual(force_str(plugin.__str__()), "generic blog plugin")
+
+        plugin = add_plugin(post1.content, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
+        self.assertEqual(plugin.__str__(), "Featured posts")
 
         # create fake empty post - assign a random pk to trick ORM / parler to think the object has been saved
         # due to how safe_translation_getter works
