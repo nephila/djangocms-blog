@@ -387,16 +387,7 @@ class PostAdmin(
         form_class.language = get_language_from_request(request)
         return form_class
 
-    def get_readonly_fields(self, request, obj=None):
-        # First, get read-only fields for grouper
-        fields = super().get_readonly_fields(request, obj)
-        content_obj = self.get_content_obj(obj)
-        if not self.can_change(request, content_obj):
-            # Only allow content object fields to be edited if user can change them
-            fields += tuple(self.form._meta.labels)  # <= _postcontent_fields
-        return fields
-
-    def can_change(self, request, content_obj):
+    def can_change_content(self, request, content_obj):
         """Returns True if user can change content_obj"""
         if content_obj and is_versioning_enabled():
             from djangocms_versioning.models import Version
@@ -620,7 +611,7 @@ class PostAdmin(
 
     def get_prepopulated_fields(self, request, obj=None):
         content_obj = self.get_content_obj(obj)
-        if self.can_change(request, content_obj):
+        if self.can_change_content(request, content_obj):
             return {"content__slug": ("content__title",)}
         return {}
 
