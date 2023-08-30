@@ -6,6 +6,15 @@ History
 
 .. towncrier release notes start
 
+2.0.2 (2023-08-30)
+==================
+
+Features
+--------
+
+- Update translations (#751)
+
+
 2.0.1 (2023-08-07)
 ==================
 
