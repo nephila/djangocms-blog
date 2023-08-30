@@ -8,10 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djangocms-blog\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-20 12:59+0100\n"
-"PO-Revision-Date: 2020-12-20 11:59+0000\n"
-"Last-Translator: yakky <i.spalletti@nephila.it>\n"
-"Language-Team: Slovenian (http://www.transifex.com/nephila/djangocms-blog/language/sl/)\n"
+"POT-Creation-Date: 2023-08-30 11:04+0200\n"
+"PO-Revision-Date: 2014-03-29 15:29+0000\n"
+"Last-Translator: Iacopo Spalletti, 2014\n"
+"Language-Team: Slovenian (http://app.transifex.com/nephila/djangocms-blog/language/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,63 +23,63 @@ msgstr ""
 msgid "site"
 msgstr ""
 
-#: admin.py:129
+#: admin.py:131
 msgid "Info"
 msgstr ""
 
-#: admin.py:136
+#: admin.py:138
 msgid "Images"
 msgstr ""
 
-#: admin.py:139
+#: admin.py:141
 msgid "SEO"
 msgstr ""
 
-#: admin.py:256
+#: admin.py:172
 msgid "Publish selection"
 msgstr ""
 
-#: admin.py:257
+#: admin.py:194
 msgid "Unpublish selection"
 msgstr ""
 
-#: admin.py:258
+#: admin.py:207
 msgid "Enable comments for selection"
 msgstr ""
 
-#: admin.py:259
+#: admin.py:221
 msgid "Disable comments for selection "
 msgstr ""
 
-#: admin.py:260
+#: admin.py:235
 msgid "Enable liveblog for selection"
 msgstr ""
 
-#: admin.py:261
+#: admin.py:249
 msgid "Disable liveblog for selection "
 msgstr ""
 
-#: admin.py:468
+#: admin.py:473
 msgid "Generic"
 msgstr ""
 
-#: admin.py:480
+#: admin.py:485
 msgid "Layout"
 msgstr ""
 
-#: admin.py:494
+#: admin.py:499
 msgid "Notifications"
 msgstr ""
 
-#: admin.py:498
+#: admin.py:503
 msgid "Sitemap"
 msgstr ""
 
-#: admin.py:507
+#: admin.py:512
 msgid "Meta"
 msgstr ""
 
-#: admin.py:519 admin.py:530 admin.py:540
+#: admin.py:524 admin.py:535 admin.py:545
 msgid "You can provide plain strings, Post model attribute or method names"
 msgstr ""
 
@@ -268,7 +268,7 @@ msgid ""
 "Emits a desktop notification -if enabled- when editing a published post"
 msgstr ""
 
-#: cms_apps.py:13 cms_toolbars.py:17 settings.py:468
+#: cms_apps.py:13 cms_toolbars.py:17 settings.py:485
 msgid "Blog"
 msgstr "Blog"
 
@@ -280,19 +280,27 @@ msgstr "Blog meni"
 msgid "Post list"
 msgstr "Seznam objav"
 
-#: cms_toolbars.py:22
+#: cms_toolbars.py:23
+msgid "Category list"
+msgstr ""
+
+#: cms_toolbars.py:26
+msgid "Tag list"
+msgstr ""
+
+#: cms_toolbars.py:29
 msgid "Add post"
 msgstr "Nova objava"
 
-#: cms_toolbars.py:26
+#: cms_toolbars.py:33
 msgid "Edit configuration"
 msgstr "Uredi nastavitve"
 
-#: cms_toolbars.py:31
+#: cms_toolbars.py:38
 msgid "Edit Post"
 msgstr "Uredi objavo"
 
-#: cms_toolbars.py:46
+#: cms_toolbars.py:53
 #, python-brace-format
 msgid "Publish {0} now"
 msgstr ""
@@ -324,7 +332,7 @@ msgstr "Blog objave na %(site_name)s"
 msgid "Liveblog"
 msgstr ""
 
-#: liveblog/cms_plugins.py:12
+#: liveblog/cms_plugins.py:13
 msgid "Liveblog item"
 msgstr ""
 
@@ -336,236 +344,244 @@ msgstr ""
 msgid "post date"
 msgstr ""
 
-#: liveblog/models.py:31 liveblog/models.py:110
+#: liveblog/models.py:31 liveblog/models.py:111
 msgid "liveblog entry"
 msgstr ""
 
-#: liveblog/models.py:32 liveblog/models.py:111
+#: liveblog/models.py:32 liveblog/models.py:112
 msgid "liveblog entries"
 msgstr ""
 
-#: liveblog/models.py:92 models.py:250
+#: liveblog/models.py:93 models.py:252
 msgid "title"
 msgstr "naziv"
 
-#: liveblog/models.py:94
+#: liveblog/models.py:95
 msgid "image"
 msgstr ""
 
-#: liveblog/models.py:102
+#: liveblog/models.py:103
 msgid "thumbnail size"
 msgstr ""
 
-#: models.py:94
+#: models.py:95
 msgid "parent"
 msgstr "starš"
 
-#: models.py:96
+#: models.py:97
 msgid "created at"
 msgstr "ustvarjeno na"
 
-#: models.py:97
+#: models.py:98
 msgid "modified at"
 msgstr "urejeno na"
 
-#: models.py:98 models.py:247 models.py:477
+#: models.py:99 models.py:249 models.py:491
 msgid "app. config"
 msgstr ""
 
-#: models.py:101
+#: models.py:102
 msgid "name"
 msgstr "ime"
 
-#: models.py:102 models.py:251
+#: models.py:103 models.py:254
 msgid "slug"
 msgstr ""
 
-#: models.py:103
+#: models.py:104
 msgid "category meta description"
 msgstr ""
 
-#: models.py:131
+#: models.py:132
 msgid "blog category"
 msgstr "blog kategorija"
 
-#: models.py:132
+#: models.py:133
 msgid "blog categories"
 msgstr "blog kategorije"
 
-#: models.py:168
+#: models.py:169
 msgid "BlogCategory (no translation)"
 msgstr ""
 
-#: models.py:195
+#: models.py:196
 msgid "author"
 msgstr "avtor"
 
-#: models.py:202
+#: models.py:203
 msgid "created"
 msgstr "ustvarjeno"
 
-#: models.py:203
+#: models.py:204
 msgid "last modified"
 msgstr "nazadnje urejeno"
 
-#: models.py:204
+#: models.py:205
 msgid "published since"
 msgstr "objavljeno od"
 
-#: models.py:205
+#: models.py:206
 msgid "published until"
 msgstr "objavljeno do"
 
-#: models.py:206
+#: models.py:207
 msgid "featured date"
 msgstr ""
 
-#: models.py:207
+#: models.py:208
 msgid "publish"
 msgstr "objavljeno"
 
 #: models.py:209
+msgid "include in RSS feed"
+msgstr ""
+
+#: models.py:211
 msgid "category"
 msgstr "kategorija"
 
-#: models.py:212
+#: models.py:214
 msgid "main image"
 msgstr "glavna slika"
 
-#: models.py:220
+#: models.py:222
 msgid "main image thumbnail"
 msgstr "glavna slika - predogled"
 
-#: models.py:228
+#: models.py:230
 msgid "main image full"
 msgstr "glavna slika - polna"
 
-#: models.py:235
+#: models.py:237
 msgid "enable comments on post"
 msgstr "Omogoči komentarje na objavi"
 
-#: models.py:239
+#: models.py:241
 msgid "Site(s)"
 msgstr "Stran(i)"
 
-#: models.py:242
+#: models.py:244
 msgid ""
 "Select sites in which to show the post. If none is set it will be visible in"
 " all the configured sites."
 msgstr "Izberi strani na katerih naj bo objava prikazana. Če ni izbrano nič, bo objava prikazana na vseh nastavljenih straneh."
 
-#: models.py:252
+#: models.py:256
 msgid "subtitle"
 msgstr ""
 
-#: models.py:253
+#: models.py:257
 msgid "abstract"
 msgstr "osnutek"
 
-#: models.py:254
+#: models.py:258
 msgid "post meta description"
 msgstr "meta opis objave"
 
-#: models.py:255
+#: models.py:259
 msgid "post meta keywords"
 msgstr "meta ključne besede objave"
 
-#: models.py:257
+#: models.py:261
 msgid "post meta title"
 msgstr "meta naziv objave"
 
-#: models.py:258
+#: models.py:262
 msgid "used in title tag and social sharing"
 msgstr "za uporabo v označbi naslova in deljenju na socialnih omrežjih"
 
-#: models.py:263
+#: models.py:267
 msgid "text"
 msgstr "tekst"
 
-#: models.py:269
+#: models.py:273
 msgid "enable liveblog on post"
 msgstr ""
 
-#: models.py:275
+#: models.py:279
 msgid ""
 "Type a tag and hit tab, or start typing and select from autocomplete list."
 msgstr ""
 
-#: models.py:278
+#: models.py:282
 msgid "Related Posts"
 msgstr ""
 
-#: models.py:310
+#: models.py:314
 msgid "blog article"
 msgstr "blog objava"
 
-#: models.py:311
+#: models.py:315
 msgid "blog articles"
 msgstr "blog objave"
 
-#: models.py:316
+#: models.py:320
 msgid "Post (no translation)"
 msgstr ""
 
-#: models.py:479
+#: models.py:493
 msgid "current site"
 msgstr ""
 
-#: models.py:479
+#: models.py:493
 msgid "Select items from the current site only"
 msgstr ""
 
-#: models.py:483
+#: models.py:497
 msgid "Plugin template"
 msgstr ""
 
-#: models.py:484
+#: models.py:498
 msgid "Select plugin template to load for this instance"
 msgstr ""
 
-#: models.py:522 models.py:564
+#: models.py:536 models.py:578
 msgid "articles"
 msgstr "objave"
 
-#: models.py:524
+#: models.py:538
 msgid "The number of latests articles to be displayed."
 msgstr "Število najnovejših objav, ki naj bodo prikazane"
 
-#: models.py:527
+#: models.py:541
 msgid "filter by tag"
 msgstr "filtriraj po oznakah"
 
-#: models.py:529
+#: models.py:543
 msgid "Show only the blog articles tagged with chosen tags."
 msgstr "Prikaži le blog objave označene z izbranimi oznakami"
 
-#: models.py:535
+#: models.py:549
 msgid "filter by category"
 msgstr "filtriraj po kategoriji"
 
-#: models.py:536
+#: models.py:550
 msgid "Show only the blog articles tagged with chosen categories."
 msgstr "Prikaži le blog objave označene z izbranimi kategorijami"
 
-#: models.py:540
+#: models.py:554
 #, python-format
 msgid "%s latest articles by tag"
 msgstr "%s najnovejših objav glede na oznako"
 
-#: models.py:560
+#: models.py:574
 msgid "authors"
 msgstr "avtorji"
 
-#: models.py:566
+#: models.py:580
 msgid "The number of author articles to be displayed."
 msgstr "Število avtorjevih objav, ki naj bodo prikazane"
 
-#: models.py:570
+#: models.py:584
 #, python-format
 msgid "%s latest articles by author"
 msgstr "%s najnovejših objav glede na avtorja"
 
-#: models.py:595
+#: models.py:605 models.py:608
+msgid "Featured posts"
+msgstr ""
+
+#: models.py:623
 msgid "generic blog plugin"
 msgstr "generični blog vtičnik"
 
@@ -585,80 +601,88 @@ msgstr "Kategorija"
 msgid "Just slug"
 msgstr ""
 
-#: settings.py:51
+#: settings.py:59
 msgid "Categories and posts"
 msgstr "Kategorije in objave"
 
-#: settings.py:52
+#: settings.py:60
 msgid "Categories only"
 msgstr "Samo kategorije"
 
-#: settings.py:53
+#: settings.py:61
 msgid "Posts only"
 msgstr "Samo objave"
 
-#: settings.py:54
+#: settings.py:62
 msgid "None"
 msgstr ""
 
-#: settings.py:63
+#: settings.py:71
 msgid "always"
 msgstr "vedno"
 
-#: settings.py:64
+#: settings.py:72
 msgid "hourly"
 msgstr "vsako uro"
 
-#: settings.py:65
+#: settings.py:73
 msgid "daily"
 msgstr "dnevno"
 
-#: settings.py:66
+#: settings.py:74
 msgid "weekly"
 msgstr "tedensko"
 
-#: settings.py:67
+#: settings.py:75
 msgid "monthly"
 msgstr "mesečno"
 
-#: settings.py:68
+#: settings.py:76
 msgid "yearly"
 msgstr "letno"
 
-#: settings.py:69
+#: settings.py:77
 msgid "never"
 msgstr "nikoli"
 
-#: settings.py:475
+#: settings.py:492
 msgid "Latest Blog Articles"
 msgstr "Najnovejše blog objave"
 
-#: settings.py:482
+#: settings.py:499
 msgid "Latest Blog Articles - Cache"
 msgstr ""
 
-#: settings.py:489
+#: settings.py:506
 msgid "Author Blog Articles"
 msgstr "Avtorjeve blog objave"
 
-#: settings.py:496
+#: settings.py:513
 msgid "Author Blog Articles List"
 msgstr ""
 
-#: settings.py:503 templates/djangocms_blog/plugins/tags.html:3
+#: settings.py:520 templates/djangocms_blog/plugins/tags.html:5
 msgid "Tags"
 msgstr "Oznake"
 
-#: settings.py:510 templates/djangocms_blog/plugins/categories.html:3
+#: settings.py:527 templates/djangocms_blog/plugins/categories.html:3
 msgid "Categories"
 msgstr "Kategorije"
 
-#: settings.py:517 templates/djangocms_blog/plugins/archive.html:3
+#: settings.py:534 templates/djangocms_blog/plugins/archive.html:3
 #: templates/djangocms_blog/post_list.html:12
 msgid "Archive"
 msgstr "Arhiv"
 
-#: settings.py:559
+#: settings.py:541
+msgid "Featured Posts"
+msgstr ""
+
+#: settings.py:548
+msgid "Featured Posts - Cache"
+msgstr ""
+
+#: settings.py:590
 msgid "Default template"
 msgstr ""
 
@@ -673,7 +697,7 @@ msgstr ""
 #: templates/djangocms_blog/plugins/archive.html:17
 #: templates/djangocms_blog/plugins/authors.html:10
 #: templates/djangocms_blog/plugins/categories.html:10
-#: templates/djangocms_blog/plugins/tags.html:10
+#: templates/djangocms_blog/plugins/tags.html:12
 #, python-format
 msgid "1 article"
 msgid_plural "%(articles)s articles"
@@ -685,14 +709,14 @@ msgstr[3] "%(articles)s objave"
 #: templates/djangocms_blog/plugins/archive.html:18
 #: templates/djangocms_blog/plugins/authors.html:11
 #: templates/djangocms_blog/plugins/categories.html:11
-#: templates/djangocms_blog/plugins/tags.html:11
+#: templates/djangocms_blog/plugins/tags.html:13
 msgid "0 articles"
 msgstr "0 objav"
 
 #: templates/djangocms_blog/plugins/archive.html:26
 #: templates/djangocms_blog/plugins/authors_posts.html:12
 #: templates/djangocms_blog/plugins/latest_entries.html:7
-#: templates/djangocms_blog/plugins/tags.html:15
+#: templates/djangocms_blog/plugins/tags.html:17
 #: templates/djangocms_blog/post_list.html:21
 msgid "No article found."
 msgstr "Nič objav"
