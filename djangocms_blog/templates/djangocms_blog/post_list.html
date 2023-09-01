@@ -20,8 +20,8 @@
         {% endif %}
     </header>
     {% endblock %}
-    {% for post in post_list %}
-        {% include "djangocms_blog/includes/blog_item.html" with post=post image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
+    {% for postcontent in postcontent_list %}
+        {% include "djangocms_blog/includes/blog_item.html" with postcontent=postcontent image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
     {% empty %}
     <p class="blog-empty">{% trans "No article found." %}</p>
     {% endfor %}

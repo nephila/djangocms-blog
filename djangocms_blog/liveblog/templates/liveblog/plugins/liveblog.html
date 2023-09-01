@@ -1,7 +1,0 @@
-{% spaceless %}{% if instance.publish %}
-<div class="post" data-post-id="{{ instance.id }}">
-    <h3>{{ instance.title }}</h3>
-    <h4>{{ instance.post_date|date:"D d M Y H:i" }}</h4>
-    {{ instance.content|safe }}
-</div>
-{% endif %}{% endspaceless %}

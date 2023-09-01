@@ -28,9 +28,8 @@ from .utils import is_versioning_enabled
 
 signal_dict = {}
 
-djangocms_versioning_enabled = BlogCMSConfig.djangocms_versioning_enabled
 
-if djangocms_versioning_enabled:
+if BlogCMSConfig.djangocms_versioning_enabled:
     from djangocms_versioning.admin import ExtendedGrouperVersionAdminMixin, StateIndicatorMixin
 else:
     # Declare stubs

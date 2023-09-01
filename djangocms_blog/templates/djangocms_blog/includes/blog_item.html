@@ -1,34 +1,34 @@
 {% load djangocms_blog i18n easy_thumbnails_tags cms_tags %}
 
-<article id="post-{{ post.slug }}" class="post-item">
+<article id="post-{{ postcontent.slug }}" class="post-item">
     <header>
-        <h3><a href="{% absolute_url post %}">{{ post.title }}</a></h3>
-        {% if post.subtitle %}
-            <h4>{{ post.subtitle }}</h4>
+        <h3><a href="{% absolute_url postcontent %}">{{ postcontent.title }}</a></h3>
+        {% if postcontent.subtitle %}
+            <h4>{{ postcontent.subtitle }}</h4>
         {% endif %}
         {% block blog_meta %}
             {% include "djangocms_blog/includes/blog_meta.html" %}
         {% endblock %}
     </header>
-    {% if image and post.main_image %}
+    {% if image and postcontent.main_image %}
     <div class="blog-visual">
-        {% thumbnail post.main_image post.thumbnail_options.size crop=post.thumbnail_options.crop upscale=post.thumbnail_options.upscale subject_location=post.main_image.subject_location as thumb %}
-        <img src="{{ thumb.url }}" alt="{{ post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
+        {% thumbnail postcontent.main_image postcontent.thumbnail_options.size crop=postcontent.thumbnail_options.crop upscale=postcontent.thumbnail_options.upscale subject_location=postcontent.main_image.subject_location as thumb %}
+        <img src="{{ thumb.url }}" alt="{{ postcontent.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
     {% else %}
-        {% media_images post as previews %}
+        {% media_images postcontent as previews %}
         <div class="blog-visual">
           {% for preview in previews %}<img src="{{ preview }}" />{% endfor %}
         </div>
     {% endif %}
     <div class="blog-lead">
         {% if not TRUNCWORDS_COUNT %}
-            {% render_model post "abstract" "" "" "safe" %}
+            {% render_model postcontent "abstract" "" "" "safe" %}
         {% else %}
-            {% render_model post "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
+            {% render_model postcontent "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
         {% endif %}
     </div>
     <footer class="read-more">
-        <a href="{% absolute_url post %}">{% trans "read more" %} &raquo;</a>
+        <a href="{% absolute_url postcontent %}">{% trans "read more" %} &raquo;</a>
     </footer>
 </article>

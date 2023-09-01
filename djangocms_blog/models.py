@@ -5,10 +5,11 @@ from cms.utils.placeholder import get_placeholder_from_slot
 from django.conf import settings as dj_settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import NoReverseMatch, reverse
@@ -28,7 +29,7 @@ from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
 from .fields import slugify
-from .managers import GenericDateTaggedManager
+from .managers import GenericDateTaggedManager, AdminDateTaggedManager
 from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
@@ -186,11 +187,11 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
 
     @cached_property
     def count(self):
-        return self.linked_posts.published().count()
+        return self.linked_posts.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current())).count()
 
     @cached_property
     def count_all_sites(self):
-        return self.linked_posts.published(current_site=False).count()
+        return self.linked_posts.count()
 
     def get_absolute_url(self, lang=None):
         lang = _get_language(self, lang)
@@ -415,14 +416,6 @@ class Post(KnockerModel, models.Model):
             return self.date_featured
         return self.date_published
 
-    def save(self, *args, **kwargs):
-        """
-        Handle some autoconfiguration during save
-        """
-        if self.publish and self.date_published is None:
-            self.date_published = timezone.now()
-        super().save(*args, **kwargs)
-
     def get_available_languages(self):
         if not (self._language_cache):
             self._language_cache = list(self.postcontent_set.all().values_list("language", flat=True))
@@ -527,13 +520,9 @@ class Post(KnockerModel, models.Model):
         """
         Checks wether the blog post is *really* published by checking publishing dates too
         """
-        return (
-            self.publish
-            and (self.date_published and self.date_published <= timezone.now())
-            and (self.date_published_end is None or self.date_published_end > timezone.now())
-        )
+        assert False, "is_published is removed"
 
-    def should_knock(self, signal_type, created=False):
+    def should_knock__content(self, signal_type, created=False):
         """
         Returns whether to emit knocks according to the post state
         """
@@ -587,7 +576,7 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     placeholders = PlaceholderRelationField()
 
     objects = GenericDateTaggedManager()
-    admin_manager = ContentAdminManager()
+    admin_manager = AdminDateTaggedManager()
 
     @property
     def author(self):
@@ -615,10 +604,6 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     @cached_property
     def content(self):
         return get_placeholder_from_slot(self.placeholders, "content")
-
-    @cached_property
-    def liveblog(self):
-        return get_placeholder_from_slot(self.placeholders, "liveblog")
 
     def save(self, *args, **kwargs):
         """
@@ -667,26 +652,22 @@ class BasePostPlugin(CMSPlugin):
         :param qs: queryset to optimize
         :return: optimized queryset
         """
-        return qs.select_related("app_config").prefetch_related(
+        return qs.select_related("post", "post__app_config").prefetch_related(
             "translations", "categories", "categories__translations", "categories__app_config"
         )
 
-    def post_queryset(self, request=None, published_only=True):
+    def post_content_queryset(self, request=None):
         language = translation.get_language()
-        posts = Post.objects
+        if (request and getattr(request, "toolbar", False) and request.toolbar.edit_mode_active):
+            post_contents = PostContent.admin_manager
+        else:
+            post_contents = PostContent.objects
         if self.app_config:
-            posts = posts.namespace(self.app_config.namespace)
+            post_contents = post_contents.filter(post__namespace=self.app_config.namespace)
         if self.current_site:
-            posts = posts.on_site(get_current_site(request))
-        posts = posts.active_translations(language_code=language)
-        if (
-            published_only
-            or not request
-            or not getattr(request, "toolbar", False)
-            or not request.toolbar.edit_mode_active
-        ):
-            posts = posts.published(current_site=self.current_site)
-        return self.optimize(posts.all())
+            post_contents = post_contents.on_site(get_current_site(request))
+        post_contents = post_contents.filter(language=language)
+        return self.optimize(post_contents.all())
 
 
 class LatestPostsPlugin(BasePostPlugin):
@@ -717,13 +698,13 @@ class LatestPostsPlugin(BasePostPlugin):
         for category in oldinstance.categories.all():
             self.categories.add(category)
 
-    def get_posts(self, request, published_only=True):
-        posts = self.post_queryset(request, published_only)
+    def get_post_contents(self, request):
+        post_contents = self.post_content_queryset(request)
         if self.tags.exists():
-            posts = posts.filter(tags__in=list(self.tags.all()))
+            post_contents = post_contents.filter(post__tags__in=list(self.tags.all()))
         if self.categories.exists():
-            posts = posts.filter(categories__in=list(self.categories.all()))
-        return self.optimize(posts.distinct())[: self.latest_posts]
+            post_contents = post_contents.filter(post__categories__in=list(self.categories.all()))
+        return self.optimize(post_contents.distinct())[: self.latest_posts]
 
 
 class AuthorEntriesPlugin(BasePostPlugin):
@@ -744,18 +725,17 @@ class AuthorEntriesPlugin(BasePostPlugin):
     def copy_relations(self, oldinstance):
         self.authors.set(oldinstance.authors.all())
 
-    def get_posts(self, request, published_only=True):
-        posts = self.post_queryset(request, published_only)
-        return posts
+    def get_post_contents(self, request):
+        return self.post_content_queryset(request)
 
     def get_authors(self, request):
         authors = self.authors.all()
         for author in authors:
-            qs = self.get_posts(request).filter(author=author)
+            qs = self.get_post_contents(request).filter(author=author)
             # total nb of articles
             author.count = qs.count()
             # "the number of author articles to be displayed"
-            author.posts = qs[: self.latest_posts]
+            author.post_contents = qs[: self.latest_posts]
         return authors
 
 

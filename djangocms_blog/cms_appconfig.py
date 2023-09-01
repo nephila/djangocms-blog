@@ -263,15 +263,20 @@ class BlogConfig(TranslatableModel):
 
 def get_app_instance(request):
     app = None
+    namespace, config = "", None
     if getattr(request, "current_page", None) and request.current_page.application_urls:
         app = apphook_pool.get_apphook(request.current_page.application_urls)
-    namespace, config = "", None
-    if app and app.app_config:
-        try:
-            config = None
-            with override(get_language_from_request(request, check_path=True)):
-                namespace = resolve(request.path_info).namespace
-                config = app.get_config(namespace)
-        except Resolver404:
-            pass
+        print(f"--> {app}")
+        if app and app.app_config:
+            try:
+                config = None
+                with override(get_language_from_request(request, check_path=True)):
+                    if hasattr(request, "toolbar") and hasattr(request.toolbar, "request_path"):
+                        path = request.toolbar.request_path  # If v4 endpoint take request_path from toolbar
+                    else:
+                        path = request.path_info
+                    namespace = resolve(path).namespace
+                    config = app.get_config(namespace)
+            except Resolver404:
+                pass
     return namespace, config

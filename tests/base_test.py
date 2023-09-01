@@ -428,26 +428,19 @@ class CMSPageRenderingMixin(RequestTestCaseMixin):
         home_set = False
         for page_data in source:
             main_data = deepcopy(page_data[languages[0]])
-            if "publish" in main_data:
-                main_data["published"] = main_data.pop("publish") or None
             main_data["language"] = languages[0]
             if main_data.get("parent", None):
                 main_data["parent"] = pages[main_data["parent"]]
+            main_data.pop("publish")
             page = create_page(**main_data)
             has_apphook = has_apphook or "apphook" in main_data
             for lang in languages[1:]:
                 if lang in page_data:
-                    publish = False
-                    title_data = deepcopy(page_data[lang])
-                    if "publish" in title_data:
-                        publish = title_data.pop("publish")
-                    if "published" in title_data:
-                        publish = title_data.pop("published")
-                    title_data["language"] = lang
-                    title_data["page"] = page
-                    create_page_content(**title_data)
-                    if publish:
-                        raise NotImplementedError("Versioning integration")
+                    content_data = deepcopy(page_data[lang])
+                    content_data["language"] = lang
+                    content_data["page"] = page
+                    content_data.pop("publish")
+                    create_page_content(**content_data)
             if not home_set and hasattr(page, "set_as_homepage") and main_data.get("published", False):
                 page.set_as_homepage()
                 home_set = True

@@ -115,6 +115,7 @@ class BaseConfigListViewMixin(BlogConfigMixin):
             queryset = self.model.admin_manager.latest_content()
         else:
             queryset = self.model.objects.all()
+        print(1, queryset, self.namespace)
         queryset = queryset.filter(language=language, post__app_config__namespace=self.namespace)
         setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         return self.optimize(queryset.on_site())
@@ -136,6 +137,11 @@ class PostListView(BaseConfigListViewMixin, ListView):
     model = PostContent
     base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-latest"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        print(qs)
+        return qs
 
 
 class CategoryListView(BlogConfigMixin, ViewUrlMixin, TranslatableSlugMixin, ListView):
@@ -160,7 +166,7 @@ class CategoryListView(BlogConfigMixin, ViewUrlMixin, TranslatableSlugMixin, Lis
 
 class PostArchiveView(BaseConfigListViewMixin, ListView):
     model = PostContent
-    context_object_name = "post_list"
+    context_object_name = "postcontent_list"
     base_template_name = "post_list.html"
     date_field = "date_published"
     allow_empty = True
@@ -186,7 +192,7 @@ class PostArchiveView(BaseConfigListViewMixin, ListView):
 
 class TaggedListView(BaseConfigListViewMixin, ListView):
     model = PostContent
-    context_object_name = "post_list"
+    context_object_name = "postcontent_list"
     base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-tagged"
 
@@ -202,7 +208,7 @@ class TaggedListView(BaseConfigListViewMixin, ListView):
 
 class AuthorEntriesView(BaseConfigListViewMixin, ListView):
     model = PostContent
-    context_object_name = "post_list"
+    context_object_name = "postcontent_list"
     base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-author"
 
@@ -221,7 +227,7 @@ class AuthorEntriesView(BaseConfigListViewMixin, ListView):
 class CategoryEntriesView(BaseConfigListViewMixin, ListView):
     _category = None
     model = PostContent
-    context_object_name = "post_list"
+    context_object_name = "postcontent_list"
     base_template_name = "post_list.html"
     view_url_name = "djangocms_blog:posts-category"
 
@@ -245,7 +251,8 @@ class CategoryEntriesView(BaseConfigListViewMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         if "category" in self.kwargs:
-            qs = qs.filter(categories=self.category.pk)
+            qs = qs.filter(post__categories=self.category.pk)
+        print(2, qs)
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):
