@@ -1,4 +1,3 @@
-from aldryn_apphooks_config.utils import get_app_instance
 from django.utils.translation import activate
 from menus.menu_pool import menu_pool
 from parler.utils.context import smart_override, switch_language
@@ -8,7 +7,7 @@ from djangocms_blog.models import BlogCategory
 from djangocms_blog.settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS
 from djangocms_blog.views import CategoryEntriesView, PostDetailView
 
-from .base import BaseTest
+from tests.base import BaseTest
 
 
 class MenuTest(BaseTest):
@@ -45,7 +44,7 @@ class MenuTest(BaseTest):
         lang = "en"
         with smart_override(lang):
             self._reset_menus()
-            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
             self.get_nodes(menu_pool, request)
             keys = CacheKey.objects.get_keys().distinct().values_list("key", flat=True)
             self.assertTrue(cache.get_many(keys))
@@ -67,7 +66,7 @@ class MenuTest(BaseTest):
         lang = "en"
         with smart_override(lang):
             self._reset_menus()
-            request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
             self.get_nodes(menu_pool, request)
             keys = CacheKey.objects.get_keys().distinct().values_list("key", flat=True)
             self.assertTrue(cache.get_many(keys))
@@ -95,7 +94,7 @@ class MenuTest(BaseTest):
         for lang in ("en", "it"):
             with smart_override(lang):
                 self._reset_menus()
-                request = self.get_page_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
+                request = self.get_toolbar_request(pages[1], self.user, pages[1].get_absolute_url(lang), edit=True)
                 nodes = self.get_nodes(menu_pool, request)
                 self.assertTrue(len(nodes), BlogCategory.objects.all().count() + len(pages))
                 nodes_url = {node.get_absolute_url() for node in nodes}
@@ -107,9 +106,7 @@ class MenuTest(BaseTest):
         for lang in ("en", "it"):
             with smart_override(lang):
                 self._reset_menus()
-                request = self.get_page_request(
-                    pages[1], self.user, pages[1].get_absolute_url(lang)
-                )
+                request = self.get_toolbar_request(pages[1], self.user, pages[1].get_absolute_url(lang))
                 nodes = self.get_nodes(menu_pool, request)
                 nodes_url = [node.get_absolute_url() for node in nodes]
                 self.assertTrue(len(nodes_url), BlogCategory.objects.all().count() + len(pages))
@@ -151,7 +148,7 @@ class MenuTest(BaseTest):
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
-            request = self.get_page_request(None, self.user, r"/%s/page-two/" % lang)
+            request = self.get_toolbar_request(None, self.user, r"/%s/page-two/" % lang)
             with smart_override(lang):
                 self._reset_menus()
                 nodes = self.get_nodes(menu_pool, request)
@@ -164,7 +161,7 @@ class MenuTest(BaseTest):
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
-            request = self.get_page_request(None, self.user, r"/%s/page-two/" % lang)
+            request = self.get_toolbar_request(None, self.user, r"/%s/page-two/" % lang)
             with smart_override(lang):
                 self._reset_menus()
                 nodes = self.get_nodes(menu_pool, request)
@@ -177,7 +174,7 @@ class MenuTest(BaseTest):
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
-            request = self.get_page_request(None, self.user, r"/%s/page-two/" % lang)
+            request = self.get_toolbar_request(None, self.user, r"/%s/page-two/" % lang)
             with smart_override(lang):
                 self._reset_menus()
                 nodes = self.get_nodes(menu_pool, request)
@@ -190,7 +187,7 @@ class MenuTest(BaseTest):
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
-            request = self.get_page_request(None, self.user, r"/%s/page-two/" % lang)
+            request = self.get_toolbar_request(None, self.user, r"/%s/page-two/" % lang)
             with smart_override(lang):
                 self._reset_menus()
                 nodes = self.get_nodes(menu_pool, request)
@@ -205,7 +202,7 @@ class MenuTest(BaseTest):
         self.app_config_2.save()
         self._reset_menus()
         for lang in languages:
-            request = self.get_page_request(None, self.user, r"/%s/page-two/" % lang)
+            request = self.get_toolbar_request(None, self.user, r"/%s/page-two/" % lang)
             with smart_override(lang):
                 self._reset_menus()
                 nodes = self.get_nodes(menu_pool, request)
@@ -238,7 +235,7 @@ class MenuTest(BaseTest):
         for view_cls, kwarg, obj, _cat in tests:
             with smart_override("en"):
                 with switch_language(obj, "en"):
-                    request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())
+                    request = self.get_toolbar_request(pages[1], self.user, path=obj.get_absolute_url())
                     self._reset_menus()
                     menu_pool.clear(all=True)
                     view_obj = view_cls()
@@ -261,7 +258,7 @@ class MenuTest(BaseTest):
         for view_cls, kwarg, obj, cat in tests:
             with smart_override("en"):
                 with switch_language(obj, "en"):
-                    request = self.get_page_request(pages[1], self.user, path=obj.get_absolute_url())
+                    request = self.get_toolbar_request(pages[1], self.user, path=obj.get_absolute_url())
                     self._reset_menus()
                     menu_pool.clear(all=True)
                     view_obj = view_cls()

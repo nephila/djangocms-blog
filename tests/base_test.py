@@ -14,7 +14,7 @@ from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.utils.functional import SimpleLazyObject
 from six import StringIO
 
-from .utils import UserLoginContext, create_user, get_user_model, reload_urls, temp_dir
+from tests.utils import UserLoginContext, create_user, get_user_model, reload_urls, temp_dir
 
 
 class RequestTestCaseMixin:
@@ -136,7 +136,13 @@ class RequestTestCaseMixin:
         """
         request = getattr(RequestFactory(), method)(path, data=data, secure=secure)
         return self._prepare_request(
-            request, page, user, lang, use_middlewares, secure=secure, use_toolbar=use_toolbar,
+            request,
+            page,
+            user,
+            lang,
+            use_middlewares,
+            secure=secure,
+            use_toolbar=use_toolbar,
         )
 
 
@@ -194,7 +200,11 @@ class CreateTestDataMixin:
             is_superuser=False,
         )
         cls.user_normal = create_user(
-            cls._user_user_username, cls._user_user_email, cls._user_user_password, is_staff=False, is_superuser=False,
+            cls._user_user_username,
+            cls._user_user_email,
+            cls._user_user_password,
+            is_staff=False,
+            is_superuser=False,
         )
 
     @classmethod
@@ -411,7 +421,7 @@ class CMSPageRenderingMixin(RequestTestCaseMixin):
         Build pages according to the pages data provided by :py:meth:`get_pages_data`
         and returns the list of the draft version of each
         """
-        from cms.api import create_page, create_title
+        from cms.api import create_page
 
         pages = OrderedDict()
         has_apphook = False
@@ -555,7 +565,15 @@ class CMSPageRenderingMixin(RequestTestCaseMixin):
         )
 
     def post_request(
-        self, page, lang, data, user=None, path=None, use_middlewares=False, secure=False, use_toolbar=False,
+        self,
+        page,
+        lang,
+        data,
+        user=None,
+        path=None,
+        use_middlewares=False,
+        secure=False,
+        use_toolbar=False,
     ):
         """
         Create a POST request for the given page and language with CSRF disabled.

@@ -5,7 +5,7 @@ from djangocms_text_ckeditor.models import Text
 
 from djangocms_blog.models import BlogCategory
 
-from .base import BaseTest
+from tests.base import BaseTest
 
 
 class WizardTest(BaseTest):
@@ -19,7 +19,7 @@ class WizardTest(BaseTest):
         for module in delete:
             if module in sys.modules:
                 del sys.modules[module]
-        wizard_pool._reset()
+        # wizard_pool._reset()
         super().setUp()
 
     def get_querydict(self, source):

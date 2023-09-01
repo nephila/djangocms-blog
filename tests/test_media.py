@@ -5,7 +5,7 @@ from cms.api import add_plugin
 
 from djangocms_blog.templatetags.djangocms_blog import media_images, media_plugins
 
-from .base import BaseTest
+from tests.base import BaseTest
 
 
 class MediaTest(BaseTest):

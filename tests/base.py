@@ -10,7 +10,7 @@ from parler.utils.context import smart_override
 
 from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.cms_menus import BlogCategoryMenu, BlogNavModifier
-from djangocms_blog.models import BlogCategory, Post, ThumbnailOption
+from djangocms_blog.models import BlogCategory, Post, ThumbnailOption, PostContent
 from tests.base_test import BaseTestCase
 
 User = get_user_model()
@@ -161,15 +161,15 @@ class BaseTest(BaseTestCase):
         cls.app_config_2, __ = BlogConfig.objects.get_or_create(namespace="sample_app2")
         cls.app_config_1.app_title = "app1"
         cls.app_config_1.object_name = "Blog"
-        cls.app_config_1.app_data.config.paginate_by = 1
-        cls.app_config_1.app_data.config.send_knock_create = True
-        cls.app_config_1.app_data.config.send_knock_update = True
+        cls.app_config_1.paginate_by = 1
+        cls.app_config_1.send_knock_create = True
+        cls.app_config_1.send_knock_update = True
         cls.app_config_1.save()
         cls.app_config_2.app_title = "app2"
         cls.app_config_2.object_name = "Article"
-        cls.app_config_2.app_data.config.paginate_by = 2
-        cls.app_config_2.app_data.config.send_knock_create = True
-        cls.app_config_2.app_data.config.send_knock_update = True
+        cls.app_config_2.paginate_by = 2
+        cls.app_config_2.send_knock_create = True
+        cls.app_config_2.send_knock_update = True
         cls.app_config_2.save()
         cls.app_configs = {
             "sample_app": cls.app_config_1,
@@ -219,20 +219,23 @@ class BaseTest(BaseTestCase):
         if not post:
             post_data = {
                 "author": self.user,
-                "title": data["title"],
-                "abstract": data["abstract"],
-                "meta_description": data["description"],
-                "meta_keywords": data["keywords"],
                 "app_config": self.app_configs[data["app_config"]],
             }
             post = Post.objects.create(**post_data)
-        else:
-            post.create_translation(
-                lang,
+            post.postcontent_set.update_or_create(
                 title=data["title"],
                 abstract=data["abstract"],
                 meta_description=data["description"],
                 meta_keywords=data["keywords"],
+                language=lang,
+            )
+        else:
+            post.postcontent_set.update_or_create(
+                title=data["title"],
+                abstract=data["abstract"],
+                meta_description=data["description"],
+                meta_keywords=data["keywords"],
+                language=lang,
             )
         post.categories.add(self.category_1)
         if sites:

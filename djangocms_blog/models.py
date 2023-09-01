@@ -1,6 +1,6 @@
 import hashlib
 
-from cms.models import CMSPlugin, Placeholder, PlaceholderField, PlaceholderRelationField
+from cms.models import CMSPlugin, PlaceholderRelationField, ContentAdminManager
 from cms.utils.placeholder import get_placeholder_from_slot
 from django.conf import settings as dj_settings
 from django.contrib import admin
@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.db import models
-from django.db.models import F, Q
+from django.db.models import F
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.urls import NoReverseMatch, reverse
@@ -23,7 +23,6 @@ from filer.fields.image import FilerImageField
 from filer.models import ThumbnailOption
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
-from parler.utils.context import switch_language
 from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
@@ -31,7 +30,6 @@ from .cms_appconfig import BlogConfig
 from .fields import slugify
 from .managers import GenericDateTaggedManager
 from .settings import get_setting
-
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
 BLOG_CURRENT_NAMESPACE = get_setting("CURRENT_NAMESPACE")
@@ -166,7 +164,7 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
     class Meta:
         verbose_name = _("blog category")
         verbose_name_plural = _("blog categories")
-        ordering = (F("priority").asc(nulls_last=True), )
+        ordering = (F("priority").asc(nulls_last=True),)
 
     def descendants(self):
         children = []
@@ -247,9 +245,14 @@ class Post(KnockerModel, models.Model):
     date_published = models.DateTimeField(_("published since"), null=True, blank=True)
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
-    pinned = models.IntegerField(_("pinning priority"), blank=True, null=True,
-                                 help_text=_("Pinned posts are shown in ascending order before unpinned ones. "
-                                             "Leave blank for regular order by date."))
+    pinned = models.IntegerField(
+        _("pinning priority"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Pinned posts are shown in ascending order before unpinned ones. " "Leave blank for regular order by date."
+        ),
+    )
     publish = models.BooleanField(_("publish"), default=False)
     include_in_rss = models.BooleanField(_("include in RSS feed"), default=True)
     categories = models.ManyToManyField(
@@ -344,7 +347,6 @@ class Post(KnockerModel, models.Model):
         ordering = (F("pinned").asc(nulls_last=True), "-date_published", "-date_created")
         get_latest_by = "date_published"
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._content_cache = {}
@@ -372,8 +374,8 @@ class Post(KnockerModel, models.Model):
             else:
                 qs = self.postcontent_set
             qs = qs.prefetch_related(
-                'placeholders',
-                'post__categories',
+                "placeholders",
+                "post__categories",
             ).filter(language=language)
 
             self._content_cache[key] = qs.first()
@@ -395,7 +397,6 @@ class Post(KnockerModel, models.Model):
         if content_obj is None and any_language and self.get_available_languages():
             content_obj = self.get_content(self.get_available_languages()[0], show_draft_content=True)
         return getattr(content_obj, field, default)
-
 
     @property
     def guid(self, language=None):
@@ -423,7 +424,7 @@ class Post(KnockerModel, models.Model):
         super().save(*args, **kwargs)
 
     def get_available_languages(self):
-        if not(self._language_cache):
+        if not (self._language_cache):
             self._language_cache = list(self.postcontent_set.all().values_list("language", flat=True))
         return self._language_cache
 
@@ -586,7 +587,7 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
     placeholders = PlaceholderRelationField()
 
     objects = GenericDateTaggedManager()
-    admin_manager = GenericDateTaggedManager()
+    admin_manager = ContentAdminManager()
 
     @property
     def author(self):
@@ -609,15 +610,15 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
 
     @cached_property
     def media(self):
-        return get_placeholder_from_slot("media")
+        return get_placeholder_from_slot(self.placeholders, "media")
 
     @cached_property
     def content(self):
-        return get_placeholder_from_slot("content")
+        return get_placeholder_from_slot(self.placeholders, "content")
 
     @cached_property
     def liveblog(self):
-        return get_placeholder_from_slot("liveblog")
+        return get_placeholder_from_slot(self.placeholders, "liveblog")
 
     def save(self, *args, **kwargs):
         """
@@ -632,7 +633,7 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
 
     def get_template(self):
         # Used for the cms structure endpoint
-        return 'djangocms_blog/post_structure.html'
+        return "djangocms_blog/post_structure.html"
 
     def __str__(self):
         return self.title or _("Untitled")

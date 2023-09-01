@@ -14,7 +14,7 @@ from taggit.models import Tag
 
 from djangocms_blog.models import BlogCategory
 
-from .base import BaseTest
+from tests.base import BaseTest
 
 User = get_user_model()
 

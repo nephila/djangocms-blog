@@ -4,7 +4,7 @@ from django.utils.encoding import force_str
 
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
 
-from .base import BaseTest
+from tests.base import BaseTest
 
 
 class ToolbarTest(BaseTest):

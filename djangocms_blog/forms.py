@@ -1,22 +1,12 @@
-from cms.models import PageContent
-from cms.utils.i18n import get_language_dict, get_site_language_from_request
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import validators
-from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.validators import MaxLengthValidator
-from django.urls import Resolver404, reverse
 from django.utils.functional import cached_property
-from django.utils.http import urlencode
-from django.utils.translation import gettext_lazy as _
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
 
-from djangocms_blog import models
-
-from .fields import LanguageSelector
-from .models import BlogCategory, BlogConfig, Post, PostContent
+from .models import BlogCategory, BlogConfig, Post
 from .settings import PERMALINK_TYPE_CATEGORY, get_setting
 
 User = get_user_model()
@@ -158,12 +148,13 @@ class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
         return qs
 
 
-
 class PostAdminForm(PostAdminFormBase):
     def __init__(self, *args, **kwargs):
         if "meta_description" in self.base_fields:
             # Not available for published fields
-            self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
+            self.base_fields["meta_description"].validators = [
+                MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))
+            ]
             original_attrs = self.base_fields["meta_description"].widget.attrs
             if "cols" in original_attrs:
                 del original_attrs["cols"]

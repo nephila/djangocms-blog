@@ -4,7 +4,7 @@ from cms.api import create_page
 from django.test import Client
 from django.utils.encoding import force_str
 
-from .base import BaseTest
+from tests.base import BaseTest
 
 try:
     from knocker.signals import pause_knocks

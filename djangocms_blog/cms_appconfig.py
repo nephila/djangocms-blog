@@ -1,14 +1,12 @@
 from cms.apphook_pool import apphook_pool
 from django import forms
 from django.db import models
-from django.urls import resolve, Resolver404
-
-from django.utils.translation import gettext_lazy as _, override, get_language_from_request
+from django.urls import Resolver404, resolve
+from django.utils.translation import get_language_from_request, gettext_lazy as _, override
 from filer.models import ThumbnailOption
 from parler.models import TranslatableModel, TranslatedFields
 
 from .settings import MENU_TYPE_COMPLETE, get_setting
-
 
 config_defaults = {
     "default_image_full": None,
@@ -39,7 +37,7 @@ config_defaults = {
     "gplus_author": get_setting("SCHEMAORG_AUTHOR"),
     "send_knock_create": False,
     "send_knock_update": False,
- }
+}
 
 
 class BlogConfig(TranslatableModel):
@@ -96,9 +94,7 @@ class BlogConfig(TranslatableModel):
         default=config_defaults["use_placeholder"],
     )
     #: Use abstract field (default: :ref:`USE_ABSTRACT <USE_ABSTRACT>`)
-    use_abstract = models.BooleanField(
-        verbose_name=_("Use abstract field"), default=config_defaults["use_abstract"]
-    )
+    use_abstract = models.BooleanField(verbose_name=_("Use abstract field"), default=config_defaults["use_abstract"])
     #: Enable related posts (default: :ref:`USE_RELATED <USE_RELATED>`)
     use_related = models.SmallIntegerField(
         verbose_name=_("Enable related posts"),
@@ -183,7 +179,7 @@ class BlogConfig(TranslatableModel):
         verbose_name=_("Facebook type"),
         blank=True,
         choices=get_setting("FB_TYPES"),
-        default=get_setting("FB_TYPE")
+        default=get_setting("FB_TYPE"),
     )
     #: Facebook application ID (default: :ref:`FB_PROFILE_ID <FB_PROFILE_ID>`)
     og_app_id = models.CharField(

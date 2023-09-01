@@ -1,6 +1,5 @@
 from django.db import migrations
 
-
 config_fields = [
     "url_patterns",
     "use_placeholder",
@@ -27,7 +26,7 @@ config_fields = [
     "gplus_author",
     "send_knock_create",
     "send_knock_update",
- ]
+]
 
 
 def json_to_model(apps, schema_editor):
@@ -48,25 +47,23 @@ def json_to_model(apps, schema_editor):
 def model_to_json(apps, schema_editor):
     BlogConfig = apps.get_model("djangocms_blog", "BlogConfig")
     for config in BlogConfig.objects.all():
-        config.app_data = dict(config={
-            "default_image_full": config.default_image_full_id,
-            "default_image_thumbnail": config.default_image_thumbnail_id,
-            "sitemap_priority": str(config.sitemap_priority),
-            **{key: getattr(config, key) for key in config_fields}
-        })
+        config.app_data = dict(
+            config={
+                "default_image_full": config.default_image_full_id,
+                "default_image_thumbnail": config.default_image_thumbnail_id,
+                "sitemap_priority": str(config.sitemap_priority),
+                **{key: getattr(config, key) for key in config_fields},
+            }
+        )
         config.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0046_auto_20230717_2307"),
     ]
 
     operations = [
         migrations.RunPython(json_to_model, model_to_json, elidable=True),
-        migrations.RemoveField(
-            model_name="blogconfig",
-            name="app_data"
-        )
+        migrations.RemoveField(model_name="blogconfig", name="app_data"),
     ]

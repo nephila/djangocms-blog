@@ -13,10 +13,10 @@ from django.utils.text import normalize_newlines
 from django.utils.translation import get_language_from_request, gettext as _
 from lxml import etree
 
-from .settings import get_setting
-from .views import PostDetailView
 from .cms_appconfig import get_app_instance
 from .models import Post
+from .settings import get_setting
+from .views import PostDetailView
 
 
 class LatestEntriesFeed(Feed):

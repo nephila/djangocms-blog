@@ -15,8 +15,7 @@ from .utils import is_versioning_enabled
 @toolbar_pool.register
 class BlogToolbar(CMSToolbar):
     def _get_published_post_version(self):
-        """Returns a published page if one exists for the toolbar object
-        """
+        """Returns a published page if one exists for the toolbar object"""
         language = self.current_lang
         # Exit the current toolbar object is not a Page / PageContent instance
         if not isinstance(self.toolbar.obj, PostContent):
@@ -27,8 +26,7 @@ class BlogToolbar(CMSToolbar):
         ).first()
 
     def add_view_published_button(self):
-        """Helper method to add a publish button to the toolbar
-        """
+        """Helper method to add a publish button to the toolbar"""
         # Check if object is registered with versioning otherwise don't add
         if not is_versioning_enabled():
             return
@@ -38,14 +36,14 @@ class BlogToolbar(CMSToolbar):
         if not published_version:
             return
 
-        url = published_version.get_absolute_url() if hasattr(published_version, 'get_absolute_url') else None
+        url = published_version.get_absolute_url() if hasattr(published_version, "get_absolute_url") else None
         if url and (self.toolbar.edit_mode_active or self.toolbar.preview_mode_active):
             item = ButtonList(side=self.toolbar.RIGHT)
             item.add_button(
                 _("View Published"),
                 url=url,
                 disabled=False,
-                extra_classes=['cms-btn', 'cms-btn-switch-save'],
+                extra_classes=["cms-btn", "cms-btn-switch-save"],
             )
             self.toolbar.add_item(item)
 
@@ -65,21 +63,21 @@ class BlogToolbar(CMSToolbar):
         self.add_blog_to_admin_menu()
         # Add on apphook urls and endpoint urls
         is_current_app = self.is_current_app or isinstance(self.toolbar.get_object(), PostContent)
-        if (
-            not is_current_app and not get_setting("ENABLE_THROUGH_TOOLBAR_MENU")
-        ) or not self.request.user.has_perm("djangocms_blog.add_post"):
+        if (not is_current_app and not get_setting("ENABLE_THROUGH_TOOLBAR_MENU")) or not self.request.user.has_perm(
+            "djangocms_blog.add_post"
+        ):
             return  # pragma: no cover
 
-        current_post = (
-            getattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.toolbar.get_object())
+        current_post = getattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.toolbar.get_object())
+        current_config = getattr(
+            self.request, get_setting("CURRENT_NAMESPACE"), current_post.app_config if current_post else None
         )
-        current_config = getattr(self.request, get_setting("CURRENT_NAMESPACE"),
-                                 current_post.app_config if current_post else None)
         with override(self.current_lang):
             admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
             object_dict = (
-                dict(object_name=current_config.object_name) if current_config else
-                dict(object_name=Post._meta.verbose_name.capitalize())
+                dict(object_name=current_config.object_name)
+                if current_config
+                else dict(object_name=Post._meta.verbose_name.capitalize())
             )
             if current_post and self.request.user.has_perm("djangocms_blog.change_post"):  # pragma: no cover  # NOQA
                 admin_menu.add_modal_item(
@@ -88,7 +86,8 @@ class BlogToolbar(CMSToolbar):
                 )
             url = admin_reverse("djangocms_blog_post_add")
             admin_menu.add_modal_item(
-                _("Create %(object_name)s") % object_dict, url=url,
+                _("Create %(object_name)s") % object_dict,
+                url=url,
             )
             if current_config:
                 url = admin_reverse("djangocms_blog_blogconfig_change", args=(current_config.pk,))
@@ -128,7 +127,7 @@ class BlogToolbar(CMSToolbar):
         if end.index < 2:
             return end.index
 
-        items = admin_menu.get_items()[1: end.index - 1]
+        items = admin_menu.get_items()[1 : end.index - 1]
         for idx, item in enumerate(items):
             try:
                 if force_str(item_name.lower()) < force_str(item.name.lower()):  # noqa: E501
