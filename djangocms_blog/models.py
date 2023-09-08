@@ -609,15 +609,11 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
 
     @cached_property
     def media(self):
-        return get_placeholder_from_slot("media")
+        return get_placeholder_from_slot(self.placeholders, "media")
 
     @cached_property
     def content(self):
-        return get_placeholder_from_slot("content")
-
-    @cached_property
-    def liveblog(self):
-        return get_placeholder_from_slot("liveblog")
+        return get_placeholder_from_slot(self.placeholders, "content")
 
     def save(self, *args, **kwargs):
         """

@@ -18,6 +18,7 @@ from django.http import Http404
 from django.urls import NoReverseMatch, path, reverse
 from django.utils.translation import gettext_lazy as _, ngettext as __
 from django.views.generic import RedirectView
+from djangocms_versioning.models import Version
 from parler.admin import TranslatableAdmin
 
 
@@ -387,23 +388,31 @@ class PostAdmin(
         form_class.language = get_language_from_request(request)
         return form_class
 
-    def get_readonly_fields(self, request, obj=None):
-        # First, get read-only fields for grouper
-        fields = super().get_readonly_fields(request, obj)
-        content_obj = self.get_content_obj(obj)
-        if not self.can_change(request, content_obj):
-            # Only allow content object fields to be edited if user can change them
-            fields += tuple(self.form._meta.labels)  # <= _postcontent_fields
-        return fields
+    # def get_readonly_fields(self, request, obj=None):
+    #     # First, get read-only fields for grouper
+    #     fields = super().get_readonly_fields(request, obj)
+    #     content_obj = self.get_content_obj(obj)
+    #     if not self.can_change(request, content_obj):
+    #         # Only allow content object fields to be edited if user can change them
+    #         fields += tuple(self.form._meta.labels)  # <= _postcontent_fields
+    #     return fields
+    #
+    # def can_change(self, request, content_obj):
+    #     """Returns True if user can change content_obj"""
+    #     if content_obj and is_versioning_enabled():
+    #         from djangocms_versioning.models import Version
+    #
+    #         version = Version.objects.get_for_content(content_obj)
+    #         return version.check_modify.as_bool(request.user)
+    #     return True
 
-    def can_change(self, request, content_obj):
+    def can_change_content(self, request, content_obj) -> bool:
         """Returns True if user can change content_obj"""
         if content_obj and is_versioning_enabled():
-            from djangocms_versioning.models import Version
-
-            version = Version.objects.get_for_content(content_obj)
+            version = content_obj.versions.first()
             return version.check_modify.as_bool(request.user)
         return True
+
 
     @admin.action(
         description=_("Enable comments for selection")
@@ -618,11 +627,11 @@ class PostAdmin(
         """Return the position in the fieldset where to add the given field."""
         return self._fieldset_extra_fields_position.get(field, (None, None, None))
 
-    def get_prepopulated_fields(self, request, obj=None):
-        content_obj = self.get_content_obj(obj)
-        if self.can_change(request, content_obj):
-            return {"content__slug": ("content__title",)}
-        return {}
+    # def get_prepopulated_fields(self, request, obj=None):
+    #     content_obj = self.get_content_obj(obj)
+    #     if self.can_change(request, content_obj):
+    #         return {"content__slug": ("content__title",)}
+    #     return {}
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj or form.instance, form, change)

@@ -456,7 +456,7 @@ BLOG_ENABLE_SEARCH = True
 Enable ``aldryn-search`` (i.e.: ``django-haystack``) indexes.
 """
 
-BLOG_CURRENT_POST_IDENTIFIER = "djangocms_post_current"
+BLOG_CURRENT_POST_IDENTIFIER = "djangocms_postcontent_current"
 """
 .. _CURRENT_POST_IDENTIFIER:
 

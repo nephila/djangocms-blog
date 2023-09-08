@@ -161,10 +161,10 @@ class BlogNavModifier(Modifier):
             return nodes
         if post_cut:
             return nodes
-        current_post = getattr(request, get_setting("CURRENT_POST_IDENTIFIER"), None)
+        current_postcontent = getattr(request, get_setting("CURRENT_POST_IDENTIFIER"), None)
         category = None
-        if current_post and current_post.__class__ == Post:
-            category = current_post.categories.first()
+        if current_postcontent and current_postcontent.__class__ == PostContent:
+            category = current_postcontent.categories.first()
         if not category:
             return nodes
 

@@ -45,7 +45,7 @@ def copy_placeholder_content(original_content):
                 # Copy plugins
                 placeholder.copy_plugins(new_placeholder)
                 new_placeholders.append(new_placeholder)
-            new_content.placeholders.add(*new_placeholders)
+            getattr(new_content, field.name).add(*new_placeholders)
 
     return new_content
 
