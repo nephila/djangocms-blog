@@ -5,9 +5,9 @@ from django.utils.encoding import force_str
 import djangocms_blog.admin
 from djangocms_blog.models import Post
 
-from .base import BaseTest
-from .test_utils.admin import PostExtensionInline
-from .test_utils.models import PostPlaceholderExtension
+from tests.base import BaseTest
+from tests.test_utils.admin import PostExtensionInline
+from tests.test_utils.models import PostPlaceholderExtension
 
 
 class AddExtensionTest(BaseTest):

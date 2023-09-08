@@ -9,7 +9,7 @@ from django.utils.translation import get_language_from_request, gettext_lazy as 
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
-from .models import BlogConfig, BlogCategory, Post, PostContent
+from .models import BlogCategory, BlogConfig, Post, PostContent
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
 
 logger = logging.getLogger(__name__)
@@ -71,12 +71,11 @@ class BlogCategoryMenu(CMSAttachMenu):
         if posts_menu:
             post_contents = PostContent.objects.filter(language=language)
             if hasattr(self, "instance") and self.instance:
-                post_contents = post_contents\
-                    .filter(post__app_config__namespace=self.instance.application_namespace)\
-                    .on_site()
+                post_contents = post_contents.filter(
+                    post__app_config__namespace=self.instance.application_namespace
+                ).on_site()
             post_contents = (
-                post_contents
-                .distinct()
+                post_contents.distinct()
                 .select_related("post", "post__app_config")
                 .prefetch_related("post__categories")
             )
@@ -92,7 +91,9 @@ class BlogCategoryMenu(CMSAttachMenu):
                 else:
                     postcontent_id = (f"{post_content.__class__.__name__}-{post_content.pk}",)
                 if postcontent_id:
-                    node = NavigationNode(post_content.title, post_content.get_absolute_url(language), postcontent_id, parent)
+                    node = NavigationNode(
+                        post_content.title, post_content.get_absolute_url(language), postcontent_id, parent
+                    )
                     nodes.append(node)
 
         if categories_menu:

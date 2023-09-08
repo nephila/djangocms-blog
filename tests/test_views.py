@@ -1,7 +1,5 @@
 import os.path
 
-from aldryn_apphooks_config.utils import get_app_instance
-from .utils import captured_output
 from cms.api import add_plugin
 from cms.toolbar.items import ModalItem
 from cms.utils.apphook_reload import reload_urlconf
@@ -30,7 +28,8 @@ from djangocms_blog.views import (
     TaggedListView,
 )
 
-from .base import BaseTest
+from tests.base import BaseTest
+from tests.utils import captured_output
 
 
 class CustomUrlViewTest(BaseTest):

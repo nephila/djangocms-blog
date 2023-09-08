@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('djangocms_blog', '0041_auto_20211214_1137'),
+        ("djangocms_blog", "0041_auto_20211214_1137"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='post',
-            name='enable_comments',
-            field=models.BooleanField(default=False, verbose_name='enable comments on post'),
+            model_name="post",
+            name="enable_comments",
+            field=models.BooleanField(default=False, verbose_name="enable comments on post"),
         ),
     ]

@@ -8,5 +8,3 @@ djangocms-video
 pytest
 pytest-django
 pytest-asyncio
-https://github.com/ella/django-appdata/archive/refs/heads/master.zip
-https://github.com/divio/aldryn-apphooks-config/archive/refs/heads/master.zip

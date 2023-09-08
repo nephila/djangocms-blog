@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 def move_plugins_to_blog_content(apps, schema_editor):
-    """ Adds instances for the new model.
+    """Adds instances for the new model.
     ATTENTION: All fields of the model must have a valid default value!"""
 
     versioning_installed = apps.is_installed("djangocms_verisoning")
@@ -58,12 +58,11 @@ def move_plugins_to_blog_content(apps, schema_editor):
 
 
 def move_plugins_back_to_blog(apps, schema_editor):
-    """ Adds instances for the new model.ATTENTION: All fields of the model must have a valid default value!"""
+    """Adds instances for the new model.ATTENTION: All fields of the model must have a valid default value!"""
     raise NotImplementedError()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("djangocms_blog", "0043_postcontent"),
     ]

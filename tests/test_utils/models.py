@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
         return self.sites
 
 
-from cms.models import PlaceholderField  # noqa isort:skip
+from cms.models import PlaceholderRelationField  # noqa isort:skip
 from djangocms_blog.models import Post  # noqa isort:skip
 
 
@@ -20,7 +20,7 @@ class PostExtension(models.Model):
 
 class PostPlaceholderExtension(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name="placeholder")
-    some_placeholder = PlaceholderField("some_placeholder", related_name="some_placeholder")
+    some_placeholder = PlaceholderRelationField("some_placeholder", related_name="some_placeholder")
 
     def delete(self):
         super().delete()

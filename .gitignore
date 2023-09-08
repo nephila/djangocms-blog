@@ -523,3 +523,4 @@ $RECYCLE.BIN/
 *.sqlite
 data
 .idea
+/filer_public/

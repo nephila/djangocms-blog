@@ -120,10 +120,8 @@ try:
                     "BlogConfig.namespace {} and BlogConfig.app_title {} are"
                     "unique together".format(seed, config.namespace, config.app_title)
                 )
-except:  # pragma: no cover
-    warnings.warn(
-        "Wizards not yet registered"
-    )
+except Exception:  # pragma: no cover
+    warnings.warn("Wizards not yet registered")
     try:
         wizard_pool.register(post_wizard)
     except AlreadyRegisteredException:  # pragma: no cover

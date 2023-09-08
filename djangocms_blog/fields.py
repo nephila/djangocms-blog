@@ -10,7 +10,10 @@ def slugify(base):
 
 class LanguageSelector(forms.Select):
     class Media:
-        js = ("admin/js/jquery.init.js", "djangocms_blog/js/language-selector.js",)
+        js = (
+            "admin/js/jquery.init.js",
+            "djangocms_blog/js/language-selector.js",
+        )
 
     def __init__(self, *args, **kwargs):
         kwargs.update({"attrs": {**kwargs.get("attrs", {}), **{"class": "js-language-selector"}}})

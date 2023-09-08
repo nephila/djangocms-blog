@@ -2,7 +2,12 @@
 
 from distutils.version import LooseVersion
 
-import aldryn_apphooks_config
+try:
+    import aldryn_apphooks_config.fields
+except ModuleNotFoundError:
+    class aldryn_apphooks_config:
+        __version__ = "0.0.1"
+
 from django.db import migrations, models
 
 

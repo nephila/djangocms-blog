@@ -79,59 +79,12 @@ class TaggedFilterItem:
         return sorted(tags, key=lambda x: -x.count)
 
 
-class GenericDateQuerySet(models.QuerySet):
-    start_date_field = "date_published"
-    fallback_date_field = "date_modified"
-    end_date_field = "date_published_end"
-    publish_field = "publish"
+class SiteQuerySet(models.QuerySet):
 
     def on_site(self, site=None):
         if not site:
             site = Site.objects.get_current()
         return self.filter(models.Q(post__sites__isnull=True) | models.Q(post__sites=site.pk))
-
-    def published(self, current_site=True):
-        assert False, "published not supported"
-        queryset = self.published_future(current_site)
-        if self.start_date_field:
-            return queryset.filter(**{"post__%s__lte" % self.start_date_field: now()})
-        else:
-            return queryset
-
-    def published_on_rss(self, current_site=True):
-        assert False, "published_on_rss not supported"
-        queryset = self.published_future(current_site)
-        return queryset.exclude(include_in_rss=False)
-
-    def published_future(self, current_site=True):
-        assert False, "published_future not supported"
-        if current_site:
-            queryset = self.on_site()
-        else:
-            queryset = self
-        if self.end_date_field:
-            qfilter = models.Q(**{"post__%s__gte" % self.end_date_field: now()}) | models.Q(
-                **{"post__%s__isnull" % self.end_date_field: True}
-            )
-            queryset = queryset.filter(qfilter)
-        return queryset.filter(**{f"post__{self.publish_field}": True})
-
-    def archived(self, current_site=True):
-        assert False, "archived not supported"
-        if current_site:
-            queryset = self.on_site()
-        else:
-            queryset = self
-        if self.end_date_field:
-            qfilter = models.Q(**{"site__%s__lte" % self.end_date_field: now()})
-            queryset = queryset.filter(qfilter)
-        return queryset.filter(**{f"post__{self.publish_field}": True})
-
-    def available(self, current_site=True):
-        if current_site:
-            return self.on_site().filter(**{f"post__{self.publish_field}": True})
-        else:
-            return self.filter(**{f"post__{self.publish_field}": True})
 
     def filter_by_language(self, language, current_site=True):
         if current_site:
@@ -140,10 +93,24 @@ class GenericDateQuerySet(models.QuerySet):
             return self.filter(language=language)
 
 
+class AdminSiteQuerySet(SiteQuerySet):
+    def current_content(self, **kwargs):
+        """If a versioning package is installed, this returns the currently valid content
+        that matches the filter given in kwargs. Used to find content to be copied, e.g..
+        Without versioning every page is current."""
+        return self.filter(**kwargs)
+
+    def latest_content(self, **kwargs):
+        """If a versioning package is installed, returns the latest version that matches the
+        filter given in kwargs including discared or unpublished page content. Without versioning
+        every page content is the latest."""
+        return self.filter(**kwargs)
+
+
 class GenericDateTaggedManager(TaggedFilterItem, models.Manager):
     use_for_related_fields = True
 
-    queryset_class = GenericDateQuerySet
+    queryset_class = SiteQuerySet
 
     def get_queryset(self, *args, **kwargs):
         return self.queryset_class(model=self.model, using=self._db, hints=self._hints)
@@ -198,3 +165,15 @@ class GenericDateTaggedManager(TaggedFilterItem, models.Manager):
             {"date": now().replace(year=year, month=month, day=1), "count": date_counter[year, month]}
             for year, month in dates
         ]
+
+
+class AdminDateTaggedManager(GenericDateTaggedManager):
+    queryset_class = AdminSiteQuerySet
+
+    def current_content(self, **kwargs):
+        """Syntactic sugar: admin_manager.current_content()"""
+        return self.get_queryset().current_content(**kwargs)
+
+    def latest_content(self, **kwargs):
+        """Syntactic sugar: admin_manager.latest_content()"""
+        return self.get_queryset().latest_content(**kwargs)

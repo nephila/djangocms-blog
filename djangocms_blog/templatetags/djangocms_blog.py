@@ -87,14 +87,15 @@ def media_images(context, post_content, main=True):
 
 class GetAbsoluteUrl(AsTag):
     """Classy tag that returns the url for editing PageContent in the admin."""
+
     name = "absolute_url"
     post_content_type = None
 
     options = Options(
-        Argument('post_content'),
+        Argument("post_content"),
         Argument("language", required=False, default=None),
-        'as',
-        Argument('varname', required=False, resolve=False)
+        "as",
+        Argument("varname", required=False, resolve=False),
     )
 
     def get_value(self, context, post_content, language):

@@ -7,7 +7,7 @@ from urllib.parse import quote
 
 import parler
 from cms.api import add_plugin
-from cms.utils.plugins import downcast_plugins, copy_plugins_to_placeholder
+from cms.utils.plugins import copy_plugins_to_placeholder, downcast_plugins
 from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
@@ -27,13 +27,13 @@ from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override
 from taggit.models import Tag
 
-from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.forms import CategoryAdminForm, PostAdminForm
 from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import MENU_TYPE_NONE, PERMALINK_TYPE_CATEGORY, PERMALINK_TYPE_FULL_DATE, get_setting
 
-from .base import BaseTest
-from .test_utils.admin import CustomPostAdmin
+from tests.base import BaseTest
+from tests.test_utils.admin import CustomPostAdmin
 
 try:
     from knocker.signals import pause_knocks
@@ -1338,20 +1338,21 @@ class ModelsTest2(BaseTest):
         post1.main_image = None
         post1.save()
 
-        self.assertEqual(force_str(post1), post1.title)
-        self.assertEqual(post1.get_description(), strip_tags(post1.abstract))
+        post1_content = post1.postcontent_set.get(language="en")
+        self.assertEqual(force_str(post1), post1_content.title)
+        self.assertEqual(post1.get_description(), strip_tags(post1_content.meta_description))
         self.assertEqual(post1.get_image_full_url(), "")
         self.assertEqual(post1.get_author(), self.user)
 
         self.assertEqual(force_str(post1.categories.first()), "category 1")
 
-        plugin = add_plugin(post1.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
+        plugin = add_plugin(post1_content.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
         self.assertEqual(force_str(plugin.__str__()), "5 latest articles by author")
 
-        plugin = add_plugin(post1.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
+        plugin = add_plugin(post1_content.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
         self.assertEqual(force_str(plugin.__str__()), "5 latest articles by tag")
 
-        plugin = add_plugin(post1.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
+        plugin = add_plugin(post1_content.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
         self.assertEqual(force_str(plugin.__str__()), "generic blog plugin")
 
         # create fake empty post - assign a random pk to trick ORM / parler to think the object has been saved

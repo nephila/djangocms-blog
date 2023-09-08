@@ -8,61 +8,72 @@ import djangocms_blog.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('djangocms_blog', '0042_alter_post_enable_comments'),
+        ("djangocms_blog", "0042_alter_post_enable_comments"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='blogcategory',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="blogcategory",
+            name="id",
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
         ),
         migrations.AlterField(
-            model_name='blogcategorytranslation',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="blogcategorytranslation",
+            name="id",
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
         ),
         migrations.AlterField(
-            model_name='blogconfig',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="blogconfig",
+            name="id",
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
         ),
         migrations.AlterField(
-            model_name='blogconfigtranslation',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="blogconfigtranslation",
+            name="id",
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='enable_comments',
-            field=models.BooleanField(default=True, verbose_name='enable comments on post'),
+            model_name="post",
+            name="enable_comments",
+            field=models.BooleanField(default=True, verbose_name="enable comments on post"),
         ),
         migrations.AlterField(
-            model_name='post',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="post",
+            name="id",
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
         ),
         migrations.AlterField(
-            model_name='posttranslation',
-            name='id',
-            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID'),
+            model_name="posttranslation",
+            name="id",
+            field=models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID"),
         ),
         migrations.CreateModel(
-            name='PostContent',
+            name="PostContent",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('language', models.CharField(db_index=True, max_length=15, verbose_name='language')),
-                ('title', models.CharField(max_length=752, verbose_name='title')),
-                ('slug', models.SlugField(allow_unicode=True, blank=True, max_length=752, verbose_name='slug')),
-                ('subtitle', models.CharField(blank=True, default='', max_length=767, verbose_name='subtitle')),
-                ('abstract', djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='abstract')),
-                ('meta_description', models.TextField(blank=True, default='', verbose_name='post meta description')),
-                ('meta_keywords', models.TextField(blank=True, default='', verbose_name='post meta keywords')),
-                ('meta_title', models.CharField(blank=True, default='', help_text='used in title tag and social sharing', max_length=2000, verbose_name='post meta title')),
-                ('post_text', djangocms_text_ckeditor.fields.HTMLField(blank=True, default='', verbose_name='text')),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='djangocms_blog.post')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("language", models.CharField(db_index=True, max_length=15, verbose_name="language")),
+                ("title", models.CharField(max_length=752, verbose_name="title")),
+                ("slug", models.SlugField(allow_unicode=True, blank=True, max_length=752, verbose_name="slug")),
+                ("subtitle", models.CharField(blank=True, default="", max_length=767, verbose_name="subtitle")),
+                (
+                    "abstract",
+                    djangocms_text_ckeditor.fields.HTMLField(blank=True, default="", verbose_name="abstract"),
+                ),
+                ("meta_description", models.TextField(blank=True, default="", verbose_name="post meta description")),
+                ("meta_keywords", models.TextField(blank=True, default="", verbose_name="post meta keywords")),
+                (
+                    "meta_title",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="used in title tag and social sharing",
+                        max_length=2000,
+                        verbose_name="post meta title",
+                    ),
+                ),
+                ("post_text", djangocms_text_ckeditor.fields.HTMLField(blank=True, default="", verbose_name="text")),
+                ("post", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="djangocms_blog.post")),
             ],
             bases=(djangocms_blog.models.BlogMetaMixin, models.Model),
         ),

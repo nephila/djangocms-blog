@@ -37,10 +37,10 @@ def copy_placeholder_content(original_content):
                     for field in Placeholder._meta.fields
                     # don't copy primary key because we're creating a new obj
                     # and handle the source field later
-                    if field.name not in [Placeholder._meta.pk.name, 'source']
+                    if field.name not in [Placeholder._meta.pk.name, "source"]
                 }
                 if placeholder.source:
-                    placeholder_fields['source'] = new_content
+                    placeholder_fields["source"] = new_content
                 new_placeholder = Placeholder.objects.create(**placeholder_fields)
                 # Copy plugins
                 placeholder.copy_plugins(new_placeholder)
@@ -53,18 +53,18 @@ def copy_placeholder_content(original_content):
 class BlogCMSConfig(CMSAppConfig):
     cms_enabled = True
     cms_toolbar_enabled_models = [(PostContent, ToolbarDetailView.as_view())]
-    djangocms_versioning_enabled = getattr(
-        settings, 'VERSIONING_BLOG_MODELS_ENABLED', True) and djangocms_versioning_installed
+    djangocms_versioning_enabled = (
+        getattr(settings, "VERSIONING_BLOG_MODELS_ENABLED", True) and djangocms_versioning_installed
+    )
 
     if djangocms_versioning_enabled:
-
         from cms.utils.i18n import get_language_tuple
         from djangocms_versioning.datastructures import VersionableItem
 
         versioning = [
             VersionableItem(
                 content_model=PostContent,
-                grouper_field_name='post',
+                grouper_field_name="post",
                 extra_grouping_fields=["language"],
                 version_list_filter_lookups={"language": get_language_tuple},
                 copy_function=copy_placeholder_content,

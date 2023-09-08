@@ -1,11 +1,11 @@
 import copy
 from copy import deepcopy
 
-from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
+from cms.admin.placeholderadmin import FrontendEditableAdminMixin
 from cms.admin.utils import GrouperModelAdmin
 from cms.models import ValidationError
 from cms.utils import get_language_from_request
-from cms.utils.urlutils import admin_reverse, static_with_version
+from cms.utils.urlutils import admin_reverse
 from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
@@ -15,22 +15,22 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Prefetch, signals
 from django.http import Http404
-from django.urls import NoReverseMatch, path, reverse
+from django.urls import NoReverseMatch, path
 from django.utils.translation import gettext_lazy as _, ngettext as __
 from django.views.generic import RedirectView
-from djangocms_versioning.models import Version
 from parler.admin import TranslatableAdmin
 
-
-from .forms import CategoryAdminForm, PostAdminForm
-from .models import BlogConfig, BlogCategory, Post, PostContent
+from .cms_config import BlogCMSConfig
+from .forms import CategoryAdminForm
+from .models import BlogCategory, BlogConfig, Post, PostContent
 from .settings import get_setting
 from .utils import is_versioning_enabled
 
 signal_dict = {}
 
-if True or is_versioning_enabled():
-    from djangocms_versioning.admin import StateIndicatorMixin, ExtendedGrouperVersionAdminMixin
+
+if BlogCMSConfig.djangocms_versioning_enabled:
+    from djangocms_versioning.admin import ExtendedGrouperVersionAdminMixin, StateIndicatorMixin
 else:
     # Declare stubs
     class StateIndicatorMixin:
@@ -250,13 +250,14 @@ class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, Translat
         "priority",
     ]
     fieldsets = (
-        (None, {
-            "fields": ("parent", "app_config", "name", "meta_description")
-        }),
+        (None, {"fields": ("parent", "app_config", "name", "meta_description")}),
         (
             _("Info"),
             {
-                "fields": ("abstract", "priority",),
+                "fields": (
+                    "abstract",
+                    "priority",
+                ),
                 "classes": ("collapse",),
             },
         ),
@@ -287,10 +288,10 @@ class PostAdmin(
     ExtendedGrouperVersionAdminMixin,
     GrouperModelAdmin,
 ):
-    #form = PostAdminForm
+    # form = PostAdminForm
     extra_grouping_fields = ("language",)
     inlines = []
-    list_display = ("title", "author",  "app_config", "state_indicator", "admin_list_actions")
+    list_display = ("title", "author", "app_config", "state_indicator", "admin_list_actions")
     list_display_links = ("title",)
     search_fields = ("author__first_name",)
     readonly_fields = ("date_created", "date_modified")
@@ -307,8 +308,18 @@ class PostAdmin(
         actions += ["enable_liveblog", "disable_liveblog"]
 
     _fieldsets = [
-        (None, {"fields": [ ["content__title"], ["content__subtitle"], ["content__slug"], ["categories", "app_config", "content__language"],]}),
-         # left empty for sites, author and related fields
+        (
+            None,
+            {
+                "fields": [
+                    ["content__title"],
+                    ["content__subtitle"],
+                    ["content__slug"],
+                    ["categories", "app_config", "content__language"],
+                ]
+            },
+        ),
+        # left empty for sites, author and related fields
         (None, {"fields": [[]]}),
         (
             _("Info"),
@@ -326,9 +337,9 @@ class PostAdmin(
             {
                 "fields": ["content__meta_title", "content__meta_keywords", "content__meta_description"],
                 "classes": ("collapse",),
-            }
+            },
         ),
-        (None, {"fields": (("date_created", "date_modified"),)})
+        (None, {"fields": (("date_created", "date_modified"),)}),
     ]
     """
     Default fieldsets structure.
@@ -367,7 +378,9 @@ class PostAdmin(
 
     def get_search_results(self, request, queryset, search_term):
         # qs, distinct = super().get_search_results(request, queryset, search_term)
-        content_title = PostContent.admin_manager.filter(title__icontains=search_term).values("post_id").latest_content()
+        content_title = (
+            PostContent.admin_manager.filter(title__icontains=search_term).values("post_id").latest_content()
+        )
         return queryset.filter(pk__in=content_title), True
 
     @staticmethod
@@ -388,24 +401,6 @@ class PostAdmin(
         form_class.language = get_language_from_request(request)
         return form_class
 
-    # def get_readonly_fields(self, request, obj=None):
-    #     # First, get read-only fields for grouper
-    #     fields = super().get_readonly_fields(request, obj)
-    #     content_obj = self.get_content_obj(obj)
-    #     if not self.can_change(request, content_obj):
-    #         # Only allow content object fields to be edited if user can change them
-    #         fields += tuple(self.form._meta.labels)  # <= _postcontent_fields
-    #     return fields
-    #
-    # def can_change(self, request, content_obj):
-    #     """Returns True if user can change content_obj"""
-    #     if content_obj and is_versioning_enabled():
-    #         from djangocms_versioning.models import Version
-    #
-    #         version = Version.objects.get_for_content(content_obj)
-    #         return version.check_modify.as_bool(request.user)
-    #     return True
-
     def can_change_content(self, request, content_obj) -> bool:
         """Returns True if user can change content_obj"""
         if content_obj and is_versioning_enabled():
@@ -413,10 +408,7 @@ class PostAdmin(
             return version.check_modify.as_bool(request.user)
         return True
 
-
-    @admin.action(
-        description=_("Enable comments for selection")
-    )
+    @admin.action(description=_("Enable comments for selection"))
     def enable_comments(self, request, queryset):
         """
         Bulk action to enable comments for selected posts.
@@ -430,9 +422,7 @@ class PostAdmin(
             % {"updates": updates},
         )
 
-    @admin.action(
-        description=_("Disable comments for selection ")
-    )
+    @admin.action(description=_("Disable comments for selection "))
     def disable_comments(self, request, queryset):
         """
         Bulk action to disable comments for selected posts.
@@ -446,9 +436,7 @@ class PostAdmin(
             % {"updates": updates},
         )
 
-    @admin.action(
-        description=_("Enable liveblog for selection")
-    )
+    @admin.action(description=_("Enable liveblog for selection"))
     def enable_liveblog(self, request, queryset):
         """
         Bulk action to enable comments for selected posts.
@@ -462,9 +450,7 @@ class PostAdmin(
             % {"updates": updates},
         )
 
-    @admin.action(
-        description=_("Disable liveblog for selection ")
-    )
+    @admin.action(description=_("Disable liveblog for selection "))
     def disable_liveblog(self, request, queryset):
         """
         Bulk action to disable comments for selected posts.
@@ -481,7 +467,10 @@ class PostAdmin(
     # Make bulk action menu entries localizable
 
     def get_list_filter(self, request):
-        filters = ["categories", "app_config", ]
+        filters = [
+            "categories",
+            "app_config",
+        ]
         if get_setting("MULTISITE"):
             filters.append(SiteListFilter)
         try:
@@ -498,10 +487,12 @@ class PostAdmin(
         return filters
 
     def lookup_allowed(self, lookup, value):
-        return super().lookup_allowed(lookup,value) or any((
-            lookup.startswith("post__categories"),
-            lookup.startswith("post__app_config"),
-        ))
+        return super().lookup_allowed(lookup, value) or any(
+            (
+                lookup.startswith("post__categories"),
+                lookup.startswith("post__app_config"),
+            )
+        )
 
     def get_urls(self):
         """
@@ -644,7 +635,7 @@ class PostAdmin(
         if sites.exists():
             pks = list(sites.all().values_list("pk", flat=True))
             qs = qs.filter(sites__in=pks)
-        return qs.distinct().prefetch_related(Prefetch('postcontent_set', queryset=PostContent.admin_manager.all()))
+        return qs.distinct().prefetch_related(Prefetch("postcontent_set", queryset=PostContent.admin_manager.all()))
 
     def save_related(self, request, form, formsets, change):
         if self.get_restricted_sites(request).exists():
@@ -669,17 +660,20 @@ class BlogConfigAdmin(TranslatableAdmin):
         Fieldsets configuration
         """
         return [
-            (None, {"fields": (
-                "namespace",
-                ("app_title", "object_name"),
-            )}),
+            (
+                None,
+                {
+                    "fields": (
+                        "namespace",
+                        ("app_title", "object_name"),
+                    )
+                },
+            ),
             (
                 _("Generic"),
                 {
                     "fields": (
-                        ("use_placeholder",
-                        "use_abstract",
-                        "set_author"),
+                        ("use_placeholder", "use_abstract", "set_author"),
                         "use_related",
                     )
                 },
@@ -769,5 +763,6 @@ class BlogConfigAdmin(TranslatableAdmin):
         """
         if "config.urlconf" in form.changed_data:
             from cms.signals.apphook import trigger_restart
+
             trigger_restart()
         return super().save_model(request, obj, form, change)

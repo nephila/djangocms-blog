@@ -30,9 +30,6 @@
     {% else %}
         <div class="blog-content">{% render_model post "post_text" "post_text" "" "safe" %}</div>
     {% endif %}
-    {% if view.liveblog_enabled %}
-        {% include "liveblog/includes/post_detail.html" %}
-    {% endif %}
     {% if post.related.exists %}
         <section class="post-detail-list">
         {% for related in post.related.all %}

@@ -3,11 +3,12 @@ from cms.apphook_pool import apphook_pool
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-# from djangocms_apphook_setup.base import AutoCMSAppMixin
 
-from .models import BlogConfig
 from .cms_menus import BlogCategoryMenu
+from .models import BlogConfig
 from .settings import get_setting
+
+# from djangocms_apphook_setup.base import AutoCMSAppMixin
 
 
 @apphook_pool.register
@@ -33,8 +34,13 @@ class BlogApp(CMSApp):
         urlconf = get_setting("URLCONF")
         if page is None or not page.application_namespace or isinstance(urlconf, str):
             return [urlconf]  # Single urlconf
-        return [getattr(self.app_config.objects.get(namespace=page.application_namespace), "urlconf",
-                        get_setting("URLCONF")[0][0])]  # Default if no urlconf is configured
+        return [
+            getattr(
+                self.app_config.objects.get(namespace=page.application_namespace),
+                "urlconf",
+                get_setting("URLCONF")[0][0],
+            )
+        ]  # Default if no urlconf is configured
 
     @property
     def urls(self):
