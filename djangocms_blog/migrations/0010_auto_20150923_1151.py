@@ -1,11 +1,16 @@
 try:
     import aldryn_apphooks_config.fields
+    import app_data.fields
 except ModuleNotFoundError:
     class aldryn_apphooks_config:
         class fields:
             AppHookConfigField = lambda *args, **kwargs: None
 
-import app_data.fields
+    class app_data:
+        class fields:
+            AppDataField = lambda *args, **kwargs: None
+
+
 import djangocms_text_ckeditor.fields
 from django.db import migrations, models
 
