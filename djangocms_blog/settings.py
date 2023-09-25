@@ -195,7 +195,7 @@ Choices of available blog types.
 Available values are defined in to ``META_FB_TYPES`` defined in `django-meta settings`_.
 """
 
-BLOG_FB_APPID = meta_settings.FB_APPID
+BLOG_FB_APPID = meta_settings.get_setting("FB_APPID")
 """
 .. _FB_APPID:
 
@@ -204,7 +204,7 @@ Facebook Application ID.
 Default from ``FB_APPID`` defined in `django-meta settings`_.
 """
 
-BLOG_FB_PROFILE_ID = meta_settings.FB_PROFILE_ID
+BLOG_FB_PROFILE_ID = meta_settings.get_setting("FB_PROFILE_ID")
 """
 .. _FB_PROFILE_ID:
 
@@ -213,7 +213,7 @@ Facebook profile ID of the post author.
 Default from ``FB_PROFILE_ID`` defined in `django-meta settings`_.
 """
 
-BLOG_FB_PUBLISHER = meta_settings.FB_PUBLISHER
+BLOG_FB_PUBLISHER = meta_settings.get_setting("FB_PUBLISHER")
 """
 .. _FB_PUBLISHER:
 
@@ -252,7 +252,7 @@ Choices of available blog types for twitter.
 Default from ``TWITTER_TYPES`` defined in `django-meta settings`_.
 """
 
-BLOG_TWITTER_SITE = meta_settings.TWITTER_SITE
+BLOG_TWITTER_SITE = meta_settings.get_setting("TWITTER_SITE")
 """
 .. _TWITTER_SITE:
 
