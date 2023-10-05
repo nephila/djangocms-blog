@@ -663,7 +663,7 @@ class BasePostPlugin(CMSPlugin):
         else:
             post_contents = PostContent.objects
         if self.app_config:
-            post_contents = post_contents.filter(post__app_confige=self.app_config)
+            post_contents = post_contents.filter(post__app_config=self.app_config)
         if self.current_site:
             post_contents = post_contents.on_site(get_current_site(request))
         post_contents = post_contents.filter(language=language)
