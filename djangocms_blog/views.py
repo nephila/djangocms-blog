@@ -115,7 +115,6 @@ class BaseConfigListViewMixin(BlogConfigMixin):
             queryset = self.model.admin_manager.latest_content()
         else:
             queryset = self.model.objects.all()
-        print(1, queryset, self.namespace)
         queryset = queryset.filter(language=language, post__app_config__namespace=self.namespace)
         setattr(self.request, get_setting("CURRENT_NAMESPACE"), self.config)
         return self.optimize(queryset.on_site())
@@ -139,9 +138,7 @@ class PostListView(BaseConfigListViewMixin, ListView):
     view_url_name = "djangocms_blog:posts-latest"
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        print(qs)
-        return qs
+        return super().get_queryset()
 
 
 class CategoryListView(BlogConfigMixin, ViewUrlMixin, TranslatableSlugMixin, ListView):
@@ -252,7 +249,6 @@ class CategoryEntriesView(BaseConfigListViewMixin, ListView):
         qs = super().get_queryset()
         if "category" in self.kwargs:
             qs = qs.filter(post__categories=self.category.pk)
-        print(2, qs)
         return self.optimize(qs)
 
     def get_context_data(self, **kwargs):

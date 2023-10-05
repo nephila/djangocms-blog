@@ -637,8 +637,8 @@ class BasePostPlugin(CMSPlugin):
     )
     template_folder = models.CharField(
         max_length=200,
-        verbose_name=_("Plugin template"),
-        help_text=_("Select plugin template to load for this instance"),
+        verbose_name=_("Plugin laylout"),
+        help_text=_("Select plugin laylout to load for this instance"),
         default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
         choices=BLOG_PLUGIN_TEMPLATE_FOLDERS,
     )
