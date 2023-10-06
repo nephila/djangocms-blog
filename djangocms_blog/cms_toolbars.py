@@ -100,7 +100,7 @@ class BlogToolbar(CMSToolbar):
         with override(self.current_lang):
             menu_name = _("Blog")
             if current_config and current_config.app_title:
-                menu_name = current_config.app_title
+                menu_name = current_config.app_title.capitalize()
             admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", menu_name)
             object_dict = (
                 dict(object_name=current_config.object_name.capitalize())

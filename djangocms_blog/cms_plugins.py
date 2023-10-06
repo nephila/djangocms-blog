@@ -60,7 +60,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     def render(self, context, instance, placeholder):
         """Render the plugin."""
         context = super().render(context, instance, placeholder)
-        context["postcontent"] = instance.get_post_contents(context["request"])
+        context["postcontent_list"] = instance.get_post_contents(context["request"])
         context["TRUNCWORDS_COUNT"] = get_setting("POSTS_LIST_TRUNCWORDS_COUNT")
         return context
 
