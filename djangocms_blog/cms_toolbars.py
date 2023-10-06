@@ -103,7 +103,7 @@ class BlogToolbar(CMSToolbar):
                 menu_name = current_config.app_title
             admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", menu_name)
             object_dict = (
-                dict(object_name=current_config.object_name)
+                dict(object_name=current_config.object_name.capitalize())
                 if current_config
                 else dict(object_name=Post._meta.verbose_name.capitalize())
             )
