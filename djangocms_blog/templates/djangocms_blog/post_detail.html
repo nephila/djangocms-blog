@@ -6,7 +6,6 @@
 
 {% block content_blog %}{% spaceless %}
 <article id="post-{{ post.slug }}" class="post-item post-detail">
-  {{ post.content }}
     <header>
         <h2>{{ post.title }}{#  render_model post "title" #}</h2>
         {% if post.subtitle %}
