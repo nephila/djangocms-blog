@@ -232,7 +232,7 @@ class ModelAppHookConfig:
 
             class InitialForm(form):
                 class Meta(form.Meta):
-                    fields = ("app_config",)
+                    fields = ("app_config", "language",)
 
             form = InitialForm
         form = self._set_config_defaults(request, form, obj)
