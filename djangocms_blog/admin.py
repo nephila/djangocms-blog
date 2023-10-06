@@ -350,8 +350,8 @@ class PostAdmin(
     position matches.
     """
     _fieldset_extra_fields_position = {
-        "abstract": (0, 1),
-        "post_text": (0, 1),
+        "content__abstract": (0, 1),
+        "content__post_text": (0, 1),
         "sites": (1, 1, 0),
         "author": (1, 1, 0),
         "enable_liveblog": (2, 1, 2),
@@ -585,13 +585,11 @@ class PostAdmin(
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
-            # self._patch_fieldsets(fsets, "abstract")
-            pass
+            self._patch_fieldsets(fsets, "content__abstract")
         if not placeholder:
-            self._patch_fieldsets(fsets, "post_text")
+            self._patch_fieldsets(fsets, "content__post_text")
         if get_setting("MULTISITE") and not self.has_restricted_sites(request):
-            # self._patch_fieldsets(fsets, "sites")
-            pass
+            self._patch_fieldsets(fsets, "sites")
         if request.user.is_superuser:
             self._patch_fieldsets(fsets, "author")
         if apps.is_installed("djangocms_blog.liveblog"):
