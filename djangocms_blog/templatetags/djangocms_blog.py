@@ -1,6 +1,8 @@
 from classytags.arguments import Argument
 from classytags.core import Options
 from classytags.helpers import AsTag
+from cms.toolbar.utils import get_toolbar_from_request
+from cms.utils.placeholder import get_placeholder_from_slot
 from cms.utils.plugins import get_plugins
 from cms.utils.urlutils import admin_reverse
 from django import template
@@ -121,3 +123,49 @@ class GetAbsoluteUrl(AsTag):
 
 
 register.tag(GetAbsoluteUrl.name, GetAbsoluteUrl)
+
+
+class RenderNamedPlaceholder(AsTag):
+    """
+    Render the content of the plugins contained in a placeholder.
+    The result can be assigned to a variable within the template's context by using the `as` keyword.
+    It behaves in the same way as the `PageAttribute` class, check its docstring for more details.
+    """
+
+    name = "render_object_placeholder"
+    options = Options(
+        Argument("placeholder"),
+        Argument("object"),
+        "language",
+        Argument("language", default=None, required=False),
+        "as",
+        Argument("varname", required=False, resolve=False),
+    )
+
+    def _get_value(self, context, editable=True, **kwargs):
+        request = context["request"]
+        toolbar = get_toolbar_from_request(request)
+        renderer = toolbar.get_content_renderer()
+        placeholder = kwargs.get("placeholder")
+        obj = kwargs.get("object")
+        nocache = kwargs.get("nocache", False)
+
+        if not placeholder or not isinstance(placeholder, str) or not hasattr(obj, "placeholders"):
+            return ""
+
+        placeholder = get_placeholder_from_slot(obj.placeholders, placeholder)
+        content = renderer.render_placeholder(
+            placeholder=placeholder,
+            context=context,
+            language=kwargs.get("language"),
+            editable=editable,
+            use_cache=not nocache,
+            width=kwargs.get("width"),
+        )
+        return content
+
+    def get_value_for_context(self, context, **kwargs):
+        return self._get_value(context, editable=False, **kwargs)
+
+    def get_value(self, context, **kwargs):
+        return self._get_value(context, **kwargs)

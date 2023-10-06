@@ -2,14 +2,14 @@
 {% load i18n easy_thumbnails_tags cms_tags %}
 
 {% block canonical_url %}<link rel="canonical" href="{{ meta.url }}"/>{% endblock canonical_url %}
-{% block title %}{{ post.get_title }}{% endblock %}
+{% block title %}{{ post_content.title }}{% endblock %}
 
 {% block content_blog %}{% spaceless %}
 <article id="post-{{ post_content.slug }}" class="post-item post-detail">
     <header>
-        <h2>{{ post_content.title }}{#  render_model post "title" #}</h2>
+        <h2>{% render_model post_content "title" %}</h2>
         {% if post_content.subtitle %}
-            <h3>{# render_model post "subtitle" #}</h3>
+            <h3>{% render_model post_content "subtitle" %}</h3>
         {% endif %}
         {% block blog_meta %}
             {% include "djangocms_blog/includes/blog_meta.html" %}
@@ -19,20 +19,20 @@
         <div class="blog-visual">{% render_placeholder post_content.media %}</div>
     {% else %}
         <div class="blog-visual">
-            {% thumbnail post_content.post.main_image post_content.post.full_image_options.size crop=post_content.post.full_image_options.crop upscale=post_content.post.full_image_options.upscale subject_location=post_content.post.main_image.subject_location as thumb %}
-            <img src="{{ thumb.url }}" alt="{{ post_content.post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
+            {% thumbnail post_content.post.main_image post_content.post.full_image_options.size crop=post_content.post.full_image_options.crop upscale=post_content.post.full_image_options.upscale subject_location=post_content.post.main_image.subject_location as main_image %}
+            <img src="{{ main_image.url }}" alt="{{ post_content.post.main_image.default_alt_text }}" width="{{ main_image.width }}" height="{{ main_image.height }}" />
         </div>
     {% endif %}
     {% endspaceless %}
     {% if post_content.post.app_config.use_placeholder %}
-        <div class="blog-content">{% render_placeholder post.content %}</div>
+        <div class="blog-content">{% render_placeholder post_content.content %}</div>
     {% else %}
         <div class="blog-content">{% render_model post_content "post_text" "post_text" "" "safe" %}</div>
     {% endif %}
-    {% if post.related.exists %}
+    {% if post_content.related.exists %}
         <section class="post-detail-list">
-        {% for related in post.related.all %}
-            {% include "djangocms_blog/includes/blog_item.html" with post=related image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
+        {% for related in post_content.related.all %}
+            {% include "djangocms_blog/includes/blog_item.html" with post_content=related image="true" TRUNCWORDS_COUNT=TRUNCWORDS_COUNT %}
         {% endfor %}
         </section>
     {% endif %}
