@@ -5,7 +5,7 @@
 {% block title %}{{ post.get_title }}{% endblock %}
 
 {% block content_blog %}{% spaceless %}
-<article id="post-{{ post.slug }}" class="post-item post-detail">
+<article id="post-{{ post_content.slug }}" class="post-item post-detail">
     <header>
         <h2>{{ post_content.title }}{#  render_model post "title" #}</h2>
         {% if post_content.subtitle %}
@@ -18,10 +18,10 @@
     {% if not post_content.post.main_image_id %}
         <div class="blog-visual">{% render_placeholder post_content.media %}</div>
     {% else %}
-    <div class="blog-visual">
-        {% thumbnail post_content.post.main_image post_content.post.full_image_options.size crop=post_content.post.full_image_options.crop upscale=post_content.post.full_image_options.upscale subject_location=post_content.post.main_image.subject_location as thumb %}
-        <img src="{{ thumb.url }}" alt="{{ post_content.post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
-    </div>
+        <div class="blog-visual">
+            {% thumbnail post_content.post.main_image post_content.post.full_image_options.size crop=post_content.post.full_image_options.crop upscale=post_content.post.full_image_options.upscale subject_location=post_content.post.main_image.subject_location as thumb %}
+            <img src="{{ thumb.url }}" alt="{{ post_content.post.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
+        </div>
     {% endif %}
     {% endspaceless %}
     {% if post_content.post.app_config.use_placeholder %}
