@@ -634,7 +634,7 @@ class PostAdmin(
 
 
 @admin.register(PostContent)
-class PostAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
+class PostContentAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
     def change_view(self, request, object_id, form_url="", extra_context=None):
         """Redirect to grouper change view to allow for FrontendEditing of Post Content fields"""
         to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
@@ -642,6 +642,12 @@ class PostAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
         if request.method == "GET":
             return HttpResponseRedirect(admin_reverse("djangocms_blog_post_change", args=[obj.post.pk]))
         raise Http404
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(BlogConfig)
