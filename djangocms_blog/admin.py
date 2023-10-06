@@ -568,6 +568,7 @@ class PostAdmin(
         else:
             config = obj.app_config
 
+        self.opts.verbose_name = config.object_name if config else self.model._meta.verbose_name
         fsets = deepcopy(self._fieldsets)
         related_posts = []
         abstract = bool(getattr(config, "use_abstract", get_setting("USE_ABSTRACT")))
@@ -608,12 +609,6 @@ class PostAdmin(
         """Return the position in the fieldset where to add the given field."""
         return self._fieldset_extra_fields_position.get(field, (None, None, None))
 
-    # def get_prepopulated_fields(self, request, obj=None):
-    #     content_obj = self.get_content_obj(obj)
-    #     if self.can_change(request, content_obj):
-    #         return {"content__slug": ("content__title",)}
-    #     return {}
-
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj or form.instance, form, change)
         obj._set_default_author(request.user)
@@ -637,6 +632,17 @@ class PostAdmin(
             else:
                 form.instance.sites.add(*self.get_restricted_sites(request).all().values_list("pk", flat=True))
         super().save_related(request, form, formsets, change)
+
+
+@admin.register(PostContent)
+class PostAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        """Redirect to grouper change view to allow for FrontendEditing of Post Content fields"""
+        to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
+        obj = self.get_object(request, unquote(object_id), to_field)
+        if request.method == "GET":
+            return HttpResponseRedirect(admin_reverse("djangocms_blog_post_change", args=[obj.post.pk]))
+        raise Http404
 
 
 @admin.register(BlogConfig)
@@ -756,14 +762,3 @@ class BlogConfigAdmin(TranslatableAdmin):
 
             trigger_restart()
         return super().save_model(request, obj, form, change)
-
-
-@admin.register(PostContent)
-class PostAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
-    def change_view(self, request, object_id, form_url="", extra_context=None):
-        """Redirect to grouper change view to allow for FrontendEditing of Post Content fields"""
-        to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
-        obj = self.get_object(request, unquote(object_id), to_field)
-        if request.method == "GET":
-            return HttpResponseRedirect(admin_reverse("djangocms_blog_post_change", args=[obj.post.pk]))
-        raise Http404

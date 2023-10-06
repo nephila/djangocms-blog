@@ -30,25 +30,25 @@ class BlogToolbar(CMSToolbar):
     def add_preview_button(self):
         if self.is_current_app and self.toolbar.get_object() is None:
             # TODO: Restrict preview button to root url of blog
-                page_content = self.request.current_page.pagecontent_set(manager="admin_manager").latest_content().first()
-                url = get_object_preview_url(page_content, language=self.toolbar.request_language)
-                item = ButtonList(side=self.toolbar.RIGHT)
-                if self.toolbar.preview_mode_active:
-                    print(f"==> {self.request.path_info=} {self.toolbar.request_path=}")
-                    item.add_button(
-                        _('View on site'),
-                        url=page_content.get_absolute_url(),
-                        disabled=False,
-                        extra_classes=['cms-btn', 'cms-btn-switch-save'],
-                    )
-                else:
-                    item.add_button(
-                        _('Preview'),
-                        url=url,
-                        disabled=False,
-                        extra_classes=['cms-btn', 'cms-btn-switch-save'],
-                    )
-                self.toolbar.add_item(item)
+            page_content = self.request.current_page.pagecontent_set(manager="admin_manager").latest_content().first()
+            url = get_object_preview_url(page_content, language=self.toolbar.request_language)
+            item = ButtonList(side=self.toolbar.RIGHT)
+            if self.toolbar.preview_mode_active:
+                print(f"==> {self.request.path_info=} {self.toolbar.request_path=}")
+                item.add_button(
+                    _("View on site"),
+                    url=page_content.get_absolute_url(),
+                    disabled=False,
+                    extra_classes=["cms-btn", "cms-btn-switch-save"],
+                )
+            else:
+                item.add_button(
+                    _("Preview"),
+                    url=url,
+                    disabled=False,
+                    extra_classes=["cms-btn", "cms-btn-switch-save"],
+                )
+            self.toolbar.add_item(item)
 
     def add_view_published_button(self):
         """Helper method to add a publish button to the toolbar"""
@@ -102,21 +102,17 @@ class BlogToolbar(CMSToolbar):
             if current_config and current_config.app_title:
                 menu_name = current_config.app_title.capitalize()
             admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", menu_name)
-            object_dict = (
-                dict(object_name=current_config.object_name.capitalize())
-                if current_config
-                else dict(object_name=Post._meta.verbose_name.capitalize())
-            )
+            object_name = current_config.object_name if current_config else Post._meta.verbose_name
             if current_content and self.request.user.has_perm("djangocms_blog.change_post"):
                 admin_menu.add_modal_item(
-                    _("%(object_name)s Properties") % object_dict,
+                    _("%(object_name)s properties") % dict(object_name=object_name.capitalize()),
                     admin_reverse("djangocms_blog_post_change", args=(current_content.post.pk,)),
                 )
             url = admin_reverse("djangocms_blog_post_add")
             if current_config:
                 url += f"?app_config={current_config.pk}"
             admin_menu.add_modal_item(
-                _("Create %(object_name)s") % object_dict,
+                _("Create %(object_name)s") % dict(object_name=object_name),
                 url=url,
             )
             if current_config:
@@ -183,7 +179,7 @@ class BlogToolbar(CMSToolbar):
             start = admin_menu.find_first(Break, identifier=SHORTCUTS_BREAK)
         end = admin_menu.find_first(Break, identifier=ADMINISTRATION_BREAK)
 
-        items = admin_menu.get_items()[start.index + 1: end.index]
+        items = admin_menu.get_items()[start.index + 1 : end.index]
         for idx, item in enumerate(items):
             try:
                 if force_str(item_name.lower()) < force_str(item.name.lower()):  # noqa: E501
