@@ -10,9 +10,9 @@
             {% include "djangocms_blog/includes/blog_meta.html" %}
         {% endblock %}
     </header>
-    {% if image and postcontent.main_image %}
+    {% if image and postcontent.post.main_image %}
     <div class="blog-visual">
-        {% thumbnail postcontent.main_image postcontent.thumbnail_options.size crop=postcontent.thumbnail_options.crop upscale=postcontent.thumbnail_options.upscale subject_location=postcontent.main_image.subject_location as thumb %}
+        {% thumbnail postcontent.post.main_image postcontent.post.thumbnail_options.size crop=postcontent.post.thumbnail_options.crop upscale=postcontent.post.thumbnail_options.upscale subject_location=postcontent.post.main_image.subject_location as thumb %}
         <img src="{{ thumb.url }}" alt="{{ postcontent.main_image.default_alt_text }}" width="{{ thumb.width }}" height="{{ thumb.height }}" />
     </div>
     {% else %}
