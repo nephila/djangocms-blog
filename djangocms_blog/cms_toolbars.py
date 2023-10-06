@@ -98,7 +98,10 @@ class BlogToolbar(CMSToolbar):
             self.request, get_setting("CURRENT_NAMESPACE"), current_content.app_config if current_content else None
         )
         with override(self.current_lang):
-            admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", _("Blog"))
+            menu_name = _("Blog")
+            if current_config and current_config.app_title:
+                menu_name = current_config.app_title
+            admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", menu_name)
             object_dict = (
                 dict(object_name=current_config.object_name)
                 if current_config
@@ -110,6 +113,8 @@ class BlogToolbar(CMSToolbar):
                     admin_reverse("djangocms_blog_post_change", args=(current_content.post.pk,)),
                 )
             url = admin_reverse("djangocms_blog_post_add")
+            if current_config:
+                url += f"?app_config={current_config.pk}"
             admin_menu.add_modal_item(
                 _("Create %(object_name)s") % object_dict,
                 url=url,
