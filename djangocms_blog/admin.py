@@ -568,7 +568,6 @@ class PostAdmin(
         else:
             config = obj.app_config
 
-        self.opts.verbose_name = config.object_name if config else self.model._meta.verbose_name
         fsets = deepcopy(self._fieldsets)
         related_posts = []
         abstract = bool(getattr(config, "use_abstract", get_setting("USE_ABSTRACT")))

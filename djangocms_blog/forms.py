@@ -78,7 +78,7 @@ class LatestEntriesForm(BlogPluginForm):
         self.fields["tags"].widget = TagAutoSuggest("taggit.Tag")
 
     class Media:
-        css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
+        css = {"all": ("djangocms_blog/css/djangocms_blog_admin.css",)}
 
 
 class AuthorPostsForm(BlogPluginForm):

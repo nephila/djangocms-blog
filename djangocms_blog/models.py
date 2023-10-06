@@ -163,8 +163,8 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
     }
 
     class Meta:
-        verbose_name = _("blog category")
-        verbose_name_plural = _("blog categories")
+        verbose_name = _("post category")
+        verbose_name_plural = _("post categories")
         ordering = (F("priority").asc(nulls_last=True),)
 
     def descendants(self):
@@ -343,8 +343,8 @@ class Post(KnockerModel, models.Model):
     }
 
     class Meta:
-        verbose_name = _("blog article")
-        verbose_name_plural = _("blog articles")
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
         ordering = (F("pinned").asc(nulls_last=True), "-date_published", "-date_created")
         get_latest_by = "date_published"
 
