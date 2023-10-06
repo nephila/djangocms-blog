@@ -653,7 +653,8 @@ class BasePostPlugin(CMSPlugin):
         :return: optimized queryset
         """
         return qs.select_related("post", "post__app_config").prefetch_related(
-            "categories", "categories__translations", "categories__app_config"
+            "post__categories", "post__categories__translations",
+            "post__categories__app_config"
         )
 
     def post_content_queryset(self, request=None):
