@@ -660,15 +660,15 @@ class BasePostPlugin(CMSPlugin):
     def post_content_queryset(self, request=None):
         language = translation.get_language()
         if (request and getattr(request, "toolbar", False) and request.toolbar.edit_mode_active):
-            post_contents = PostContent.admin_manager
+            post_contents = PostContent.admin_manager.latest_content()
         else:
-            post_contents = PostContent.objects
+            post_contents = PostContent.objects.all()
         if self.app_config:
             post_contents = post_contents.filter(post__app_config=self.app_config)
         if self.current_site:
             post_contents = post_contents.on_site(get_current_site(request))
         post_contents = post_contents.filter(language=language)
-        return self.optimize(post_contents.all())
+        return self.optimize(post_contents)
 
 
 class LatestPostsPlugin(BasePostPlugin):
