@@ -389,21 +389,21 @@ BLOG_AUTO_HOME_TITLE = "Home"
 Title of the home page created by :ref:`auto_setup`.
 """
 
-BLOG_AUTO_BLOG_TITLE = "Blog"
+BLOG_AUTO_BLOG_TITLE = "blog"
 """
 .. _AUTO_BLOG_TITLE:
 
 Title of the blog page created by :ref:`auto_setup`.
 """
 
-BLOG_AUTO_APP_TITLE = "Blog"
+BLOG_AUTO_APP_TITLE = "blog"
 """
 .. _AUTO_APP_TITLE:
 
 Title of the ``BlogConfig`` instance created by :ref:`auto_setup`.
 """
 
-BLOG_AUTO_NAMESPACE = "Blog"
+BLOG_AUTO_NAMESPACE = "blog"
 """
 .. _AUTO_NAMESPACE:
 
