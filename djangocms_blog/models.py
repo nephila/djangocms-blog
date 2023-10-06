@@ -618,6 +618,8 @@ class PostContent(BlogMetaMixin, ModelMeta, models.Model):
 
     def get_template(self):
         # Used for the cms structure endpoint
+        if self.app_config and self.app_config.template_prefix:
+            return f"{self.app_config.template_prefix}/post_structure.html"
         return "djangocms_blog/post_structure.html"
 
     def __str__(self):
