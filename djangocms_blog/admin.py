@@ -9,12 +9,13 @@ from cms.utils.urlutils import admin_reverse
 from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
-from django.contrib.admin.options import InlineModelAdmin
+from django.contrib.admin.options import InlineModelAdmin, TO_FIELD_VAR
+from django.contrib.admin.utils import unquote
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Prefetch, signals
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.urls import NoReverseMatch, path
 from django.utils.translation import gettext_lazy as _, ngettext as __
 from django.views.generic import RedirectView
@@ -232,7 +233,10 @@ class ModelAppHookConfig:
 
             class InitialForm(form):
                 class Meta(form.Meta):
-                    fields = ("app_config", "language",)
+                    fields = (
+                        "app_config",
+                        "language",
+                    )
 
             form = InitialForm
         form = self._set_config_defaults(request, form, obj)
@@ -382,18 +386,6 @@ class PostAdmin(
             PostContent.admin_manager.filter(title__icontains=search_term).values("post_id").latest_content()
         )
         return queryset.filter(pk__in=content_title), True
-
-    @staticmethod
-    def endpoint_url(admin, obj):
-        if PostAdmin._post_content_type is None:
-            # Use class as cache
-            from django.contrib.contenttypes.models import ContentType
-
-            PostAdmin._post_content_type = ContentType.objects.get_for_model(obj.__class__).pk
-        try:
-            return admin_reverse(admin, args=[PostAdmin._post_content_type, obj.pk])
-        except NoReverseMatch:
-            return ""
 
     def get_form(self, request, obj=None, **kwargs):
         """Adds the language from the request to the form class"""
@@ -764,3 +756,14 @@ class BlogConfigAdmin(TranslatableAdmin):
 
             trigger_restart()
         return super().save_model(request, obj, form, change)
+
+
+@admin.register(PostContent)
+class PostAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        """Redirect to grouper change view to allow for FrontendEditing of Post Content fields"""
+        to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
+        obj = self.get_object(request, unquote(object_id), to_field)
+        if request.method == "GET":
+            return HttpResponseRedirect(admin_reverse("djangocms_blog_post_change", args=[obj.post.pk]))
+        raise Http404
