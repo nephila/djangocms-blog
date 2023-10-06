@@ -125,14 +125,14 @@ class GetAbsoluteUrl(AsTag):
 register.tag(GetAbsoluteUrl.name, GetAbsoluteUrl)
 
 
-class RenderNamedPlaceholder(AsTag):
+class RenderContentPlaceholder(AsTag):
     """
     Render the content of the plugins contained in a placeholder.
     The result can be assigned to a variable within the template's context by using the `as` keyword.
     It behaves in the same way as the `PageAttribute` class, check its docstring for more details.
     """
 
-    name = "render_object_placeholder"
+    name = "render_content_placeholder"
     options = Options(
         Argument("placeholder"),
         Argument("object"),
@@ -170,4 +170,5 @@ class RenderNamedPlaceholder(AsTag):
     def get_value(self, context, **kwargs):
         return self._get_value(context, **kwargs)
 
-register.tag(RenderNamedPlaceholder.name, RenderNamedPlaceholder)
+
+register.tag(RenderContentPlaceholder.name, RenderContentPlaceholder)
