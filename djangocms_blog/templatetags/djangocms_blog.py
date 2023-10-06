@@ -169,3 +169,5 @@ class RenderNamedPlaceholder(AsTag):
 
     def get_value(self, context, **kwargs):
         return self._get_value(context, **kwargs)
+
+register.tag(RenderNamedPlaceholder.name, RenderNamedPlaceholder)
