@@ -637,8 +637,8 @@ class BasePostPlugin(CMSPlugin):
     )
     template_folder = models.CharField(
         max_length=200,
-        verbose_name=_("Plugin laylout"),
-        help_text=_("Select plugin laylout to load for this instance"),
+        verbose_name=_("Plugin layout"),
+        help_text=_("Select plugin layout to load for this instance"),
         default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
         choices=BLOG_PLUGIN_TEMPLATE_FOLDERS,
     )
@@ -693,10 +693,10 @@ class LatestPostsPlugin(BasePostPlugin):
     def __str__(self):
         return force_str(_("%s latest articles by tag") % self.latest_posts)
 
-    def copy_relations(self, oldinstance):
-        for tag in oldinstance.tags.all():
+    def copy_relations(self, old_instance):
+        for tag in old_instance.tags.all():
             self.tags.add(tag)
-        for category in oldinstance.categories.all():
+        for category in old_instance.categories.all():
             self.categories.add(category)
 
     def get_post_contents(self, request):
