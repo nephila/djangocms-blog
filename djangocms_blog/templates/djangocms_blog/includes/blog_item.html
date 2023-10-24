@@ -1,38 +1,38 @@
 {% load djangocms_blog i18n easy_thumbnails_tags cms_tags %}
 
-<article id="post-{{ post_content.slug }}" class="post-item">
+<article id="post-{{ postcontent.slug }}" class="post-item">
     <header>
-        <h3><a href="{% absolute_url post_content %}">{{ post_content.title }}</a></h3>
-        {% if post_content.subtitle %}
-            <h4>{{ post_content.subtitle }}</h4>
+        <h3><a href="{% absolute_url postcontent %}">{{ postcontent.title }}</a></h3>
+        {% if postcontent.subtitle %}
+            <h4>{{ postcontent.subtitle }}</h4>
         {% endif %}
         {% block blog_meta %}
             {% include "djangocms_blog/includes/blog_meta.html" %}
         {% endblock %}
     </header>
-    {% if image and post_content.post.main_image %}
+    {% if image and postcontent.post.main_image %}
     <div class="blog-visual">
-        {% thumbnail post_content.post.main_image post_content.post.thumbnail_options.size crop=post_content.post.thumbnail_options.crop upscale=post_content.post.thumbnail_options.upscale subject_location=post_content.post.main_image.subject_location as main_image %}
+        {% thumbnail postcontent.post.main_image postcontent.post.thumbnail_options.size crop=postcontent.post.thumbnail_options.crop upscale=post_content.post.thumbnail_options.upscale subject_location=post_content.post.main_image.subject_location as main_image %}
         {% if main_image %}
-          <img src="{{ main_image.url }}" alt="{{ post_content.main_image.default_alt_text|default:'' }}" width="{{ main_image.width }}" height="{{ main_image.height }}" />
+          <img src="{{ main_image.url }}" alt="{{ postcontent.main_image.default_alt_text|default:'' }}" width="{{ main_image.width }}" height="{{ main_image.height }}" />
         {% else %}
-          <img src="{{ post_content.post.main_image.url }}" alt="{{ post_content.main_image.default_alt_text|default:'' }}" />
+          <img src="{{ postcontent.post.main_image.url }}" alt="{{ postcontent.main_image.default_alt_text|default:'' }}" />
         {% endif %}
     </div>
     {% else %}
-        {% media_images post_content as previews %}
+        {% media_images postcontent as previews %}
         <div class="blog-visual">
           {% for preview in previews %}<img src="{{ preview }}" />{% endfor %}
         </div>
     {% endif %}
     <div class="blog-lead">
         {% if not TRUNCWORDS_COUNT %}
-            {% render_model post_content "abstract" "" "" "safe" %}
+            {% render_model postcontent "abstract" "" "" "safe" %}
         {% else %}
-            {% render_model post_content "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
+            {% render_model postcontent "abstract" "" "" "truncatewords_html:TRUNCWORDS_COUNT|safe"  %}
         {% endif %}
     </div>
     <footer class="read-more">
-        <a href="{% absolute_url post_content %}">{% trans "read more" %} &raquo;</a>
+        <a href="{% absolute_url postcontent %}">{% trans "read more" %} &raquo;</a>
     </footer>
 </article>
