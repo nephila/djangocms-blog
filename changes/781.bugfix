@@ -1,1 +1,0 @@
-Fix FeaturedPostsPlugin get_posts method rendering all posts instead of selected ones

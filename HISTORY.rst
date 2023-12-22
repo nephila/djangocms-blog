@@ -6,6 +6,23 @@ History
 
 .. towncrier release notes start
 
+2.0.6 (2023-12-22)
+==================
+
+Features
+--------
+
+- Switch to Coveralls Github action (#774)
+
+
+Bugfixes
+--------
+
+- Add sphinx-rtd-theme dependency in setup (#769)
+- Add force_str to FeaturedPostsPlugin __str__ method (#780)
+- Fix FeaturedPostsPlugin get_posts method rendering all posts instead of selected ones (#781)
+
+
 2.0.5 (2023-09-26)
 ==================
 
