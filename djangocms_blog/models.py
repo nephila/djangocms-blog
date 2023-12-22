@@ -611,11 +611,7 @@ class FeaturedPostsPlugin(BasePostPlugin):
         self.posts.set(oldinstance.posts.all())
 
     def get_posts(self, request, published_only=True):
-        # if self.posts.exists():
-        #     posts = self.post_queryset(request, published_only, selected_posts=self.posts.all())
-        # else:
-        #     posts = self.post_queryset(request, published_only)
-        posts = self.post_queryset(request, published_only)
+        posts = self.post_queryset(request, published_only, selected_posts=self.posts.all())
         return posts
 
 

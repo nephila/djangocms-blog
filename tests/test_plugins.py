@@ -145,13 +145,13 @@ class PluginTest(BaseTest):
         plugin_nocache = add_plugin(ph, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
         plugin_nocache.posts.add(posts[0])
         # FIXME: Investigate the correct number of queries expected here
-        with self.assertNumQueries(FuzzyInt(16, 17)):
+        with self.assertNumQueries(FuzzyInt(15, 17)):
             self.render_plugin(pages[0], "en", plugin_nocache)
 
-        with self.assertNumQueries(FuzzyInt(16, 17)):
+        with self.assertNumQueries(FuzzyInt(15, 17)):
             self.render_plugin(pages[0], "en", plugin)
 
-        with self.assertNumQueries(FuzzyInt(16, 17)):
+        with self.assertNumQueries(FuzzyInt(15, 17)):
             rendered = self.render_plugin(pages[0], "en", plugin)
 
         self.assertTrue(rendered.find("<p>first line</p>") > -1)
