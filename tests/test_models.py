@@ -1364,10 +1364,11 @@ class ModelsTest2(BaseTest):
         plugin = add_plugin(post1.content, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
         plugin.posts.add(post1, post2)
         self.assertEqual(len(plugin.get_posts(request)), 1)
-
         post2.publish = True
         post2.save()
         self.assertEqual(len(plugin.get_posts(request)), 2)
+        plugin.posts.remove(post2)
+        self.assertEqual(len(plugin.get_posts(request)), 1)
 
     def test_copy_plugin_featured_post(self):
         post1 = self._get_post(self._post_data[0]["en"])

@@ -513,9 +513,9 @@ class BasePostPlugin(CMSPlugin):
             "translations", "categories", "categories__translations", "categories__app_config"
         )
 
-    def post_queryset(self, request=None, published_only=True):
+    def post_queryset(self, request=None, published_only=True, selected_posts=None):
         language = get_language()
-        posts = Post.objects
+        posts = Post.objects if not selected_posts else selected_posts
         if self.app_config:
             posts = posts.namespace(self.app_config.namespace)
         if self.current_site:
@@ -611,7 +611,7 @@ class FeaturedPostsPlugin(BasePostPlugin):
         self.posts.set(oldinstance.posts.all())
 
     def get_posts(self, request, published_only=True):
-        posts = self.post_queryset(request, published_only)
+        posts = self.post_queryset(request, published_only, selected_posts=self.posts.all())
         return posts
 
 
