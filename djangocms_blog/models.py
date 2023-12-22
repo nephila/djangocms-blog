@@ -605,7 +605,7 @@ class FeaturedPostsPlugin(BasePostPlugin):
     posts = SortedManyToManyField(Post, verbose_name=_("Featured posts"))
 
     def __str__(self):
-        return _("Featured posts")
+        return force_str(_("Featured posts"))
 
     def copy_relations(self, oldinstance):
         self.posts.set(oldinstance.posts.all())
