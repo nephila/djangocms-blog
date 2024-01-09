@@ -41,16 +41,54 @@ config_defaults = {
 
 
 class BlogConfig(TranslatableModel):
+    """
+
+    Class representing a blog configuration.
+
+    This class inherits from TranslatableModel.
+
+    Attributes:
+        type (models.CharField): Represents the type of the blog config.
+        namespace (models.CharField): Represents the namespace of the instance.
+        translations (TranslatedFields): Represents the translated fields of the blog config.
+        default_image_full (models.ForeignKey): Represents the default size of full images.
+        default_image_thumbnail (models.ForeignKey): Represents the default size of thumbnail images.
+        url_patterns (models.CharField): Represents the structure of permalinks.
+        use_placeholder (models.BooleanField): Represents whether to use placeholder and plugins for article body.
+        use_abstract (models.BooleanField): Represents whether to use abstract field.
+        use_related (models.SmallIntegerField): Represents whether to enable related posts.
+        urlconf (models.CharField): Represents the URL config.
+        set_author (models.BooleanField): Represents whether to set author by default.
+        paginate_by (models.SmallIntegerField): Represents the number of articles per page for pagination.
+        template_prefix (models.CharField): Represents the alternative directory to load the blog templates from.
+        menu_structure (models.CharField): Represents the menu structure.
+        menu_empty_categories (models.BooleanField): Represents whether to show empty categories in menu.
+        sitemap_changefreq (models.CharField): Represents the changefreq attribute for sitemap items.
+        sitemap_priority (models.DecimalField): Represents the priority attribute for sitemap items.
+        object_type (models.CharField): Represents the object type.
+        og_type (models.CharField): Represents the Facebook type.
+        og_app_id (models.CharField): Represents the Facebook application ID.
+        og_profile_id (models.CharField): Represents the Facebook profile ID.
+        og_publisher (models.CharField): Represents the Facebook page URL.
+        og_author_url (models.CharField): Represents the Facebook author URL.
+        og_author (models.CharField): Represents the Facebook author.
+        twitter_type (models.CharField): Represents the Twitter type field.
+        twitter_site (models.CharField): Represents the Twitter site handle.
+        twitter_author (models.CharField): Represents the Twitter author handle.
+        gplus_type (models.CharField): Represents the Schema.org object type.
+        gplus_author (models.CharField): Represents the Schema.org author name abstract field.
+
+    """
     class Meta:
         verbose_name = _("blog config")
         verbose_name_plural = _("blog configs")
 
     type = models.CharField(
-        _("Type"),
+        verbose_name=_("type"),
         max_length=100,
     )
     namespace = models.CharField(
-        _("Instance namespace"),
+        verbose_name=_("instance namespace"),
         default=None,
         max_length=100,
         unique=True,
@@ -67,7 +105,7 @@ class BlogConfig(TranslatableModel):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        verbose_name=_("Default size of full images"),
+        verbose_name=_("default size of full images"),
         help_text=_("If left empty the image size will have to be set for every newly created post."),
     )
     #: Default size of thumbnail images
@@ -77,7 +115,7 @@ class BlogConfig(TranslatableModel):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        verbose_name=_("Default size of thumbnail images"),
+        verbose_name=_("default size of thumbnail images"),
         help_text=_("If left empty the thumbnail image size will have to be set for every newly created post."),
     )
     #: Structure of permalinks (get_absolute_url); see :ref:`AVAILABLE_PERMALINK_STYLES <AVAILABLE_PERMALINK_STYLES>`
@@ -262,6 +300,9 @@ class BlogConfig(TranslatableModel):
 
 
 def get_app_instance(request):
+    """
+    Return current app instance namespace and config
+    """
     app = None
     namespace, config = "", None
     if getattr(request, "current_page", None) and request.current_page.application_urls:

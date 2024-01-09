@@ -17,9 +17,9 @@ from .utils import is_versioning_enabled
 @toolbar_pool.register
 class BlogToolbar(CMSToolbar):
     def _get_published_post_version(self):
-        """Returns a published page if one exists for the toolbar object"""
+        """Returns a published post if one exists for the toolbar object"""
         language = self.current_lang
-        # Exit the current toolbar object is not a Page / PageContent instance
+        # Exit if the current toolbar object is not a PostContent instance
         if not isinstance(self.toolbar.obj, PostContent):
             return
 
@@ -34,7 +34,6 @@ class BlogToolbar(CMSToolbar):
             url = get_object_preview_url(page_content, language=self.toolbar.request_language)
             item = ButtonList(side=self.toolbar.RIGHT)
             if self.toolbar.preview_mode_active:
-                print(f"==> {self.request.path_info=} {self.toolbar.request_path=}")
                 item.add_button(
                     _("View on site"),
                     url=page_content.get_absolute_url(),
@@ -104,12 +103,23 @@ class BlogToolbar(CMSToolbar):
             if current_config and current_config.app_title:
                 menu_name = current_config.app_title.capitalize()
             admin_menu = self.toolbar.get_or_create_menu("djangocms_blog", menu_name)
+            # Properties menu entry
             object_name = current_config.object_name if current_config else Post._meta.verbose_name
+            object_name = object_name.capitalize()
             if current_content and self.request.user.has_perm("djangocms_blog.change_post"):
                 admin_menu.add_modal_item(
                     _("%(object_name)s properties") % dict(object_name=object_name.capitalize()),
                     admin_reverse("djangocms_blog_post_change", args=(current_content.post.pk,)),
                 )
+                admin_menu.add_break()
+            # Entry list menu entry
+            if current_config:
+                url = admin_reverse("djangocms_blog_post_changelist") + f"?app_config__id__exact={current_config.pk}"
+                admin_menu.add_sideframe_item(
+                    _("Instances of %(object_name)s") % dict(object_name=object_name),
+                    url=url,
+                )
+            # Create menu entry
             url = admin_reverse("djangocms_blog_post_add")
             if current_config:
                 url += f"?app_config={current_config.pk}"
@@ -119,7 +129,7 @@ class BlogToolbar(CMSToolbar):
             )
             if current_config:
                 url = admin_reverse("djangocms_blog_blogconfig_change", args=(current_config.pk,))
-                admin_menu.add_modal_item(_("Edit configuration"), url=url)
+                admin_menu.add_modal_item(_("Edit Configuration"), url=url)
         self.add_preview_button()
         self.add_view_published_button()  # Takes the user the published post version
 
