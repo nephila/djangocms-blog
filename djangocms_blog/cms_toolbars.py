@@ -94,8 +94,10 @@ class BlogToolbar(CMSToolbar):
             return  # pragma: no cover
 
         current_content = getattr(self.request, get_setting("CURRENT_POST_IDENTIFIER"), self.toolbar.get_object())
+        if isinstance(current_content, PageContent):
+            current_content = None
         current_config = getattr(
-            self.request, get_setting("CURRENT_NAMESPACE"), current_content.app_config if current_content else None
+            self.request, get_setting("CURRENT_NAMESPACE"), getattr(current_content, "app_config", None)
         )
         with override(self.current_lang):
             menu_name = _("Blog")
