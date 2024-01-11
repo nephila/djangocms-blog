@@ -239,12 +239,6 @@ class CategoryEntriesView(BaseConfigListViewMixin, ListView):
                 raise Http404
         return self._category
 
-    def get(self, *args, **kwargs):
-        # submit object to cms toolbar to get correct language switcher behavior
-        if hasattr(self.request, "toolbar"):
-            self.request.toolbar.set_object(self.category)
-        return super().get(*args, **kwargs)
-
     def get_queryset(self):
         qs = super().get_queryset()
         if "category" in self.kwargs:

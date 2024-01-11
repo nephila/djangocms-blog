@@ -116,7 +116,7 @@ class BlogToolbar(CMSToolbar):
             if current_config:
                 url = admin_reverse("djangocms_blog_post_changelist") + f"?app_config__id__exact={current_config.pk}"
                 admin_menu.add_sideframe_item(
-                    _("Instances of %(object_name)s") % dict(object_name=object_name),
+                    _("All entries"),
                     url=url,
                 )
             # Create menu entry
@@ -124,7 +124,7 @@ class BlogToolbar(CMSToolbar):
             if current_config:
                 url += f"?app_config={current_config.pk}"
             admin_menu.add_modal_item(
-                _("Create %(object_name)s") % dict(object_name=object_name),
+                _("New %(object_name)s") % dict(object_name=object_name),
                 url=url,
             )
             if current_config:
