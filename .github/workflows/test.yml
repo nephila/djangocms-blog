@@ -18,10 +18,6 @@ jobs:
             cms: 39
           - django: 42
             cms: 39
-          - django: 32
-            cms: 311
-          - django: 42
-            cms: 311
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
