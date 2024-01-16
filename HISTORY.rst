@@ -6,6 +6,15 @@ History
 
 .. towncrier release notes start
 
+2.0.7 (2024-01-16)
+==================
+
+Bugfixes
+--------
+
+- Pin Django CMS version < 4, update Github test matrix (#786)
+
+
 2.0.6 (2023-12-22)
 ==================
 
