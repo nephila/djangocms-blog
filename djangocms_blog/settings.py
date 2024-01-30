@@ -1,6 +1,7 @@
 """
 List of settings that can be set in project django settings.
 """
+
 from django.utils.translation import gettext_lazy as _
 from meta import settings as meta_settings
 
