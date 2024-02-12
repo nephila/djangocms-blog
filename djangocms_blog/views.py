@@ -45,7 +45,11 @@ class PostDetailView(BlogConfigMixin, DetailView):
     def get(self, request, *args, **kwargs):
         """Make toolbar object's apphook config available"""
         if hasattr(request, "toolbar") and self.config is None:
-            self.config = getattr(request.toolbar.get_object().post, "app_config", None)
+            obj = request.toolbar.get_object()
+            if isinstance(obj, PostContent):
+                self.config = getattr(request.toolbar.get_object().post, "app_config", None)
+            else:
+                self.config = None
         return super().get(request, *args, **kwargs)
 
     def liveblog_enabled(self):
