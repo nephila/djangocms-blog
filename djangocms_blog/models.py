@@ -675,21 +675,21 @@ class BasePostPlugin(CMSPlugin):
 
 class LatestPostsPlugin(BasePostPlugin):
     latest_posts = models.IntegerField(
-        _("articles"),
+        _("entries"),
         default=get_setting("LATEST_POSTS"),
-        help_text=_("The number of latests " "articles to be displayed."),
+        help_text=_("The number of latests entries to be displayed."),
     )
     tags = TaggableManager(
         _("filter by tag"),
         blank=True,
-        help_text=_("Show only the blog articles tagged with chosen tags."),
+        help_text=_("Show only the entries tagged with chosen tags."),
         related_name="djangocms_blog_latest_post",
     )
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory",
         blank=True,
         verbose_name=_("filter by category"),
-        help_text=_("Show only the blog articles tagged " "with chosen categories."),
+        help_text=_("Show only the blog articles tagged with chosen categories."),
     )
 
     def __str__(self):
@@ -714,16 +714,15 @@ class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL,
         verbose_name=_("authors"),
-        limit_choices_to={"djangocms_blog_post_author__publish": True},
     )
     latest_posts = models.IntegerField(
-        _("articles"),
+        _("entries"),
         default=get_setting("LATEST_POSTS"),
-        help_text=_("The number of author articles to be displayed."),
+        help_text=_("The number of author entries to be displayed."),
     )
 
     def __str__(self):
-        return force_str(_("%s latest articles by author") % self.latest_posts)
+        return force_str(_("%s latest entries by author") % self.latest_posts)
 
     def copy_relations(self, oldinstance):
         self.authors.set(oldinstance.authors.all())

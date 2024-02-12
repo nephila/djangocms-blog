@@ -61,10 +61,10 @@ class BlogApp(CMSApp):
 
     def get_config_add_url(self):
         try:
-            return reverse("admin:{}_{}_add".format(self.app_config._meta.app_label, self.app_config._meta.model_name))
+            return reverse(f"admin:{self.app_config._meta.app_label}_{self.app_config._meta.model_name}_add")
         except AttributeError:  # pragma: no cover
             return reverse(
-                "admin:{}_{}_add".format(self.app_config._meta.app_label, self.app_config._meta.module_name)
+                f"admin:{self.app_config._meta.app_label}_{self.app_config._meta.module_name}_add"
             )
 
 
