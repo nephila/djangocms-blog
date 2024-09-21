@@ -119,6 +119,7 @@ class SiteListFilter(admin.SimpleListFilter):
 class ModelAppHookConfig:
     app_config_selection_title = _("Select app config")
     app_config_selection_desc = _("Select the app config for the new object")
+    app_config_initial_fields = ("app_config",)
     app_config_values = {}
 
     def _app_config_select(self, request, obj):
@@ -181,7 +182,7 @@ class ModelAppHookConfig:
                 (
                     _(self.app_config_selection_title),
                     {
-                        "fields": ("app_config",),
+                        "fields": self.app_config_initial_fields,
                         "description": _(self.app_config_selection_desc),
                     },
                 ),
@@ -314,7 +315,7 @@ class ModelAppHookConfig:
 
             class InitialForm(form):
                 class Meta(form.Meta):
-                    fields = ("app_config",)
+                    fields = self.app_config_initial_fields
 
             form = InitialForm
         form = self._set_config_defaults(request, form, obj)
@@ -371,6 +372,7 @@ class PostAdmin(
     GrouperModelAdmin,
 ):
     # form = PostAdminForm
+    app_config_initial_fields = ("app_config", "content__language")
     extra_grouping_fields = ("language",)
     inlines = []
     list_display = ("title", "author", "app_config", "state_indicator", "admin_list_actions")
