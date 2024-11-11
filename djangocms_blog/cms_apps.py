@@ -36,7 +36,7 @@ class BlogApp(CMSApp):
             return [urlconf]  # Single urlconf
         return [
             getattr(
-                self.app_config.objects.get(namespace=page.application_namespace),
+                self.app_config.objects.filter(namespace=page.application_namespace).first(),
                 "urlconf",
                 get_setting("URLCONF")[0][0],
             )

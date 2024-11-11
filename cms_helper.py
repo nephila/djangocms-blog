@@ -18,7 +18,7 @@ HELPER_SETTINGS = dict(
         "meta",
         "easy_thumbnails",
         "django.contrib.sitemaps",
-        "djangocms_text_ckeditor",
+        "djangocms_text",
         "taggit",
         "taggit_autosuggest",
         "djangocms_video",

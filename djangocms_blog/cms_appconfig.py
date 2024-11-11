@@ -306,7 +306,6 @@ def get_app_instance(request):
     """
     Return current app instance namespace and config
     """
-    app = None
     namespace, config = "", None
     if getattr(request, "current_page", None) and request.current_page.application_urls:
         app = apphook_pool.get_apphook(request.current_page.application_urls)

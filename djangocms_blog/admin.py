@@ -288,12 +288,6 @@ class ModelAppHookConfig:
                     else:
                         form = AppConfigForm(initial={"app_config": None, "language": request.GET.get("language")})
                     return self.render_app_config_form(request, form)
-                elif "author" not in request.POST:
-                    get = copy.copy(request.GET)  # Make a copy to modify
-                    get["app_config"] = app_config_default.pk
-                    request.GET = get
-                    request.method = "GET"
-
         return super().changeform_view(request, object_id, form_url, extra_context)
 
     def get_form_x(self, request, obj=None, **kwargs):
@@ -713,6 +707,8 @@ class PostAdmin(
 
 @admin.register(PostContent)
 class PostContentAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
+    frontend_editable_fields = ["post_text", "title", "subtitle"]
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         """Redirect to grouper change view to allow for FrontendEditing of Post Content fields"""
         to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
