@@ -15,7 +15,6 @@ config_defaults = {
     "use_placeholder": get_setting("USE_PLACEHOLDER"),
     "use_abstract": get_setting("USE_ABSTRACT"),
     "use_related": int(get_setting("USE_RELATED")),
-    "urlconf": get_setting("URLCONF") if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")[0][0],
     "set_author": get_setting("AUTHOR_DEFAULT"),
     "paginate_by": get_setting("PAGINATION"),
     "template_prefix": "",
@@ -141,15 +140,6 @@ class BlogConfig(TranslatableModel):
             (0, _("No")),
             (1, _("Yes, from this blog config")),
             (2, _("Yes, from this site")),
-        ),
-    )
-    #: Adjust urlconf (default: :ref:`USE_RELATED <USE_RELATED>`)
-    urlconf = models.CharField(
-        max_length=200,
-        verbose_name=_("URL config"),
-        default=config_defaults["urlconf"],
-        choices=(
-            [(get_setting("URLCONF"), "---")] if isinstance(get_setting("URLCONF"), str) else get_setting("URLCONF")
         ),
     )
     #: Set author by default (default: :ref:`AUTHOR_DEFAULT <AUTHOR_DEFAULT>`)
@@ -279,13 +269,6 @@ class BlogConfig(TranslatableModel):
         default=False,
         help_text=_("Emits a desktop notification -if enabled- when editing a published post"),
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        """Remove urlconf from form if no apphook-based url config is enabled"""
-        if isinstance(get_setting("URLCONF"), str):
-            self.fields["urlconf"].widget = forms.HiddenInput()
-            self.fields["urlconf"].label = ""  # Admin otherwise displays label for hidden field
 
     def get_app_title(self):
         return getattr(self, "app_title", _("untitled"))

@@ -110,6 +110,7 @@ class BlogToolbar(CMSToolbar):
                 admin_menu.add_modal_item(
                     _("%(object_name)s properties") % dict(object_name=object_name.capitalize()),
                     admin_reverse("djangocms_blog_post_change", args=(current_content.post.pk,)),
+                    disabled=not self.request.user.has_perm("djangocms_blog.change_post"),
                 )
                 admin_menu.add_break()
             # Entry list menu entry
@@ -118,6 +119,7 @@ class BlogToolbar(CMSToolbar):
                 admin_menu.add_sideframe_item(
                     _("All entries"),
                     url=url,
+                    disabled=not self.request.user.has_perm("djangocms_blog.change_post"),
                 )
             # Create menu entry
             url = admin_reverse("djangocms_blog_post_add")
@@ -126,10 +128,12 @@ class BlogToolbar(CMSToolbar):
             admin_menu.add_modal_item(
                 _("New %(object_name)s") % dict(object_name=object_name),
                 url=url,
+                disabled=not self.request.user.has_perm("djangocms_blog.add_post"),
             )
             if current_config:
                 url = admin_reverse("djangocms_blog_blogconfig_change", args=(current_config.pk,))
-                admin_menu.add_modal_item(_("Edit Configuration"), url=url)
+                disabled = not self.request.user.has_perm("djangocms_blog.change_blogconfig")
+                admin_menu.add_modal_item(_("Edit Configuration"), url=url, disabled=disabled)
         self.add_preview_button()
         self.add_view_published_button()  # Takes the user the published post version
 
