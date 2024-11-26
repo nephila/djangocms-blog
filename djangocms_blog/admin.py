@@ -108,7 +108,7 @@ class SiteListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         try:
             if "sites" in self.used_parameters:
-                return queryset.on_site(Site.objects.get(pk=self.used_parameters["sites"]))
+                return queryset.filter(models.Q(sites__isnull=True) | models.Q(sites=self.used_parameters["sites"]))
             return queryset
         except Site.DoesNotExist as e:  # pragma: no cover
             raise admin.options.IncorrectLookupParameters(e)
@@ -760,7 +760,7 @@ class BlogConfigAdmin(TranslatableAdmin):
                 {
                     "fields": (
                         "paginate_by",
-                        ("urlconf", "url_patterns"),
+                        "url_patterns",
                         ("menu_structure", "menu_empty_categories"),
                         "template_prefix",
                         ("default_image_full", "default_image_thumbnail"),
