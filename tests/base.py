@@ -10,7 +10,7 @@ from parler.utils.context import smart_override
 
 from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.cms_menus import BlogCategoryMenu, BlogNavModifier
-from djangocms_blog.models import BlogCategory, Post, ThumbnailOption, PostContent
+from djangocms_blog.models import BlogCategory, Post, PostContent, ThumbnailOption
 from tests.base_test import BaseTestCase
 
 User = get_user_model()

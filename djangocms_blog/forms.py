@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxLengthValidator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
 

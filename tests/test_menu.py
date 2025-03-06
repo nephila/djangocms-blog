@@ -6,7 +6,6 @@ from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.models import BlogCategory
 from djangocms_blog.settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS
 from djangocms_blog.views import CategoryEntriesView, PostDetailView
-
 from tests.base import BaseTest
 
 
@@ -83,7 +82,7 @@ class MenuTest(BaseTest):
             keys = CacheKey.objects.get_keys().distinct().values_list("key", flat=True)
             self.assertFalse(keys)
 
-    def test_menu_nodes(self):
+    def test_all_categories_present_in_menu(self):
         """
         Tests if all categories are present in the menu
         """
@@ -99,6 +98,10 @@ class MenuTest(BaseTest):
                 self.assertTrue(len(nodes), BlogCategory.objects.all().count() + len(pages))
                 nodes_url = {node.get_absolute_url() for node in nodes}
                 cats_url = {cat.get_absolute_url() for cat in self.cats if cat.has_translation(lang)}
+                print()
+                print(nodes_url)
+                print(cats_url)
+                print(80*"-")
                 self.assertTrue(cats_url.issubset(nodes_url))
 
         self._reset_menus()
@@ -134,7 +137,7 @@ class MenuTest(BaseTest):
                 cats_with_post_url[lang] = {
                     cat.get_absolute_url()
                     for cat in self.cats
-                    if cat.has_translation(lang) and cat.blog_posts.published().exists()
+                    if cat.has_translation(lang) and cat.blog_posts.exists()
                 }
                 cats_without_post_url[lang] = cats_url[lang].difference(cats_with_post_url[lang])
                 posts_url[lang] = {
@@ -144,7 +147,7 @@ class MenuTest(BaseTest):
                 }
 
         # No item in the menu
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_NONE
+        self.app_config_1.menu_structure = MENU_TYPE_NONE
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
@@ -157,7 +160,7 @@ class MenuTest(BaseTest):
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
 
         # Only posts in the menu
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_POSTS
+        self.app_config_1.menu_structure = MENU_TYPE_POSTS
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
@@ -170,7 +173,7 @@ class MenuTest(BaseTest):
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
 
         # Only categories in the menu
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_CATEGORIES
+        self.app_config_1.menu_structure = MENU_TYPE_CATEGORIES
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
@@ -183,7 +186,7 @@ class MenuTest(BaseTest):
                 self.assertFalse(posts_url[lang].issubset(nodes_url))
 
         # Both types in the menu
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
+        self.app_config_1.menu_structure = MENU_TYPE_COMPLETE
         self.app_config_1.save()
         self._reset_menus()
         for lang in languages:
@@ -196,9 +199,9 @@ class MenuTest(BaseTest):
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
 
         # Both types in the menu
-        self.app_config_1.app_data.config.menu_empty_categories = False
+        self.app_config_1.menu_empty_categories = False
         self.app_config_1.save()
-        self.app_config_2.app_data.config.menu_empty_categories = False
+        self.app_config_2.menu_empty_categories = False
         self.app_config_2.save()
         self._reset_menus()
         for lang in languages:
@@ -211,9 +214,9 @@ class MenuTest(BaseTest):
                 self.assertFalse(cats_without_post_url[lang].intersection(nodes_url))
                 self.assertTrue(posts_url[lang].issubset(nodes_url))
         # Both types in the menu
-        self.app_config_1.app_data.config.menu_empty_categories = True
+        self.app_config_1.menu_empty_categories = True
         self.app_config_1.save()
-        self.app_config_2.app_data.config.menu_empty_categories = True
+        self.app_config_2.menu_empty_categories = True
         self.app_config_2.save()
         self._reset_menus()
 
@@ -230,7 +233,7 @@ class MenuTest(BaseTest):
             (PostDetailView, "slug", posts[0], posts[0].categories.first()),
             (CategoryEntriesView, "category", self.cats[2], self.cats[2]),
         )
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
+        self.app_config_1.menu_structure = MENU_TYPE_COMPLETE
         self.app_config_1.save()
         for view_cls, kwarg, obj, _cat in tests:
             with smart_override("en"):
@@ -253,7 +256,7 @@ class MenuTest(BaseTest):
                             found.append(node.get_absolute_url())
                     self.assertTrue(obj.get_absolute_url() in found)
 
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_CATEGORIES
+        self.app_config_1.menu_structure = MENU_TYPE_CATEGORIES
         self.app_config_1.save()
         for view_cls, kwarg, obj, cat in tests:
             with smart_override("en"):
@@ -273,5 +276,5 @@ class MenuTest(BaseTest):
                     found = [node.get_absolute_url() for node in nodes if node.selected]
                     self.assertTrue(cat.get_absolute_url() in found)
 
-        self.app_config_1.app_data.config.menu_structure = MENU_TYPE_COMPLETE
+        self.app_config_1.menu_structure = MENU_TYPE_COMPLETE
         self.app_config_1.save()

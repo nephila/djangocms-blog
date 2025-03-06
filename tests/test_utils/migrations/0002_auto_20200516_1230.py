@@ -50,17 +50,6 @@ class Migration(migrations.Migration):
                         to="djangocms_blog.Post",
                     ),
                 ),
-                (
-                    "some_placeholder",
-                    cms.models.fields.PlaceholderField(
-                        editable=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="some_placeholder",
-                        slotname="some_placeholder",
-                        to="cms.Placeholder",
-                    ),
-                ),
             ],
         ),
         migrations.CreateModel(

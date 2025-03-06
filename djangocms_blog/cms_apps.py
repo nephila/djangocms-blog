@@ -54,9 +54,7 @@ class BlogApp(CMSApp):
         try:
             return reverse(f"admin:{self.app_config._meta.app_label}_{self.app_config._meta.model_name}_add")
         except AttributeError:  # pragma: no cover
-            return reverse(
-                f"admin:{self.app_config._meta.app_label}_{self.app_config._meta.module_name}_add"
-            )
+            return reverse(f"admin:{self.app_config._meta.app_label}_{self.app_config._meta.module_name}_add")
 
 
 # BlogApp.setup()

@@ -18,11 +18,14 @@ classifiers = [
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
     "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
     "Framework :: Django CMS :: 4.1",
+    "Framework :: Django CMS :: 5.0",
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "django-cms>=4.1.0rc3",
@@ -45,10 +48,25 @@ docs = [
 taggit-helpers = [
     "django-taggit-helpers",
 ]
+test = [
+    "coverage",
+    "coveralls>=2.0",
+    "pysolr",
+    "django-taggit-helpers",
+    "djangocms-video",
+    "djangocms-text",
+    "pytest",
+    "pytest-django",
+    "pytest-asyncio",
+]
 
 [project.urls]
 Documentation = "https://djangocms-blog.readthedocs.io/"
 Homepage = "https://github.com/nephila/djangocms-blog"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+pythonpath = ["."]
 
 [tool.hatch.version]
 path = "djangocms_blog/__init__.py"
@@ -103,7 +121,3 @@ target-version = "py39"
 [tool.ruff.mccabe]
 max-complexity = 5
 
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "tests.settings"
-# django_find_project = false
-# pythonpath = [".", "djangocms_blog"]

@@ -27,9 +27,8 @@ from djangocms_blog.views import (
     PostListView,
     TaggedListView,
 )
-
 from tests.base import BaseTest
-from tests.utils import captured_output
+from tests.base_test import captured_output
 
 
 class CustomUrlViewTest(BaseTest):
@@ -76,7 +75,7 @@ class ViewTest(BaseTest):
             self.assertEqual(list(view_obj.get_queryset()), [posts[0]])
             self.assertEqual(getattr(request, BLOG_CURRENT_NAMESPACE), self.app_config_1)
 
-            request = self.get_page_request(pages[1], self.user, lang="en", edit=False)
+            request = self.get_toolbar_request(pages[1], self.user, lang="en", edit=False)
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
             view_obj.kwargs = {}
@@ -84,7 +83,7 @@ class ViewTest(BaseTest):
             self.assertEqual(qs.count(), 1)
             self.assertEqual(set(qs), {posts[0]})
 
-            request = self.get_page_request(pages[1], self.user, lang="en", edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, lang="en", edit=True)
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
             self.assertEqual(set(view_obj.get_queryset()), {posts[0], posts[1], posts[2]})
@@ -107,7 +106,7 @@ class ViewTest(BaseTest):
             self.assertFalse(posts[1] in view_obj.get_queryset())
 
         with smart_override("it"):
-            request = self.get_page_request(pages[1], self.user, lang="it", edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, lang="it", edit=True)
             view_obj = PostListView()
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
@@ -174,7 +173,7 @@ class ViewTest(BaseTest):
 
         with smart_override("fr"):
             view_obj = PostListView()
-            request = self.get_page_request(pages[1], self.user, lang="fr", edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, lang="fr", edit=True)
             view_obj.request = request
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.kwargs = {}
@@ -185,7 +184,7 @@ class ViewTest(BaseTest):
             PARLER_FALLBACK = add_default_language_settings(PARLER_FALLBACK)  # noqa: N806
             with override_parler_settings(PARLER_LANGUAGES=PARLER_FALLBACK):
                 view_obj = PostListView()
-                request = self.get_page_request(pages[1], self.user, lang="fr", edit=True)
+                request = self.get_toolbar_request(pages[1], self.user, lang="fr", edit=True)
                 view_obj.request = request
                 view_obj.namespace, view_obj.config = get_app_instance(request)
                 view_obj.kwargs = {}
@@ -199,7 +198,7 @@ class ViewTest(BaseTest):
 
         with smart_override("en"):
             with switch_language(posts[0], "en"):
-                request = self.get_page_request(pages[1], AnonymousUser(), lang="en", edit=False)
+                request = self.get_toolbar_request(pages[1], AnonymousUser(), lang="en", edit=False)
                 view_obj = PostDetailView()
                 view_obj.request = request
                 view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -215,7 +214,7 @@ class ViewTest(BaseTest):
 
         with smart_override("it"):
             with switch_language(posts[0], "it"):
-                request = self.get_page_request(pages[1], AnonymousUser(), lang="it", edit=False)
+                request = self.get_toolbar_request(pages[1], AnonymousUser(), lang="it", edit=False)
                 view_obj = PostDetailView()
                 view_obj.request = request
                 view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -236,7 +235,7 @@ class ViewTest(BaseTest):
         posts = self.get_posts()
 
         with smart_override("en"):
-            request = self.get_page_request(pages[1], AnonymousUser(), lang="en", edit=False)
+            request = self.get_toolbar_request(pages[1], AnonymousUser(), lang="en", edit=False)
             view_obj = PostArchiveView()
             view_obj.request = request
             view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -258,7 +257,7 @@ class ViewTest(BaseTest):
         posts = self.get_posts()
 
         with smart_override("en"):
-            request = self.get_page_request(pages[1], self.user, lang="en", edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, lang="en", edit=True)
             view_obj = CategoryEntriesView()
             view_obj.request = request
             view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -278,7 +277,7 @@ class ViewTest(BaseTest):
             self.assertEqual(context["post_list"][0].title, "First post")
             self.assertTrue(context["meta"])
 
-            request = self.get_page_request(pages[1], self.user, edit=False)
+            request = self.get_toolbar_request(pages[1], self.user, edit=False)
             view_obj.request = request
             qs = view_obj.get_queryset()
             self.assertEqual(qs.count(), 1)
@@ -288,7 +287,7 @@ class ViewTest(BaseTest):
         posts = self.get_posts()
 
         with smart_override("en"):
-            request = self.get_page_request(pages[1], self.user, lang="en", edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, lang="en", edit=True)
             view_obj = AuthorEntriesView()
             view_obj.namespace, view_obj.config = get_app_instance(request)
             view_obj.request = request
@@ -307,7 +306,7 @@ class ViewTest(BaseTest):
             self.assertEqual(context["paginator"].count, 3)
             self.assertEqual(context["post_list"][0].title, "First post")
 
-            request = self.get_page_request(pages[1], self.user, edit=False)
+            request = self.get_toolbar_request(pages[1], self.user, edit=False)
             view_obj.request = request
             qs = view_obj.get_queryset()
             self.assertEqual(qs.count(), 1)
@@ -317,7 +316,7 @@ class ViewTest(BaseTest):
         self.get_posts()
 
         with smart_override("en"):
-            request = self.get_page_request(pages[1], self.user, edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, edit=True)
             view_obj = PostListView()
             view_obj.request = request
             view_obj.namespace = self.app_config_1.namespace
@@ -363,7 +362,7 @@ class TaggedItemViewTest(BaseTest):
         posts[1].save()
 
         with smart_override("en"):
-            request = self.get_page_request(pages[1], self.user, lang="en", edit=True)
+            request = self.get_toolbar_request(pages[1], self.user, lang="en", edit=True)
             view_obj = TaggedListView()
             view_obj.request = request
             view_obj.namespace, view_obj.config = get_app_instance(request)
@@ -396,7 +395,7 @@ class TaggedItemViewTest(BaseTest):
 
         with smart_override("en"):
             with switch_language(posts[0], "en"):
-                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+                request = self.get_toolbar_request(pages[1], self.user, path=posts[0].get_absolute_url())
 
                 feed = LatestEntriesFeed()
                 feed.namespace, feed.config = get_app_instance(request)
@@ -412,7 +411,7 @@ class TaggedItemViewTest(BaseTest):
                 feed = LatestEntriesFeed()
                 feed.namespace, feed.config = get_app_instance(request)
                 self.assertEqual(list(feed.items()), [posts[0]])
-                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+                request = self.get_toolbar_request(pages[1], self.user, path=posts[0].get_absolute_url())
                 xml = feed(request)
                 self.assertContains(xml, posts[0].get_absolute_url())
                 self.assertContains(xml, "Articoli del blog su example.com")
@@ -427,7 +426,7 @@ class TaggedItemViewTest(BaseTest):
                 posts[0].include_in_rss = False
                 posts[0].save()
 
-                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+                request = self.get_toolbar_request(pages[1], self.user, path=posts[0].get_absolute_url())
 
                 feed = LatestEntriesFeed()
                 feed.namespace, feed.config = get_app_instance(request)
@@ -510,7 +509,7 @@ class InstanctArticlesViewTest(BaseTest):
 
         with smart_override("en"):
             with switch_language(posts[0], "en"):
-                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+                request = self.get_toolbar_request(pages[1], self.user, path=posts[0].get_absolute_url())
 
                 feed = FBInstantArticles()
                 feed.namespace, feed.config = get_app_instance(request)

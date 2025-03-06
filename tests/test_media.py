@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 from cms.api import add_plugin
 
 from djangocms_blog.templatetags.djangocms_blog import media_images, media_plugins
-
 from tests.base import BaseTest
 
 

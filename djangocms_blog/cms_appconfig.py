@@ -78,6 +78,7 @@ class BlogConfig(TranslatableModel):
         gplus_author (models.CharField): Represents the Schema.org author name abstract field.
 
     """
+
     class Meta:
         verbose_name = _("blog config")
         verbose_name_plural = _("blog configs")
@@ -272,6 +273,20 @@ class BlogConfig(TranslatableModel):
 
     def get_app_title(self):
         return getattr(self, "app_title", _("untitled"))
+
+    def save(self, *args, **kwargs):
+        """Delete menu cache upon safe"""
+        from menus.menu_pool import menu_pool
+
+        menu_pool.clear(all=True)
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Delete menu cache upon delete"""
+        from menus.menu_pool import menu_pool
+
+        menu_pool.clear(all=True)
+        return super().delete(*args, **kwargs)
 
     @property
     def schemaorg_type(self):

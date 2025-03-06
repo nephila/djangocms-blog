@@ -7,8 +7,7 @@ from django.conf import settings
 from django.db import migrations, models
 from filer.settings import FILER_IMAGE_MODEL
 
-from djangocms_blog.models import HTMLField
-from djangocms_blog.models import thumbnail_model
+from djangocms_blog.models import HTMLField, thumbnail_model
 
 ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or "filer.Image"
 

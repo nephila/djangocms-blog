@@ -4,7 +4,6 @@ from django.utils.encoding import force_str
 
 import djangocms_blog.admin
 from djangocms_blog.models import Post
-
 from tests.base import BaseTest
 from tests.test_utils.admin import PostExtensionInline
 from tests.test_utils.models import PostPlaceholderExtension
@@ -61,7 +60,7 @@ class AddExtensionTest(BaseTest):
         self.get_pages()
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         post = self._get_post(self._post_data[0]["en"])
 
@@ -84,7 +83,7 @@ class AddExtensionTest(BaseTest):
         self.get_pages()
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         post = self._get_post(self._post_data[0]["en"])
 
