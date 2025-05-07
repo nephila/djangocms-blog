@@ -4,6 +4,7 @@ from django.db import migrations, models
 
 class BareVersion:
     """Patches the save method of a model to standard model save."""
+
     def __init__(self, model):
         self.model = model
 
@@ -68,7 +69,7 @@ def move_plugins_to_blog_content(apps, schema_editor):
                         "meta_keywords": translation.meta_keywords,
                         "meta_title": translation.meta_title,
                         "post_text": translation.post_text,
-                    }
+                    },
                 )
                 if created:
                     if versioning_installed:
@@ -91,7 +92,9 @@ def move_plugins_to_blog_content(apps, schema_editor):
                     move_plugins(post_content, content, content_type)
                     move_plugins(liveblog, content, content_type)
                 else:
-                    print(f"Post content {translation.title} ({translation.language_code}) already exists, skipping...")
+                    print(
+                        f"Post content {translation.title} ({translation.language_code}) already exists, skipping..."
+                    )
 
 
 def move_plugins_back_to_blog(apps, schema_editor):

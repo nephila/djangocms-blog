@@ -2,6 +2,7 @@ try:
     import aldryn_apphooks_config.fields
     import app_data.fields
 except ModuleNotFoundError:
+
     class aldryn_apphooks_config:
         class fields:
             AppHookConfigField = lambda *args, **kwargs: None

@@ -4,7 +4,6 @@ from django.http import QueryDict
 from djangocms_text_ckeditor.models import Text
 
 from djangocms_blog.models import BlogCategory
-
 from tests.base import BaseTest
 
 

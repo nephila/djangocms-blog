@@ -1,9 +1,11 @@
 try:
     import aldryn_apphooks_config.fields
 except ModuleNotFoundError:
+
     class aldryn_apphooks_config:
         class fields:
             AppHookConfigField = lambda *args, **kwargs: None
+
 
 import django.utils.timezone
 from django.db import migrations, models

@@ -6,7 +6,6 @@ from cms.utils import get_language_list
 from django.utils.translation import override
 
 from djangocms_blog.cms_appconfig import BlogConfig
-
 from tests.base import BaseTest
 
 try:

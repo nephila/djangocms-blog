@@ -10,7 +10,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin import helpers
-from django.contrib.admin.options import InlineModelAdmin, TO_FIELD_VAR, get_content_type_for_model, IS_POPUP_VAR
+from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR, InlineModelAdmin, get_content_type_for_model
 from django.contrib.admin.utils import unquote
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist

@@ -7,5 +7,5 @@ It is not used by installed instances of this app.
 from django.urls import include, path
 
 urlpatterns = [
-    path('foo/', include('myapp.urls')),
+    path("foo/", include("myapp.urls")),
 ]

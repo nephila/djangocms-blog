@@ -1,4 +1,6 @@
+import importlib
 import os.path
+import sys
 import warnings
 from collections import OrderedDict
 from contextlib import contextmanager
@@ -8,13 +10,75 @@ from unittest.mock import patch
 
 from cms.api import create_page_content
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.handlers.base import BaseHandler
 from django.http import SimpleCookie
 from django.test import RequestFactory, TestCase, TransactionTestCase
+from django.urls import clear_url_caches
+from django.utils.timezone import now
 from django.utils.functional import SimpleLazyObject
 from six import StringIO
 
-from tests.utils import UserLoginContext, create_user, get_user_model, reload_urls, temp_dir
+from cms.test_utils.util.context_managers import UserLoginContext
+from cms.test_utils.tmpdir import temp_dir
+
+
+def create_user(username, email, password, is_staff=False, is_superuser=False,
+                is_active=True, add_default_permissions=False, permissions=None):
+    """
+    Use this method to create users.
+
+    Default permissions on page and text plugin are added if creating a
+    non-superuser and `add_default_permissions` is set.
+
+    Set `permissions` parameter to an iterable of permission codes to add
+    custom permissios.
+    """
+    from django.contrib.auth.models import Permission
+
+    User = get_user_model()
+
+    fields = dict(
+        email=email or username + '@django-cms.org', last_login=now(),
+        is_staff=is_staff, is_active=is_active, is_superuser=is_superuser
+    )
+
+    # Check for special case where email is used as username
+    if (get_user_model().USERNAME_FIELD != 'email'):
+        fields[get_user_model().USERNAME_FIELD] = username
+
+    user = User(**fields)
+    user.set_password(getattr(user, get_user_model().USERNAME_FIELD))
+    user.save()
+    if is_staff and not is_superuser and add_default_permissions:
+        raise NotImplementedError("add_default_permissions is not implemented")
+        self._add_default_permissions(user)
+    if is_staff and not is_superuser and permissions:
+        for permission in permissions:
+            user.user_permissions.add(Permission.objects.get(codename=permission))
+    return user
+
+
+@contextmanager
+def captured_output():
+    with patch("sys.stdout", new_callable=StringIO) as out:
+        with patch("sys.stderr", new_callable=StringIO) as err:
+            yield out, err
+
+
+def reload_urls(settings, urlconf=None, cms_apps=True):
+    if "cms.urls" in sys.modules:
+        importlib.reload(sys.modules["cms.urls"])
+    if urlconf is None:
+        urlconf = settings.ROOT_URLCONF
+    if urlconf in sys.modules:
+        importlib.reload(sys.modules[urlconf])
+    clear_url_caches()
+    if cms_apps:
+        from cms.appresolver import clear_app_resolvers, get_app_patterns
+
+        clear_app_resolvers()
+        get_app_patterns()
 
 
 class RequestTestCaseMixin:
@@ -62,7 +126,7 @@ class RequestTestCaseMixin:
         elif use_toolbar:
             from cms.middleware.toolbar import ToolbarMiddleware
 
-            mid = ToolbarMiddleware()
+            mid = ToolbarMiddleware(get_response=lambda x: x)
             mid.process_request(request)
         return request
 
@@ -89,7 +153,7 @@ class RequestTestCaseMixin:
         :param user: user username
         :param password: user password (if omitted, username is used)
         """
-        return UserLoginContext(self, user, password)
+        return UserLoginContext(self, user)
 
     def request(
         self,
@@ -496,14 +560,6 @@ class CMSPageRenderingMixin(RequestTestCaseMixin):
         content_renderer = context["cms_content_renderer"]
         rendered = content_renderer.render_plugin(instance=plugin, context=context, placeholder=plugin.placeholder)
         return rendered
-
-    def get_page_request(self, page, user, path=None, edit=False, lang="en", use_middlewares=False, secure=False):
-        """Deprecated, use :py:meth:`get_toolbar_request`."""
-        warnings.warn(
-            "get_page_request has been renamed tp `get_toolbar_request` and it will be removed in version 3.0",
-            PendingDeprecationWarning,
-        )
-        return self.get_toolbar_request(page, user, path, edit, lang, use_middlewares, secure)
 
     def get_toolbar_request(self, page, user, path=None, edit=False, lang="en", use_middlewares=False, secure=False):
         """

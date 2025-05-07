@@ -4,7 +4,6 @@ from cms.api import add_plugin
 from django.test import override_settings
 
 from djangocms_blog.models import Post
-
 from tests.base import BaseTest
 
 try:

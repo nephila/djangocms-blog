@@ -1,7 +1,10 @@
 import hashlib
 
-from cms.models import CMSPlugin, PlaceholderRelationField, ContentAdminManager
+from cms.models import CMSPlugin, ContentAdminManager, PlaceholderRelationField
 from cms.utils.placeholder import get_placeholder_from_slot
+
+from menus.menu_pool import menu_pool
+
 from django.apps import apps
 from django.conf import settings as dj_settings
 from django.contrib import admin
@@ -29,7 +32,7 @@ from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
 from .fields import slugify
-from .managers import GenericDateTaggedManager, AdminDateTaggedManager
+from .managers import AdminDateTaggedManager, GenericDateTaggedManager
 from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
@@ -52,6 +55,7 @@ except ImportError:  # pragma: no cover
 
         pass
 
+
 # HTMLField is a custom field that allows to use a rich text editor
 # Probe for djangocms_text first, then for djangocms_text_ckeditor
 # and finally fallback to a simple textarea
@@ -60,6 +64,7 @@ if apps.is_installed("djangocms_text"):
 elif apps.is_installed("djangocms_text_ckeditor"):
     from djangocms_text_ckeditor.fields import HTMLField
 else:
+
     class HTMLField(models.TextField):
         def __init__(self, *args, **kwargs):
             kwargs.setdefault("widget", forms.Textarea)
@@ -225,11 +230,16 @@ class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        menu_pool.clear(all=True)
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.name:
                 self.slug = slugify(force_str(self.name))
         self.save_translations()
+
+    def delete(self, *args, **kwargs):
+        menu_pool.clear(all=True)
+        return super().delete(*args, **kwargs)
 
     def get_title(self):
         title = self.safe_translation_getter("name", any_language=True)
@@ -673,13 +683,12 @@ class BasePostPlugin(CMSPlugin):
         :return: optimized queryset
         """
         return qs.select_related("post", "post__app_config").prefetch_related(
-            "post__categories", "post__categories__translations",
-            "post__categories__app_config"
+            "post__categories", "post__categories__translations", "post__categories__app_config"
         )
 
     def post_content_queryset(self, request=None):
         language = translation.get_language()
-        if (request and getattr(request, "toolbar", False) and request.toolbar.edit_mode_active):
+        if request and getattr(request, "toolbar", False) and request.toolbar.edit_mode_active:
             post_contents = PostContent.admin_manager.latest_content()
         else:
             post_contents = PostContent.objects.all()

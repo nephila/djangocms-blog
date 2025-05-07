@@ -72,4 +72,3 @@ os.environ["AUTH_USER_MODEL"] = "tests.test_utils.CustomUser"
 
 if "server" in sys.argv[:3]:
     HELPER_SETTINGS["BLOG_AUTO_SETUP"] = True
-

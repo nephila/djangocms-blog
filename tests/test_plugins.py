@@ -13,7 +13,6 @@ from django.utils.timezone import now
 from taggit.models import Tag
 
 from djangocms_blog.models import BlogCategory
-
 from tests.base import BaseTest
 
 User = get_user_model()

@@ -26,4 +26,3 @@ if __name__ == "__main__":
     if len(argv) == 2 and argv[1] == "test":
         argv.append("tests")
     execute_from_command_line(argv)
-
