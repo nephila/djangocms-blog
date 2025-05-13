@@ -605,14 +605,6 @@ BLOG_WIZARD_CONTENT_PLUGIN_BODY = "body"
 Name of the plugin field to add wizard text.
 """
 
-BLOG_STRUCTURE = 0
-"""
-.. _STRUCTURE:
-
-Default structure of blog: 0 for a list of posts ordered by publication date. 1 for a set of categories ordered by
-priority.
-"""
-
 params = {param: value for param, value in locals().items() if param.startswith("BLOG_")}
 
 """
