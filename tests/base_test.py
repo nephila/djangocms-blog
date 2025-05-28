@@ -9,22 +9,29 @@ from tempfile import mkdtemp
 from unittest.mock import patch
 
 from cms.api import create_page_content
+from cms.test_utils.tmpdir import temp_dir
+from cms.test_utils.util.context_managers import UserLoginContext
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.handlers.base import BaseHandler
 from django.http import SimpleCookie
 from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.urls import clear_url_caches
-from django.utils.timezone import now
 from django.utils.functional import SimpleLazyObject
-from six import StringIO
-
-from cms.test_utils.util.context_managers import UserLoginContext
-from cms.test_utils.tmpdir import temp_dir
+from django.utils.timezone import now
+from io import StringIO
 
 
-def create_user(username, email, password, is_staff=False, is_superuser=False,
-                is_active=True, add_default_permissions=False, permissions=None):
+def create_user(
+    username,
+    email,
+    password,
+    is_staff=False,
+    is_superuser=False,
+    is_active=True,
+    add_default_permissions=False,
+    permissions=None,
+):
     """
     Use this method to create users.
 
@@ -39,12 +46,15 @@ def create_user(username, email, password, is_staff=False, is_superuser=False,
     User = get_user_model()
 
     fields = dict(
-        email=email or username + '@django-cms.org', last_login=now(),
-        is_staff=is_staff, is_active=is_active, is_superuser=is_superuser
+        email=email or username + "@django-cms.org",
+        last_login=now(),
+        is_staff=is_staff,
+        is_active=is_active,
+        is_superuser=is_superuser,
     )
 
     # Check for special case where email is used as username
-    if (get_user_model().USERNAME_FIELD != 'email'):
+    if get_user_model().USERNAME_FIELD != "email":
         fields[get_user_model().USERNAME_FIELD] = username
 
     user = User(**fields)

@@ -263,7 +263,7 @@ class ModelAppHookConfig:
             request,
             form_template
             or [
-                "admin/%s/%s/change_form.html" % (app_label, self.opts.model_name),
+                "admin/{}/{}/change_form.html".format(app_label, self.opts.model_name),
                 "admin/%s/change_form.html" % app_label,
                 "admin/change_form.html",
             ],

@@ -378,7 +378,9 @@ class AdminTest(BaseTest):
         BlogCategory.objects.create(name="category different branch", app_config=self.app_config_2)
 
         post_admin = admin.site._registry[BlogCategory]
-        request = self.get_toolbar_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
 
         # Add view shows all the exising categories
         response = post_admin.add_view(request)
@@ -395,7 +397,9 @@ class AdminTest(BaseTest):
         )
 
         # Test second apphook categories
-        request = self.get_toolbar_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_2.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_2.pk, edit=False
+        )
         response = post_admin.add_view(request)
         self.assertTrue(
             response.context_data["adminform"].form.fields["parent"].queryset,
@@ -469,7 +473,9 @@ class AdminTest(BaseTest):
             fsets = post_admin.get_fieldsets(request)
             self.assertFalse("sites" in fsets[1][1]["fields"][0])
 
-        request = self.get_toolbar_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("author" in fsets[1][1]["fields"][0])
 
@@ -587,7 +593,9 @@ class AdminTest(BaseTest):
             fsets = post_admin.get_fieldsets(request)
             self.assertFalse("sites" in fsets[1][1]["fields"][0])
 
-        request = self.get_toolbar_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("author" in fsets[1][1]["fields"])
 

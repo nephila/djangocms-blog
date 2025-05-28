@@ -2,9 +2,6 @@ import hashlib
 
 from cms.models import CMSPlugin, ContentAdminManager, PlaceholderRelationField
 from cms.utils.placeholder import get_placeholder_from_slot
-
-from menus.menu_pool import menu_pool
-
 from django.apps import apps
 from django.conf import settings as dj_settings
 from django.contrib import admin
@@ -25,6 +22,7 @@ from django.utils.timezone import now
 from django.utils.translation import get_language, gettext, gettext_lazy as _
 from filer.fields.image import FilerImageField
 from filer.models import ThumbnailOption
+from menus.menu_pool import menu_pool
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
 from sortedm2m.fields import SortedManyToManyField

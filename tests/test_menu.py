@@ -101,7 +101,7 @@ class MenuTest(BaseTest):
                 print()
                 print(nodes_url)
                 print(cats_url)
-                print(80*"-")
+                print(80 * "-")
                 self.assertTrue(cats_url.issubset(nodes_url))
 
         self._reset_menus()
