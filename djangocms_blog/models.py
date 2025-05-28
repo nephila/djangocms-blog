@@ -494,15 +494,25 @@ class Post(KnockerModel, models.Model):
 
     def get_image_full_url(self):
         if self.main_image:
+            thumbnail_options = get_setting("META_IMAGE_SIZE")
+            if thumbnail_options:
+                thumbnail_url = get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).url
+                return self.build_absolute_uri(thumbnail_url)
             return self.build_absolute_uri(self.main_image.url)
         return ""
 
     def get_image_width(self):
         if self.main_image:
+            thumbnail_options = get_setting("META_IMAGE_SIZE")
+            if thumbnail_options:
+                return get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).width
             return self.main_image.width
 
     def get_image_height(self):
         if self.main_image:
+            thumbnail_options = get_setting("META_IMAGE_SIZE")
+            if thumbnail_options:
+                return get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).height
             return self.main_image.height
 
     def get_tags(self):
@@ -766,6 +776,20 @@ class AuthorEntriesPlugin(BasePostPlugin):
             # "the number of author articles to be displayed"
             author.post_contents = qs[: self.latest_posts]
         return authors
+
+
+class FeaturedPostsPlugin(BasePostPlugin):
+    posts = SortedManyToManyField(Post, verbose_name=_("Featured posts"))
+
+    def __str__(self):
+        return force_str(_("Featured posts"))
+
+    def copy_relations(self, oldinstance):
+        self.posts.set(oldinstance.posts.all())
+
+    def get_posts(self, request, published_only=True):
+        posts = self.post_queryset(request, published_only, selected_posts=self.posts.all())
+        return posts
 
 
 class GenericBlogPlugin(BasePostPlugin):

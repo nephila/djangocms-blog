@@ -6,6 +6,102 @@ History
 
 .. towncrier release notes start
 
+2.0.7 (2024-01-16)
+==================
+
+Bugfixes
+--------
+
+- Pin Django CMS version < 4, update Github test matrix (#786)
+
+
+2.0.6 (2023-12-22)
+==================
+
+Features
+--------
+
+- Switch to Coveralls Github action (#774)
+
+
+Bugfixes
+--------
+
+- Add sphinx-rtd-theme dependency in setup (#769)
+- Add force_str to FeaturedPostsPlugin __str__ method (#780)
+- Fix FeaturedPostsPlugin get_posts method rendering all posts instead of selected ones (#781)
+
+
+2.0.5 (2023-09-26)
+==================
+
+Bugfixes
+--------
+
+- Pin correct django-meta version (#763)
+
+
+2.0.4 (2023-09-25)
+==================
+
+Bugfixes
+--------
+
+- Bump django-meta version in setup.cfg (#761)
+
+
+2.0.3 (2023-09-22)
+==================
+
+Features
+--------
+
+- Migrate to bump-my-version (#759)
+
+
+2.0.2 (2023-08-30)
+==================
+
+Features
+--------
+
+- Update translations (#751)
+
+
+2.0.1 (2023-08-07)
+==================
+
+Features
+--------
+
+- Add BlogFeaturedPostsPlugin to show selected posts (#428)
+
+
+2.0.0 (2023-08-03)
+==================
+
+Features
+--------
+
+- Add include in rss field to post, to be able to exclude blog items from rss feed. (#663)
+- Add a CMS toolbar item for category and tag list (#676)
+- Add optional BLOG_UNICODE_SLUGS setting that disable unicode in blog posts slugs. (#707)
+- Improve meta image size handling (#718)
+- Port to django 3.2/4.1 - django CMS 3.11 (#720)
+- Add default_auto_field to BlogAppConfig (#737)
+
+
+Bugfixes
+--------
+
+- Fix distinct preventing post delete from admin (#683)
+- See description here: https://github.com/nephila/djangocms-blog/issues/699 (#699)
+- Add classname for categories and tags that uses slug, not empty "count". (#710)
+- Fix pre-commit flake8 repo url (#715)
+- Fix template urls not respecting namespaces (#723)
+- Do not show a post detail published on another site (#724)
+
+
 1.2.3 (2020-12-21)
 ==================
 

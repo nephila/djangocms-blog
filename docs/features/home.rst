@@ -19,9 +19,9 @@ Add blog apphook to the home page
 Amend configuration
 *******************
 
-Permalinks must be updated to avoid blog urlconf swallowing django CMS page patters.
+Permalinks must be updated to avoid blog urlconf swallowing django CMS page patterns.
 
-To avoid this add the following settings to you project:
+To avoid this add the following settings to your project:
 
 .. code-block:: python
 
@@ -32,14 +32,14 @@ To avoid this add the following settings to you project:
     )
     BLOG_PERMALINK_URLS = {
         "full_date": "<int:year>/<int:month>/<int:day>/<str:slug>/",
-        "short_date: "<int:year>/<int:month>/<str:slug>/",
+        "short_date": "<int:year>/<int:month>/<str:slug>/",
         "category": "<str:category>/<str:slug>/",
     }
 
 Notice that the last permalink type is no longer present.
 
 Then, pick any of the three remaining permalink types in the layout section of the apphooks config
-linked ot the home page (at http://yoursite.com/admin/djangocms_blog/blogconfig/).'
+linked to the home page (at http://yoursite.com/admin/djangocms_blog/blogconfig/).'
 
 .. warning:: Version 1.2 introduce a breaking change as it drops ``url`` function in favour of ``path``.
              If you have customized the urls as documented above you **must** update the custom urlconf to path-based

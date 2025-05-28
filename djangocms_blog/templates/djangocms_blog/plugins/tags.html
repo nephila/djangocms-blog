@@ -1,9 +1,11 @@
-{% load i18n %}{% spaceless %}
+{% load i18n apphooks_config_tags %}
+
+{% spaceless %}
 <div class="plugin plugin-blog">
     <h3>{% trans "Tags" %}</h3>
     <ul class="blog-tags">
         {% for tag in tags %}
-            <li><a href="{% url 'djangocms_blog:posts-tagged' tag=tag.slug %}" class="blog-tag-{{ tag.count }}">
+            <li><a href="{% namespace_url 'posts-tagged' tag=tag.slug namespace=instance.app_config.namespace %}" class="blog-tag-{{ tag.count }}">
                 {{ tag.name }}
                 <span>(
                     {% if tag.count > 0 %}

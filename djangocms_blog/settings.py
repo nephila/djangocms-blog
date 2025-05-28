@@ -99,6 +99,15 @@ Easy-thumbnail alias configuration for the post main image when shown on the pos
 it's a dictionary with ``size``, ``crop`` and ``upscale`` keys.
 """
 
+BLOG_META_IMAGE_SIZE = None
+"""
+.. _META_IMAGE_SIZE:
+
+Easy-thumbnail alias configuration for the post meta image;
+it's a dictionary with ``size``, ``crop`` and ``upscale`` keys.
+Recommended values are {"size": (1200, 630), "crop": True, "upscale": False}
+"""
+
 BLOG_URLCONF = "djangocms_blog.urls"
 """
 .. _URLCONF:
@@ -535,6 +544,20 @@ BLOG_ARCHIVE_PLUGIN_NAME = _("Archive")
 .. _ARCHIVE_PLUGIN_NAME:
 
 Name of the plugin showing the blog archive index.
+"""
+
+BLOG_FEATURED_POSTS_PLUGIN_NAME = _("Featured Posts")
+"""
+.. _FEATURED_POSTS_PLUGIN_NAME:
+
+Name of the plugin showing the selected posts.
+"""
+
+BLOG_FEATURED_POSTS_PLUGIN_NAME_CACHED = _("Featured Posts - Cache")
+"""
+.. _FEATURED_POSTS_PLUGIN_NAME_CACHED:
+
+Name of the plugin showing the selected posts (cached version).
 """
 
 BLOG_FEED_CACHE_TIMEOUT = 3600

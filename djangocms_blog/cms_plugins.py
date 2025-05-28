@@ -7,7 +7,7 @@ from django.db import models
 from django.template.loader import select_template
 
 from .forms import AuthorPostsForm, BlogPluginForm, LatestEntriesForm
-from .models import AuthorEntriesPlugin, BlogCategory, GenericBlogPlugin, LatestPostsPlugin, Post
+from .models import AuthorEntriesPlugin, BlogCategory, FeaturedPostsPlugin, GenericBlogPlugin, LatestPostsPlugin, Post
 from .settings import get_setting
 
 
@@ -72,6 +72,48 @@ class BlogLatestEntriesPluginCached(BlogLatestEntriesPlugin):
     """
 
     name = get_setting("LATEST_ENTRIES_PLUGIN_NAME_CACHED")
+    cache = True
+
+
+@plugin_pool.register_plugin
+class BlogFeaturedPostsPlugin(BlogPlugin):
+    """
+    Return the selected posts which bypasses cache.
+    """
+
+    name = get_setting("FEATURED_POSTS_PLUGIN_NAME")
+    model = FeaturedPostsPlugin
+    form = BlogPluginForm
+    cache = False
+    base_render_template = "featured_posts.html"
+
+    def get_fields(self, request, obj=None):
+        """
+        Return the fields available when editing the plugin.
+
+        'template_folder' field is added if ``BLOG_PLUGIN_TEMPLATE_FOLDERS`` contains multiple folders.
+
+        """
+        fields = ["app_config", "posts"]
+        if len(get_setting("PLUGIN_TEMPLATE_FOLDERS")) > 1:
+            fields.append("template_folder")
+        return fields
+
+    def render(self, context, instance, placeholder):
+        """Render the plugin."""
+        context = super().render(context, instance, placeholder)
+        context["posts_list"] = instance.get_posts(context["request"])
+        context["TRUNCWORDS_COUNT"] = get_setting("POSTS_LIST_TRUNCWORDS_COUNT")
+        return context
+
+
+@plugin_pool.register_plugin
+class BlogFeaturedPostsPluginCached(BlogFeaturedPostsPlugin):
+    """
+    Return the selected posts caching the result.
+    """
+
+    name = get_setting("FEATURED_POSTS_PLUGIN_NAME_CACHED")
     cache = True
 
 

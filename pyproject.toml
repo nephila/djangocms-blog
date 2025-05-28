@@ -120,4 +120,3 @@ target-version = "py39"
 
 [tool.ruff.mccabe]
 max-complexity = 5
-

@@ -1,9 +1,9 @@
-{% load i18n easy_thumbnails_tags %}{% spaceless %}
+{% load i18n easy_thumbnails_tags apphooks_config_tags %}{% spaceless %}
 <div class="plugin plugin-blog">
     <h3>{% trans "Authors" %}</h3>
     <ul class="blog-authors">
         {% for author in authors_list %}
-        <li><a href="{% url 'djangocms_blog:posts-author' author.get_username %}">
+        <li><a href="{% namespace_url 'posts-author' author.get_username namespace=instance.app_config.namespace %}">
             {{ author.get_full_name }}
             <span>(
                 {% if author.count > 0 %}
