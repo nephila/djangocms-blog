@@ -48,7 +48,7 @@ def move_plugins_to_blog_content(apps, schema_editor):
         if getattr(settings, "CMS_MIGRATION_USER_ID", None):
             migration_user = User.objects.get(pk=settings.CMS_MIGRATION_USER_ID)
         else:
-            migration_user = User.objects.filter(is_superuser=True, is_acitve=True).first()
+            migration_user = User.objects.filter(is_superuser=True, is_active=True).first()
     else:
         migration_user = None
 
