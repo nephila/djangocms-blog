@@ -3,8 +3,6 @@
 import aldryn_apphooks_config.fields
 import app_data.fields
 import cms.models.fields
-from django.conf import settings
-from django.db import migrations, models
 import django.db.models.deletion
 import djangocms_text.fields
 import djangocms_text_ckeditor.fields
@@ -13,6 +11,8 @@ import meta.models
 import parler.fields
 import sortedm2m.fields
 import taggit_autosuggest.managers
+from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):

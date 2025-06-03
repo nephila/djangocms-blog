@@ -5,6 +5,7 @@ import warnings
 from collections import OrderedDict
 from contextlib import contextmanager
 from copy import deepcopy
+from io import StringIO
 from tempfile import mkdtemp
 from unittest.mock import patch
 
@@ -19,7 +20,6 @@ from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.urls import clear_url_caches
 from django.utils.functional import SimpleLazyObject
 from django.utils.timezone import now
-from io import StringIO
 
 
 def create_user(
