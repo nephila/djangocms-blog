@@ -2,7 +2,6 @@
 
 import app_data.fields
 import cms.models.fields
-from django.db.models import ForeignKey
 import django.db.models.deletion
 import djangocms_text.fields
 import djangocms_text_ckeditor.fields
@@ -13,6 +12,7 @@ import sortedm2m.fields
 import taggit_autosuggest.managers
 from django.conf import settings
 from django.db import migrations, models
+from django.db.models import ForeignKey
 
 
 class Migration(migrations.Migration):
