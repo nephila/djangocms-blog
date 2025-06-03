@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             "0006_rename_taggeditem_content_type_object_id_taggit_tagg_content_8fc721_idx",
         ),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("djangocms_blog", "0001_squashed_0047_migrate_config"),
+        ("djangocms_blog", "0047_migrate_config"),
     ]
 
     operations = [
