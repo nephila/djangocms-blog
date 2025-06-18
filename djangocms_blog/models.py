@@ -492,8 +492,7 @@ class Post(KnockerModel, models.Model):
 
     def get_image_full_url(self):
         if self.main_image:
-            thumbnail_options = get_setting("META_IMAGE_SIZE")
-            if thumbnail_options:
+            if thumbnail_options := get_setting("META_IMAGE_SIZE"):
                 thumbnail_url = get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).url
                 return self.build_absolute_uri(thumbnail_url)
             return self.build_absolute_uri(self.main_image.url)
