@@ -85,7 +85,7 @@ Features
 
 - Add include in rss field to post, to be able to exclude blog items from rss feed. (#663)
 - Add a CMS toolbar item for category and tag list (#676)
-- Add optional BLOG_UNICODE_SLUGS setting that disable unicode in blog posts slugs. (#707)
+- Add optional BLOG_UNICODE_SLUGS setting that disables unicode in blog post slugs. (#707)
 - Improve meta image size handling (#718)
 - Port to django 3.2/4.1 - django CMS 3.11 (#720)
 - Add default_auto_field to BlogAppConfig (#737)
