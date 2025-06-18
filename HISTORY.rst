@@ -96,7 +96,7 @@ Bugfixes
 
 - Fix distinct preventing post delete from admin (#683)
 - See description here: https://github.com/nephila/djangocms-blog/issues/699 (#699)
-- Add classname for categories and tags that uses slug, not empty "count". (#710)
+- Add classname for categories and tags that use slug, not empty "count". (#710)
 - Fix pre-commit flake8 repo url (#715)
 - Fix template urls not respecting namespaces (#723)
 - Do not show a post detail published on another site (#724)
