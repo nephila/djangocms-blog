@@ -4,7 +4,7 @@ djangocms-blog
 
 |Gitter| |PyPiVersion| |PyVersion| |GAStatus| |TestCoverage| |CodeClimate| |License|
 
-**This project has been migrated to `djangocms-stories <https://github.com/django-cms/djangocms-stories>`_  and is only maintained there!**
+**This project has been migrated to** `djangocms-stories <https://github.com/django-cms/djangocms-stories>`_  **and is only maintained there!**
 
 ************
 Installation
