@@ -1,5 +1,6 @@
-import djangocms_text_ckeditor.fields
 from django.db import migrations
+
+from djangocms_blog.models import HTMLField
 
 
 class Migration(migrations.Migration):
@@ -11,7 +12,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="posttranslation",
             name="abstract",
-            field=djangocms_text_ckeditor.fields.HTMLField(verbose_name="Abstract", blank=True, default=""),
+            field=HTMLField(verbose_name="Abstract", blank=True, default=""),
             preserve_default=True,
         ),
     ]

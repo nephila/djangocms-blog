@@ -1,6 +1,5 @@
 from collections import Counter
 
-from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager, AppHookConfigTranslatableQueryset
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.db import models
@@ -14,7 +13,7 @@ class TaggedFilterItem:
         o con gli stessi tag di un model o un queryset
         """
         tags = self._taglist(other_model, queryset)
-        return self.get_queryset().filter(tags__in=tags).distinct()
+        return self.get_queryset().filter(post__tags__in=tags).distinct()
 
     def _taglist(self, other_model=None, queryset=None):
         """
@@ -80,70 +79,41 @@ class TaggedFilterItem:
         return sorted(tags, key=lambda x: -x.count)
 
 
-class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
-    start_date_field = "date_published"
-    fallback_date_field = "date_modified"
-    end_date_field = "date_published_end"
-    publish_field = "publish"
+class SiteQuerySet(models.QuerySet):
 
     def on_site(self, site=None):
         if not site:
             site = Site.objects.get_current()
-        return self.filter(models.Q(sites__isnull=True) | models.Q(sites=site.pk))
-
-    def published(self, current_site=True):
-        queryset = self.published_future(current_site)
-        if self.start_date_field:
-            return queryset.filter(**{"%s__lte" % self.start_date_field: now()})
-        else:
-            return queryset
-
-    def published_on_rss(self, current_site=True):
-        queryset = self.published_future(current_site)
-        return queryset.exclude(include_in_rss=False)
-
-    def published_future(self, current_site=True):
-        if current_site:
-            queryset = self.on_site()
-        else:
-            queryset = self
-        if self.end_date_field:
-            qfilter = models.Q(**{"%s__gte" % self.end_date_field: now()}) | models.Q(
-                **{"%s__isnull" % self.end_date_field: True}
-            )
-            queryset = queryset.filter(qfilter)
-        return queryset.filter(**{self.publish_field: True})
-
-    def archived(self, current_site=True):
-        if current_site:
-            queryset = self.on_site()
-        else:
-            queryset = self
-        if self.end_date_field:
-            qfilter = models.Q(**{"%s__lte" % self.end_date_field: now()})
-            queryset = queryset.filter(qfilter)
-        return queryset.filter(**{self.publish_field: True})
-
-    def available(self, current_site=True):
-        if current_site:
-            return self.on_site().filter(**{self.publish_field: True})
-        else:
-            return self.filter(**{self.publish_field: True})
+        return self.filter(models.Q(post__sites__isnull=True) | models.Q(post__sites=site.pk))
 
     def filter_by_language(self, language, current_site=True):
         if current_site:
-            return self.active_translations(language_code=language).on_site()
+            return self.filter(language=language).on_site()
         else:
-            return self.active_translations(language_code=language)
+            return self.filter(language=language)
 
 
-class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManager):
+class AdminSiteQuerySet(SiteQuerySet):
+    def current_content(self, **kwargs):
+        """If a versioning package is installed, this returns the currently valid content
+        that matches the filter given in kwargs. Used to find content to be copied, e.g..
+        Without versioning every page is current."""
+        return self.filter(**kwargs)
+
+    def latest_content(self, **kwargs):
+        """If a versioning package is installed, returns the latest version that matches the
+        filter given in kwargs including discared or unpublished page content. Without versioning
+        every page content is the latest."""
+        return self.filter(**kwargs)
+
+
+class GenericDateTaggedManager(TaggedFilterItem, models.Manager):
     use_for_related_fields = True
 
-    queryset_class = GenericDateQuerySet
+    queryset_class = SiteQuerySet
 
     def get_queryset(self, *args, **kwargs):
-        return super().get_queryset(*args, **kwargs)
+        return self.queryset_class(model=self.model, using=self._db, hints=self._hints)
 
     def published(self, current_site=True):
         return self.get_queryset().published(current_site)
@@ -168,7 +138,7 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
 
     def get_months(self, queryset=None, current_site=True):
         """
-        Get months with aggregate count (how much posts is in the month).
+        Get months with aggregate count (how many posts is in the month).
         Results are ordered by date.
         """
         if queryset is None:
@@ -195,3 +165,15 @@ class GenericDateTaggedManager(TaggedFilterItem, AppHookConfigTranslatableManage
             {"date": now().replace(year=year, month=month, day=1), "count": date_counter[year, month]}
             for year, month in dates
         ]
+
+
+class AdminDateTaggedManager(GenericDateTaggedManager):
+    queryset_class = AdminSiteQuerySet
+
+    def current_content(self, **kwargs):
+        """Syntactic sugar: admin_manager.current_content()"""
+        return self.get_queryset().current_content(**kwargs)
+
+    def latest_content(self, **kwargs):
+        """Syntactic sugar: admin_manager.latest_content()"""
+        return self.get_queryset().latest_content(**kwargs)

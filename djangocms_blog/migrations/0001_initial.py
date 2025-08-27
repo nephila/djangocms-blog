@@ -1,6 +1,5 @@
 import cms.models.fields
 import django.utils.timezone
-import djangocms_text_ckeditor.fields
 import filer.fields.image
 import meta.models
 import taggit_autosuggest.managers
@@ -8,7 +7,7 @@ from django.conf import settings
 from django.db import migrations, models
 from filer.settings import FILER_IMAGE_MODEL
 
-from djangocms_blog.models import thumbnail_model
+from djangocms_blog.models import HTMLField, thumbnail_model
 
 ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or "filer.Image"
 
@@ -243,7 +242,7 @@ class Migration(migrations.Migration):
                 ),
                 ("title", models.CharField(max_length=255, verbose_name="Title")),
                 ("slug", models.SlugField(verbose_name="slug", blank=True)),
-                ("abstract", djangocms_text_ckeditor.fields.HTMLField(verbose_name="Abstract")),
+                ("abstract", HTMLField(verbose_name="Abstract")),
                 ("meta_description", models.TextField(default="", verbose_name="Post meta description", blank=True)),
                 ("meta_keywords", models.TextField(default="", verbose_name="Post meta keywords", blank=True)),
                 (
@@ -256,7 +255,7 @@ class Migration(migrations.Migration):
                         blank=True,
                     ),
                 ),
-                ("post_text", djangocms_text_ckeditor.fields.HTMLField(default="", verbose_name="Text", blank=True)),
+                ("post_text", HTMLField(default="", verbose_name="Text", blank=True)),
                 (
                     "master",
                     models.ForeignKey(

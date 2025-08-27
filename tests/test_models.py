@@ -7,8 +7,7 @@ from urllib.parse import quote
 
 import parler
 from cms.api import add_plugin
-from cms.utils.copy_plugins import copy_plugins_to
-from cms.utils.plugins import downcast_plugins
+from cms.utils.plugins import copy_plugins_to_placeholder, downcast_plugins
 from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
@@ -29,13 +28,12 @@ from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override
 from taggit.models import Tag
 
-from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm
+from djangocms_blog.cms_appconfig import BlogConfig
 from djangocms_blog.forms import CategoryAdminForm, PostAdminForm
 from djangocms_blog.models import BlogCategory, Post
 from djangocms_blog.settings import MENU_TYPE_NONE, PERMALINK_TYPE_CATEGORY, PERMALINK_TYPE_FULL_DATE, get_setting
-
-from .base import BaseTest
-from .test_utils.admin import CustomPostAdmin
+from tests.base import BaseTest
+from tests.test_utils.admin import CustomPostAdmin
 
 try:
     from knocker.signals import pause_knocks
@@ -84,7 +82,7 @@ class AdminTest(BaseTest):
         )
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         post = self._get_post(self._post_data[0]["en"])
         post = self._get_post(self._post_data[0]["it"], post, "it")
@@ -104,8 +102,8 @@ class AdminTest(BaseTest):
         self.assertRegex(force_str(response.content), r"selected[^>]*>Custom image")
         self.assertRegex(force_str(response.content), r"selected[^>]*>Custom thumbnail")
 
-        self.app_config_1.app_data.config.default_image_full = self.default_full
-        self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
+        self.app_config_1.default_image_full = self.default_full
+        self.app_config_1.default_image_thumbnail = self.default_thumbnail
         self.app_config_1.save()
         post.main_image_full = None
         post.main_image_thumbnail = None
@@ -120,7 +118,7 @@ class AdminTest(BaseTest):
         self.get_pages()
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
         BlogCategory.objects.create(name="category 1 - blog 2", app_config=self.app_config_2)
 
         post = self._get_post(self._post_data[0]["en"])
@@ -132,7 +130,7 @@ class AdminTest(BaseTest):
             self.app_config_1.url_patterns == PERMALINK_TYPE_CATEGORY,
         )
 
-        self.app_config_1.app_data.config.url_patterns = PERMALINK_TYPE_CATEGORY
+        self.app_config_1.url_patterns = PERMALINK_TYPE_CATEGORY
         self.app_config_1.save()
 
         response = post_admin.change_view(request, str(post.pk))
@@ -141,14 +139,14 @@ class AdminTest(BaseTest):
             self.app_config_1.url_patterns == PERMALINK_TYPE_CATEGORY,
         )
 
-        self.app_config_1.app_data.config.url_patterns = PERMALINK_TYPE_FULL_DATE
+        self.app_config_1.url_patterns = PERMALINK_TYPE_FULL_DATE
         self.app_config_1.save()
 
     def test_admin_post_views(self):
         self.get_pages()
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         post = self._get_post(self._post_data[0]["en"])
         post = self._get_post(self._post_data[0]["it"], post, "it")
@@ -228,7 +226,7 @@ class AdminTest(BaseTest):
 
         posts = self.get_posts()
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         # Normal changelist, all existing posts
         response = post_admin.changelist_view(request)
@@ -241,19 +239,19 @@ class AdminTest(BaseTest):
         self.assertTrue(posts[0] in response.context_data["cl"].queryset.all())
 
         # Filtering on site, first post not shown
-        request = self.get_page_request("/", self.user, r"/en/blog/?sites=1", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/?sites=1", edit=False)
         response = post_admin.changelist_view(request)
         self.assertEqual(response.context_data["cl"].queryset.count(), len(posts) - 1)
         self.assertTrue(posts[0] not in response.context_data["cl"].queryset.all())
 
         # Removing site filtering, first post appears again
-        request = self.get_page_request("/", self.user, r"/en/blog/?", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/?", edit=False)
         response = post_admin.changelist_view(request)
         self.assertEqual(response.context_data["cl"].queryset.count(), len(posts))
         self.assertTrue(posts[0] in response.context_data["cl"].queryset.all())
 
         # Filtering on the apphook config and site
-        request = self.get_page_request(
+        request = self.get_toolbar_request(
             "/", self.user, r"/en/blog/?app_config__id__exact=%s&sites=1" % self.app_config_1.pk, edit=False
         )
         response = post_admin.changelist_view(request)
@@ -266,7 +264,7 @@ class AdminTest(BaseTest):
         posts[1].publish = True
         posts[1].save()
         published = Post.objects.published(current_site=False)
-        request = self.get_page_request("/", self.user, r"/en/blog/?publish__exact=1", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/?publish__exact=1", edit=False)
         response = post_admin.changelist_view(request)
         # The admin queryset and the model queryset are the same
         self.assertEqual(response.context_data["cl"].queryset.count(), published.count())
@@ -275,7 +273,7 @@ class AdminTest(BaseTest):
 
     def test_admin_blogconfig_views(self):
         post_admin = admin.site._registry[BlogConfig]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         # Add view only has an empty form - no type
         response = post_admin.add_view(request)
@@ -305,7 +303,7 @@ class AdminTest(BaseTest):
 
     def test_admin_category_views(self):
         category_admin = admin.site._registry[BlogCategory]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
         BlogCategory.objects.create(name="category 1 - blog 2", app_config=self.app_config_2)
 
         # Add view only has an empty form - no type
@@ -380,7 +378,9 @@ class AdminTest(BaseTest):
         BlogCategory.objects.create(name="category different branch", app_config=self.app_config_2)
 
         post_admin = admin.site._registry[BlogCategory]
-        request = self.get_page_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
 
         # Add view shows all the exising categories
         response = post_admin.add_view(request)
@@ -397,7 +397,9 @@ class AdminTest(BaseTest):
         )
 
         # Test second apphook categories
-        request = self.get_page_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_2.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_2.pk, edit=False
+        )
         response = post_admin.add_view(request)
         self.assertTrue(
             response.context_data["adminform"].form.fields["parent"].queryset,
@@ -407,28 +409,28 @@ class AdminTest(BaseTest):
     def test_admin_fieldsets(self):
         handler = BaseHandler()
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request(
+        request = self.get_toolbar_request(
             "/", self.user_staff, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
         )
 
         # Use placeholder
-        self.app_config_1.app_data.config.use_placeholder = True
+        self.app_config_1.use_placeholder = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("post_text" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_placeholder = False
+        self.app_config_1.use_placeholder = False
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("post_text" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_placeholder = True
+        self.app_config_1.use_placeholder = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("post_text" in fsets[0][1]["fields"])
 
         # Use related posts
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
@@ -437,30 +439,31 @@ class AdminTest(BaseTest):
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = False
+        self.app_config_1.use_related = 0
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
+        print("###", "related" in fsets[1][1]["fields"][0], fsets)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("related" in fsets[1][1]["fields"][0])
 
         # Use abstract
-        self.app_config_1.app_data.config.use_abstract = True
+        self.app_config_1.use_abstract = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("abstract" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_abstract = False
+        self.app_config_1.use_abstract = False
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("abstract" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_abstract = True
-        self.app_config_1.app_data.config.default_image_full = self.default_full
-        self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
+        self.app_config_1.use_abstract = True
+        self.app_config_1.default_image_full = self.default_full
+        self.app_config_1.default_image_thumbnail = self.default_thumbnail
         self.app_config_1.save()
 
         with self.settings(BLOG_MULTISITE=True):
@@ -470,7 +473,9 @@ class AdminTest(BaseTest):
             fsets = post_admin.get_fieldsets(request)
             self.assertFalse("sites" in fsets[1][1]["fields"][0])
 
-        request = self.get_page_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("author" in fsets[1][1]["fields"][0])
 
@@ -525,28 +530,28 @@ class AdminTest(BaseTest):
 
     def test_custom_admin_fieldsets(self):
         post_admin = CustomPostAdmin(Post, admin_site=admin.site)
-        request = self.get_page_request(
+        request = self.get_toolbar_request(
             "/", self.user_staff, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
         )
 
         # Use placeholder
-        self.app_config_1.app_data.config.use_placeholder = True
+        self.app_config_1.use_placeholder = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("post_text" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_placeholder = False
+        self.app_config_1.use_placeholder = False
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("post_text" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_placeholder = True
+        self.app_config_1.use_placeholder = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("post_text" in fsets[0][1]["fields"])
 
         # Related field is always hidden due to the value in CustomPostAdmin._fieldset_extra_fields_position
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
@@ -555,30 +560,30 @@ class AdminTest(BaseTest):
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = False
+        self.app_config_1.use_related = 0
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
-        self.app_config_1.app_data.config.use_related = True
+        self.app_config_1.use_related = 1
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("related" in fsets[1][1]["fields"][0])
 
         # Use abstract
-        self.app_config_1.app_data.config.use_abstract = True
+        self.app_config_1.use_abstract = True
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("abstract" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_abstract = False
+        self.app_config_1.use_abstract = False
         self.app_config_1.save()
         fsets = post_admin.get_fieldsets(request)
         self.assertFalse("abstract" in fsets[0][1]["fields"])
 
-        self.app_config_1.app_data.config.use_abstract = True
-        self.app_config_1.app_data.config.default_image_full = self.default_full
-        self.app_config_1.app_data.config.default_image_thumbnail = self.default_thumbnail
+        self.app_config_1.use_abstract = True
+        self.app_config_1.default_image_full = self.default_full
+        self.app_config_1.default_image_thumbnail = self.default_thumbnail
         self.app_config_1.save()
 
         with self.settings(BLOG_MULTISITE=True):
@@ -588,7 +593,9 @@ class AdminTest(BaseTest):
             fsets = post_admin.get_fieldsets(request)
             self.assertFalse("sites" in fsets[1][1]["fields"][0])
 
-        request = self.get_page_request("/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False)
+        request = self.get_toolbar_request(
+            "/", self.user, r"/en/blog/?app_config=%s" % self.app_config_1.pk, edit=False
+        )
         fsets = post_admin.get_fieldsets(request)
         self.assertTrue("author" in fsets[1][1]["fields"])
 
@@ -618,7 +625,7 @@ class AdminTest(BaseTest):
         handler = BaseHandler()
 
         with self.login_user_context(self.user):
-            self.app_config_1.app_data.config.set_author = True
+            self.app_config_1.set_author = True
             self.app_config_1.save()
             data["date_published_0"] = now().strftime("%Y-%m-%d")
             data["date_published_1"] = now().strftime("%H:%M:%S")
@@ -635,7 +642,7 @@ class AdminTest(BaseTest):
             self.assertEqual(Post.objects.count(), 1)
             self.assertEqual(Post.objects.get(translations__slug="first-post").author_id, request.user.pk)
 
-            self.app_config_1.app_data.config.set_author = False
+            self.app_config_1.set_author = False
             self.app_config_1.save()
             data = deepcopy(self._post_data[1]["en"])
             data["date_published_0"] = now().strftime("%Y-%m-%d")
@@ -654,7 +661,7 @@ class AdminTest(BaseTest):
             self.assertEqual(Post.objects.get(translations__slug="second-post").author_id, None)
 
             with self.settings(BLOG_AUTHOR_DEFAULT="staff"):
-                self.app_config_1.app_data.config.set_author = True
+                self.app_config_1.set_author = True
                 self.app_config_1.save()
                 data = deepcopy(self._post_data[2]["en"])
                 data["date_published_0"] = now().strftime("%Y-%m-%d")
@@ -674,7 +681,7 @@ class AdminTest(BaseTest):
 
     def test_admin_fieldsets_filter(self):
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user_normal, r"/en/blog/?app_config=%s" % self.app_config_1.pk)
+        request = self.get_toolbar_request("/", self.user_normal, r"/en/blog/?app_config=%s" % self.app_config_1.pk)
 
         post_admin._sites = None
         fsets = post_admin.get_fieldsets(request)
@@ -688,7 +695,7 @@ class AdminTest(BaseTest):
             return fs
 
         self.user_normal.sites.add(self.site_1)
-        request = self.get_page_request("/", self.user_normal, r"/en/blog/?app_config=%s" % self.app_config_1.pk)
+        request = self.get_toolbar_request("/", self.user_normal, r"/en/blog/?app_config=%s" % self.app_config_1.pk)
         post_admin._sites = None
         with self.settings(BLOG_ADMIN_POST_FIELDSET_FILTER=filter_function):
             fsets = post_admin.get_fieldsets(request)
@@ -836,7 +843,7 @@ class AdminTest(BaseTest):
         pages = self.get_pages()
         post = self._get_post(self._post_data[0]["en"])
 
-        request = self.get_page_request(None, self.user, r"/en/page-two/")
+        request = self.get_toolbar_request(None, self.user, r"/en/page-two/")
         first_nodes = self.get_nodes(menu_pool, request)
         self._reset_menus()
         with pause_knocks(post):
@@ -1069,19 +1076,19 @@ class ModelsTest(BaseTest):
         self.assertTrue(re.match(r".*\d{4}/\d{2}/\d{2}/%s/$" % post.slug, post.get_absolute_url()))
 
         # full date
-        self.app_config_1.app_data.config.url_patterns = "full_date"
+        self.app_config_1.url_patterns = "full_date"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*\d{4}/\d{2}/\d{2}/%s/$" % post.slug, post.get_absolute_url()))
 
         # short date
-        self.app_config_1.app_data.config.url_patterns = "short_date"
+        self.app_config_1.url_patterns = "short_date"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*\d{4}/\d{2}/%s/$" % post.slug, post.get_absolute_url()))
 
         # category
-        self.app_config_1.app_data.config.url_patterns = "category"
+        self.app_config_1.url_patterns = "category"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*/\w[-\w]*/%s/$" % post.slug, post.get_absolute_url()))
@@ -1090,7 +1097,7 @@ class ModelsTest(BaseTest):
         )
 
         # slug only
-        self.app_config_1.app_data.config.url_patterns = "category"
+        self.app_config_1.url_patterns = "category"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*/%s/$" % post.slug, post.get_absolute_url()))
@@ -1102,19 +1109,19 @@ class ModelsTest(BaseTest):
         post.categories.add(category)
 
         # full date
-        self.app_config_1.app_data.config.url_patterns = "full_date"
+        self.app_config_1.url_patterns = "full_date"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*\d{4}/\d{2}/\d{2}/%s/$" % quote(post.slug), post.get_absolute_url()))
 
         # short date
-        self.app_config_1.app_data.config.url_patterns = "short_date"
+        self.app_config_1.url_patterns = "short_date"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*\d{4}/\d{2}/%s/$" % quote(post.slug), post.get_absolute_url()))
 
         # category
-        self.app_config_1.app_data.config.url_patterns = "category"
+        self.app_config_1.url_patterns = "category"
         self.app_config_1.save()
         post.app_config = self.app_config_1
 
@@ -1126,7 +1133,7 @@ class ModelsTest(BaseTest):
         )
 
         # slug only
-        self.app_config_1.app_data.config.url_patterns = "category"
+        self.app_config_1.url_patterns = "category"
         self.app_config_1.save()
         post.app_config = self.app_config_1
         self.assertTrue(re.match(r".*/%s/$" % quote(post.slug), post.get_absolute_url()))
@@ -1303,9 +1310,9 @@ class ModelsTest(BaseTest):
         self._get_post(self._post_data[1]["en"])
         post1.tags.add("tag 1")
         post1.save()
-        request = self.get_page_request("/", AnonymousUser(), r"/en/blog/", edit=False)
-        request_auth = self.get_page_request("/", self.user_staff, r"/en/blog/", edit=False)
-        request_edit = self.get_page_request("/", self.user_staff, r"/en/blog/", edit=True)
+        request = self.get_toolbar_request("/", AnonymousUser(), r"/en/blog/", edit=False)
+        request_auth = self.get_toolbar_request("/", self.user_staff, r"/en/blog/", edit=False)
+        request_edit = self.get_toolbar_request("/", self.user_staff, r"/en/blog/", edit=True)
         plugin = add_plugin(post1.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
         tag = Tag.objects.get(slug="tag-1")
         plugin.tags.add(tag)
@@ -1331,7 +1338,7 @@ class ModelsTest2(BaseTest):
         plugin.tags.add(tag1)
         plugin.tags.add(tag2)
         plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
-        copy_plugins_to(plugins, post2.content)
+        copy_plugins_to_placeholder(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].tags.all()), {tag1, tag2})
         self.assertEqual(set(new[0].tags.all()), set(plugin.tags.all()))
@@ -1339,7 +1346,7 @@ class ModelsTest2(BaseTest):
     def test_plugin_author(self):
         post1 = self._get_post(self._post_data[0]["en"])
         post2 = self._get_post(self._post_data[1]["en"])
-        request = self.get_page_request("/", AnonymousUser(), r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", AnonymousUser(), r"/en/blog/", edit=False)
         plugin = add_plugin(post1.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
         plugin.authors.add(self.user)
         self.assertEqual(len(plugin.get_posts(request)), 0)
@@ -1398,7 +1405,7 @@ class ModelsTest2(BaseTest):
 
             self.assertEqual(len(Post.objects.all()), 3)
             with self.settings(**{"SITE_ID": self.site_1.pk}):
-                self.assertEqual(len(Post.objects.all().on_site()), 2)
+                self.assertEqual(len(Post.objects.filter().on_site()), 2)
                 self.assertEqual(set(Post.objects.all().on_site()), {post1, post3})
             with self.settings(**{"SITE_ID": self.site_2.pk}):
                 self.assertEqual(len(Post.objects.all().on_site()), 2)
@@ -1411,20 +1418,25 @@ class ModelsTest2(BaseTest):
         post1.main_image = None
         post1.save()
 
-        self.assertEqual(force_str(post1), post1.title)
-        self.assertEqual(post1.get_description(), strip_tags(post1.abstract))
+        post1_content = post1.postcontent_set.get(language="en")
+        self.assertEqual(force_str(post1), post1_content.title)
+        self.assertEqual(post1.get_description(), strip_tags(post1_content.meta_description))
         self.assertEqual(post1.get_image_full_url(), "")
         self.assertEqual(post1.get_author(), self.user)
 
         self.assertEqual(force_str(post1.categories.first()), "category 1")
 
-        plugin = add_plugin(post1.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
-        self.assertEqual(force_str(plugin.__str__()), "5 latest articles by author")
+        plugin = add_plugin(
+            post1_content.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1
+        )
+        self.assertEqual(force_str(plugin.__str__()), "5 latest entries by author")
 
-        plugin = add_plugin(post1.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
-        self.assertEqual(force_str(plugin.__str__()), "5 latest articles by tag")
+        plugin = add_plugin(
+            post1_content.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1
+        )
+        self.assertEqual(force_str(plugin.__str__()), "5 latest entries by tag")
 
-        plugin = add_plugin(post1.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
+        plugin = add_plugin(post1_content.content, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
         self.assertEqual(force_str(plugin.__str__()), "generic blog plugin")
 
         plugin = add_plugin(post1.content, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
@@ -1488,14 +1500,14 @@ class KnockerTest(BaseTest):
         self.assertTrue(post.should_knock(signal_type="post_save"))
 
         # Knock disabled for updates
-        self.app_config_1.app_data.config.send_knock_update = False
+        self.app_config_1.send_knock_update = False
         self.app_config_1.save()
         post.abstract = "what"
         post.save()
         self.assertFalse(post.should_knock(signal_type="post_save"))
 
         # Knock disabled for publishing
-        self.app_config_1.app_data.config.send_knock_create = False
+        self.app_config_1.send_knock_create = False
         self.app_config_1.save()
         post_data = {
             "author": self.user,
@@ -1512,6 +1524,6 @@ class KnockerTest(BaseTest):
         self.assertFalse(post.should_knock(signal_type="post_save"))
 
         # Restore default values
-        self.app_config_1.app_data.config.send_knock_create = True
-        self.app_config_1.app_data.config.send_knock_update = True
+        self.app_config_1.send_knock_create = True
+        self.app_config_1.send_knock_update = True
         self.app_config_1.save()

@@ -1,9 +1,13 @@
 
 .. _blog-custom-urlconf:
 
-########################
+################
+Customizing URLs
+################
+
+************************
 Provide a custom URLConf
-########################
+************************
 
 It's possible to completely customize the urlconf by setting ``BLOG_URLCONF`` to the dotted path of
 the new urlconf.

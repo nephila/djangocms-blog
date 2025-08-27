@@ -3,8 +3,7 @@ from django.urls import reverse
 from django.utils.encoding import force_str
 
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
-
-from .base import BaseTest
+from tests.base import BaseTest
 
 
 class ToolbarTest(BaseTest):
@@ -16,7 +15,7 @@ class ToolbarTest(BaseTest):
 
         posts = self.get_posts()
         pages = self.get_pages()
-        request = self.get_page_request(pages[0], self.user, r"/en/blog/", edit=True)
+        request = self.get_toolbar_request(pages[0], self.user, r"/en/blog/", edit=True)
         setattr(request, BLOG_CURRENT_POST_IDENTIFIER, posts[0])
 
         posts[0].publish = False

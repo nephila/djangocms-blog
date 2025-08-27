@@ -3,7 +3,6 @@
     "installed-apps": [
         "filer",
         "easy_thumbnails",
-        "aldryn_apphooks_config",
         "parler",
         "taggit",
         "taggit_autosuggest",

@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         ]
 
         operations = [
-            migrations.RunPython(move_thumbnail_opt_to_filer, move_thumbnail_opt_to_plugin),
+            migrations.RunPython(move_thumbnail_opt_to_filer, move_thumbnail_opt_to_plugin, elidable=True),
         ]
     else:
         dependencies = [

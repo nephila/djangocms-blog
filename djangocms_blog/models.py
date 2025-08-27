@@ -1,42 +1,45 @@
 import hashlib
 
-from aldryn_apphooks_config.fields import AppHookConfigField
-from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
-from cms.models import CMSPlugin, PlaceholderField
+from cms.models import CMSPlugin, ContentAdminManager, PlaceholderRelationField
+from cms.utils.placeholder import get_placeholder_from_slot
+from django.apps import apps
 from django.conf import settings as dj_settings
+from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.cache import cache
 from django.db import models
+from django.db.models import F, Q
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from django.urls import reverse
-from django.utils import timezone
+from django.urls import NoReverseMatch, reverse
+from django.utils import timezone, translation
 from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
+from django.utils.timezone import now
 from django.utils.translation import get_language, gettext, gettext_lazy as _
-from djangocms_text_ckeditor.fields import HTMLField
-from easy_thumbnails.files import get_thumbnailer
 from filer.fields.image import FilerImageField
 from filer.models import ThumbnailOption
+from menus.menu_pool import menu_pool
 from meta.models import ModelMeta
 from parler.models import TranslatableModel, TranslatedFields
-from parler.utils.context import switch_language
 from sortedm2m.fields import SortedManyToManyField
 from taggit_autosuggest.managers import TaggableManager
 
 from .cms_appconfig import BlogConfig
 from .fields import slugify
-from .managers import GenericDateTaggedManager
+from .managers import AdminDateTaggedManager, GenericDateTaggedManager
 from .settings import get_setting
 
 BLOG_CURRENT_POST_IDENTIFIER = get_setting("CURRENT_POST_IDENTIFIER")
 BLOG_CURRENT_NAMESPACE = get_setting("CURRENT_NAMESPACE")
 BLOG_PLUGIN_TEMPLATE_FOLDERS = get_setting("PLUGIN_TEMPLATE_FOLDERS")
+BLOG_ALLOW_UNICODE_SLUGS = get_setting("ALLOW_UNICODE_SLUGS")
 
 
-thumbnail_model = "{}.{}".format(ThumbnailOption._meta.app_label, ThumbnailOption.__name__)
+thumbnail_model = f"{ThumbnailOption._meta.app_label}.{ThumbnailOption.__name__}"
 
 
 try:
@@ -51,11 +54,26 @@ except ImportError:  # pragma: no cover
         pass
 
 
+# HTMLField is a custom field that allows to use a rich text editor
+# Probe for djangocms_text first, then for djangocms_text_ckeditor
+# and finally fallback to a simple textarea
+if apps.is_installed("djangocms_text"):
+    from djangocms_text.fields import HTMLField
+elif apps.is_installed("djangocms_text_ckeditor"):
+    from djangocms_text_ckeditor.fields import HTMLField
+else:
+
+    class HTMLField(models.TextField):
+        def __init__(self, *args, **kwargs):
+            kwargs.setdefault("widget", forms.Textarea)
+            super().__init__(*args, **kwargs)
+
+
 def _get_language(instance, language):
     available_languages = instance.get_available_languages()
     if language and language in available_languages:
         return language
-    language = get_language()
+    language = translation.get_language()
     if language and language in available_languages:
         return language
     language = instance.get_current_language()
@@ -68,16 +86,13 @@ def _get_language(instance, language):
     return language
 
 
-class BlogMetaMixin(ModelMeta):
+class BlogMetaMixin:
     def get_meta_attribute(self, param):
         """
         Retrieves django-meta attributes from apphook config instance
         :param param: django-meta attribute passed as key
         """
         return self._get_meta_value(param, getattr(self.app_config, param)) or ""
-
-    def get_locale(self):
-        return self.get_current_language()
 
     def get_full_url(self):
         """
@@ -86,9 +101,9 @@ class BlogMetaMixin(ModelMeta):
         return self.build_absolute_uri(self.get_absolute_url())
 
 
-class BlogCategory(BlogMetaMixin, TranslatableModel):
+class BlogCategory(BlogMetaMixin, ModelMeta, TranslatableModel):
     """
-    Blog category
+    Blog category allows to structure content in a hierarchy of categories.
     """
 
     parent = models.ForeignKey(
@@ -96,16 +111,51 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     )
     date_created = models.DateTimeField(_("created at"), auto_now_add=True)
     date_modified = models.DateTimeField(_("modified at"), auto_now=True)
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
+    app_config = models.ForeignKey(
+        BlogConfig,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("app. config"),
+        help_text=_("When selecting a value, the form is reloaded to get the updated default"),
+    )
+    priority = models.IntegerField(_("priority"), blank=True, null=True)
+    main_image = FilerImageField(
+        verbose_name=_("main image"),
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="djangocms_category_image",
+    )
+    main_image_thumbnail = models.ForeignKey(
+        thumbnail_model,
+        verbose_name=_("main image thumbnail"),
+        related_name="djangocms_category_thumbnail",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    main_image_full = models.ForeignKey(
+        thumbnail_model,
+        verbose_name=_("main image full"),
+        related_name="djangocms_category_full",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
 
     translations = TranslatedFields(
         name=models.CharField(_("name"), max_length=752),
-        slug=models.SlugField(_("slug"), max_length=752, blank=True, db_index=True),
+        slug=models.SlugField(
+            _("slug"),
+            max_length=752,
+            blank=True,
+            db_index=True,
+            allow_unicode=BLOG_ALLOW_UNICODE_SLUGS,
+        ),
         meta_description=models.TextField(verbose_name=_("category meta description"), blank=True, default=""),
         meta={"unique_together": (("language_code", "slug"),)},
+        abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
     )
-
-    objects = AppHookConfigTranslatableManager()
 
     _metadata = {
         "title": "get_title",
@@ -129,8 +179,9 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
     }
 
     class Meta:
-        verbose_name = _("blog category")
-        verbose_name_plural = _("blog categories")
+        verbose_name = _("post category")
+        verbose_name_plural = _("post categories")
+        ordering = (F("priority").asc(nulls_last=True),)
 
     def descendants(self):
         children = []
@@ -142,15 +193,21 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     @cached_property
     def linked_posts(self):
-        return self.blog_posts.namespace(self.app_config.namespace)
+        """returns all linked posts in the same appconfig namespace"""
+        return self.blog_posts.filter(app_config=self.app_config)
+
+    @cached_property
+    def pinned_posts(self):
+        """returns all linked posts which have a pinned value of at least 1"""
+        return self.linked_posts.filter(pinned__gt=0)
 
     @cached_property
     def count(self):
-        return self.linked_posts.published().count()
+        return self.linked_posts.filter(Q(sites__isnull=True) | Q(sites=Site.objects.get_current())).count()
 
     @cached_property
     def count_all_sites(self):
-        return self.linked_posts.published(current_site=False).count()
+        return self.linked_posts.count()
 
     def get_absolute_url(self, lang=None):
         lang = _get_language(self, lang)
@@ -171,11 +228,16 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+        menu_pool.clear(all=True)
         for lang in self.get_available_languages():
             self.set_current_language(lang)
             if not self.slug and self.name:
                 self.slug = slugify(force_str(self.name))
         self.save_translations()
+
+    def delete(self, *args, **kwargs):
+        menu_pool.clear(all=True)
+        return super().delete(*args, **kwargs)
 
     def get_title(self):
         title = self.safe_translation_getter("name", any_language=True)
@@ -186,7 +248,7 @@ class BlogCategory(BlogMetaMixin, TranslatableModel):
         return strip_tags(description).strip()
 
 
-class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
+class Post(KnockerModel, models.Model):
     """
     Blog post
     """
@@ -205,6 +267,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     date_published = models.DateTimeField(_("published since"), null=True, blank=True)
     date_published_end = models.DateTimeField(_("published until"), null=True, blank=True)
     date_featured = models.DateTimeField(_("featured date"), null=True, blank=True)
+    pinned = models.IntegerField(
+        _("pinning priority"),
+        blank=True,
+        null=True,
+        help_text=_(
+            "Pinned posts are shown in ascending order before unpinned ones. " "Leave blank for regular order by date."
+        ),
+    )
     publish = models.BooleanField(_("publish"), default=False)
     include_in_rss = models.BooleanField(_("include in RSS feed"), default=True)
     categories = models.ManyToManyField(
@@ -246,33 +316,16 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             "visible in all the configured sites."
         ),
     )
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"))
-
-    translations = TranslatedFields(
-        title=models.CharField(_("title"), max_length=752),
-        slug=models.SlugField(
-            _("slug"), max_length=752, blank=True, db_index=True, allow_unicode=get_setting("UNICODE_SLUGS")
-        ),
-        subtitle=models.CharField(verbose_name=_("subtitle"), max_length=767, blank=True, default=""),
-        abstract=HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR"),
-        meta_description=models.TextField(verbose_name=_("post meta description"), blank=True, default=""),
-        meta_keywords=models.TextField(verbose_name=_("post meta keywords"), blank=True, default=""),
-        meta_title=models.CharField(
-            verbose_name=_("post meta title"),
-            help_text=_("used in title tag and social sharing"),
-            max_length=2000,
-            blank=True,
-            default="",
-        ),
-        post_text=HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR"),
-        meta={"unique_together": (("language_code", "slug"),)},
+    app_config = models.ForeignKey(
+        BlogConfig,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("app. config"),
+        help_text=_("When selecting a value, the form is reloaded to get the updated default"),
     )
-    media = PlaceholderField("media", related_name="media")
-    content = PlaceholderField("post_content", related_name="post_content")
-    liveblog = PlaceholderField("live_blog", related_name="live_blog")
+
     enable_liveblog = models.BooleanField(verbose_name=_("enable liveblog on post"), default=False)
 
-    objects = GenericDateTaggedManager()
     tags = TaggableManager(
         blank=True,
         related_name="djangocms_blog_tags",
@@ -311,19 +364,66 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
     }
 
     class Meta:
-        verbose_name = _("blog article")
-        verbose_name_plural = _("blog articles")
-        ordering = ("-date_published", "-date_created")
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
+        ordering = (F("pinned").asc(nulls_last=True), "-date_published", "-date_created")
         get_latest_by = "date_published"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._content_cache = {}
+        self._language_cache = None
 
     def __str__(self):
         default = gettext("Post (no translation)")
         return self.safe_translation_getter("title", any_language=True, default=default)
 
+    @admin.display(boolean=True)
+    def featured(self):
+        return bool(self.pinned) or self.date_featured >= now()
+
+    def get_content(self, language=None, show_draft_content=False):
+        if not language:
+            language = translation.get_language()
+
+        key = f"{language}_{'latest' if show_draft_content else 'public'}"
+
+        try:
+            return self._content_cache[key]
+        except KeyError:
+            if show_draft_content:
+                qs = self.postcontent_set(manager="admin_manager").current_content()
+            else:
+                qs = self.postcontent_set
+            qs = qs.prefetch_related(
+                "placeholders",
+                "post__categories",
+            ).filter(language=language)
+
+            self._content_cache[key] = qs.first()
+            return self._content_cache[key]
+
+    def safe_translation_getter(self, field, default=None, language_code=None, any_language=False):
+        """
+        Fetch a content property, and return a default value
+        when both the translation and fallback language are missing.
+
+        When ``any_language=True`` is used, the function also looks
+        into other languages to find a suitable value. This feature can be useful
+        for "title" attributes for example, to make sure there is at least something being displayed.
+        Also consider using ``field = TranslatedField(any_language=True)`` in the model itself,
+        to make this behavior the default for the given field.
+        """
+
+        content_obj = self.get_content(language_code, show_draft_content=True)
+        if content_obj is None and any_language and self.get_available_languages():
+            content_obj = self.get_content(self.get_available_languages()[0], show_draft_content=True)
+        return getattr(content_obj, field, default)
+
     @property
     def guid(self, language=None):
         if not language:
-            language = self.get_current_language()
+            language = get_language()
         base_string = "-{0}-{2}-{1}-".format(
             language,
             self.app_config.namespace,
@@ -337,27 +437,14 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             return self.date_featured
         return self.date_published
 
-    def save(self, *args, **kwargs):
-        """
-        Handle some auto configuration during save
-        """
-        if self.publish and self.date_published is None:
-            self.date_published = timezone.now()
-        if not self.slug and self.title:
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
+    def get_available_languages(self):
+        if not (self._language_cache):
+            self._language_cache = list(self.postcontent_set.all().values_list("language", flat=True))
+        return self._language_cache
 
-    def save_translation(self, translation, *args, **kwargs):
-        """
-        Handle some auto configuration during save
-        """
-        if not translation.slug and translation.title:
-            translation.slug = slugify(translation.title)
-        super().save_translation(translation, *args, **kwargs)
-
-    def get_absolute_url(self, lang=None):
-        lang = _get_language(self, lang)
-        with switch_language(self, lang):
+    def get_absolute_url(self, language=None):
+        lang = language or translation.get_language()
+        with translation.override(lang):
             category = self.categories.first()
             kwargs = {}
             if self.date_published:
@@ -377,14 +464,17 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
                 kwargs["category"] = category.safe_translation_getter(
                     "slug", language_code=lang, any_language=True
                 )  # NOQA
-            return reverse(
-                "%s:post-detail" % self.app_config.namespace, kwargs=kwargs, current_app=self.app_config.namespace
-            )
+            try:
+                return reverse(
+                    "%s:post-detail" % self.app_config.namespace, kwargs=kwargs, current_app=self.app_config.namespace
+                )
+            except NoReverseMatch:
+                return ""
 
-    def get_title(self):
-        title = self.safe_translation_getter("meta_title", any_language=True)
+    def get_title(self, language=None):
+        title = self.safe_translation_getter("meta_title", language_code=language, any_language=True)
         if not title:
-            title = self.safe_translation_getter("title", any_language=True)
+            title = self.safe_translation_getter("title", language_code=language, any_language=True) or _("No title")
         return title.strip()
 
     def get_keywords(self):
@@ -402,8 +492,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
 
     def get_image_full_url(self):
         if self.main_image:
-            thumbnail_options = get_setting("META_IMAGE_SIZE")
-            if thumbnail_options:
+            if thumbnail_options := get_setting("META_IMAGE_SIZE"):
                 thumbnail_url = get_thumbnailer(self.main_image).get_thumbnail(thumbnail_options).url
                 return self.build_absolute_uri(thumbnail_url)
             return self.build_absolute_uri(self.main_image.url)
@@ -461,13 +550,9 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         """
         Checks wether the blog post is *really* published by checking publishing dates too
         """
-        return (
-            self.publish
-            and (self.date_published and self.date_published <= timezone.now())
-            and (self.date_published_end is None or self.date_published_end > timezone.now())
-        )
+        assert False, "is_published is removed"
 
-    def should_knock(self, signal_type, created=False):
+    def should_knock__content(self, signal_type, created=False):
         """
         Returns whether to emit knocks according to the post state
         """
@@ -476,26 +561,121 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         return (new or updated) and signal_type in ("post_save", "post_delete")
 
     def get_cache_key(self, language, prefix):
-        return "djangocms-blog:{2}:{0}:{1}".format(language, self.guid, prefix)
+        return f"djangocms-blog:{prefix}:{language}:{self.guid}"
 
     @property
     def liveblog_group(self):
         return "liveblog-{apphook}-{lang}-{post}".format(
-            lang=self.get_current_language(),
+            lang=translation.get_language(),
             apphook=self.app_config.namespace,
             post=self.safe_translation_getter("slug", any_language=True),
         )
 
 
+class PostContent(BlogMetaMixin, ModelMeta, models.Model):
+    class Meta:
+        verbose_name = _("article content")
+        verbose_name_plural = _("article contents")
+        ordering = (F("post__pinned").asc(nulls_last=True), "-post__date_published", "-post__date_created")
+        get_latest_by = "date_published"
+
+    # Gruping fields
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    language = models.CharField(_("language"), max_length=15, db_index=True)
+    # Content fields (by post and language
+    title = models.CharField(_("title"), max_length=752)
+    slug = models.SlugField(
+        _("slug"),
+        max_length=752,
+        blank=True,
+        db_index=True,
+        allow_unicode=BLOG_ALLOW_UNICODE_SLUGS,
+    )
+    subtitle = models.CharField(verbose_name=_("subtitle"), max_length=767, blank=True, default="")
+    abstract = HTMLField(_("abstract"), blank=True, default="", configuration="BLOG_ABSTRACT_CKEDITOR")
+    meta_description = models.TextField(verbose_name=_("post meta description"), blank=True, default="")
+    meta_keywords = models.TextField(verbose_name=_("post meta keywords"), blank=True, default="")
+    meta_title = models.CharField(
+        verbose_name=_("post meta title"),
+        help_text=_("used in title tag and social sharing"),
+        max_length=2000,
+        blank=True,
+        default="",
+    )
+    post_text = HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR")
+    placeholders = PlaceholderRelationField()
+
+    objects = GenericDateTaggedManager()
+    admin_manager = AdminDateTaggedManager()
+
+    @property
+    def author(self):
+        return self.post.author
+
+    @property
+    def date_published(self):
+        return self.post.date_published
+
+    @property
+    def date_published_end(self):
+        return self.post.date_published_end
+
+    @property
+    def app_config(self):
+        return self.post.app_config
+
+    def categories(self):
+        return self.post.categories
+
+    @cached_property
+    def media(self):
+        return get_placeholder_from_slot(self.placeholders, "media")
+
+    @cached_property
+    def content(self):
+        return get_placeholder_from_slot(self.placeholders, "content")
+
+    def save(self, *args, **kwargs):
+        """
+        Handle some auto-configuration during save
+        """
+        if not self.slug and self.title:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self, language=None):
+        return self.post.get_absolute_url(language=language)
+
+    def get_template(self):
+        # Used for the cms structure endpoint
+        if self.app_config:
+            if self.app_config.use_placeholder:
+                if self.app_config and self.app_config.template_prefix:
+                    return f"{self.app_config.template_prefix}/post_structure.html"
+                return "djangocms_blog/post_structure.html"
+            else:
+                return "djangocms_blog/no_post_structure.html"
+        return "djangocms_blog/post_structure.html"
+
+    def __str__(self):
+        return self.title or _("Untitled")
+
+
 class BasePostPlugin(CMSPlugin):
-    app_config = AppHookConfigField(BlogConfig, null=True, verbose_name=_("app. config"), blank=True)
+    app_config = models.ForeignKey(
+        BlogConfig,
+        on_delete=models.CASCADE,
+        null=True,
+        verbose_name=_("app. config"),
+        help_text=_("When selecting a value, the form is reloaded to get the updated default"),
+    )
     current_site = models.BooleanField(
         _("current site"), default=True, help_text=_("Select items from the current site only")
     )
     template_folder = models.CharField(
         max_length=200,
-        verbose_name=_("Plugin template"),
-        help_text=_("Select plugin template to load for this instance"),
+        verbose_name=_("Plugin layout"),
+        help_text=_("Select plugin layout to load for this instance"),
         default=BLOG_PLUGIN_TEMPLATE_FOLDERS[0][0],
         choices=BLOG_PLUGIN_TEMPLATE_FOLDERS,
     )
@@ -509,95 +689,89 @@ class BasePostPlugin(CMSPlugin):
         :param qs: queryset to optimize
         :return: optimized queryset
         """
-        return qs.select_related("app_config").prefetch_related(
-            "translations", "categories", "categories__translations", "categories__app_config"
+        return qs.select_related("post", "post__app_config").prefetch_related(
+            "post__categories", "post__categories__translations", "post__categories__app_config"
         )
 
-    def post_queryset(self, request=None, published_only=True, selected_posts=None):
-        language = get_language()
-        posts = Post.objects if not selected_posts else selected_posts
+    def post_content_queryset(self, request=None):
+        language = translation.get_language()
+        if request and getattr(request, "toolbar", False) and request.toolbar.edit_mode_active:
+            post_contents = PostContent.admin_manager.latest_content()
+        else:
+            post_contents = PostContent.objects.all()
         if self.app_config:
-            posts = posts.namespace(self.app_config.namespace)
+            post_contents = post_contents.filter(post__app_config=self.app_config)
         if self.current_site:
-            posts = posts.on_site(get_current_site(request))
-        posts = posts.active_translations(language_code=language)
-        if (
-            published_only
-            or not request
-            or not getattr(request, "toolbar", False)
-            or not request.toolbar.edit_mode_active
-        ):
-            posts = posts.published(current_site=self.current_site)
-        return self.optimize(posts.all())
+            post_contents = post_contents.on_site(get_current_site(request))
+        post_contents = post_contents.filter(language=language)
+        return self.optimize(post_contents)
 
 
 class LatestPostsPlugin(BasePostPlugin):
     latest_posts = models.IntegerField(
-        _("articles"),
+        _("entries"),
         default=get_setting("LATEST_POSTS"),
-        help_text=_("The number of latests " "articles to be displayed."),
+        help_text=_("The number of latests entries to be displayed."),
     )
     tags = TaggableManager(
         _("filter by tag"),
         blank=True,
-        help_text=_("Show only the blog articles tagged with chosen tags."),
+        help_text=_("Show only the entries tagged with chosen tags."),
         related_name="djangocms_blog_latest_post",
     )
     categories = models.ManyToManyField(
         "djangocms_blog.BlogCategory",
         blank=True,
         verbose_name=_("filter by category"),
-        help_text=_("Show only the blog articles tagged " "with chosen categories."),
+        help_text=_("Show only the blog articles tagged with chosen categories."),
     )
 
     def __str__(self):
         return force_str(_("%s latest articles by tag") % self.latest_posts)
 
-    def copy_relations(self, oldinstance):
-        for tag in oldinstance.tags.all():
+    def copy_relations(self, old_instance):
+        for tag in old_instance.tags.all():
             self.tags.add(tag)
-        for category in oldinstance.categories.all():
+        for category in old_instance.categories.all():
             self.categories.add(category)
 
-    def get_posts(self, request, published_only=True):
-        posts = self.post_queryset(request, published_only)
+    def get_post_contents(self, request):
+        post_contents = self.post_content_queryset(request)
         if self.tags.exists():
-            posts = posts.filter(tags__in=list(self.tags.all()))
+            post_contents = post_contents.filter(post__tags__in=list(self.tags.all()))
         if self.categories.exists():
-            posts = posts.filter(categories__in=list(self.categories.all()))
-        return self.optimize(posts.distinct())[: self.latest_posts]
+            post_contents = post_contents.filter(post__categories__in=list(self.categories.all()))
+        return self.optimize(post_contents.distinct())[: self.latest_posts]
 
 
 class AuthorEntriesPlugin(BasePostPlugin):
     authors = models.ManyToManyField(
         dj_settings.AUTH_USER_MODEL,
         verbose_name=_("authors"),
-        limit_choices_to={"djangocms_blog_post_author__publish": True},
     )
     latest_posts = models.IntegerField(
-        _("articles"),
+        _("entries"),
         default=get_setting("LATEST_POSTS"),
-        help_text=_("The number of author articles to be displayed."),
+        help_text=_("The number of author entries to be displayed."),
     )
 
     def __str__(self):
-        return force_str(_("%s latest articles by author") % self.latest_posts)
+        return force_str(_("%s latest entries by author") % self.latest_posts)
 
     def copy_relations(self, oldinstance):
         self.authors.set(oldinstance.authors.all())
 
-    def get_posts(self, request, published_only=True):
-        posts = self.post_queryset(request, published_only)
-        return posts
+    def get_post_contents(self, request):
+        return self.post_content_queryset(request)
 
     def get_authors(self, request):
         authors = self.authors.all()
         for author in authors:
-            qs = self.get_posts(request).filter(author=author)
+            qs = self.get_post_contents(request).filter(author=author)
             # total nb of articles
             author.count = qs.count()
             # "the number of author articles to be displayed"
-            author.posts = qs[: self.latest_posts]
+            author.post_contents = qs[: self.latest_posts]
         return authors
 
 

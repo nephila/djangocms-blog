@@ -10,6 +10,7 @@ def gettext(s):
 
 
 HELPER_SETTINGS = dict(
+    SECRET_KEY="secret",
     ROOT_URLCONF="tests.test_utils.urls",
     INSTALLED_APPS=[
         "filer",
@@ -17,10 +18,9 @@ HELPER_SETTINGS = dict(
         "meta",
         "easy_thumbnails",
         "django.contrib.sitemaps",
-        "djangocms_text_ckeditor",
+        "djangocms_text",
         "taggit",
         "taggit_autosuggest",
-        "aldryn_apphooks_config",
         "djangocms_video",
         "sortedm2m",
         "tests.media_app",
@@ -64,49 +64,11 @@ HELPER_SETTINGS = dict(
     BLOG_AUTO_SETUP=False,
     ALLOWED_HOSTS=["*"],
     TEST_RUNNER="app_helper.pytest_runner.PytestTestRunner",
+    CMS_CONFIRM_VERSION4=True,
 )
 
-try:
-    import knocker  # pragma: no cover # NOQA
 
-    HELPER_SETTINGS["INSTALLED_APPS"].append("knocker")
-    HELPER_SETTINGS["INSTALLED_APPS"].append("channels")
-    HELPER_SETTINGS["INSTALLED_APPS"].append("djangocms_blog.liveblog")
-    HELPER_SETTINGS["ASGI_APPLICATION"] = "tests.test_utils.routing.application"
-    HELPER_SETTINGS["CHANNEL_LAYERS"] = {
-        "default": {"BACKEND": "channels_redis.core.RedisChannelLayer", "CONFIG": {"hosts": [("localhost", 6379)]}},
-    }
-except ImportError:
-    pass
-
-
-try:
-    import aldryn_search  # pragma: no cover # NOQA
-
-    HELPER_SETTINGS["INSTALLED_APPS"].append("aldryn_search")
-except ImportError:
-    pass
 os.environ["AUTH_USER_MODEL"] = "tests.test_utils.CustomUser"
 
 if "server" in sys.argv[:3]:
     HELPER_SETTINGS["BLOG_AUTO_SETUP"] = True
-
-
-def run():
-    from app_helper import runner
-
-    runner.cms("djangocms_blog")
-
-
-def setup():
-    from app_helper import runner
-
-    runner.setup("djangocms_blog", sys.modules[__name__], use_cms=True)
-
-
-if __name__ == "__main__":
-    run()
-
-if __name__ == "cms_helper":
-    # this is needed to run cms_helper in pycharm
-    setup()

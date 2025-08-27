@@ -1,0 +1,8 @@
+{% if target == "_top" and url %}
+  <a href="javascript:var win=window.parent;if(win.CMS){win.CMS.settings.sideframe={url:'',hidden:true};win.CMS.API.Helpers.setSettings(win.CMS.settings);}win.location='{{ url }}'"
+   {% if title %}title="{{ title }}" {% endif %}class="btn cms-versioning-action-btn">
+{% else %}
+  <a href="{{ url|default:"#" }}"{% if target %} target="{{ target }}"{% endif %}{% if title %} title="{{ title }}"{% endif %} class="btn cms-versioning-action-btn{% if disabled %} inactive{% endif %}">
+{% endif %}
+<span class="cms-icon cms-icon-{{ icon }}"></span>
+</a>

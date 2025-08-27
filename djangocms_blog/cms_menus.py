@@ -9,8 +9,7 @@ from django.utils.translation import get_language_from_request, gettext_lazy as 
 from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
-from .cms_appconfig import BlogConfig
-from .models import BlogCategory, Post
+from .models import BlogCategory, BlogConfig, Post, PostContent
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
 
 logger = logging.getLogger(__name__)
@@ -55,12 +54,12 @@ class BlogCategoryMenu(CMSAttachMenu):
                     logger.exception(e)
                     return []
             config = self._config[self.instance.application_namespace]
-            if not getattr(request, "toolbar", False) or not request.toolbar.edit_mode_active:
-                if self.instance == self.instance.get_draft_object():
-                    return []
-            else:
-                if self.instance == self.instance.get_public_object():
-                    return []
+            # if not getattr(request, "toolbar", False) or not request.toolbar.edit_mode_active:
+            #     if self.instance == self.instance.get_draft_object():
+            #         return []
+            # else:
+            #     if self.instance == self.instance.get_public_object():
+            #         return []
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
             categories_menu = True
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):
@@ -70,34 +69,37 @@ class BlogCategoryMenu(CMSAttachMenu):
 
         used_categories = []
         if posts_menu:
-            posts = Post.objects
+            post_contents = PostContent.objects.filter(language=language)
             if hasattr(self, "instance") and self.instance:
-                posts = posts.namespace(self.instance.application_namespace).on_site()
-            posts = (
-                posts.active_translations(language)
-                .distinct()
-                .select_related("app_config")
-                .prefetch_related("translations", "categories")
+                post_contents = post_contents.filter(
+                    post__app_config__namespace=self.instance.application_namespace
+                ).on_site()
+            post_contents = (
+                post_contents.distinct()
+                .select_related("post", "post__app_config")
+                .prefetch_related("post__categories")
             )
-            for post in posts:
-                post_id = None
+            for post_content in post_contents:
+                postcontent_id = None
                 parent = None
-                used_categories.extend(post.categories.values_list("pk", flat=True))
+                used_categories.extend(post_content.post.categories.values_list("pk", flat=True))
                 if categories_menu:
-                    category = post.categories.first()
+                    category = post_content.post.categories.first()
                     if category:
-                        parent = "{}-{}".format(category.__class__.__name__, category.pk)
-                        post_id = ("{}-{}".format(post.__class__.__name__, post.pk),)
+                        parent = f"{category.__class__.__name__}-{category.pk}"
+                        postcontent_id = (f"{post_content.__class__.__name__}-{post_content.pk}",)
                 else:
-                    post_id = ("{}-{}".format(post.__class__.__name__, post.pk),)
-                if post_id:
-                    node = NavigationNode(post.get_title(), post.get_absolute_url(language), post_id, parent)
+                    postcontent_id = (f"{post_content.__class__.__name__}-{post_content.pk}",)
+                if postcontent_id:
+                    node = NavigationNode(
+                        post_content.title, post_content.get_absolute_url(language), postcontent_id, parent
+                    )
                     nodes.append(node)
 
         if categories_menu:
             categories = BlogCategory.objects
             if config:
-                categories = categories.namespace(self.instance.application_namespace)
+                categories = categories.filter(app_config__namespace=self.instance.application_namespace)
             if config and not config.menu_empty_categories:
                 categories = categories.active_translations(language).filter(pk__in=used_categories).distinct()
             else:
@@ -113,8 +115,8 @@ class BlogCategoryMenu(CMSAttachMenu):
                     node = NavigationNode(
                         category.name,
                         category.get_absolute_url(),
-                        "{}-{}".format(category.__class__.__name__, category.pk),
-                        ("{}-{}".format(category.__class__.__name__, category.parent.id) if category.parent else None),
+                        f"{category.__class__.__name__}-{category.pk}",
+                        (f"{category.__class__.__name__}-{category.parent.id}" if category.parent else None),
                     )
                     nodes.append(node)
                     added_categories.append(category.pk)
@@ -160,21 +162,21 @@ class BlogNavModifier(Modifier):
             return nodes
         if post_cut:
             return nodes
-        current_post = getattr(request, get_setting("CURRENT_POST_IDENTIFIER"), None)
+        current_postcontent = getattr(request, get_setting("CURRENT_POST_IDENTIFIER"), None)
         category = None
-        if current_post and current_post.__class__ == Post:
-            category = current_post.categories.first()
+        if current_postcontent and current_postcontent.__class__ == PostContent:
+            category = current_postcontent.categories.first()
         if not category:
             return nodes
 
         for node in nodes:
-            if "{}-{}".format(category.__class__.__name__, category.pk) == node.id:
+            if f"{category.__class__.__name__}-{category.pk}" == node.id:
                 node.selected = True
         return nodes
 
 
-menu_pool.register_modifier(BlogNavModifier)
-menu_pool.register_menu(BlogCategoryMenu)
+# menu_pool.register_modifier(BlogNavModifier)
+# menu_pool.register_menu(BlogCategoryMenu)
 
 
 def clear_menu_cache(**kwargs):
@@ -184,6 +186,6 @@ def clear_menu_cache(**kwargs):
     menu_pool.clear(all=True)
 
 
-post_save.connect(clear_menu_cache, sender=BlogCategory)
-post_delete.connect(clear_menu_cache, sender=BlogCategory)
-post_delete.connect(clear_menu_cache, sender=BlogConfig)
+# post_save.connect(clear_menu_cache, sender=BlogCategory)
+# post_delete.connect(clear_menu_cache, sender=BlogCategory)
+# post_delete.connect(clear_menu_cache, sender=BlogConfig)

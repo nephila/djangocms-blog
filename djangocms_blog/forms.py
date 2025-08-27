@@ -1,8 +1,8 @@
 from django import forms
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxLengthValidator
 from django.utils.functional import cached_property
+from django.utils.translation import gettext_lazy as _
 from parler.forms import TranslatableModelForm
 from taggit_autosuggest.widgets import TagAutoSuggest
 
@@ -47,13 +47,13 @@ class CategoryAdminForm(ConfigFormBase, TranslatableModelForm):
                 qs = qs.exclude(pk__in=[self.instance.pk] + [child.pk for child in self.instance.descendants()])
             config = None
             if getattr(self.instance, "app_config_id", None):
-                qs = qs.namespace(self.instance.app_config.namespace)
+                qs = qs.filter(app_config__namespace=self.instance.app_config.namespace)
             elif "app_config" in self.initial:
                 config = BlogConfig.objects.get(pk=self.initial["app_config"])
             elif self.data.get("app_config", None):
                 config = BlogConfig.objects.get(pk=self.data["app_config"])
             if config:
-                qs = qs.namespace(config.namespace)
+                qs = qs.filter(app_config__namespace=config.namespace)
             self.fields["parent"].queryset = qs
 
     class Meta:
@@ -78,7 +78,7 @@ class LatestEntriesForm(BlogPluginForm):
         self.fields["tags"].widget = TagAutoSuggest("taggit.Tag")
 
     class Media:
-        css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
+        css = {"all": ("djangocms_blog/css/djangocms_blog_admin.css",)}
 
 
 class AuthorPostsForm(BlogPluginForm):
@@ -90,7 +90,40 @@ class AuthorPostsForm(BlogPluginForm):
         self.fields["authors"].queryset = User.objects.filter(djangocms_blog_post_author__publish=True).distinct()
 
 
-class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
+# class PostAdminBaseForm(ConfigFormBase, forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
+#         original_attrs = self.base_fields["meta_description"].widget.attrs
+#         if "cols" in original_attrs:
+#             del original_attrs["cols"]
+#         if "rows" in original_attrs:
+#             del original_attrs["rows"]
+#         original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
+#         self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
+#         self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
+#         super().__init__(*args, **kwargs)
+#         if "categories" in self.fields:
+#             if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
+#                 self.fields["categories"].required = True
+#             self.fields["categories"].queryset = self.available_categories
+#         if "related" in self.fields:
+#             self.fields["related"].queryset = self.available_related_posts
+#
+#         if "app_config" in self.fields:
+#             # Don't allow app_configs to be added here. The correct way to add an
+#             # apphook-config is to create an apphook on a cms Page.
+#             self.fields["app_config"].widget.can_add_related = False
+#
+#         if self.app_config:
+#             if not self.initial.get("main_image_full", ""):
+#                 self.initial["main_image_full"] = self.app_config.app_data["config"].get("default_image_full")
+#             if not self.initial.get("main_image_thumbnail", ""):
+#                 self.initial["main_image_thumbnail"] = self.app_config.app_data["config"].get(
+#                     "default_image_thumbnail"
+#                 )
+
+
+class PostAdminFormBase(ConfigFormBase, forms.ModelForm):
     """
     Common methods between the admin and wizard form
     """
@@ -103,34 +136,41 @@ class PostAdminFormBase(ConfigFormBase, TranslatableModelForm):
     def available_categories(self):
         qs = BlogCategory.objects
         if self.app_config:
-            return qs.namespace(self.app_config.namespace).active_translations()
+            return qs.filter(app_config__namespace=self.app_config.namespace)
         return qs
 
-    def _post_clean_translation(self, translation):
-        # This is a quickfix for https://github.com/django-parler/django-parler/issues/236
-        # which needs to be fixed in parler
-        # operating at form level ensure that if the model is validated outside the form
-        # the uniqueness check is not disabled
-        super()._post_clean_translation(translation)
-        self._validate_unique = False
+    @cached_property
+    def available_related_posts(self):
+        qs = Post.objects
+        if self.app_config:
+            if self.app_config.use_related == "1":
+                qs = qs.filter(app_config__namespace=self.app_config.namespace)
+        return qs
 
 
 class PostAdminForm(PostAdminFormBase):
     def __init__(self, *args, **kwargs):
-        self.base_fields["meta_description"].validators = [MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))]
-        original_attrs = self.base_fields["meta_description"].widget.attrs
-        if "cols" in original_attrs:
-            del original_attrs["cols"]
-        if "rows" in original_attrs:
-            del original_attrs["rows"]
-        original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
-        self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
-        self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
+        if "meta_description" in self.base_fields:
+            # Not available for published fields
+            self.base_fields["meta_description"].validators = [
+                MaxLengthValidator(get_setting("META_DESCRIPTION_LENGTH"))
+            ]
+            original_attrs = self.base_fields["meta_description"].widget.attrs
+            if "cols" in original_attrs:
+                del original_attrs["cols"]
+            if "rows" in original_attrs:
+                del original_attrs["rows"]
+            original_attrs["maxlength"] = get_setting("META_DESCRIPTION_LENGTH")
+            self.base_fields["meta_description"].widget = forms.TextInput(original_attrs)
+        if "meta_title" in self.base_fields:
+            self.base_fields["meta_title"].validators = [MaxLengthValidator(get_setting("META_TITLE_LENGTH"))]
         super().__init__(*args, **kwargs)
         if "categories" in self.fields:
-            if self.app_config and self.app_config.url_patterns == PERMALINK_TYPE_CATEGORY:
+            if getattr(self.app_config, "url_patterns", "") == PERMALINK_TYPE_CATEGORY:
                 self.fields["categories"].required = True
             self.fields["categories"].queryset = self.available_categories
+        if "related" in self.fields:
+            self.fields["related"].queryset = self.available_related_posts
 
         if "app_config" in self.fields:
             # Don't allow app_configs to be added here. The correct way to add an
@@ -139,8 +179,18 @@ class PostAdminForm(PostAdminFormBase):
 
         if self.app_config:
             if not self.initial.get("main_image_full", ""):
-                self.initial["main_image_full"] = self.app_config.app_data["config"].get("default_image_full")
+                self.initial["main_image_full"] = self.app_config.default_image_full
             if not self.initial.get("main_image_thumbnail", ""):
-                self.initial["main_image_thumbnail"] = self.app_config.app_data["config"].get(
-                    "default_image_thumbnail"
-                )
+                self.initial["main_image_thumbnail"] = self.app_config.default_image_thumbnail
+
+
+class AppConfigForm(forms.Form):
+    app_config = forms.ModelChoiceField(
+        queryset=BlogConfig.objects.all(),
+        label=_("App Config"),
+        required=True,
+        help_text=_("Select the app config to apply to the new post."),
+    )
+    language = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    fieldsets = [(None, {"fields": ("app_config", "language")})]

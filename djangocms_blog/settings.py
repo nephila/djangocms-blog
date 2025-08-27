@@ -115,7 +115,7 @@ BLOG_URLCONF = "djangocms_blog.urls"
 Standard Apphook URLConf.
 """
 
-BLOG_PAGINATION = 10
+BLOG_PAGINATION = 20
 """
 .. _PAGINATION:
 
@@ -134,6 +134,13 @@ BLOG_POSTS_LIST_TRUNCWORDS_COUNT = 100
 .. _POSTS_LIST_TRUNCWORDS_COUNT:
 
 Default number of words shown for abstract in the post list.
+"""
+
+BLOG_ALLOW_UNICODE_SLUGS = True
+"""
+.. _ALLOW_UNICODE_SLUGS:
+
+Typically slugs can contain unicode characters. Set to False to only allow ASCII-based slugs.
 """
 
 BLOG_META_DESCRIPTION_LENGTH = 320
@@ -389,21 +396,21 @@ BLOG_AUTO_HOME_TITLE = "Home"
 Title of the home page created by :ref:`auto_setup`.
 """
 
-BLOG_AUTO_BLOG_TITLE = "Blog"
+BLOG_AUTO_BLOG_TITLE = "blog"
 """
 .. _AUTO_BLOG_TITLE:
 
 Title of the blog page created by :ref:`auto_setup`.
 """
 
-BLOG_AUTO_APP_TITLE = "Blog"
+BLOG_AUTO_APP_TITLE = "blog"
 """
 .. _AUTO_APP_TITLE:
 
 Title of the ``BlogConfig`` instance created by :ref:`auto_setup`.
 """
 
-BLOG_AUTO_NAMESPACE = "Blog"
+BLOG_AUTO_NAMESPACE = "blog"
 """
 .. _AUTO_NAMESPACE:
 
@@ -456,7 +463,7 @@ BLOG_ENABLE_SEARCH = True
 Enable ``aldryn-search`` (i.e.: ``django-haystack``) indexes.
 """
 
-BLOG_CURRENT_POST_IDENTIFIER = "djangocms_post_current"
+BLOG_CURRENT_POST_IDENTIFIER = "djangocms_postcontent_current"
 """
 .. _CURRENT_POST_IDENTIFIER:
 

@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("cms", "0022_auto_20180620_1551"),
-        ("djangocms_blog", "0039_auto_20200331_2227"),
+        ("djangocms_blog", "0001_squashed_0047_migrate_config"),
         ("test_utils", "0001_initial"),
     ]
 
@@ -48,17 +48,6 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="placeholder",
                         to="djangocms_blog.Post",
-                    ),
-                ),
-                (
-                    "some_placeholder",
-                    cms.models.fields.PlaceholderField(
-                        editable=False,
-                        null=True,
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name="some_placeholder",
-                        slotname="some_placeholder",
-                        to="cms.Placeholder",
                     ),
                 ),
             ],

@@ -1,12 +1,11 @@
 import django.db.models.deletion
 import django.utils.timezone
-import djangocms_text_ckeditor.fields
 import filer.fields.image
 from django.conf import settings
 from django.db import migrations, models
 from filer.settings import FILER_IMAGE_MODEL
 
-from djangocms_blog.models import thumbnail_model
+from djangocms_blog.models import HTMLField, thumbnail_model
 
 ACTUAL_FILER_IMAGE_MODEL = FILER_IMAGE_MODEL or "filer.Image"
 
@@ -168,7 +167,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="posttranslation",
             name="abstract",
-            field=djangocms_text_ckeditor.fields.HTMLField(verbose_name="abstract"),
+            field=HTMLField(verbose_name="abstract"),
             preserve_default=True,
         ),
         migrations.AlterField(
@@ -204,7 +203,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="posttranslation",
             name="post_text",
-            field=djangocms_text_ckeditor.fields.HTMLField(blank=True, verbose_name="text", default=""),
+            field=HTMLField(blank=True, verbose_name="text", default=""),
             preserve_default=True,
         ),
         migrations.AlterField(

@@ -4,10 +4,9 @@ from django.utils.encoding import force_str
 
 import djangocms_blog.admin
 from djangocms_blog.models import Post
-
-from .base import BaseTest
-from .test_utils.admin import PostExtensionInline
-from .test_utils.models import PostPlaceholderExtension
+from tests.base import BaseTest
+from tests.test_utils.admin import PostExtensionInline
+from tests.test_utils.models import PostPlaceholderExtension
 
 
 class AddExtensionTest(BaseTest):
@@ -47,7 +46,7 @@ class AddExtensionTest(BaseTest):
     def test_add_plugin_to_placeholder(self):
         djangocms_blog.admin.register_extension(PostPlaceholderExtension)
         pages = self.get_pages()
-        ph = pages[0].placeholders.get(slot="some_placeholder")
+        ph = pages[0].get_placeholders(language="en").get(slot="some_placeholder")
         plugin = add_plugin(ph, "TextPlugin", language="en", body="<p>test</p>")
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         self.assertTrue(rendered.find("<p>test</p>") > -1)
@@ -61,7 +60,7 @@ class AddExtensionTest(BaseTest):
         self.get_pages()
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         post = self._get_post(self._post_data[0]["en"])
 
@@ -84,7 +83,7 @@ class AddExtensionTest(BaseTest):
         self.get_pages()
 
         post_admin = admin.site._registry[Post]
-        request = self.get_page_request("/", self.user, r"/en/blog/", edit=False)
+        request = self.get_toolbar_request("/", self.user, r"/en/blog/", edit=False)
 
         post = self._get_post(self._post_data[0]["en"])
 

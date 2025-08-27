@@ -60,7 +60,7 @@ class BlogLatestEntriesPlugin(BlogPlugin):
     def render(self, context, instance, placeholder):
         """Render the plugin."""
         context = super().render(context, instance, placeholder)
-        context["posts_list"] = instance.get_posts(context["request"], published_only=False)
+        context["postcontent_list"] = instance.get_post_contents(context["request"])
         context["TRUNCWORDS_COUNT"] = get_setting("POSTS_LIST_TRUNCWORDS_COUNT")
         return context
 
@@ -211,7 +211,7 @@ class BlogCategoryPlugin(BlogPlugin):
         context = super().render(context, instance, placeholder)
         qs = BlogCategory.objects.active_translations()
         if instance.app_config:
-            qs = qs.namespace(instance.app_config.namespace)
+            qs = qs.filter(app_config__namespace=instance.app_config.namespace)
         if instance.current_site:
             site = get_current_site(context["request"])
             qs = qs.filter(models.Q(blog_posts__sites__isnull=True) | models.Q(blog_posts__sites=site.pk))

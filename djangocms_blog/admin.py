@@ -1,27 +1,51 @@
+import copy
 from copy import deepcopy
 
-from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
-from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
-from cms.models import CMSPlugin, ValidationError
+from cms.admin.placeholderadmin import FrontendEditableAdminMixin
+from cms.admin.utils import GrouperModelAdmin
+from cms.models import ValidationError
+from cms.utils import get_language_from_request
+from cms.utils.urlutils import admin_reverse
 from django.apps import apps
 from django.conf import settings
 from django.contrib import admin, messages
-from django.contrib.admin.options import InlineModelAdmin
+from django.contrib.admin import helpers
+from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR, InlineModelAdmin, get_content_type_for_model
+from django.contrib.admin.utils import unquote
 from django.contrib.sites.models import Site
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import signals
-from django.http import HttpResponseRedirect
-from django.urls import path, reverse
-from django.utils import timezone
-from django.utils.translation import get_language_from_request, gettext_lazy as _, ngettext as __
+from django.db.models import Prefetch, signals
+from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import NoReverseMatch, path
+from django.utils.translation import gettext_lazy as _, ngettext as __
+from django.views.generic import RedirectView
 from parler.admin import TranslatableAdmin
 
-from .cms_appconfig import BlogConfig
-from .forms import CategoryAdminForm, PostAdminForm
-from .models import BlogCategory, Post
+from .cms_config import BlogCMSConfig
+from .forms import AppConfigForm, CategoryAdminForm
+from .models import BlogCategory, BlogConfig, Post, PostContent
 from .settings import get_setting
+from .utils import is_versioning_enabled
 
 signal_dict = {}
+
+
+if BlogCMSConfig.djangocms_versioning_enabled:
+    from djangocms_versioning.admin import ExtendedGrouperVersionAdminMixin, StateIndicatorMixin
+else:
+    # Declare stubs
+    class StateIndicatorMixin:
+        def state_indicator(self, obj):
+            pass
+
+        def get_list_display(self, request):
+            # remove "indicator" entry
+            return [item for item in super().get_list_display(request) if item != "state_indicator"]
+
+    class ExtendedGrouperVersionAdminMixin:
+        pass
 
 
 def register_extension(klass):
@@ -30,11 +54,11 @@ def register_extension(klass):
         return
     if issubclass(klass, models.Model):
         if klass in signal_dict:
-            raise Exception("Can not register {} twice.".format(klass))
+            raise Exception(f"Can not register {klass} twice.")
         signal_dict[klass] = create_post_post_save(klass)
         signals.post_save.connect(signal_dict[klass], sender=Post, weak=False)
         return
-    raise Exception("Can not register {} type. You can only register a Model or a TabularInline.".format(klass))
+    raise Exception(f"Can not register {klass} type. You can only register a Model or a TabularInline.")
 
 
 def unregister_extension(klass):
@@ -43,11 +67,11 @@ def unregister_extension(klass):
         return
     if issubclass(klass, models.Model):
         if klass not in signal_dict:
-            raise Exception("Can not unregister {}. No signal found for this class.".format(klass))
+            raise Exception(f"Can not unregister {klass}. No signal found for this class.")
         signals.post_save.disconnect(signal_dict[klass], sender=Post)
         del signal_dict[klass]
         return
-    raise Exception("Can not unregister {} type. You can only unregister a Model or a TabularInline.".format(klass))
+    raise Exception(f"Can not unregister {klass} type. You can only unregister a Model or a TabularInline.")
 
 
 def create_post_post_save(model):
@@ -59,6 +83,13 @@ def create_post_post_save(model):
             model.objects.create(post=instance)
 
     return create_instance
+
+
+def admin_get_object_or_404(model, **kwargs):
+    try:
+        return model.admin_manager.get(**kwargs)
+    except ObjectDoesNotExist:
+        raise Http404
 
 
 class SiteListFilter(admin.SimpleListFilter):
@@ -77,7 +108,7 @@ class SiteListFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         try:
             if "sites" in self.used_parameters:
-                return queryset.on_site(Site.objects.get(pk=self.used_parameters["sites"]))
+                return queryset.filter(models.Q(sites__isnull=True) | models.Q(sites=self.used_parameters["sites"]))
             return queryset
         except Site.DoesNotExist as e:  # pragma: no cover
             raise admin.options.IncorrectLookupParameters(e)
@@ -85,15 +116,236 @@ class SiteListFilter(admin.SimpleListFilter):
             raise admin.options.IncorrectLookupParameters(e)
 
 
+class ModelAppHookConfig:
+    app_config_selection_title = _("Select app config")
+    app_config_selection_desc = _("Select the app config for the new object")
+    app_config_initial_fields = ("app_config",)
+    app_config_values = {}
+
+    def _app_config_select(self, request, obj):
+        """
+        Return the select value for apphook configs
+
+        :param request: request object
+        :param obj: current object
+        :return: False if no preselected value is available (more than one or no apphook
+                 config is present), apphook config instance if exactly one apphook
+                 config is defined or apphook config defined in the request or in the current
+                 object, None otherwise
+        """
+        if not obj and not request.GET.get("app_config", False):
+            if BlogConfig.objects.count() == 1:
+                return BlogConfig.objects.first()
+            if request.POST.get("app_config", False):
+                return BlogConfig.objects.get(pk=int(request.POST.get("app_config", False)))
+            return None
+        elif obj and getattr(obj, "app_config", False):
+            return getattr(obj, "app_config")
+        elif request.GET.get("app_config", False):
+            return BlogConfig.objects.get(pk=int(request.GET.get("app_config")))
+        return None
+
+    def _set_config_defaults(self, request, form, obj=None):
+        """
+        Cycle through app_config_values and sets the form value according to the
+        options in the current apphook config.
+
+        self.app_config_values is a dictionary containing config options as keys, form fields as
+        values::
+
+            app_config_values = {
+                'apphook_config': 'form_field',
+                ...
+            }
+
+        :param request: request object
+        :param form: model form for the current model
+        :param obj: current object
+        :return: form with defaults set
+        """
+        for config_option, field in self.app_config_values.items():
+            if field in form.base_fields:
+                form.base_fields[field].initial = self.get_config_data(request, obj, config_option)
+        return form
+
+    def get_fieldsets(self, request, obj=None):
+        """
+        If the apphook config must be selected first, returns a fieldset with just the
+        app config field and help text
+        :param request:
+        :param obj:
+        :return:
+        """
+        app_config_default = self._app_config_select(request, obj)
+        if app_config_default is None and request.method == "GET":
+            return (
+                (
+                    _(self.app_config_selection_title),
+                    {
+                        "fields": self.app_config_initial_fields,
+                        "description": _(self.app_config_selection_desc),
+                    },
+                ),
+            )
+        else:
+            return super().get_fieldsets(request, obj)
+
+    def get_config_data(self, request, obj, name):
+        """
+        Method that retrieves a configuration option for a specific AppHookConfig instance
+
+        :param request: the request object
+        :param obj: the model instance
+        :param name: name of the config option as defined in the config form
+
+        :return value: config value or None if no app config is found
+        """
+        return_value = None
+        config = None
+        if obj:
+            try:
+                config = getattr(obj, "app_config", False)
+            except ObjectDoesNotExist:  # pragma: no cover
+                pass
+        if not config and "app_config" in request.GET:
+            try:
+                config = BlogConfig.objects.get(pk=request.GET["app_config"])
+            except BlogConfig.DoesNotExist:  # pragma: no cover
+                pass
+        if config:
+            return_value = getattr(config, name)
+        return return_value
+
+    def render_app_config_form(self, request, form):
+        """
+        Render the app config form
+        """
+        admin_form = helpers.AdminForm(
+            form,
+            form.fieldsets,
+            {},
+            model_admin=self,
+        )
+        app_label = self.opts.app_label
+        context = {
+            **self.admin_site.each_context(request),
+            "title": _("Add %s") % self.opts.verbose_name,
+            "adminform": admin_form,
+            "errors": helpers.AdminErrorList(form, []),
+            "media": self.media,
+            "show_save": True,
+            "show_save_and_add": False,
+            "show_save_and_add_another": False,
+            "show_save_and_continue": False,
+            "add": True,
+            "change": False,
+            "opts": self.opts,
+            "content_type_id": get_content_type_for_model(self.model).pk,
+            "save_as": self.save_as,
+            "save_on_top": self.save_on_top,
+            "to_field_var": TO_FIELD_VAR,
+            "is_popup_var": IS_POPUP_VAR,
+            "app_label": app_label,
+            "has_add_permission": self.has_add_permission(request),
+            "has_change_permission": self.has_change_permission(request),
+            "has_view_permission": self.has_view_permission(request),
+            "has_delete_permission": self.has_delete_permission(request),
+            "has_editable_inline_admin_formsets": False,
+        }
+
+        if self.add_form_template is not None:
+            form_template = self.add_form_template
+        else:
+            form_template = self.change_form_template
+        request.current_app = self.admin_site.name
+
+        return TemplateResponse(
+            request,
+            form_template
+            or [
+                "admin/{}/{}/change_form.html".format(app_label, self.opts.model_name),
+                "admin/%s/change_form.html" % app_label,
+                "admin/change_form.html",
+            ],
+            context,
+        )
+
+    def changeform_view(self, request, object_id=None, form_url="", extra_context=None):
+        """
+        Override the changeform_view to set the app_config field to the correct value
+
+        For the add view it checks whether the app_config is set; if not, a special form
+        to select the namespace is shown, which is reloaded after namespace selection.
+        If only one namespace exists, the current is selected and the normal form
+        is used.
+        """
+        if object_id is None:
+            # Add new object
+            if request.method == "GET" or "app_config" in request.POST:
+                app_config_default = self._app_config_select(request, None)
+                if not app_config_default:
+                    if request.method == "POST":
+                        form = AppConfigForm(request.POST)
+                    else:
+                        form = AppConfigForm(initial={"app_config": None, "language": request.GET.get("language")})
+                    return self.render_app_config_form(request, form)
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
+    def get_form_x(self, request, obj=None, **kwargs):
+        """
+        Provides a flexible way to get the right form according to the context
+
+        """
+        form = super().get_form(request, obj, **kwargs)
+        if "app_config" not in form.base_fields:
+            return form
+        app_config_default = self._app_config_select(request, obj)
+        if app_config_default:
+            form.base_fields["app_config"].initial = app_config_default
+            get = copy.copy(request.GET)  # Make a copy to modify
+            get["app_config"] = app_config_default.pk
+            request.GET = get
+        elif app_config_default is None and request.method == "GET":
+
+            class InitialForm(form):
+                class Meta(form.Meta):
+                    fields = self.app_config_initial_fields
+
+            form = InitialForm
+        form = self._set_config_defaults(request, form, obj)
+        return form
+
+
 @admin.register(BlogCategory)
-class BlogCategoryAdmin(ModelAppHookConfig, TranslatableAdmin):
+class BlogCategoryAdmin(FrontendEditableAdminMixin, ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
     list_display = [
         "name",
         "parent",
         "app_config",
         "all_languages_column",
+        "priority",
     ]
+    fieldsets = (
+        (None, {"fields": ("parent", "app_config", "name", "meta_description")}),
+        (
+            _("Info"),
+            {
+                "fields": (
+                    "abstract",
+                    "priority",
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            _("Images"),
+            {
+                "fields": ("main_image", "main_image_thumbnail", "main_image_full"),
+                "classes": ("collapse",),
+            },
+        ),
+    )
 
     def get_prepopulated_fields(self, request, obj=None):
         app_config_default = self._app_config_select(request, obj)
@@ -106,25 +358,45 @@ class BlogCategoryAdmin(ModelAppHookConfig, TranslatableAdmin):
 
 
 @admin.register(Post)
-class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookConfig, TranslatableAdmin):
-    form = PostAdminForm
-    list_display = ["title", "author", "date_published", "app_config", "all_languages_column", "date_published_end"]
-    search_fields = ("translations__title",)
+class PostAdmin(
+    FrontendEditableAdminMixin,
+    ModelAppHookConfig,
+    StateIndicatorMixin,
+    ExtendedGrouperVersionAdminMixin,
+    GrouperModelAdmin,
+):
+    # form = PostAdminForm
+    app_config_initial_fields = ("app_config", "content__language")
+    extra_grouping_fields = ("language",)
+    inlines = []
+    list_display = ("title", "author", "app_config", "state_indicator", "admin_list_actions")
+    list_display_links = ("title",)
+    search_fields = ("author__first_name",)
+    readonly_fields = ("date_created", "date_modified")
     date_hierarchy = "date_published"
-    raw_id_fields = ["author"]
+    autocomplete_fields = ["author"]
     frontend_editable_fields = ("title", "abstract", "post_text")
     enhance_exclude = ("main_image", "tags")
     actions = [
-        "make_published",
-        "make_unpublished",
         "enable_comments",
         "disable_comments",
     ]
-    inlines = []
+
     if apps.is_installed("djangocms_blog.liveblog"):
         actions += ["enable_liveblog", "disable_liveblog"]
+
     _fieldsets = [
-        (None, {"fields": ["title", "subtitle", "slug", "publish", "include_in_rss", ["categories", "app_config"]]}),
+        (
+            None,
+            {
+                "fields": [
+                    ["content__title"],
+                    ["content__subtitle"],
+                    ["content__slug"],
+                    ["categories", "app_config", "content__language"],
+                ]
+            },
+        ),
         # left empty for sites, author and related fields
         (None, {"fields": [[]]}),
         (
@@ -138,7 +410,14 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             _("Images"),
             {"fields": [["main_image", "main_image_thumbnail", "main_image_full"]], "classes": ("collapse",)},
         ),
-        (_("SEO"), {"fields": [["meta_description", "meta_title", "meta_keywords"]], "classes": ("collapse",)}),
+        (
+            _("SEO"),
+            {
+                "fields": ["content__meta_title", "content__meta_keywords", "content__meta_description"],
+                "classes": ("collapse",),
+            },
+        ),
+        (None, {"fields": (("date_created", "date_modified"),)}),
     ]
     """
     Default fieldsets structure.
@@ -149,8 +428,8 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     position matches.
     """
     _fieldset_extra_fields_position = {
-        "abstract": (0, 1),
-        "post_text": (0, 1),
+        "content__abstract": (0, 1),
+        "content__post_text": (0, 1),
         "sites": (1, 1, 0),
         "author": (1, 1, 0),
         "enable_liveblog": (2, 1, 2),
@@ -167,42 +446,33 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
     app_config_values = {"default_published": "publish"}
     _sites = None
+    _post_content_type = None
 
-    # Bulk actions for post admin
-    @admin.action(description=_("Publish selection"))
-    def make_published(self, request, queryset):
-        """
-        Bulk action to mark selected posts as published.
-        If the date_published field is empty the current time is saved as date_published.
-        queryset must not be empty (ensured by django CMS).
-        """
-        cnt1 = queryset.filter(
-            date_published__isnull=True,
-            publish=False,
-        ).update(date_published=timezone.now(), publish=True)
-        cnt2 = queryset.filter(
-            date_published__isnull=False,
-            publish=False,
-        ).update(publish=True)
-        messages.add_message(
-            request,
-            messages.INFO,
-            __("%(updates)d entry published.", "%(updates)d entries published.", cnt1 + cnt2)
-            % {"updates": cnt1 + cnt2},
-        )
+    def title(self, obj):
+        content_obj = self.get_content_obj(obj)
+        if content_obj:
+            return content_obj.title
+        return _("Empty")
 
-    @admin.action(description=_("Unpublish selection"))
-    def make_unpublished(self, request, queryset):
-        """
-        Bulk action to mark selected posts as unpublished.
-        queryset must not be empty (ensured by django CMS).
-        """
-        updates = queryset.filter(publish=True).update(publish=False)
-        messages.add_message(
-            request,
-            messages.INFO,
-            __("%(updates)d entry unpublished.", "%(updates)d entries unpublished.", updates) % {"updates": updates},
+    def get_search_results(self, request, queryset, search_term):
+        # qs, distinct = super().get_search_results(request, queryset, search_term)
+        content_title = (
+            PostContent.admin_manager.filter(title__icontains=search_term).values("post_id").latest_content()
         )
+        return queryset.filter(pk__in=content_title), True
+
+    def get_form(self, request, obj=None, **kwargs):
+        """Adds the language from the request to the form class"""
+        form_class = super().get_form(request, obj, **kwargs)
+        form_class.language = get_language_from_request(request)
+        return form_class
+
+    def can_change_content(self, request, content_obj) -> bool:
+        """Returns True if user can change content_obj"""
+        if content_obj and is_versioning_enabled():
+            version = content_obj.versions.first()
+            return version.check_modify.as_bool(request.user)
+        return True
 
     @admin.action(description=_("Enable comments for selection"))
     def enable_comments(self, request, queryset):
@@ -263,7 +533,10 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     # Make bulk action menu entries localizable
 
     def get_list_filter(self, request):
-        filters = ["app_config", "publish", "date_published"]
+        filters = [
+            "categories",
+            "app_config",
+        ]
         if get_setting("MULTISITE"):
             filters.append(SiteListFilter)
         try:
@@ -279,51 +552,39 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
                 pass
         return filters
 
+    def lookup_allowed(self, lookup, value):
+        return super().lookup_allowed(lookup, value) or any(
+            (
+                lookup.startswith("post__categories"),
+                lookup.startswith("post__app_config"),
+            )
+        )
+
     def get_urls(self):
         """
         Customize the modeladmin urls
         """
         urls = [
             path(
-                "publish/<int:pk>/",
-                self.admin_site.admin_view(self.publish_post),
-                name="djangocms_blog_publish_article",
+                "content/",
+                RedirectView.as_view(pattern_name="djangocms_blog_post_changelist"),
+                name="djangocms_blog_postcontent_changelist",
             ),
         ]
         urls.extend(super().get_urls())
         return urls
 
-    def post_add_plugin(self, request, obj1, obj2=None):
-        if isinstance(obj1, CMSPlugin):
-            plugin = obj1
-        elif isinstance(obj2, CMSPlugin):
-            plugin = obj2
-        if plugin.plugin_type in get_setting("LIVEBLOG_PLUGINS"):
-            plugin = plugin.move(plugin.get_siblings().first(), "first-sibling")
-        if isinstance(obj1, CMSPlugin):
-            return super().post_add_plugin(request, plugin)
-        elif isinstance(obj2, CMSPlugin):
-            return super().post_add_plugin(request, obj1, plugin)
-
-    def publish_post(self, request, pk):
-        """
-        Admin view to publish a single post
-
-        :param request: request
-        :param pk: primary key of the post to publish
-        :return: Redirect to the post itself (if found) or fallback urls
-        """
-        language = get_language_from_request(request, check_path=True)
-        try:
-            post = Post.objects.get(pk=int(pk))
-            post.publish = True
-            post.save()
-            return HttpResponseRedirect(post.get_absolute_url(language))
-        except Exception:
-            try:
-                return HttpResponseRedirect(request.headers["referer"])
-            except KeyError:
-                return HttpResponseRedirect(reverse("djangocms_blog:posts-latest"))
+    # def post_add_plugin(self, request, obj1, obj2=None):
+    #     if isinstance(obj1, CMSPlugin):
+    #         plugin = obj1
+    #     elif isinstance(obj2, CMSPlugin):
+    #         plugin = obj2
+    #     if plugin.plugin_type in get_setting("LIVEBLOG_PLUGINS"):
+    #         plugin = plugin.move(plugin.get_siblings().first(), "first-sibling")
+    #     if isinstance(obj1, CMSPlugin):
+    #         return super().post_add_plugin(request, plugin)
+    #     elif isinstance(obj2, CMSPlugin):
+    #         return super().post_add_plugin(request, obj1, plugin)
 
     def has_restricted_sites(self, request):
         """
@@ -362,7 +623,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
     def _get_available_posts(self, config):
         if config:
-            return self.model.objects.namespace(config.namespace).active_translations().exists()
+            return self.model.objects.filter(app_config__namespace=config.namespace).all()
         return []
 
     def get_fieldsets(self, request, obj=None):
@@ -383,20 +644,16 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
 
         fsets = deepcopy(self._fieldsets)
         related_posts = []
-        if config:
-            abstract = bool(config.use_abstract)
-            placeholder = bool(config.use_placeholder)
-            related = bool(config.use_related)
-        else:
-            abstract = get_setting("USE_ABSTRACT")
-            placeholder = get_setting("USE_PLACEHOLDER")
-            related = get_setting("USE_RELATED")
+        abstract = bool(getattr(config, "use_abstract", get_setting("USE_ABSTRACT")))
+        placeholder = bool(getattr(config, "use_placeholder", get_setting("USE_PLACEHOLDER")))
+        related = getattr(config, "use_related", get_setting("USE_RELATED"))
+        related = bool(int(related)) if isinstance(related, str) and related.isnumeric() else bool(related)
         if related:
             related_posts = self._get_available_posts(config)
         if abstract:
-            self._patch_fieldsets(fsets, "abstract")
+            self._patch_fieldsets(fsets, "content__abstract")
         if not placeholder:
-            self._patch_fieldsets(fsets, "post_text")
+            self._patch_fieldsets(fsets, "content__post_text")
         if get_setting("MULTISITE") and not self.has_restricted_sites(request):
             self._patch_fieldsets(fsets, "sites")
         if request.user.is_superuser:
@@ -425,12 +682,10 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         """Return the position in the fieldset where to add the given field."""
         return self._fieldset_extra_fields_position.get(field, (None, None, None))
 
-    def get_prepopulated_fields(self, request, obj=None):
-        return {"slug": ("title",)}
-
     def save_model(self, request, obj, form, change):
+        super().save_model(request, obj or form.instance, form, change)
         obj._set_default_author(request.user)
-        super().save_model(request, obj, form, change)
+        obj.save()
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -438,9 +693,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         if sites.exists():
             pks = list(sites.all().values_list("pk", flat=True))
             qs = qs.filter(sites__in=pks)
-        # can't use distinct here because it prevents deleting records, but we need a unique list of posts because
-        # filters can cause duplicates
-        return super().get_queryset(request).filter(pk__in=qs.values_list("pk", flat=True))
+        return qs.distinct().prefetch_related(Prefetch("postcontent_set", queryset=PostContent.admin_manager.all()))
 
     def save_related(self, request, form, formsets, change):
         if self.get_restricted_sites(request).exists():
@@ -453,12 +706,28 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
                 form.instance.sites.add(*self.get_restricted_sites(request).all().values_list("pk", flat=True))
         super().save_related(request, form, formsets, change)
 
-    class Media:
-        css = {"all": ("{}djangocms_blog/css/{}".format(settings.STATIC_URL, "djangocms_blog_admin.css"),)}
+
+@admin.register(PostContent)
+class PostContentAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
+    frontend_editable_fields = ["post_text", "title", "subtitle"]
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        """Redirect to grouper change view to allow for FrontendEditing of Post Content fields"""
+        to_field = request.POST.get(TO_FIELD_VAR, request.GET.get(TO_FIELD_VAR))
+        obj = self.get_object(request, unquote(object_id), to_field)
+        if request.method == "GET":
+            return HttpResponseRedirect(admin_reverse("djangocms_blog_post_change", args=[obj.post.pk]))
+        raise Http404
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(BlogConfig)
-class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
+class BlogConfigAdmin(TranslatableAdmin):
     @property
     def declared_fieldsets(self):
         return self.get_fieldsets(None)
@@ -468,16 +737,21 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
         Fieldsets configuration
         """
         return [
-            (None, {"fields": ("type", "namespace", "app_title", "object_name")}),
+            (
+                None,
+                {
+                    "fields": (
+                        "namespace",
+                        ("app_title", "object_name"),
+                    )
+                },
+            ),
             (
                 _("Generic"),
                 {
                     "fields": (
-                        "config.default_published",
-                        "config.use_placeholder",
-                        "config.use_abstract",
-                        "config.set_author",
-                        "config.use_related",
+                        ("use_placeholder", "use_abstract", "set_author"),
+                        "use_related",
                     )
                 },
             ),
@@ -485,42 +759,40 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 _("Layout"),
                 {
                     "fields": (
-                        "config.paginate_by",
-                        "config.url_patterns",
-                        "config.template_prefix",
-                        "config.menu_structure",
-                        "config.menu_empty_categories",
-                        ("config.default_image_full", "config.default_image_thumbnail"),
+                        "paginate_by",
+                        "url_patterns",
+                        ("menu_structure", "menu_empty_categories"),
+                        "template_prefix",
+                        ("default_image_full", "default_image_thumbnail"),
                     ),
                     "classes": ("collapse",),
                 },
             ),
             (
                 _("Notifications"),
-                {"fields": ("config.send_knock_create", "config.send_knock_update"), "classes": ("collapse",)},
+                {"fields": ("send_knock_create", "send_knock_update"), "classes": ("collapse",)},
             ),
             (
                 _("Sitemap"),
                 {
                     "fields": (
-                        "config.sitemap_changefreq",
-                        "config.sitemap_priority",
+                        "sitemap_changefreq",
+                        "sitemap_priority",
                     ),
                     "classes": ("collapse",),
                 },
             ),
-            (_("Meta"), {"fields": ("config.object_type",)}),
+            (_("Meta"), {"fields": ("object_type",)}),
             (
                 "Open Graph",
                 {
                     "fields": (
-                        "config.og_type",
-                        "config.og_app_id",
-                        "config.og_profile_id",
-                        "config.og_publisher",
-                        "config.og_author_url",
-                        "config.og_author",
+                        "og_type",
+                        ("og_app_id", "og_profile_id"),
+                        "og_publisher",
+                        ("og_author_url", "og_author"),
                     ),
+                    "classes": ("collapse",),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
@@ -528,10 +800,11 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 "Twitter",
                 {
                     "fields": (
-                        "config.twitter_type",
-                        "config.twitter_site",
-                        "config.twitter_author",
+                        "twitter_type",
+                        "twitter_site",
+                        "twitter_author",
                     ),
+                    "classes": ("collapse",),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
@@ -539,13 +812,20 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
                 "Schema.org",
                 {
                     "fields": (
-                        "config.gplus_type",
-                        "config.gplus_author",
+                        "gplus_type",
+                        "gplus_author",
                     ),
+                    "classes": ("collapse",),
                     "description": _("You can provide plain strings, Post model attribute or method names"),
                 },
             ),
         ]
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.pk:
+            return tuple(self.readonly_fields) + ("namespace",)
+        else:
+            return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
         """
@@ -555,4 +835,11 @@ class BlogConfigAdmin(BaseAppHookConfig, TranslatableAdmin):
             from menus.menu_pool import menu_pool
 
             menu_pool.clear(all=True)
+        """
+        Reload urls when changing url config
+        """
+        if "config.urlconf" in form.changed_data:
+            from cms.signals.apphook import trigger_restart
+
+            trigger_restart()
         return super().save_model(request, obj, form, change)
