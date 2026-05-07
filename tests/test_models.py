@@ -7,15 +7,18 @@ from urllib.parse import quote
 
 import parler
 from cms.api import add_plugin
+
 try:
     from cms.utils.copy_plugins import copy_plugins_to
 except ImportError:  # django-cms 4.x: renamed and moved
     from cms.utils.plugins import copy_plugins_to_placeholder as copy_plugins_to
+
 from cms.utils.plugins import downcast_plugins
 from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
+from django.core.exceptions import FieldError
 from django.core.handlers.base import BaseHandler
 from django.http import QueryDict
 from django.test import override_settings
@@ -30,7 +33,6 @@ from menus.menu_pool import menu_pool
 from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override
-from django.core.exceptions import FieldError
 from taggit.models import Tag
 
 from djangocms_blog.cms_appconfig import BlogConfig, BlogConfigForm

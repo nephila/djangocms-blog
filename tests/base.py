@@ -291,6 +291,7 @@ class BaseTest(BaseTestCase):
     # and create_pages.  When CMS 3.x support is dropped, these can be removed
     # and app_helper updated to a version that supports CMS 4.x natively.
     if CMS_4_PLUS:
+
         def _prepare_request(self, request, page, user, lang, use_middlewares, use_toolbar=False, secure=False):
             """CMS 4.x: ToolbarMiddleware extends MiddlewareMixin, always needs get_response."""
             from http.cookies import SimpleCookie
@@ -328,11 +329,14 @@ class BaseTest(BaseTestCase):
                 self._apply_middlewares(request)
             elif use_toolbar:
                 from cms.middleware.toolbar import ToolbarMiddleware
+
                 mid = ToolbarMiddleware(lambda req: HttpResponse())
                 mid.process_request(request)
             return request
 
-        def get_toolbar_request(self, page, user, path=None, edit=False, lang="en", use_middlewares=False, secure=False):
+        def get_toolbar_request(
+            self, page, user, path=None, edit=False, lang="en", use_middlewares=False, secure=False
+        ):
             """CMS 4.x override: CMS_TOOLBAR_URL__EDIT_ON renamed to CMS_TOOLBAR_URL__ENABLE.
             Also forces edit_mode_active=True since CMS 4.x no longer activates it via URL param."""
             from cms.utils.conf import get_cms_setting
@@ -344,7 +348,9 @@ class BaseTest(BaseTestCase):
             from django.test import RequestFactory
 
             request = RequestFactory().get(path, secure=secure)
-            request = self._prepare_request(request, page, user, lang, use_middlewares, use_toolbar=True, secure=secure)
+            request = self._prepare_request(
+                request, page, user, lang, use_middlewares, use_toolbar=True, secure=secure
+            )
             if edit and hasattr(request, "toolbar"):
                 # CMS 4.x: edit_mode_active no longer triggered by URL param.
                 # Force it via the cached_property backing store.
@@ -355,10 +361,9 @@ class BaseTest(BaseTestCase):
         @staticmethod
         def create_pages(source, languages):
             """CMS 4.x compatible override: no page.publish() or get_draft_object()."""
+            from app_helper.utils import reload_urls
             from cms.api import create_page, create_title
             from django.conf import settings
-
-            from app_helper.utils import reload_urls
 
             pages = OrderedDict()
             has_apphook = False

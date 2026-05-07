@@ -498,6 +498,7 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         )
 
     if CMS_4_PLUS:
+
         @cached_property
         def media(self):
             return get_placeholder_from_slot(self.placeholders, "media")

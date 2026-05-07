@@ -9,14 +9,12 @@ except ImportError:  # django-cms 4.x+
     from cms.admin.placeholderadmin import PlaceholderAdmin as PlaceholderAdminMixin
 
 from cms.models import CMSPlugin
-
-from .compat import CMS_4_PLUS
 from django.apps import apps
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.contrib import admin, messages
 from django.contrib.admin.options import InlineModelAdmin
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import signals
 from django.http import HttpResponseRedirect
@@ -26,6 +24,7 @@ from django.utils.translation import get_language_from_request, gettext_lazy as 
 from parler.admin import TranslatableAdmin
 
 from .cms_appconfig import BlogConfig
+from .compat import CMS_4_PLUS
 from .forms import CategoryAdminForm, PostAdminForm
 from .models import BlogCategory, Post
 from .settings import get_setting
@@ -309,6 +308,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     # reorders all liveblog plugins by post_date on every save(), covering the
     # same behaviour for any plugin that respects the LiveblogInterface contract.
     if not CMS_4_PLUS:
+
         def post_add_plugin(self, request, obj1, obj2=None):
             if isinstance(obj1, CMSPlugin):
                 plugin = obj1

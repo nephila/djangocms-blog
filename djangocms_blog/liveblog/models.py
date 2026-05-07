@@ -3,10 +3,12 @@ from operator import itemgetter
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from cms.models import CMSPlugin
+
 from ..compat import CMS_4_PLUS
 
 try:
     from cms.utils.plugins import reorder_plugins
+
     _HAS_REORDER_PLUGINS = True
 except ImportError:  # django-cms 4.x+
     _HAS_REORDER_PLUGINS = False
@@ -71,10 +73,14 @@ class LiveblogInterface(models.Model):
             # filter(liveblog=placeholder) only matched the liveblog placeholder. CMS 4.x
             # uses a generic placeholders M2M, so we must also filter by slot to avoid
             # returning a group for plugins in non-liveblog placeholders (e.g. post_content).
-            post = Post.objects.language(self.language).filter(
-                placeholders=self.placeholder,
-                placeholders__slot="live_blog",
-            ).first()
+            post = (
+                Post.objects.language(self.language)
+                .filter(
+                    placeholders=self.placeholder,
+                    placeholders__slot="live_blog",
+                )
+                .first()
+            )
         else:
             post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
         if post:

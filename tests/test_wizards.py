@@ -12,14 +12,17 @@ from .base import BaseTest
 def _get_wizard_entries():
     if CMS_4_PLUS:
         from cms.wizards.helpers import get_entries
+
         return get_entries()
     from cms.wizards.wizard_pool import wizard_pool
+
     return wizard_pool.get_entries()
 
 
 def _reset_wizard_pool():
     if CMS_4_PLUS:
         from django.apps import apps
+
         apps.get_app_config("cms").cms_extension.wizards.clear()
     else:
         wizard_pool._reset()
@@ -44,6 +47,7 @@ class WizardTest(BaseTest):
         # `if CMS_4_PLUS:` guard (it's a no-op on a fresh import in any version).
         if CMS_4_PLUS:
             import importlib
+
             importlib.import_module("djangocms_blog.cms_wizards")
 
     def get_querydict(self, source):

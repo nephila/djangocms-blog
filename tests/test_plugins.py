@@ -29,6 +29,7 @@ def _get_admin_with_add_plugin():
     if hasattr(page_admin, "add_plugin"):
         return page_admin
     from cms.models import Placeholder
+
     return admin.site._registry[Placeholder]
 
 

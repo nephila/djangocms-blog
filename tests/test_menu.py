@@ -108,9 +108,7 @@ class MenuTest(BaseTest):
             with smart_override(lang):
                 self._reset_menus()
                 draft_page = getattr(pages[1], "get_draft_object", lambda: pages[1])()
-                request = self.get_page_request(
-                    draft_page, self.user, draft_page.get_absolute_url(lang)
-                )
+                request = self.get_page_request(draft_page, self.user, draft_page.get_absolute_url(lang))
                 nodes = self.get_nodes(menu_pool, request)
                 nodes_url = [node.get_absolute_url() for node in nodes]
                 self.assertTrue(len(nodes_url), BlogCategory.objects.all().count() + len(pages))

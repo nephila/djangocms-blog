@@ -18,6 +18,7 @@ existing ``media_id`` / ``content_id`` / ``liveblog_id`` references into the
 new generic placeholders relation *before* applying this one.  Fresh CMS 4.x
 installs do not need that step.
 """
+
 from django.db import migrations
 
 from djangocms_blog.compat import CMS_4_PLUS

@@ -46,8 +46,11 @@ class BlogApp(AutoCMSAppMixin, CMSConfigApp):
     # make these the unconditional implementations (or delete entirely if
     # djangocms_apphook_setup is updated to support CMS 4.x natively).
     if CMS_4_PLUS:
+
         @classmethod
-        def _create_page(cls, page, lang, auto_title, cms_app=None, parent=None, namespace=None, site=None, set_home=False):
+        def _create_page(
+            cls, page, lang, auto_title, cms_app=None, parent=None, namespace=None, site=None, set_home=False
+        ):
             """CMS 4.x override: page.publish() and page.get_draft_object() no longer exist."""
             from cms.api import create_page, create_title
             from cms.utils.conf import get_templates
