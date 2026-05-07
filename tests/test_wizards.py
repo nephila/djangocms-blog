@@ -25,6 +25,8 @@ def _reset_wizard_pool():
 
         apps.get_app_config("cms").cms_extension.wizards.clear()
     else:
+        from cms.wizards.wizard_pool import wizard_pool
+
         wizard_pool._reset()
 
 

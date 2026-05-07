@@ -12,7 +12,7 @@ from django.utils.http import urlencode
 from django.utils.timezone import now
 from taggit.models import Tag
 
-from djangocms_blog.models import BlogCategory, Post as BlogPost
+from djangocms_blog.models import BlogCategory
 
 from .base import BaseTest
 
