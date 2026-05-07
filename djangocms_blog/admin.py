@@ -1,10 +1,19 @@
 from copy import deepcopy
 
 from aldryn_apphooks_config.admin import BaseAppHookConfig, ModelAppHookConfig
-from cms.admin.placeholderadmin import FrontendEditableAdminMixin, PlaceholderAdminMixin
-from cms.models import CMSPlugin, ValidationError
+from cms.admin.placeholderadmin import FrontendEditableAdminMixin
+
+try:
+    from cms.admin.placeholderadmin import PlaceholderAdminMixin
+except ImportError:  # django-cms 4.x+
+    from cms.admin.placeholderadmin import PlaceholderAdmin as PlaceholderAdminMixin
+
+from cms.models import CMSPlugin
+
+from .compat import CMS_4_PLUS
 from django.apps import apps
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.contrib import admin, messages
 from django.contrib.admin.options import InlineModelAdmin
 from django.contrib.sites.models import Site
@@ -293,17 +302,24 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
         urls.extend(super().get_urls())
         return urls
 
-    def post_add_plugin(self, request, obj1, obj2=None):
-        if isinstance(obj1, CMSPlugin):
-            plugin = obj1
-        elif isinstance(obj2, CMSPlugin):
-            plugin = obj2
-        if plugin.plugin_type in get_setting("LIVEBLOG_PLUGINS"):
-            plugin = plugin.move(plugin.get_siblings().first(), "first-sibling")
-        if isinstance(obj1, CMSPlugin):
-            return super().post_add_plugin(request, plugin)
-        elif isinstance(obj2, CMSPlugin):
-            return super().post_add_plugin(request, obj1, plugin)
+    # django CMS 3.x compatibility: post_add_plugin was a PlaceholderAdminMixin
+    # hook that used treebeard's plugin.move() to push a new liveblog entry to
+    # first position.  CMS 4.x removed both the hook and treebeard, so this is
+    # gated out.  No replacement is needed: LiveblogInterface._post_save() already
+    # reorders all liveblog plugins by post_date on every save(), covering the
+    # same behaviour for any plugin that respects the LiveblogInterface contract.
+    if not CMS_4_PLUS:
+        def post_add_plugin(self, request, obj1, obj2=None):
+            if isinstance(obj1, CMSPlugin):
+                plugin = obj1
+            elif isinstance(obj2, CMSPlugin):
+                plugin = obj2
+            if plugin.plugin_type in get_setting("LIVEBLOG_PLUGINS"):
+                plugin = plugin.move(plugin.get_siblings().first(), "first-sibling")
+            if isinstance(obj1, CMSPlugin):
+                return super().post_add_plugin(request, plugin)
+            elif isinstance(obj2, CMSPlugin):
+                return super().post_add_plugin(request, obj1, plugin)
 
     def publish_post(self, request, pk):
         """
@@ -319,7 +335,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
             post.publish = True
             post.save()
             return HttpResponseRedirect(post.get_absolute_url(language))
-        except Exception:
+        except (Post.DoesNotExist, ValueError):
             try:
                 return HttpResponseRedirect(request.headers["referer"])
             except KeyError:

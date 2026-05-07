@@ -6,46 +6,68 @@ jobs:
   test:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.continue-on-error }}
+    continue-on-error: false
     strategy:
       matrix:
-        python-version: ["3.11", "3.10", "3.9"]
-        django: [42, 41, 32]
-        cms: [311, 39]
-        continue-on-error: [false]
-        exclude:
-          - django: 41
-            cms: 39
-          - django: 42
-            cms: 39
+        include:
+          # Django 3.2 + cms 3.9.x — Python 3.9–3.11
+          - {python-version: "3.9",  django: 32, cms: 39}
+          - {python-version: "3.10", django: 32, cms: 39}
+          - {python-version: "3.11", django: 32, cms: 39}
+          # Django 4.1 + cms 3.11.x — Python 3.9–3.11
+          - {python-version: "3.9",  django: 41, cms: 311}
+          - {python-version: "3.10", django: 41, cms: 311}
+          - {python-version: "3.11", django: 41, cms: 311}
+          # Django 4.2 + cms 3.11.x — Python 3.9–3.12
+          - {python-version: "3.9",  django: 42, cms: 311}
+          - {python-version: "3.10", django: 42, cms: 311}
+          - {python-version: "3.11", django: 42, cms: 311}
+          - {python-version: "3.12", django: 42, cms: 311}
+          # Django 5.0 + cms 4.x — Python 3.10–3.12
+          - {python-version: "3.10", django: 50, cms: 4x}
+          - {python-version: "3.11", django: 50, cms: 4x}
+          - {python-version: "3.12", django: 50, cms: 4x}
+          # Django 5.1 + cms 4.x — Python 3.10–3.13
+          - {python-version: "3.10", django: 51, cms: 4x}
+          - {python-version: "3.11", django: 51, cms: 4x}
+          - {python-version: "3.12", django: 51, cms: 4x}
+          - {python-version: "3.13", django: 51, cms: 4x}
+          # Django 5.2 + cms 4.x — Python 3.10–3.13
+          - {python-version: "3.10", django: 52, cms: 4x}
+          - {python-version: "3.11", django: 52, cms: 4x}
+          - {python-version: "3.12", django: 52, cms: 4x}
+          - {python-version: "3.13", django: 52, cms: 4x}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.toxenv }}
+        key: ${{ runner.os }}-pip-py${{ matrix.python-version }}-django${{ matrix.django }}-cms${{ matrix.cms }}
         restore-keys: |
-          ${{ runner.os }}-pip-${{ matrix.toxenv }}
+          ${{ runner.os }}-pip-py${{ matrix.python-version }}-django${{ matrix.django }}-cms${{ matrix.cms }}-
     - name: Cache tox
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .tox
-        key: ${{ runner.os }}-tox-${{ format('{{py{0}-django{1}-cms{2}}}', matrix.python-version, matrix.django, matrix.cms) }}-${{ hashFiles('setup.cfg') }}
+        key: ${{ runner.os }}-tox-py${{ matrix.python-version }}-django${{ matrix.django }}-cms${{ matrix.cms }}-${{ hashFiles('setup.cfg') }}
         restore-keys: |
-          ${{ runner.os }}-tox-${{ format('{{py{0}-django{1}-cms{2}}}', matrix.python-version, matrix.django, matrix.cms) }}-
+          ${{ runner.os }}-tox-py${{ matrix.python-version }}-django${{ matrix.django }}-cms${{ matrix.cms }}-
     - name: Install dependencies
       run: |
         sudo apt update
         sudo apt install gettext libcairo2-dev
         python -m pip install --upgrade pip setuptools tox>4
+    - name: Build tox env name
+      run: |
+        PY=$(echo "${{ matrix.python-version }}" | tr -d '.')
+        echo "TOX_ENV=py${PY}-django${{ matrix.django }}-cms${{ matrix.cms }}" >> $GITHUB_ENV
     - name: Test with tox
       env:
-        TOX_ENV: ${{ format('py-django{1}-cms{2}', matrix.python-version, matrix.django, matrix.cms) }}
         COMMAND: coverage run
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
@@ -57,7 +79,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel: true
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         flags: unittests

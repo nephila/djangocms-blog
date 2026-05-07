@@ -10,6 +10,7 @@ from menus.base import Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
 from .cms_appconfig import BlogConfig
+from .compat import CMS_4_PLUS
 from .models import BlogCategory, Post
 from .settings import MENU_TYPE_CATEGORIES, MENU_TYPE_COMPLETE, MENU_TYPE_NONE, MENU_TYPE_POSTS, get_setting
 
@@ -55,12 +56,13 @@ class BlogCategoryMenu(CMSAttachMenu):
                     logger.exception(e)
                     return []
             config = self._config[self.instance.application_namespace]
-            if not getattr(request, "toolbar", False) or not request.toolbar.edit_mode_active:
-                if self.instance == self.instance.get_draft_object():
-                    return []
-            else:
-                if self.instance == self.instance.get_public_object():
-                    return []
+            if not CMS_4_PLUS:
+                if not getattr(request, "toolbar", False) or not request.toolbar.edit_mode_active:
+                    if self.instance == self.instance.get_draft_object():
+                        return []
+                else:
+                    if self.instance == self.instance.get_public_object():
+                        return []
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_CATEGORIES):
             categories_menu = True
         if config and config.menu_structure in (MENU_TYPE_COMPLETE, MENU_TYPE_POSTS):

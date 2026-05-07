@@ -63,6 +63,7 @@ HELPER_SETTINGS = dict(
     CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}},
     BLOG_AUTO_SETUP=False,
     ALLOWED_HOSTS=["*"],
+    CMS_CONFIRM_VERSION4=True,
     TEST_RUNNER="app_helper.pytest_runner.PytestTestRunner",
 )
 
@@ -75,6 +76,15 @@ try:
     HELPER_SETTINGS["ASGI_APPLICATION"] = "tests.test_utils.routing.application"
     HELPER_SETTINGS["CHANNEL_LAYERS"] = {
         "default": {"BACKEND": "channels_redis.core.RedisChannelLayer", "CONFIG": {"hosts": [("localhost", 6379)]}},
+    }
+    # Async tests (database_sync_to_async) open additional DB connections in
+    # separate threads.  SQLite in-memory databases are per-connection, so those
+    # threads see empty databases.  A file-based DB is shared across connections.
+    HELPER_SETTINGS["DATABASES"] = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(mkdtemp(), "test_djangocms_blog.sqlite3"),
+        }
     }
 except ImportError:
     pass

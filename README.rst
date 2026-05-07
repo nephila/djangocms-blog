@@ -6,19 +6,26 @@ djangocms-blog
 
 django CMS blog application - Support for multilingual posts, placeholders, social network meta tags and configurable apphooks.
 
-Supported Django versions:
+Compatibility matrix:
 
-* Django 3.2 - 4.2
-
-Supported django CMS versions:
-
-* django CMS 3.9 - 3.11+
+============ ========= =====================
+Python       Django    django CMS
+============ ========= =====================
+3.9 – 3.11   3.2       3.9
+3.9 – 3.11   4.1       3.11
+3.9 – 3.12   4.2       3.11
+3.10 – 3.12  5.0       4.x (>= 4.0, < 5.0)
+3.10 – 3.13  5.1, 5.2  4.x (>= 4.0, < 5.0)
+============ ========= =====================
 
 ************
 Installation
 ************
 
 See `installation documentation`_
+
+When running on django CMS 4.x, add ``CMS_CONFIRM_VERSION4 = True`` to your
+Django settings — django CMS 4 requires the host project to opt in explicitly.
 
 ********
 Features
