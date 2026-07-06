@@ -96,6 +96,7 @@ class SiteListFilter(admin.SimpleListFilter):
 @admin.register(BlogCategory)
 class BlogCategoryAdmin(ModelAppHookConfig, TranslatableAdmin):
     form = CategoryAdminForm
+    search_fields = ["translations__name"]
     list_display = [
         "name",
         "parent",
@@ -118,6 +119,7 @@ class PostAdmin(PlaceholderAdminMixin, FrontendEditableAdminMixin, ModelAppHookC
     form = PostAdminForm
     list_display = ["title", "author", "date_published", "app_config", "all_languages_column", "date_published_end"]
     search_fields = ("translations__title",)
+    autocomplete_fields = ["categories", "sites"]
     date_hierarchy = "date_published"
     raw_id_fields = ["author"]
     frontend_editable_fields = ("title", "abstract", "post_text")
