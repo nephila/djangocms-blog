@@ -2,6 +2,7 @@ from cms.toolbar.items import ButtonList, ModalItem
 from django.urls import reverse
 from django.utils.encoding import force_str
 
+from djangocms_blog.compat import CMS_4_PLUS
 from djangocms_blog.models import BLOG_CURRENT_POST_IDENTIFIER
 
 from .base import BaseTest
@@ -14,14 +15,21 @@ class ToolbarTest(BaseTest):
         """
         from cms.toolbar.toolbar import CMSToolbar
 
-        posts = self.get_posts()
         pages = self.get_pages()
+        posts = self.get_posts()
         request = self.get_page_request(pages[0], self.user, r"/en/blog/", edit=True)
         setattr(request, BLOG_CURRENT_POST_IDENTIFIER, posts[0])
 
         posts[0].publish = False
         posts[0].save()
         toolbar = CMSToolbar(request)
+        # django CMS 3.x compatibility: in CMS 4.x edit_mode_active is a cached_property
+        # that no longer activates from the ?edit URL param; must be forced manually.
+        # When CMS 3.x support is dropped, remove the `if CMS_4_PLUS:` guards and
+        # always set toolbar.__dict__["edit_mode_active"] = True (or update the test
+        # to use the CMS 4.x edit activation mechanism).
+        if CMS_4_PLUS:
+            toolbar.__dict__["edit_mode_active"] = True
         toolbar.populate()
         toolbar.post_template_populate()
         toolbar.get_left_items()
@@ -47,6 +55,8 @@ class ToolbarTest(BaseTest):
         posts[0].publish = True
         posts[0].save()
         toolbar = CMSToolbar(request)
+        if CMS_4_PLUS:  # django CMS 3.x compatibility: see comment above
+            toolbar.__dict__["edit_mode_active"] = True
         toolbar.populate()
         toolbar.post_template_populate()
         right = toolbar.get_right_items()
@@ -57,6 +67,8 @@ class ToolbarTest(BaseTest):
         posts[1].publish = True
         posts[1].save()
         toolbar = CMSToolbar(request)
+        if CMS_4_PLUS:  # django CMS 3.x compatibility: see comment above
+            toolbar.__dict__["edit_mode_active"] = True
         toolbar.populate()
         toolbar.post_template_populate()
         right = toolbar.get_right_items()

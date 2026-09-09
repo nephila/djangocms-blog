@@ -6,6 +6,7 @@ from cms.wizards.wizard_base import Wizard
 from cms.wizards.wizard_pool import AlreadyRegisteredException, wizard_pool
 from django import forms
 from django.conf import settings
+from django.db import OperationalError, ProgrammingError
 from django.utils.translation import gettext_lazy as _
 
 from .cms_appconfig import BlogConfig
@@ -97,7 +98,14 @@ class PostWizard(Wizard):
     pass
 
 
-for config in BlogConfig.objects.all().order_by("namespace"):
+try:
+    _configs = list(BlogConfig.objects.all().order_by("namespace"))
+except (OperationalError, ProgrammingError):
+    # Table doesn't exist yet (migrations not run, or DB not ready during
+    # cms 4.x AppConfig.ready() bootstrap). No configs to register.
+    _configs = []
+
+for config in _configs:
     seed = slugify("{}.{}".format(config.app_title, config.namespace))
     new_wizard = type(str(seed), (PostWizard,), {})
     new_form = type("{}Form".format(seed), (PostWizardForm,), {"default_appconfig": config.pk})

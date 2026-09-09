@@ -7,12 +7,18 @@ from urllib.parse import quote
 
 import parler
 from cms.api import add_plugin
-from cms.utils.copy_plugins import copy_plugins_to
+
+try:
+    from cms.utils.copy_plugins import copy_plugins_to
+except ImportError:  # django-cms 4.x: renamed and moved
+    from cms.utils.plugins import copy_plugins_to_placeholder as copy_plugins_to
+
 from cms.utils.plugins import downcast_plugins
 from django.contrib import admin
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sites.models import Site
+from django.core.exceptions import FieldError
 from django.core.handlers.base import BaseHandler
 from django.http import QueryDict
 from django.test import override_settings
@@ -1330,7 +1336,13 @@ class ModelsTest2(BaseTest):
         plugin = add_plugin(post1.content, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
         plugin.tags.add(tag1)
         plugin.tags.add(tag2)
-        plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        # django CMS 3.x compatibility: CMSPlugin used treebeard (MP_Node) in CMS 3.x,
+        # giving "path" and "depth" fields.  These were removed in CMS 4.x.
+        # When CMS 3.x support is dropped, keep only the `except` branch (order_by "position").
+        try:
+            plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        except FieldError:  # CMS 4.x: no treebeard path/depth fields
+            plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("position"))
         copy_plugins_to(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].tags.all()), {tag1, tag2})
@@ -1375,7 +1387,11 @@ class ModelsTest2(BaseTest):
         post2 = self._get_post(self._post_data[1]["en"])
         plugin = add_plugin(post1.content, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
         plugin.posts.add(post1, post2)
-        plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        # django CMS 3.x compatibility: see comment in test_copy_plugin_latest
+        try:
+            plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        except FieldError:  # CMS 4.x: no treebeard path/depth fields
+            plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("position"))
         copy_plugins_to(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].posts.all()), {post1, post2})
@@ -1385,7 +1401,11 @@ class ModelsTest2(BaseTest):
         post2 = self._get_post(self._post_data[1]["en"])
         plugin = add_plugin(post1.content, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
         plugin.authors.add(self.user)
-        plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        # django CMS 3.x compatibility: see comment in test_copy_plugin_latest
+        try:
+            plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("path", "depth", "position"))
+        except FieldError:  # CMS 4.x: no treebeard path/depth fields
+            plugins = list(post1.content.cmsplugin_set.filter(language="en").order_by("position"))
         copy_plugins_to(plugins, post2.content)
         new = list(downcast_plugins(post2.content.cmsplugin_set.all()))
         self.assertEqual(set(new[0].authors.all()), {self.user})

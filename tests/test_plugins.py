@@ -19,6 +19,20 @@ from .base import BaseTest
 User = get_user_model()
 
 
+# django CMS 3.x compatibility: in CMS 3.x, PageAdmin had add_plugin; in CMS 4.x
+# PlaceholderAdminMixin became an empty stub and add_plugin lives on PlaceholderAdmin
+# (registered for the Placeholder model).  When CMS 3.x support is dropped, remove
+# this helper and call admin.site._registry[Placeholder].add_plugin directly.
+def _get_admin_with_add_plugin():
+    """Return an admin that has the add_plugin method (CMS 4.x removed it from PageAdmin)."""
+    page_admin = admin.site._registry[Page]
+    if hasattr(page_admin, "add_plugin"):
+        return page_admin
+    from cms.models import Placeholder
+
+    return admin.site._registry[Placeholder]
+
+
 class PluginTest(BaseTest):
     def test_plugin_latest_cached(self):
         pages = self.get_pages()
@@ -26,7 +40,7 @@ class PluginTest(BaseTest):
         posts[0].tags.add("tag 1")
         posts[0].publish = True
         posts[0].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
 
         plugin = add_plugin(ph, "BlogLatestEntriesPluginCached", language="en", app_config=self.app_config_1)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
@@ -39,14 +53,17 @@ class PluginTest(BaseTest):
         self.assertTrue(rendered.find(posts[0].get_absolute_url()) > -1)
 
         plugin_nocache = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
-        # FIXME: Investigate the correct number of queries expected here
-        with self.assertNumQueries(FuzzyInt(17, 18)):
+        # django CMS 3.x compatibility: CMS 4.x has fewer DB queries (no draft/published
+        # page overhead), so the lower bound was widened from 17 to 14.
+        # When CMS 3.x support is dropped, tighten the range once the exact CMS 4.x count
+        # is known to be stable.
+        with self.assertNumQueries(FuzzyInt(14, 18)):
             self.render_plugin(pages[0], "en", plugin_nocache)
 
-        with self.assertNumQueries(FuzzyInt(17, 18)):
+        with self.assertNumQueries(FuzzyInt(14, 18)):
             self.render_plugin(pages[0], "en", plugin)
 
-        with self.assertNumQueries(FuzzyInt(17, 18)):
+        with self.assertNumQueries(FuzzyInt(14, 18)):
             rendered = self.render_plugin(pages[0], "en", plugin)
 
         self.assertTrue(rendered.find("<p>first line</p>") > -1)
@@ -59,7 +76,7 @@ class PluginTest(BaseTest):
         posts[0].tags.add("tag 1")
         posts[0].publish = True
         posts[0].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
 
         plugin = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
         tag = Tag.objects.get(slug="tag-1")
@@ -95,11 +112,14 @@ class PluginTest(BaseTest):
         self.assertTrue(rendered.find(posts[1].get_absolute_url()) > -1)
 
         # Checking copy relations
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         original = ph.get_plugins("en")
-        pages[0].publish("en")
-        published = pages[0].get_public_object()
-        ph = published.placeholders.get(slot="content")
+        if hasattr(pages[0], "publish"):
+            pages[0].publish("en")
+            published = pages[0].get_public_object()
+        else:
+            published = pages[0]
+        ph = self._get_placeholder(published, "content")
         new = ph.get_plugins("en")
         self.assertNotEqual(original, new)
 
@@ -129,7 +149,7 @@ class PluginTest(BaseTest):
     def test_plugin_featured_cached(self):
         pages = self.get_pages()
         posts = self.get_posts()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
 
         plugin = add_plugin(ph, "BlogFeaturedPostsPluginCached", language="en", app_config=self.app_config_1)
         plugin.posts.add(posts[0])
@@ -144,14 +164,15 @@ class PluginTest(BaseTest):
 
         plugin_nocache = add_plugin(ph, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
         plugin_nocache.posts.add(posts[0])
-        # FIXME: Investigate the correct number of queries expected here
-        with self.assertNumQueries(FuzzyInt(15, 17)):
+        # django CMS 3.x compatibility: CMS 4.x has fewer DB queries (no draft/published
+        # page overhead), lower bound widened from 15 to 12.  Same as FuzzyInt note above.
+        with self.assertNumQueries(FuzzyInt(12, 17)):
             self.render_plugin(pages[0], "en", plugin_nocache)
 
-        with self.assertNumQueries(FuzzyInt(15, 17)):
+        with self.assertNumQueries(FuzzyInt(12, 17)):
             self.render_plugin(pages[0], "en", plugin)
 
-        with self.assertNumQueries(FuzzyInt(15, 17)):
+        with self.assertNumQueries(FuzzyInt(12, 17)):
             rendered = self.render_plugin(pages[0], "en", plugin)
 
         self.assertTrue(rendered.find("<p>first line</p>") > -1)
@@ -163,7 +184,7 @@ class PluginTest(BaseTest):
         posts = self.get_posts()
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
 
         plugin = add_plugin(ph, "BlogFeaturedPostsPlugin", language="en", app_config=self.app_config_1)
         plugin.posts.add(posts[0], posts[1])
@@ -204,7 +225,7 @@ class PluginTest(BaseTest):
         posts[1].tags.add("test tag", "another tag")
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugin = add_plugin(ph, "BlogTagsPlugin", language="en", app_config=self.app_config_1)
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         for tag in Tag.objects.all():
@@ -223,7 +244,7 @@ class PluginTest(BaseTest):
         posts[0].save()
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugin = add_plugin(ph, "BlogArchivePlugin", language="en", app_config=self.app_config_1)
         plugin_class = plugin.get_plugin_class_instance()
 
@@ -269,7 +290,7 @@ class PluginTest(BaseTest):
         self.get_posts()
         pages = self.get_pages()
 
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugin = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
 
         context = self.get_plugin_context(pages[0], "en", plugin)
@@ -294,7 +315,7 @@ class PluginTest10(BaseTest):
         posts[0].save()
         posts[1].publish = True
         posts[1].save()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugin = add_plugin(ph, "BlogAuthorPostsPlugin", language="en", app_config=self.app_config_1)
 
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
@@ -316,11 +337,14 @@ class PluginTest10(BaseTest):
         self.assertTrue(rendered.find("0 articles") > -1)
 
         # Checking copy relations
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         original = ph.get_plugins("en")
-        pages[0].publish("en")
-        published = pages[0].get_public_object()
-        ph = published.placeholders.get(slot="content")
+        if hasattr(pages[0], "publish"):
+            pages[0].publish("en")
+            published = pages[0].get_public_object()
+        else:
+            published = pages[0]
+        ph = self._get_placeholder(published, "content")
         new = ph.get_plugins("en")
         self.assertNotEqual(original, new)
 
@@ -341,17 +365,21 @@ class PluginTest10(BaseTest):
         posts[2].publish = False
         posts[2].author = unpublished_author
         posts[2].save()
-        ph = pages[0].placeholders.get(slot="content")
-        page_admin = admin.site._registry[Page]
+        ph = self._get_placeholder(pages[0], "content")
+        plugin_admin = _get_admin_with_add_plugin()
         parms = {
             "cms_path": "/en/",
             "placeholder_id": ph.pk,
             "plugin_type": "BlogAuthorPostsPlugin",
             "plugin_language": "en",
+            # django CMS 3.x compatibility: plugin_position is required by CMS 4.x
+            # PluginAddValidationForm but harmlessly ignored by CMS 3.x.
+            # When CMS 3.x support is dropped this comment can be removed.
+            "plugin_position": 0,
         }
         path = "/en/?%s" % urlencode(parms)
         request = self.get_request(pages[0], "en", user=self.user, path=path)
-        response = page_admin.add_plugin(request)
+        response = plugin_admin.add_plugin(request)
         form_authors = response.context_data["adminform"].form.fields["authors"].queryset
         self.assertEqual(form_authors.count(), 2)
         self.assertIn(other_author, form_authors)
@@ -361,7 +389,7 @@ class PluginTest10(BaseTest):
 
     def test_plugin_templates_field_single_template(self):
         pages = self.get_pages()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugins = [
             "BlogLatestEntriesPlugin",
             "BlogLatestEntriesPluginCached",
@@ -374,16 +402,17 @@ class PluginTest10(BaseTest):
             "BlogFeaturedPostsPluginCached",
         ]
         for plugin in plugins:
-            page_admin = admin.site._registry[Page]
+            plugin_admin = _get_admin_with_add_plugin()
             parms = {
                 "cms_path": "/en/",
                 "placeholder_id": ph.pk,
                 "plugin_type": plugin,
                 "plugin_language": "en",
+                "plugin_position": 0,  # django CMS 3.x compatibility: required by CMS 4.x, ignored by CMS 3.x
             }
             path = "/en/?%s" % urlencode(parms)
             request = self.get_request(pages[0], "en", user=self.user, path=path)
-            response = page_admin.add_plugin(request)
+            response = plugin_admin.add_plugin(request)
             with self.assertRaises(KeyError):
                 template_folder_field = response.context_data["adminform"].form.fields["template_folder"]  # noqa: F841
 
@@ -395,7 +424,7 @@ class PluginTest10(BaseTest):
     )
     def test_plugin_templates_field_multi_template(self):
         pages = self.get_pages()
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugins = [
             "BlogLatestEntriesPlugin",
             "BlogLatestEntriesPluginCached",
@@ -408,16 +437,17 @@ class PluginTest10(BaseTest):
             "BlogFeaturedPostsPluginCached",
         ]
         for plugin in plugins:
-            page_admin = admin.site._registry[Page]
+            plugin_admin = _get_admin_with_add_plugin()
             parms = {
                 "cms_path": "/en/",
                 "placeholder_id": ph.pk,
                 "plugin_type": plugin,
                 "plugin_language": "en",
+                "plugin_position": 0,  # django CMS 3.x compatibility: required by CMS 4.x, ignored by CMS 3.x
             }
             path = "/en/?%s" % urlencode(parms)
             request = self.get_request(pages[0], "en", user=self.user, path=path)
-            response = page_admin.add_plugin(request)
+            response = plugin_admin.add_plugin(request)
             template_folder_field = response.context_data["adminform"].form.fields["template_folder"]
             self.assertEqual(len(template_folder_field.choices), 2)
             self.assertEqual(sorted(dict(template_folder_field.choices).keys()), sorted(["default", "vertical"]))
@@ -436,7 +466,7 @@ class PluginTest2(BaseTest):
         new_category = BlogCategory.objects.create(name="category 2", app_config=self.app_config_1)
         posts[1].categories.add(new_category)
 
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugin = add_plugin(ph, "BlogCategoryPlugin", language="en", app_config=self.app_config_1)
         plugin_class = plugin.get_plugin_class_instance()
         context = self.get_plugin_context(pages[0], "en", plugin, edit=True)
@@ -480,7 +510,7 @@ class PluginTestNamespace(BaseTest):
         self.category_1.set_current_language("en")
         category_2 = BlogCategory.objects.create(name="category 2", app_config=self.app_config_2)
         category_2.set_current_language("en")
-        ph = pages[0].placeholders.get(slot="content")
+        ph = self._get_placeholder(pages[0], "content")
         plugin = add_plugin(ph, "BlogLatestEntriesPlugin", language="en", app_config=self.app_config_1)
         plugin.categories.add(self.category_1)
         plugin.save()

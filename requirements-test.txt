@@ -3,7 +3,7 @@ coverage
 coveralls>=2.0
 pysolr
 django-taggit-helpers
-django-app-helper>=2.0.0
+django-app-helper>=2.0.0,<3.4
 djangocms-video
 pytest
 pytest-django

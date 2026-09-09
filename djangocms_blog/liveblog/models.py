@@ -3,7 +3,15 @@ from operator import itemgetter
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from cms.models import CMSPlugin
-from cms.utils.plugins import reorder_plugins
+
+from ..compat import CMS_4_PLUS
+
+try:
+    from cms.utils.plugins import reorder_plugins
+
+    _HAS_REORDER_PLUGINS = True
+except ImportError:  # django-cms 4.x+
+    _HAS_REORDER_PLUGINS = False
 from django.db import models
 from django.template import Context
 from django.utils.timezone import now
@@ -44,12 +52,37 @@ class LiveblogInterface(models.Model):
         items = []
         for model in LiveblogInterface.__subclasses__():
             items.extend(model.objects.filter(placeholder=self.placeholder).values("pk", "post_date"))
-        order = reversed([item["pk"] for item in sorted(items, key=itemgetter("post_date"))])
-        reorder_plugins(self.placeholder, None, self.language, order)
+        order = list(reversed([item["pk"] for item in sorted(items, key=itemgetter("post_date"))]))
+        if _HAS_REORDER_PLUGINS:
+            reorder_plugins(self.placeholder, None, self.language, order)
+        else:
+            # django CMS 3.x compatibility: CMS 4.x has unique_together on
+            # (placeholder, language, position). A naive single-pass position update
+            # creates transient duplicates; shift all positions high first, then set
+            # real values.  When CMS 3.x support is dropped, keep only this branch.
+            offset = len(order) + 1000
+            for pk in order:
+                CMSPlugin.objects.filter(pk=pk).update(position=models.F("position") + offset)
+            for pos, pk in enumerate(order, start=1):
+                CMSPlugin.objects.filter(pk=pk).update(position=pos)
 
     @property
     def liveblog_group(self):
-        post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
+        if CMS_4_PLUS:
+            # django CMS 3.x compatibility: CMS 3.x had a liveblog ForeignKey on Post so
+            # filter(liveblog=placeholder) only matched the liveblog placeholder. CMS 4.x
+            # uses a generic placeholders M2M, so we must also filter by slot to avoid
+            # returning a group for plugins in non-liveblog placeholders (e.g. post_content).
+            post = (
+                Post.objects.language(self.language)
+                .filter(
+                    placeholders=self.placeholder,
+                    placeholders__slot="live_blog",
+                )
+                .first()
+            )
+        else:
+            post = Post.objects.language(self.language).filter(liveblog=self.placeholder).first()
         if post:
             return post.liveblog_group
 
