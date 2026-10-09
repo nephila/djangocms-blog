@@ -1,4 +1,4 @@
-from cms.utils import get_language_list
+from cms.utils.i18n import get_language_list
 from django.contrib.sitemaps import Sitemap
 from django.urls.exceptions import NoReverseMatch
 from parler.utils.context import smart_override

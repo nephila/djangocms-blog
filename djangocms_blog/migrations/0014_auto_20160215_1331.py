@@ -12,7 +12,11 @@ def forwards(apps, schema_editor):
     LatestPostsPlugin = apps.get_model("djangocms_blog", "LatestPostsPlugin")
     AuthorEntriesPlugin = apps.get_model("djangocms_blog", "AuthorEntriesPlugin")
     config = None
-    for page in Page.objects.drafts().filter(application_urls="BlogApp"):
+    try:
+        page_qs = Page.objects.drafts().filter(application_urls="BlogApp")
+    except AttributeError:  # django-cms 4.x: Page.objects always returns drafts
+        page_qs = Page.objects.filter(application_urls="BlogApp")
+    for page in page_qs:
         config, created = BlogConfig.objects.get_or_create(namespace=page.application_namespace)
         if not BlogConfigTranslation.objects.exists():
             for lang in get_language_list():

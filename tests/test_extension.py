@@ -47,7 +47,11 @@ class AddExtensionTest(BaseTest):
     def test_add_plugin_to_placeholder(self):
         djangocms_blog.admin.register_extension(PostPlaceholderExtension)
         pages = self.get_pages()
-        ph = pages[0].placeholders.get(slot="some_placeholder")
+        try:
+            # django CMS 3.x compatibility: Page.placeholders M2M removed in CMS 4.x
+            ph = pages[0].placeholders.get(slot="some_placeholder")
+        except AttributeError:  # CMS 4.x: no placeholders M2M field
+            ph = pages[0].get_placeholders("en").get(slot="some_placeholder")
         plugin = add_plugin(ph, "TextPlugin", language="en", body="<p>test</p>")
         rendered = self.render_plugin(pages[0], "en", plugin, edit=True)
         self.assertTrue(rendered.find("<p>test</p>") > -1)
@@ -68,12 +72,15 @@ class AddExtensionTest(BaseTest):
         # Add view should contain extension
         response = post_admin.add_view(request)
         response.render()
-        self.assertRegex(force_str(response.content), r"<h2>.*PostExtension.*</h2>")
+        # Django 5.x compatibility: admin inline headings now use
+        # <h2 id="..." class="inline-heading"> instead of bare <h2>.
+        # When Django 4.x support is dropped, the regex can be simplified back to r"<h2>.*PostExtension.*</h2>".
+        self.assertRegex(force_str(response.content), r"<h2[^>]*>[\s\S]*?PostExtension")
 
         # Changeview should contain extension
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertRegex(force_str(response.content), r"<h2>.*PostExtension.*</h2>")
+        self.assertRegex(force_str(response.content), r"<h2[^>]*>[\s\S]*?PostExtension")
         post.delete()
         djangocms_blog.admin.unregister_extension(PostExtensionInline)
 
@@ -91,10 +98,11 @@ class AddExtensionTest(BaseTest):
         # Add view should contain extension
         response = post_admin.add_view(request)
         response.render()
-        self.assertNotRegex(force_str(response.content), r"<h2>.*PostExtension.*</h2>")
+        # Django 5.x compatibility: see comment in test_admin_post_views_should_have_extension
+        self.assertNotRegex(force_str(response.content), r"<h2[^>]*>[\s\S]*?PostExtension")
 
         # Changeview should contain extension
         response = post_admin.change_view(request, str(post.pk))
         response.render()
-        self.assertNotRegex(force_str(response.content), r"<h2>.*PostExtension.*</h2>")
+        self.assertNotRegex(force_str(response.content), r"<h2[^>]*>[\s\S]*?PostExtension")
         post.delete()
