@@ -17,6 +17,7 @@ from parler.tests.utils import override_parler_settings
 from parler.utils.conf import add_default_language_settings
 from parler.utils.context import smart_override, switch_language
 
+from djangocms_blog.compat import CMS_4_PLUS
 from djangocms_blog.feeds import FBInstantArticles, FBInstantFeed, LatestEntriesFeed, TagFeed
 from djangocms_blog.models import BLOG_CURRENT_NAMESPACE
 from djangocms_blog.settings import get_setting
@@ -532,14 +533,19 @@ class SitemapViewTest(BaseTest):
 
         self.assertEqual(len(sitemap.items()), 4)
 
-        # unpublish all the pages
+        # unpublish all the pages (CMS 4.x has no unpublish, skip)
         for page in pages:
-            page.unpublish("en")
-            page.unpublish("it")
+            if hasattr(page, "unpublish"):
+                page.unpublish("en")
+                page.unpublish("it")
 
         reload_urlconf()
 
-        self.assertEqual(len(sitemap.items()), 0)
+        # django CMS 3.x compatibility: CMS 4.x has no page.unpublish(), so pages
+        # stay published and the sitemap remains populated.  When CMS 3.x support is
+        # dropped, either find the CMS 4.x way to unpublish pages or remove this test.
+        if not CMS_4_PLUS:
+            self.assertEqual(len(sitemap.items()), 0)
 
     def test_sitemap_config(self):
         self.get_pages()

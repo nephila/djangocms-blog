@@ -2,7 +2,15 @@ import hashlib
 
 from aldryn_apphooks_config.fields import AppHookConfigField
 from aldryn_apphooks_config.managers.parler import AppHookConfigTranslatableManager
-from cms.models import CMSPlugin, PlaceholderField
+from cms.models import CMSPlugin
+
+from .compat import CMS_4_PLUS
+
+if CMS_4_PLUS:
+    from cms.models.fields import PlaceholderRelationField
+    from cms.utils.placeholder import get_placeholder_from_slot
+else:
+    from cms.models import PlaceholderField
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -267,9 +275,12 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
         post_text=HTMLField(_("text"), default="", blank=True, configuration="BLOG_POST_TEXT_CKEDITOR"),
         meta={"unique_together": (("language_code", "slug"),)},
     )
-    media = PlaceholderField("media", related_name="media")
-    content = PlaceholderField("post_content", related_name="post_content")
-    liveblog = PlaceholderField("live_blog", related_name="live_blog")
+    if CMS_4_PLUS:
+        placeholders = PlaceholderRelationField()
+    else:
+        media = PlaceholderField("media", related_name="media")
+        content = PlaceholderField("post_content", related_name="post_content")
+        liveblog = PlaceholderField("live_blog", related_name="live_blog")
     enable_liveblog = models.BooleanField(verbose_name=_("enable liveblog on post"), default=False)
 
     objects = GenericDateTaggedManager()
@@ -485,6 +496,20 @@ class Post(KnockerModel, BlogMetaMixin, TranslatableModel):
             apphook=self.app_config.namespace,
             post=self.safe_translation_getter("slug", any_language=True),
         )
+
+    if CMS_4_PLUS:
+
+        @cached_property
+        def media(self):
+            return get_placeholder_from_slot(self.placeholders, "media")
+
+        @cached_property
+        def content(self):
+            return get_placeholder_from_slot(self.placeholders, "post_content")
+
+        @cached_property
+        def liveblog(self):
+            return get_placeholder_from_slot(self.placeholders, "live_blog")
 
 
 class BasePostPlugin(CMSPlugin):

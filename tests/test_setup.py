@@ -6,6 +6,7 @@ from cms.utils import get_language_list
 from django.utils.translation import override
 
 from djangocms_blog.cms_appconfig import BlogConfig
+from djangocms_blog.compat import CMS_4_PLUS
 
 from .base import BaseTest
 
@@ -45,8 +46,12 @@ class SetupTest(BaseTest):
         # importing cms_app triggers the auto setup
         from djangocms_blog import cms_apps  # NOQA
 
-        # Home and blog, published and draft
-        self.assertEqual(Page.objects.count(), 4)
+        # django CMS 3.x compatibility: CMS 3.x stores both a draft and a published
+        # copy of every page (2 pages × 2 copies = 4).  CMS 4.x has no drafts so
+        # only 2 pages exist.  When CMS 3.x support is dropped, replace with
+        # `self.assertEqual(Page.objects.count(), 2)`.
+        expected_pages = 2 if CMS_4_PLUS else 4
+        self.assertEqual(Page.objects.count(), expected_pages)
         self.assertEqual(BlogConfig.objects.count(), 1)
 
     def test_setup_filled(self):
@@ -67,13 +72,15 @@ class SetupTest(BaseTest):
                         home.set_as_homepage()
                 else:
                     create_title(language=lang, title="a new home", page=home)
-                    home.publish(lang)
+                    if hasattr(home, "publish"):
+                        home.publish(lang)
 
         # importing cms_app triggers the auto setup
         from djangocms_blog import cms_apps  # NOQA
 
-        # Home and blog, published and draft
-        self.assertEqual(Page.objects.count(), 4)
+        # django CMS 3.x compatibility: see comment in test_setup_from_url
+        expected_pages = 2 if CMS_4_PLUS else 4
+        self.assertEqual(Page.objects.count(), expected_pages)
         self.assertEqual(BlogConfig.objects.count(), 1)
 
         home = Page.objects.get_home()

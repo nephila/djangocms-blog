@@ -44,6 +44,12 @@ def get_post():
     post = Post.objects.create(**post_data)
     post.enable_liveblog = True
     post.save()
+    # django CMS 3.x compatibility: in CMS 4.x, post.liveblog and post.content are
+    # @cached_property backed by get_placeholder_from_slot(), which runs a DB query.
+    # Pre-fetch them here (inside database_sync_to_async) so the cached values are
+    # available in the async context without triggering SynchronousOnlyOperation.
+    _ = post.liveblog
+    _ = post.content
     return post
 
 
@@ -74,7 +80,7 @@ def update_livelobg_plugin_content(plugin, publish=True):
 
 
 @pytest.mark.debug
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 @pytest.mark.asyncio
 async def test_add_plugin():
     post = await get_post()
@@ -146,7 +152,7 @@ async def test_disconnect():
     await delete_post(post)
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 @pytest.mark.asyncio
 async def test_nopost():
     post = await get_post()
@@ -158,7 +164,7 @@ async def test_nopost():
     await delete_post(post)
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 @pytest.mark.asyncio
 async def test_plugin_not_liveblog_placeholder():
     @database_sync_to_async
