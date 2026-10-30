@@ -99,7 +99,7 @@ class GenericDateQuerySet(AppHookConfigTranslatableQueryset):
             return queryset
 
     def published_on_rss(self, current_site=True):
-        queryset = self.published_future(current_site)
+        queryset = self.published(current_site)
         return queryset.exclude(include_in_rss=False)
 
     def published_future(self, current_site=True):
