@@ -1,4 +1,5 @@
 import os.path
+from datetime import timedelta
 
 from aldryn_apphooks_config.utils import get_app_instance
 from app_helper.utils import captured_output
@@ -503,6 +504,36 @@ class TaggedItemViewTest(BaseTest):
 
                 posts[0].include_in_rss = True
                 posts[0].save()
+
+    def test_feed_publication_dates(self):
+        pages = self.get_pages()
+        posts = self.get_posts()
+        posts[1].publish = True
+        posts[1].save()
+
+        with smart_override("en"):
+            with switch_language(posts[0], "en"):
+                request = self.get_page_request(pages[1], self.user, path=posts[0].get_absolute_url())
+                feed = LatestEntriesFeed()
+                feed.namespace, feed.config = get_app_instance(request)
+
+                # both posts are inside their publication window
+                posts[0].date_published = now() - timedelta(days=1)
+                posts[0].date_published_end = now() + timedelta(days=1)
+                posts[0].save()
+                posts[1].date_published = now() - timedelta(days=2)
+                posts[1].save()
+                self.assertEqual(list(feed.items()), [posts[0], posts[1]])
+
+                # post not yet published (published since in the future) must not be in the feed
+                posts[1].date_published = now() + timedelta(days=1)
+                posts[1].save()
+                self.assertEqual(list(feed.items()), [posts[0]])
+
+                # post no longer published (published until in the past) must not be in the feed
+                posts[0].date_published_end = now() - timedelta(hours=1)
+                posts[0].save()
+                self.assertEqual(list(feed.items()), [])
 
 
 class SitemapViewTest(BaseTest):
